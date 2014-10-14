@@ -1,4 +1,5 @@
 # import functions
+
 # export functions
 export(margins)
 
@@ -9,4 +10,5 @@ S3method(margins, polr)
 S3method(margins, censReg)
 
 ## methods for margins class
+S3method(print, margins)
 S3method(plot, margins)

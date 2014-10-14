@@ -1,0 +1,414 @@
+<!--
+%\VignetteEngine{knitr}
+%\VignetteIndexEntry{Stata Benchmarks}
+-->
+
+# Stata Benchmarks #
+
+**margins** is intended as a port of (some of) the features of Stata's `margins` command. This vignette walks through common uses of Stata's `margins` commands and the comparable functionality in using either R's built-in `predict` function or the `margins` function from this package. We will use the `mtcars` dataset. Some of the analyses make little substantive sense; they are only intended to demonstrate package functionality.
+
+## OLS predicted values ##
+
+### Stata ###
+
+```
+import delimited mtcars.csv
+quietly reg mpg cyl hp wt
+margins
+
+Predictive margins                                Number of obs   =         32
+Model VCE    : OLS
+
+Expression   : Linear prediction, predict()
+
+------------------------------------------------------------------------------
+             |            Delta-method
+             |     Margin   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+       _cons |   20.09062   .4439833    45.25   0.000     19.18117    21.00008
+------------------------------------------------------------------------------
+```
+
+### R ###
+
+```{r}
+x <- lm(mpg ~ cyl + hp + wt, data = mtcars)
+mean(predict(x))
+```
+
+
+## OLS predicted values at specified covariate levels ##
+
+### Stata ###
+
+```
+margins, at(cyl = (4 6 8))
+
+Predictive margins                                Number of obs   =         32
+Model VCE    : OLS
+Expression   : Linear prediction, predict()
+1._at        : cyl             =           4
+2._at        : cyl             =           6
+3._at        : cyl             =           8
+
+------------------------------------------------------------------------------
+             |            Delta-method
+             |     Margin   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+         _at |
+          1  |   22.15041   1.284313    17.25   0.000     19.51962    24.78121
+          2  |   20.26718   .4558414    44.46   0.000     19.33343    21.20093
+          3  |   18.38394   1.092793    16.82   0.000     16.14546    20.62243
+------------------------------------------------------------------------------
+```
+
+
+### R ###
+
+```{r}
+n <- expand.grid(cyl = c(4,6,8), hp = mean(mtcars$hp), wt = mean(mtcars$wt))
+predict(x, newdata = n)
+```
+
+
+## GLM predicted values ##
+
+### Stata ###
+
+```
+quietly logit am cyl hp wt
+* probability of success
+margins 
+
+Predictive margins                                Number of obs   =         32
+Model VCE    : OIM
+
+Expression   : Pr(am), predict()
+
+------------------------------------------------------------------------------
+             |            Delta-method
+             |     Margin   Std. Err.      z    P>|z|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+       _cons |     .40625   .0370796    10.96   0.000     .3335752    .4789248
+------------------------------------------------------------------------------
+
+* Linear prediction
+margins, predict(xb) 
+
+Predictive margins                                Number of obs   =         32
+Model VCE    : OIM
+
+Expression   : Linear prediction (log odds), predict(xb)
+
+------------------------------------------------------------------------------
+             |            Delta-method
+             |     Margin   Std. Err.      z    P>|z|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+       _cons |   -1.93545   1.144232    -1.69   0.091    -4.178104    .3072045
+------------------------------------------------------------------------------
+```
+
+### R ###
+
+```{r}
+x <- glm(am ~ cyl + hp + wt, data = mtcars, family=binomial)
+mean(predict(x, type = "response")) # Probability of success
+mean(predict(x)) # linear prediction
+```
+
+## GLM predicted values at specified covariate levels ##
+
+
+### Stata ###
+
+```
+* average predictive margins
+margins, at(cyl = (4 6 8))
+
+Predictive margins                                Number of obs   =         32
+Model VCE    : OIM
+Expression   : Pr(am), predict()
+1._at        : cyl             =           4
+2._at        : cyl             =           6
+3._at        : cyl             =           8
+
+------------------------------------------------------------------------------
+             |            Delta-method
+             |     Margin   Std. Err.      z    P>|z|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+         _at |
+          1  |   .3618736   .1065746     3.40   0.001     .1529913     .570756
+          2  |   .4022889   .0363634    11.06   0.000      .331018    .4735599
+          3  |    .439427   .0671516     6.54   0.000     .3078122    .5710418
+------------------------------------------------------------------------------
+
+* holding all other variables at means
+margins, at(cyl = (4 6 8)) atmeans 
+
+Adjusted predictions                              Number of obs   =         32
+Model VCE    : OIM
+Expression   : Pr(am), predict()
+1._at        : cyl             =           4
+               hp              =    146.6875 (mean)
+               wt              =     3.21725 (mean)
+2._at        : cyl             =           6
+               hp              =    146.6875 (mean)
+               wt              =     3.21725 (mean)
+3._at        : cyl             =           8
+               hp              =    146.6875 (mean)
+               wt              =     3.21725 (mean)
+
+------------------------------------------------------------------------------
+             |            Delta-method
+             |     Margin   Std. Err.      z    P>|z|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+         _at |
+          1  |   .0473325   .1307238     0.36   0.717    -.2088814    .3035464
+          2  |   .1164102   .1254196     0.93   0.353    -.1294077    .3622281
+          3  |   .2589031   .3718624     0.70   0.486    -.4699337    .9877399
+------------------------------------------------------------------------------
+```
+
+
+### R ###
+
+```{r}
+# average predictive margins
+sapply(c(4,6,8), function(z) {
+    mean(predict(x, newdata = `[<-`(x$model, , "cyl", z), type = "response"))
+})
+
+# holding all other variables at their means
+n <- expand.grid(cyl = c(4,6,8), hp = mean(mtcars$hp), wt = mean(mtcars$wt))
+predict(x, newdata = n, type = "response")
+```
+
+
+## OLS predicted values with interactions ##
+
+### Stata ###
+
+```
+quietly reg mpg i.cyl##c.hp wt
+margins
+
+Predictive margins                                Number of obs   =         32
+Model VCE    : OLS
+Expression   : Linear prediction, predict()
+
+------------------------------------------------------------------------------
+             |            Delta-method
+             |     Margin   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+       _cons |   20.09062   .4065514    49.42   0.000     19.25332    20.92793
+------------------------------------------------------------------------------
+
+
+margins cyl
+
+Predictive margins                                Number of obs   =         32
+Model VCE    : OLS
+Expression   : Linear prediction, predict()
+
+------------------------------------------------------------------------------
+             |            Delta-method
+             |     Margin   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+         cyl |
+          4  |   17.44233   2.372914     7.35   0.000     12.55522    22.32944
+          6  |    18.9149   1.291483    14.65   0.000     16.25505    21.57476
+          8  |   18.33318   1.123874    16.31   0.000     16.01852    20.64785
+------------------------------------------------------------------------------
+
+```
+
+### R ###
+
+```{r}
+x <- lm(mpg ~ factor(cyl) * hp + wt, data = mtcars)
+mean(predict(x))
+
+sapply(c(4,6,8), function(z) {
+    mean(predict(x, newdata = `[<-`(x$model, , "cyl", z)))
+})
+```
+
+## GLM predicted values with interactions ##
+
+### Stata ###
+
+```
+quietly logit am i.cyl##c.hp wt
+margins
+
+Predictive margins                                Number of obs   =         32
+Model VCE    : OIM
+Expression   : Pr(am), predict()
+
+------------------------------------------------------------------------------
+             |            Delta-method
+             |     Margin   Std. Err.      z    P>|z|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+       _cons |   .4062558    .031352    12.96   0.000     .3448069    .4677046
+------------------------------------------------------------------------------
+
+margins cyl
+
+Predictive margins                                Number of obs   =         32
+Model VCE    : OIM
+Expression   : Pr(am), predict()
+
+------------------------------------------------------------------------------
+             |            Delta-method
+             |     Margin   Std. Err.      z    P>|z|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+         cyl |
+          4  |   .4475668   .1511923     2.96   0.003     .1512353    .7438982
+          6  |   .4545709   .3008264     1.51   0.131    -.1350381     1.04418
+          8  |      .0625   1.96e-08  3.2e+06   0.000        .0625       .0625
+------------------------------------------------------------------------------
+```
+
+### R ###
+
+```{r}
+x <- glm(am ~ factor(cyl) * hp + wt, data = mtcars, family=binomial)
+mean(predict(x, type = "response"))
+
+sapply(c(4,6,8), function(z) {
+    mean(predict(x, newdata = `[<-`(x$model, , "cyl", z), type = "response"))
+})
+```
+
+
+## OLS marginal effects at means ##
+
+### Stata ###
+
+```
+quietly reg mpg cyl hp wt
+margins, dydx(*) atmeans
+
+Conditional marginal effects                      Number of obs   =         32
+Model VCE    : OLS
+Expression   : Linear prediction, predict()
+dy/dx w.r.t. : cyl hp wt
+at           : cyl             =      6.1875 (mean)
+               hp              =    146.6875 (mean)
+               wt              =     3.21725 (mean)
+
+------------------------------------------------------------------------------
+             |            Delta-method
+             |      dy/dx   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+         cyl |  -.9416166   .5509165    -1.71   0.098    -2.070118    .1868846
+          hp |  -.0180381   .0118763    -1.52   0.140    -.0423655    .0062893
+          wt |  -3.166973    .740576    -4.28   0.000    -4.683975   -1.649972
+------------------------------------------------------------------------------
+```
+
+### R ###
+
+```{r}
+x <- lm(mpg ~ cyl + hp + wt, data = mtcars)
+margins(x, atmeans = TRUE)
+```
+
+
+## OLS average marginal effects ##
+
+
+### Stata ###
+
+```
+quietly reg mpg cyl hp wt
+margins, dydx(*)
+
+Average marginal effects                          Number of obs   =         32
+Model VCE    : OLS
+Expression   : Linear prediction, predict()
+dy/dx w.r.t. : cyl hp wt
+
+------------------------------------------------------------------------------
+             |            Delta-method
+             |      dy/dx   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+         cyl |  -.9416166   .5509165    -1.71   0.098    -2.070118    .1868846
+          hp |  -.0180381   .0118763    -1.52   0.140    -.0423655    .0062893
+          wt |  -3.166973    .740576    -4.28   0.000    -4.683975   -1.649972
+------------------------------------------------------------------------------
+```
+
+### R ###
+
+```{r}
+x <- lm(mpg ~ cyl + hp + wt, data = mtcars)
+margins(x)
+```
+
+
+## GLM marginal effects at means ##
+
+### Stata ###
+
+```
+quietly logit am cyl hp wt
+margins, dydx(*) atmeans
+
+Conditional marginal effects                      Number of obs   =         32
+Model VCE    : OIM
+Expression   : Pr(am), predict()
+dy/dx w.r.t. : cyl hp wt
+at           : cyl             =      6.1875 (mean)
+               hp              =    146.6875 (mean)
+               wt              =     3.21725 (mean)
+
+------------------------------------------------------------------------------
+             |            Delta-method
+             |      dy/dx   Std. Err.      z    P>|z|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+         cyl |   .0537505   .1132654     0.47   0.635    -.1682456    .2757465
+          hp |   .0035928   .0029037     1.24   0.216    -.0020983    .0092838
+          wt |  -1.008594   .6676631    -1.51   0.131     -2.31719    .3000017
+------------------------------------------------------------------------------
+```
+
+### R ###
+
+```{r}
+x <- glm(am ~ cyl + hp + wt, data = mtcars, family=binomial)
+margins(x, atmeans = TRUE)
+```
+
+
+## GLM average marginal effects ##
+
+
+### Stata ###
+
+```
+quietly logit am cyl hp wt
+margins, dydx(*)
+
+Average marginal effects                          Number of obs   =         32
+Model VCE    : OIM
+Expression   : Pr(am), predict()
+dy/dx w.r.t. : cyl hp wt
+
+------------------------------------------------------------------------------
+             |            Delta-method
+             |      dy/dx   Std. Err.      z    P>|z|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+         cyl |   .0214527   .0469746     0.46   0.648    -.0706157    .1135212
+          hp |   .0014339   .0006182     2.32   0.020     .0002224    .0026455
+          wt |  -.4025475   .1154098    -3.49   0.000    -.6287466   -.1763484
+------------------------------------------------------------------------------
+```
+
+### R ###
+
+```{r}
+x <- glm(am ~ cyl + hp + wt, data = mtcars, family=binomial)
+margins(x)
+```
+

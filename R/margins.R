@@ -51,14 +51,17 @@ function(x,
     # first-order, second-order, etc. interactions
     ord <- attributes(terms(x))$order
     # drop intercept
-    f <- attributes(terms(x))$factors[-1,]
+    f <- attributes(terms(x))$factors[-1, , drop = FALSE]
     # drop non-unique I() terms from list of marginal effects to calculate
     # THIS IS IMPERFECT BECAUSE IT WON'T CAPTURE NAIVE INTERACTIONS I(var1*var1) OR ANYTHING SIMILARLY OR MORE COMPLICATED
     if(any(grepl("I\\(.+\\)", rownames(f)))) {
         tmpnames <- gsub("[(I\\()(\\))]", "", rownames(f))
         tmpnames <- gsub("^[:digit:]+[\\^\\+\\-\\*\\/]", "", tmpnames)
         tmpnames <- gsub("[^\\+-\\*/][[:digit:]+]$", "", tmpnames)
-        f <- f[unique(tmpnames),]
+        if(any(unique(tmpnames) %in% rownames(f)))
+            f <- f[unique(tmpnames), , drop = FALSE]
+        else
+            f <- f[0, , drop = FALSE]
     }
     
     # store observation-level MEs
@@ -112,7 +115,7 @@ function(x,
     
     # format output
     out <- list()
-    out$Factor <- names(e)
+    out$Factor <- names(MEs)
     out$Effect <- colMeans(MEs)
     out$MarginalEffects <- MEs
     return(structure(out, class = c("margins")))
