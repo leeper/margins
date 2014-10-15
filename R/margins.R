@@ -108,6 +108,8 @@ function(x,
                 # NEED TO DO UPDATED VARIANCE CALCULATIONS
                 # reference: https://files.nyu.edu/mrg217/public/interaction.html
                 # THIS WILL BE TRICKY WITH I() TERMS
+                # BUT MAYBE deriv CAN HELP:
+                # http://stat.ethz.ch/R-manual/R-devel/library/stats/html/deriv.html
             }
         }
         #variance <- matrix(NA, nrow=nrow(e), ncol=nrow(e))
