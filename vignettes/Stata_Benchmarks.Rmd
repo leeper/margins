@@ -413,9 +413,7 @@ margins(x)
 
 
 
-
-
-## GLM marginal effects at means ##
+## GLM marginal effects at means with interaction ##
 
 ### Stata ###
 
@@ -449,7 +447,7 @@ margins(x, atmeans = TRUE)
 ```
 
 
-## GLM average marginal effects ##
+## GLM average marginal effects with interaction ##
 
 
 ### Stata ###
@@ -484,7 +482,7 @@ margins(x)
 
 
 
-## GLM marginal effects at means ##
+## GLM marginal effects at means with interaction ##
 
 ### Stata ###
 
