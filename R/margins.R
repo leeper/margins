@@ -24,10 +24,12 @@ function(x,
                     # Stata's implementation is quite complex
          atmeans = FALSE,
          ...){
-    tl <- attributes(terms(x))$term.labels
-    mm <- x$model
-    est <- coef(x)
-
+    mm <- as.data.frame(model.matrix(x)) # data
+    tl <- names(mm)[names(mm) != "(Intercept)"] # terms
+    est <- coef(x) # coefficients
+    termorder <- attributes(terms(x))$order # term orders
+    vc <- vcov(x) # var-cov matrix
+    
     if(atmeans) {
         # replace data with means of data
         tmp <- as.list(colMeans(mm))
@@ -49,7 +51,8 @@ function(x,
             mm[ , names(at)] <- at
         }
     }
-
+    n <- nrow(mm) 
+    
     # function to cleanup I(), etc. in formulas
     gsub_bracket <- function(a, b) {
         tmp <- regmatches(a, gregexpr(paste0("(",b,"\\().+(\\))"), a))
@@ -57,32 +60,64 @@ function(x,
           gsub(")$","", gsub(paste0("^",b,"\\("), "", tmp))
         a
     }
-    tl <- gsub_bracket(tl,"I")
-    names(mm) <- gsub_bracket(names(mm), "I")
+    # function to drop multipliers, powers, etc.
+    drop_operators <- function(a) {
+        # remove mathematical operators
+        a <- gsub("^[:digit:]+[\\^\\+\\-\\*\\/]", "", a)
+        a <- gsub("[\\^\\+-\\*/][[:digit:]+]$", "", a)
+        # need to remove mathematical expressions
+        exprs <- c("exp", "log", "sin", "cos", "tan", "sinh", "cosh", 
+                   "sqrt", "pnorm", "dnorm", "asin", "acos", "atan", 
+                   "gamma", "lgamma", "digamma", "trigamma")
+        for(i in seq_along(exprs)){
+            a <- gsub_bracket(a, exprs[i])
+        }
+        a
+    }
     
+    # add variables to `mm` if they are represented in I() terms but not in their original forms
+    Iterms <- grepl("I\\(", tl)
+    Iterm_vars <- drop_operators(gsub_bracket(tl[Iterms],"I"))
+    w <- which(!Iterm_vars %in% tl[!Iterms])
+    if(length(w)){
+        stop("AsIs term(s) without corresponding unmodified variables in formula\n  will not have marginal effect calculated correctly")
+        #for(i in w) {
+        #    mm[,Iterm_vars[w]] <- # do something
+        #}
+    }
+    
+    tl <- gsub_bracket(tl,"I")
+    names(mm) <- gsub_bracket(names(mm), "I") # I() terms
+    anyfactors <- grepl("factor(", attributes(terms(x))$term.labels, fixed = TRUE)
+    if(any(anyfactors)){
+        names(mm) <- gsub_bracket(names(mm), "factor") # factor() terms
+        for(i in which(anyfactors)){
+            termorder <- c(termorder[0:(i-1)],
+                           rep(termorder[i],nlevels(x$model[,attributes(terms(x))$term.labels[i]])-1),
+                           termorder[(i+1):length(termorder)])
+        }
+    }
     # make interaction terms derivable by replacing `:` with `*`
-    f <- gsub(":", "*", paste(est[-1], tl, sep="*", collapse=" + "))
+    f <- gsub(":", "*", paste(gsub_bracket(est[-1], "factor"), 
+                              gsub_bracket(tl, "factor"), sep="*", collapse=" + "))
 
     # find unique, first-order terms
-    tmpnames <- unique(tl[attributes(terms(x))$order == 1])
-    tmpnames <- gsub("^[:digit:]+[\\^\\+\\-\\*\\/]", "", tmpnames)
-    tmpnames <- gsub("[\\^\\+-\\*/][[:digit:]+]$", "", tmpnames)
-    # need to remove mathematical expressions
-    # but that's complicated because it requires undoing the calculation of those expressions in the model.matrix
-    #exprs <- c("exp", "log", "sin", "cos", "tan", "sinh", "cosh", "sqrt", "pnorm", "dnorm", "asin", "acos", "atan", "gamma", "lgamma", "digamma", "trigamma")
-    #for(i in seq_along(exprs)){
-    #    tmpnames <- gsub_bracket(tmpnames, exprs[i])
-    #}
-    u <- unique(tmpnames)
+    tmpnames <- unique(tl[termorder == 1])
+    u <- gsub_bracket(unique(drop_operators(tmpnames)), "factor")
 
     # effect calculation
     # need to force this to return a vector result even for first-order lm's
-    MEs <- lapply(u, function(z) {
-        d <- D(reformulate(f)[[2]], z)
-        with(mm, eval(d))
-    })
-    # variance calculation
-    #Var <- 
+    MEonce <- function(vars, newdata) {
+        sapply(vars, function(z) {
+            d <- D(reformulate(f)[[2]], z)
+            e <- with(newdata, eval(d))
+            if(length(e)==1)
+                rep(e, n)
+            else
+                e
+        })
+    }
+    MEs <- MEonce(u, mm)
     
     # format output
     out <- list()
