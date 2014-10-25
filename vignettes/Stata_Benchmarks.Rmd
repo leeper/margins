@@ -347,6 +347,74 @@ margins(x)
 ```
 
 
+## OLS marginal effects with interaction at means ##
+
+### Stata ###
+
+```
+quietly reg mpg cyl c.hp##c.wt
+margins, dydx(*) atmeans
+
+onditional marginal effects                      Number of obs   =         32
+Model VCE    : OLS
+Expression   : Linear prediction, predict()
+dy/dx w.r.t. : cyl hp wt
+at           : cyl             =      6.1875 (mean)
+               hp              =    146.6875 (mean)
+               wt              =     3.21725 (mean)
+------------------------------------------------------------------------------
+             |            Delta-method
+             |      dy/dx   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+         cyl |  -.3652391   .5086204    -0.72   0.479    -1.408842    .6783638
+          hp |  -.0252715   .0105097    -2.40   0.023    -.0468357   -.0037073
+          wt |  -3.837584   .6730996    -5.70   0.000     -5.21867   -2.456498
+------------------------------------------------------------------------------
+```
+
+### R ###
+
+```{r}
+x <- lm(mpg ~ cyl + hp * wt, data = mtcars)
+margins(x, atmeans = TRUE)
+```
+
+
+## OLS average marginal effects with interaction ##
+
+
+### Stata ###
+
+```
+quietly reg mpg cyl c.hp##c.wt
+margins, dydx(*)
+
+Average marginal effects                          Number of obs   =         32
+Model VCE    : OLS
+Expression   : Linear prediction, predict()
+dy/dx w.r.t. : cyl hp wt
+
+------------------------------------------------------------------------------
+             |            Delta-method
+             |      dy/dx   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+         cyl |  -.3652391   .5086204    -0.72   0.479    -1.408842    .6783638
+          hp |  -.0252715   .0105097    -2.40   0.023    -.0468357   -.0037073
+          wt |  -3.837584   .6730996    -5.70   0.000     -5.21867   -2.456498
+------------------------------------------------------------------------------
+```
+
+### R ###
+
+```{r}
+x <- lm(mpg ~ cyl + hp + wt, data = mtcars)
+margins(x)
+```
+
+
+
+
+
 ## GLM marginal effects at means ##
 
 ### Stata ###
@@ -402,6 +470,75 @@ dy/dx w.r.t. : cyl hp wt
          cyl |   .0214527   .0469746     0.46   0.648    -.0706157    .1135212
           hp |   .0014339   .0006182     2.32   0.020     .0002224    .0026455
           wt |  -.4025475   .1154098    -3.49   0.000    -.6287466   -.1763484
+------------------------------------------------------------------------------
+```
+
+### R ###
+
+```{r}
+x <- glm(am ~ cyl + hp + wt, data = mtcars, family=binomial)
+margins(x)
+```
+
+
+
+
+
+## GLM marginal effects at means ##
+
+### Stata ###
+
+```
+quietly logit am cyl c.hp##c.wt
+margins, dydx(*) atmeans
+
+Conditional marginal effects                      Number of obs   =         32
+Model VCE    : OIM
+Expression   : Pr(am), predict()
+dy/dx w.r.t. : cyl hp wt
+at           : cyl             =      6.1875 (mean)
+               hp              =    146.6875 (mean)
+               wt              =     3.21725 (mean)
+
+------------------------------------------------------------------------------
+             |            Delta-method
+             |      dy/dx   Std. Err.      z    P>|z|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+         cyl |   .0810915   .1838916     0.44   0.659    -.2793294    .4415125
+          hp |   .0081009   .0086664     0.93   0.350    -.0088849    .0250867
+          wt |  -1.925325   1.866456    -1.03   0.302    -5.583512    1.732861
+------------------------------------------------------------------------------
+```
+
+### R ###
+
+```{r}
+x <- glm(am ~ cyl + hp + wt, data = mtcars, family=binomial)
+margins(x, atmeans = TRUE)
+```
+
+
+## GLM average marginal effects with interaction ##
+
+
+### Stata ###
+
+```
+quietly logit am cyl c.hp##c.wt
+margins, dydx(*)
+
+Average marginal effects                          Number of obs   =         32
+Model VCE    : OIM
+Expression   : Pr(am), predict()
+dy/dx w.r.t. : cyl hp wt
+
+------------------------------------------------------------------------------
+             |            Delta-method
+             |      dy/dx   Std. Err.      z    P>|z|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+         cyl |   .0215633   .0492676     0.44   0.662    -.0749994    .1181261
+          hp |   .0026673   .0023004     1.16   0.246    -.0018414     .007176
+          wt |  -.5157922   .2685806    -1.92   0.055    -1.042201    .0106162
 ------------------------------------------------------------------------------
 ```
 

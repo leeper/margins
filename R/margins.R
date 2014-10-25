@@ -5,9 +5,9 @@ function(x, atmeans = FALSE, ...) {
 
 print.margins <-
 function(x, intercept = FALSE, ...){
-    out <- data.frame(Factor = names(x$Effect), 
-                      Effect = x$Effect, 
-                      row.names = seq_along(x$Effect))
+    out <- data.frame(Factor = x$Factor, 
+                      Effect = x$MarginalEffects, 
+                      row.names = seq_along(x$Factor))
     #out[["Std. Error"]] <- something something something
     #out[["t.statistic"]] <- out[["Effect"]]/out[["Std. Error"]]
     #out[["Pr(>|z|)"]] <- something something something
@@ -24,102 +24,72 @@ function(x,
                     # Stata's implementation is quite complex
          atmeans = FALSE,
          ...){
-    b.est <- coef(x)
+    tl <- attributes(terms(x))$term.labels
+    mm <- x$model
+    est <- coef(x)
+
     if(atmeans) {
         # replace data with means of data
-        tmp <- as.list(colMeans(x$model))
+        tmp <- as.list(colMeans(mm))
         # insert `at` values
         if(!is.null(at)){
-            if(any(! names(at) %in% names(x$model)))
+            if(any(! names(at) %in% names(mm)))
                 stop("Unrecognized variable name in 'at'")
             # expand possible combinations of `at` values
             tmp <- expand.grid(append(tmp, at))
         }
-        # replace `x$model` with updated data
-        x$model <- as.data.frame(tmp)
+        # replace `mm` with updated data
+        mm <- as.data.frame(tmp)
         rm(tmp)
     } else {
         if(!is.null(at)){
-            if(any(! names(at) %in% names(x$model)))
+            if(any(! names(at) %in% names(mm)))
                 stop("Unrecognized variable name in 'at'")
             # overwrite `at` values
-            x$model[ , names(at)] <- at
+            mm[ , names(at)] <- at
         }
     }
-    # retrieve data from model matrix
-    mm <- model.matrix(x) # automatically generates interactions, factors, and I() variables
-    # first-order, second-order, etc. interactions
-    ord <- attributes(terms(x))$order
-    # drop intercept
-    f <- attributes(terms(x))$factors[-1, , drop = FALSE]
-    # drop non-unique I() terms from list of marginal effects to calculate
-    # THIS IS IMPERFECT BECAUSE IT WON'T CAPTURE NAIVE INTERACTIONS I(var1*var1) OR ANYTHING SIMILARLY OR MORE COMPLICATED
-    if(any(grepl("I\\(.+\\)", rownames(f)))) {
-        tmpnames <- gsub("[(I\\()(\\))]", "", rownames(f))
-        tmpnames <- gsub("^[:digit:]+[\\^\\+\\-\\*\\/]", "", tmpnames)
-        tmpnames <- gsub("[^\\+-\\*/][[:digit:]+]$", "", tmpnames)
-        if(any(unique(tmpnames) %in% rownames(f)))
-            f <- f[unique(tmpnames), , drop = FALSE]
-        else
-            f <- f[0, , drop = FALSE]
+
+    # function to cleanup I(), etc. in formulas
+    gsub_bracket <- function(a, b) {
+        tmp <- regmatches(a, gregexpr(paste0("(",b,"\\().+(\\))"), a))
+        regmatches(a, gregexpr(paste0("(",b,"\\().+(\\))"), a)) <- 
+          gsub(")$","", gsub(paste0("^",b,"\\("), "", tmp))
+        a
     }
+    tl <- gsub_bracket(tl,"I")
+    names(mm) <- gsub_bracket(names(mm), "I")
     
-    # store observation-level MEs
-    MEs <- setNames(data.frame(matrix(NA, nrow(mm), ncol(mm[ , -1, drop=FALSE][, ord == 1, drop = FALSE]))), 
-                    names(coef(x)[-1][ord == 1]))
-    
-    # first-order effects
-    MEs[,names(coef(x)[-1][ord == 1])] <- as.list(coef(x)[-1][ord == 1])
-    #e <- rowSums(f[, ord == 1, drop = FALSE] * coef(x)[-1][ord == 1])
-    
-    # VARIANCE CALCULATION (ONLY WORKS IF NO INTERACTION, ETC. TERMS)
-    #s <- t(as.matrix(colMeans(mm))) %*% b.est
-    #dr <- (e/b.est) * (diag(1, ncol(mm), ncol(mm)) + c(s) * (b.est %*% t(as.matrix(colMeans(mm)))))
-    #variance <- dr %*% vcov(x) %*% t(dr)
-    #variance <- matrix(NA, nrow=nrow(e), ncol=nrow(e))
-    
-    # handle higher-order terms (interactions)
-    if(any(ord > 1)) {
-        # insert interaction coefficients into `i` matrix
-        i <- f[, ord > 1, drop = FALSE] * coef(x)[-1][ord > 1]
-        if(nrow(i) > 0){
-            # for every constituent term, update ME based on effects from complex terms
-            for(j in 1:nrow(i)){
-                # if this constituent term is in the complex term, proceed
-                g <- grep(rownames(i)[j], colnames(i))
-                if(length(g)){
-                    # `itmp` is the matrix of complex terms
-                    itmp <- i[ , g, drop = FALSE]
-                    # for each complex term, add effects to first-order effects
-                    sapply(colnames(itmp), function(k){
-                        # find constituent terms
-                        s <- setdiff(strsplit(k, ":")[[1]], rownames(i)[j])
-                        # NEED SOMETHING HERE TO SKIP I() TERMS
-                        # multiply out complex terms
-                        v <- x$model[, s, drop = FALSE]
-                        v <- if(ncol(v)>1) do.call(`*`, v) else v[,1]
-                        # store effect results
-                        MEs[,rownames(i)[j]] <<- MEs[,rownames(i)[j]] + (v * b.est[k])
-                        #e[rownames(i)[j]] <<- e[rownames(i)[j]] + mean(v * b.est[k])
-                        
-                        # THIS IS WHERE VARIANCE NEEDS TO BE RECALCULATED
-                    })
-                }
-                # NEED TO DO UPDATED VARIANCE CALCULATIONS
-                # reference: https://files.nyu.edu/mrg217/public/interaction.html
-                # THIS WILL BE TRICKY WITH I() TERMS
-                # BUT MAYBE deriv CAN HELP:
-                # http://stat.ethz.ch/R-manual/R-devel/library/stats/html/deriv.html
-            }
-        }
-        #variance <- matrix(NA, nrow=nrow(e), ncol=nrow(e))
-    } 
+    # make interaction terms derivable by replacing `:` with `*`
+    f <- gsub(":", "*", paste(est[-1], tl, sep="*", collapse=" + "))
+
+    # find unique, first-order terms
+    tmpnames <- unique(tl[attributes(terms(x))$order == 1])
+    tmpnames <- gsub("^[:digit:]+[\\^\\+\\-\\*\\/]", "", tmpnames)
+    tmpnames <- gsub("[\\^\\+-\\*/][[:digit:]+]$", "", tmpnames)
+    # need to remove mathematical expressions
+    # but that's complicated because it requires undoing the calculation of those expressions in the model.matrix
+    #exprs <- c("exp", "log", "sin", "cos", "tan", "sinh", "cosh", "sqrt", "pnorm", "dnorm", "asin", "acos", "atan", "gamma", "lgamma", "digamma", "trigamma")
+    #for(i in seq_along(exprs)){
+    #    tmpnames <- gsub_bracket(tmpnames, exprs[i])
+    #}
+    u <- unique(tmpnames)
+
+    # effect calculation
+    # need to force this to return a vector result even for first-order lm's
+    MEs <- lapply(u, function(z) {
+        d <- D(reformulate(f)[[2]], z)
+        with(mm, eval(d))
+    })
+    # variance calculation
+    #Var <- 
     
     # format output
     out <- list()
-    out$Factor <- names(MEs)
-    out$Effect <- colMeans(MEs)
-    out$MarginalEffects <- MEs
+    out$Factor <- u
+    out$MarginalEffects <- sapply(MEs, mean)
+    out$Effect <- MEs
+    out$Variance <- NULL
     return(structure(out, class = c("margins")))
 }
 
@@ -155,18 +125,18 @@ function(x,
                   )
     b.est <- coef(x)
     if(atmeans) {
-        tmp <- as.list(colMeans(x$model))
+        tmp <- as.list(colMeans(mm))
         if(!is.null(at)){
-            if(any(! names(at) %in% names(x$model)))
+            if(any(! names(at) %in% names(mm)))
                 stop("Unrecognized variable name in 'at'")
             tmp <- expand.grid(append(tmp, list(a = 1:2)))
         }
-        x$model <- as.data.frame(tmp)
+        mm <- as.data.frame(tmp)
     } else {
         if(!is.null(at)){
-            if(any(! names(at) %in% names(x$model)))
+            if(any(! names(at) %in% names(mm)))
                 stop("Unrecognized variable name in 'at'")
-            x$model[,names(at)] <- at
+            mm[,names(at)] <- at
         }
     }
     mm <- model.matrix(x) # automatically generates interactions & factors
