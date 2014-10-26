@@ -407,78 +407,9 @@ dy/dx w.r.t. : cyl hp wt
 ### R ###
 
 ```{r}
-x <- lm(mpg ~ cyl + hp + wt, data = mtcars)
+x <- lm(mpg ~ cyl + hp * wt, data = mtcars)
 margins(x)
 ```
-
-
-
-## GLM marginal effects at means with interaction ##
-
-### Stata ###
-
-```
-quietly logit am cyl hp wt
-margins, dydx(*) atmeans
-
-Conditional marginal effects                      Number of obs   =         32
-Model VCE    : OIM
-Expression   : Pr(am), predict()
-dy/dx w.r.t. : cyl hp wt
-at           : cyl             =      6.1875 (mean)
-               hp              =    146.6875 (mean)
-               wt              =     3.21725 (mean)
-
-------------------------------------------------------------------------------
-             |            Delta-method
-             |      dy/dx   Std. Err.      z    P>|z|     [95% Conf. Interval]
--------------+----------------------------------------------------------------
-         cyl |   .0537505   .1132654     0.47   0.635    -.1682456    .2757465
-          hp |   .0035928   .0029037     1.24   0.216    -.0020983    .0092838
-          wt |  -1.008594   .6676631    -1.51   0.131     -2.31719    .3000017
-------------------------------------------------------------------------------
-```
-
-### R ###
-
-```{r}
-x <- glm(am ~ cyl + hp + wt, data = mtcars, family=binomial)
-margins(x, atmeans = TRUE)
-```
-
-
-## GLM average marginal effects with interaction ##
-
-
-### Stata ###
-
-```
-quietly logit am cyl hp wt
-margins, dydx(*)
-
-Average marginal effects                          Number of obs   =         32
-Model VCE    : OIM
-Expression   : Pr(am), predict()
-dy/dx w.r.t. : cyl hp wt
-
-------------------------------------------------------------------------------
-             |            Delta-method
-             |      dy/dx   Std. Err.      z    P>|z|     [95% Conf. Interval]
--------------+----------------------------------------------------------------
-         cyl |   .0214527   .0469746     0.46   0.648    -.0706157    .1135212
-          hp |   .0014339   .0006182     2.32   0.020     .0002224    .0026455
-          wt |  -.4025475   .1154098    -3.49   0.000    -.6287466   -.1763484
-------------------------------------------------------------------------------
-```
-
-### R ###
-
-```{r}
-x <- glm(am ~ cyl + hp + wt, data = mtcars, family=binomial)
-margins(x)
-```
-
-
 
 
 
@@ -511,7 +442,7 @@ at           : cyl             =      6.1875 (mean)
 ### R ###
 
 ```{r}
-x <- glm(am ~ cyl + hp + wt, data = mtcars, family=binomial)
+x <- glm(am ~ cyl + hp * wt, data = mtcars, family=binomial)
 margins(x, atmeans = TRUE)
 ```
 
@@ -543,7 +474,7 @@ dy/dx w.r.t. : cyl hp wt
 ### R ###
 
 ```{r}
-x <- glm(am ~ cyl + hp + wt, data = mtcars, family=binomial)
+x <- glm(am ~ cyl + hp * wt, data = mtcars, family=binomial)
 margins(x)
 ```
 
