@@ -98,8 +98,14 @@ function(x,
     # Marginal Effect calculation (linear models)
     # do the calculation using the symbolic derivative
     MEs <- do.call(cbind, lapply(u, function(z) {
+        # symbolic derivative
         d <- D(reformulate(f)[[2]], z)
         e <- with(mm, eval(d))
+        
+        # variables used in variance
+        # v_vars <- all.vars(d)
+        
+        # return appropriate length output
         if(length(e)==1)
             rep(e, n)
         else
@@ -112,13 +118,19 @@ function(x,
         fglm <- paste(est[1], f, sep = " + ")
         # evaluate estimated linear equation, transform by `dfun`, and use to transform MEs
         MEs <- apply(MEs, 2, `*`, with(mm, dfun(eval(parse(text=fglm)))))
+        # this should be equivalent to:
+        # MEs <- apply(MEs, 2, `*`, predict(x, newdata = mm, type = "response"))
     }
+    
+    # Variance calculation
+    var <- vc[u,u]
+    warning("Variance estimates are incorrect for variables included in higher-order terms")
     
     # format output
     out <- list()
     out$Effect <- MEs
     colnames(out$Effect) <- u
-    out$Variance <- NULL
+    out$Variance <- var
     return(structure(out, class = c("margins")))
 }
 
