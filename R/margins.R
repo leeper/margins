@@ -65,28 +65,17 @@ function(x, ...){
     
     # Marginal Effect calculation (linear models)
     # do the calculation using the symbolic derivative
-    MEs <- do.call(cbind, lapply(u, function(z) {
-        # symbolic derivative
-        d <- D(reformulate(f)[[2]], z)
-        e <- with(mm, eval(d))
-        
-        # variables used in variance
-        # v_vars <- all.vars(d)
-        
-        # return appropriate length output
-        if(length(e)==1)
-            rep(e, n)
-        else
-            e
-    }))
+    MEs <- attributes(with(mm, eval(deriv3(reformulate(f)[[2]], u))))$gradient
     
     # Variance calculation
-    #var <- vc[utmp,utmp]
-    #warning("Variance estimates are incorrect for variables included in higher-order terms")
+    # without higher-order terms it is just:
+    Variances <- diag(vc[utmp,utmp])
+    if(any(termorder > 1))
+        warning("Variance estimates are incorrect for variables included in higher-order terms")
     
     colnames(MEs) <- utmp
     structure(list(Effect = MEs,
-                   Variance = var,
+                   Variance = Variances,
                    model = x), class = c("margins"))
 }
 
@@ -155,7 +144,8 @@ margins.censReg <- function(x, ...) {
 }
 
 print.margins <- function(x, ...){
-    print(colMeans(x$Effect))
+    print(cbind.data.frame('dy/dx' = colMeans(x$Effect), 
+                           'Std.Err.' = sqrt(x$Variance)))
     invisible(x)
 }
 
