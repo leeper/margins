@@ -2,3 +2,4 @@
 travis-tool.sh
 README.Rmd
 vignettes/mtcars.csv
+vignettes/Cigar.csv
