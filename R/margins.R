@@ -21,9 +21,10 @@ drop_operators <- function(a) {
 }
 
 margins_calculator <- 
-function(x, ...){
+function(x, mm = NULL, ...){
     # setup objects
-    mm <- as.data.frame(model.matrix(x)) # data
+    if(is.null(mm))
+        mm <- as.data.frame(model.matrix(x)) # data
     tl <- names(mm)[names(mm) != "(Intercept)"] # terms
     est <- coef(x) # coefficients
     termorder <- attributes(terms(x))$order # term orders
@@ -49,7 +50,7 @@ function(x, ...){
         for(i in which(anyfactors)){
             termorder <- c(termorder[0:(i-1)],
                            rep(termorder[i],nlevels(x$model[,attributes(terms(x))$term.labels[i]])-1),
-                           termorder[(i+1):length(termorder)])
+                           tail(termorder, length(termorder) - i))
         }
     }
     
@@ -65,11 +66,14 @@ function(x, ...){
     
     # Marginal Effect calculation (linear models)
     # do the calculation using the symbolic derivative
-    MEs <- attributes(with(mm, eval(deriv3(reformulate(f)[[2]], u))))$gradient
+    d <- with(mm, eval(deriv3(reformulate(f)[[2]], u)))
+    MEs <- attributes(d)$gradient
     
     # Variance calculation
     # without higher-order terms it is just:
-    Variances <- diag(vc[utmp,utmp])
+    vctmp <- vc
+    colnames(vctmp) <- rownames(vctmp) <- gsub_bracket(colnames(vctmp), "factor")
+    Variances <- diag(vctmp[u,u])
     if(any(termorder > 1))
         warning("Variance estimates are incorrect for variables included in higher-order terms")
     
@@ -130,8 +134,14 @@ function(x,
 
 margins.plm <- 
 function(x, ...) {
-    margins_calculator(x, ...)    
     # FOR SOME REASON THIS ISN'T CAPTURING INTERACTION TERMS
+    if(x$args$model != 'pooling') {
+        warning("marginal effects not likely to be correct")
+        margins_calculator(x, ...)
+        #mm <- cbind(model.matrix(x), model.matrix(~0+attributes(x$model)$index[,1]))
+    } else {
+        margins_calculator(x, ...)
+    }
 }
 
 
@@ -143,15 +153,18 @@ margins.censReg <- function(x, ...) {
     
 }
 
-print.margins <- function(x, ...){
-    print(cbind.data.frame('dy/dx' = colMeans(x$Effect), 
-                           'Std.Err.' = sqrt(x$Variance)))
+print.margins <- function(x, digits = getOption('digits',4), ...){
+    tab <- 
+    cbind.data.frame('dy/dx' = colMeans(x$Effect), 
+                     'Std.Err.' = sqrt(x$Variance))
+    print(tab, digits = digits)
     invisible(x)
 }
 
 summary.margins <- function(x, ...){
     out <- data.frame(Factor = colnames(x$Effect), 
-                      Effect = colMeans(x$Effect), 
+                      Effect = colMeans(x$Effect),
+                      'Std.Err.' = sqrt(x$Variance),
                       row.names = 1:ncol(x$Effect))
     out
 }
