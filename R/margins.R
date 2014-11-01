@@ -84,16 +84,17 @@ function(x, mm = NULL, ...){
 }
 
 margins <- 
-function(x, atmeans = FALSE, ...) {
+function(x, newdata = NULL, ...) {
     UseMethod("margins")
 }
 
-margins.lm <- function(x, ...){
+margins.lm <- function(x, newdata = NULL, ...){
     margins_calculator(x, ...)
 }
 
 margins.glm <- 
 function(x, 
+         newdata = NULL, 
          type = "link", # "link" (linear/xb); "response" (probability scale)
          ...){
     out <- margins_calculator(x, ...)
@@ -133,7 +134,7 @@ function(x,
 }
 
 margins.plm <- 
-function(x, ...) {
+function(x, newdata = NULL, ...) {
     # FOR SOME REASON THIS ISN'T CAPTURING INTERACTION TERMS
     if(x$args$model != 'pooling') {
         warning("marginal effects not likely to be correct")
@@ -144,12 +145,54 @@ function(x, ...) {
     }
 }
 
+margins.pglm <- 
+function(x, 
+         newdata = NULL, 
+         type = "link", # "link" (linear/xb); "response" (probability scale)
+         ...){
+    out <- margins_calculator(x, ...)
+    # configure link function
+    dfun <- switch(x$family$link, 
+                  probit = dnorm, 
+                  logit = dlogis,
+                  cauchit = dcauchy,
+                  log = exp,
+                  cloglog = function(z) 1 - exp(-exp(z)),
+                  inverse = function(z) 1/z,
+                  identity = function(z) 1,
+                  sqrt = function(z) z^2,
+                  "1/mu^2" = function(z) z^(-0.5),
+                  stop("Unrecognized link function")
+                  )
+    sfun <- switch(x$family$link, 
+                  probit = function(z) -z, 
+                  logit = function(z) 1 - 2 * plogis(z),
+                  cauchit = function(z) 1, # not setup
+                  log = function(z) 1, # not setup
+                  cloglog = function(z) 1, # not setup
+                  inverse = function(z) 1, # not setup
+                  identity = function(z) 1, # not setup
+                  sqrt = function(z) 1, # not setup
+                  "1/mu^2" = function(z) 1, # not setup
+                  stop("Unrecognized link function")
+                  )
 
-margins.polr <- function(x, ...) {
+    if(type == "response"){
+        # Marginal Effect calculation (response scale for GLMs)
+        out$Effect <- apply(out$Effect, 2, `*`, predict(x, newdata = mm, type = "response"))
+    }
+    
+    
     
 }
 
-margins.censReg <- function(x, ...) {
+margins.polr <- function(x, newdata = NULL, 
+         ...) {
+    
+}
+
+margins.censReg <- function(x, newdata = NULL, 
+         ...) {
     
 }
 

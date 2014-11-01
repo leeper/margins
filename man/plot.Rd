@@ -3,7 +3,7 @@
 \title{Plot a margins object}
 \description{Plot marginal effects}
 \usage{
-\method{plot}{margins}(x, which = row.names(x), labels = which, 
+\method{plot}{margins}(x, which = colnames(x$Effect), labels = which, 
          level = 0.95, bg = "black", lwd = 2, vline = NULL, ...)
 }
 \arguments{

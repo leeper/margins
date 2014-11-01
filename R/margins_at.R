@@ -30,5 +30,5 @@ function(x,
     }
     
     # method dispatch
-    margins(x)
+    margins(x, newdata = mm)
 }

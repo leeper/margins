@@ -1,21 +1,14 @@
-\name{margins}
-\alias{margins}
-\alias{margins.lm}
-\alias{margins.glm}
-\alias{margins.plm}
-\alias{margins.polr}
-\alias{margins.censReg}
-\alias{print.margins}
-\alias{summary.margins}
-\title{Marginal effects for model objects}
+\name{margins_at}
+\alias{margins_at}
+\title{Calculate marginal effects for model objects at specified values}
 \description{Calculate marginal effects for estimated models}
 \usage{
-margins(x, newdata = NULL, ...)
+margins_at(x, ...)
 }
 \arguments{
     \item{x}{}
-    \item{newdata}{}
-    \item{type}{}
+    \item{atmeans}{}
+    \item{at}{}
     \item{...}{}
 }
 \details{Calculate marginal effects and associated standard errors for a model object.}

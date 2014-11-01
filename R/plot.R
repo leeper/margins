@@ -1,6 +1,6 @@
 plot.margins <- 
 function(x, 
-         which = x$Factor, 
+         which = colnames(x$Effect), 
          labels = which, 
          level = 0.95,
          bg = "black", 
