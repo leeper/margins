@@ -25,6 +25,7 @@ function(x, mm = NULL, ...){
     # setup objects
     if(is.null(mm))
         mm <- as.data.frame(model.matrix(x)) # data
+    datmeans <- as.data.frame(t(as.matrix(colMeans(mm)))) # data means
     tl <- names(mm)[names(mm) != "(Intercept)"] # terms
     est <- coef(x) # coefficients
     termorder <- attributes(terms(x))$order # term orders
@@ -73,9 +74,28 @@ function(x, mm = NULL, ...){
     # without higher-order terms it is just:
     vctmp <- vc
     colnames(vctmp) <- rownames(vctmp) <- gsub_bracket(colnames(vctmp), "factor")
-    Variances <- diag(vctmp[u,u])
+    #Variances <- diag(vctmp[u,u])
+    
+    # but...using the delta method
     if(any(termorder > 1))
         warning("Variance estimates are incorrect for variables included in higher-order terms")
+    betas <- setNames(tl, paste0('beta', seq_along(tl)))
+    f2 <- reformulate(gsub(":", "*", paste(names(betas), 
+                               gsub_bracket(tl, "factor"), sep="*", collapse=" + ")))[[2]]
+    Variances <- setNames(sapply(u, function(z) {
+        this_me <- D(f2, z) # ME
+        a <- all.vars(this_me)
+        a <- a[grepl("beta",a)] # coefs included in ME
+        gradmat <- do.call(cbind, lapply(a, function(b) {
+            #grad <- with(mm, eval(D(this_me, b))) # gradient evaluated at *data*
+            grad <- with(datmeans, eval(D(this_me, b))) # gradient evaluated at *means*
+            # repeat length 1 vectors
+            #if(length(grad)==1) rep(grad, nrow(mm)) else grad
+        }))
+        colnames(gradmat) <- betas[a]
+        # estimate variance using delta method
+        gradmat %*% vc[colnames(gradmat), colnames(gradmat)] %*% t(gradmat)
+    }), u)
     
     colnames(MEs) <- utmp
     structure(list(Effect = MEs,
@@ -126,10 +146,10 @@ function(x,
 
     if(type == "response"){
         # Marginal Effect calculation (response scale for GLMs)
-        out$Effect <- apply(out$Effect, 2, `*`, predict(x, newdata = mm, type = "response"))
+        out$Effect <- apply(out$Effect, 2, `*`, predict(x, newdata = as.data.frame(model.matrix(x)), type = "response"))
     }
     
-    
+    out
     
 }
 
@@ -179,11 +199,11 @@ function(x,
 
     if(type == "response"){
         # Marginal Effect calculation (response scale for GLMs)
-        out$Effect <- apply(out$Effect, 2, `*`, predict(x, newdata = mm, type = "response"))
+        out$Effect <- apply(out$Effect, 2, `*`, predict(x, newdata = as.data.frame(model.matrix(x)), type = "response"))
     }
     
     
-    
+    out
 }
 
 margins.polr <- function(x, newdata = NULL, 
@@ -199,7 +219,7 @@ margins.censReg <- function(x, newdata = NULL,
 print.margins <- function(x, digits = getOption('digits',4), ...){
     tab <- 
     cbind.data.frame('dy/dx' = colMeans(x$Effect), 
-                     'Std.Err.' = sqrt(x$Variance))
+                     'Std.Err.' = sapply(x$Variance, sqrt))
     print(tab, digits = digits)
     invisible(x)
 }
