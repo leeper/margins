@@ -224,10 +224,10 @@ print.margins <- function(x, digits = getOption('digits',4), ...){
     invisible(x)
 }
 
-summary.margins <- function(x, ...){
-    out <- data.frame(Factor = colnames(x$Effect), 
-                      Effect = colMeans(x$Effect),
-                      'Std.Err.' = sqrt(x$Variance),
-                      row.names = 1:ncol(x$Effect))
+summary.margins <- function(object, ...){
+    out <- data.frame(Factor = colnames(object$Effect), 
+                      Effect = colMeans(object$Effect),
+                      'Std.Err.' = sqrt(object$Variance),
+                      row.names = 1:ncol(object$Effect))
     out
 }

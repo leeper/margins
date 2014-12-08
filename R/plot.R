@@ -7,11 +7,7 @@ function(x,
          lwd = 2, 
          vline = NULL,
          ...) {
-    x <- x[which,]
-    if("(Intercept)" %in% x$Factor) {
-        x <- x[!x$Factor == "(Intercept)",]
-        labels <- labels[!labels == "(Intercept)"]
-    }
+    x <- x$Effect[,which]
     quantiles <- qnorm(cbind((1-sort(level))/2, 1-(1-sort(level))/2))
     maxl <- max(abs(quantiles))
     lb <- x$Effect - (maxl * x[["Std. Error"]])

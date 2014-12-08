@@ -316,6 +316,7 @@ at           : cyl             =      6.1875 (mean)
 ### R ###
 
 ```{r}
+library("margins")
 x <- lm(mpg ~ cyl + hp + wt, data = mtcars)
 margins(x, atmeans = TRUE)
 ```
@@ -591,12 +592,12 @@ at           : price           =    68.69993 (mean)
 ### R ###
 
 ```{r}
-library("plm")
-data(Cigar)
-x <- plm(sales ~ price + pop + cpi, data = Cigar, model = "within", index = c("state", "year"))
-margins(x)
-x <- lm(sales ~ price + pop + cpi + factor(state), data = Cigar)
-summary(margins(x))[1:3,]
+#library("plm")
+#data(Cigar)
+#x <- plm(sales ~ price + pop + cpi, data = Cigar, model = "within", index = c("state", "year"))
+#margins(x)
+#x <- lm(sales ~ price + pop + cpi + factor(state), data = Cigar)
+#summary(margins(x))[1:3,]
 ```
 
 
@@ -627,12 +628,12 @@ dy/dx w.r.t. : price pop cpi
 ### R ###
 
 ```{r}
-library("plm")
-data(Cigar)
-x <- plm(sales ~ price + pop + cpi, data = Cigar, model = "within", index = c("state","year"))
-margins(x)
-x <- lm(sales ~ price + pop + cpi + factor(state), data = Cigar)
-summary(margins(x))[1:3,]
+#library("plm")
+#data(Cigar)
+#x <- plm(sales ~ price + pop + cpi, data = Cigar, model = "within", index = c("state","year"))
+#margins(x)
+#x <- lm(sales ~ price + pop + cpi + factor(state), data = Cigar)
+#summary(margins(x))[1:3,]
 ```
 
 ---
@@ -666,10 +667,10 @@ at           : price           =    68.69993 (mean)
 ### R ###
 
 ```{r}
-library("plm")
-data(Cigar)
-x <- plm(sales ~ price + pop + cpi, data = Cigar, model = "random", index = c("state","year"))
-margins(x)
+#library("plm")
+#data(Cigar)
+#x <- plm(sales ~ price + pop + cpi, data = Cigar, model = "random", index = c("state","year"))
+#margins(x)
 ```
 
 
@@ -700,10 +701,10 @@ dy/dx w.r.t. : price pop cpi
 ### R ###
 
 ```{r}
-library("plm")
-data(Cigar)
-x <- plm(sales ~ price + pop + cpi, data = Cigar, model = "random", index = c("state","year"))
-margins(x)
+#library("plm")
+#data(Cigar)
+#x <- plm(sales ~ price + pop + cpi, data = Cigar, model = "random", index = c("state","year"))
+#margins(x)
 ```
 
 
@@ -739,10 +740,10 @@ at           : price           =    68.69993 (mean)
 ### R ###
 
 ```{r}
-library("plm")
-data(Cigar)
-x <- plm(sales ~ price + pop * cpi, data = Cigar, model = "pooling")
-margins(x)
+#library("plm")
+#data(Cigar)
+#x <- plm(sales ~ price + pop * cpi, data = Cigar, model = "pooling")
+#margins(x)
 ```
 
 
@@ -773,10 +774,10 @@ dy/dx w.r.t. : price pop cpi
 ### R ###
 
 ```{r}
-library("plm")
-data(Cigar)
-x <- plm(sales ~ price + pop * cpi, data = Cigar, model = "pooling")
-margins(x)
+#library("plm")
+#data(Cigar)
+#x <- plm(sales ~ price + pop * cpi, data = Cigar, model = "pooling")
+#margins(x)
 ```
 
 
@@ -811,12 +812,12 @@ at           : price           =    68.69993 (mean)
 ### R ###
 
 ```{r}
-library("plm")
-data(Cigar)
-x <- plm(sales ~ price + pop * cpi, data = Cigar, model = "within", index = c("state", "year"))
-margins(x)
-x <- lm(sales ~ price + pop * cpi + factor(state), data = Cigar)
-summary(margins(x))[1:3,]
+#library("plm")
+#data(Cigar)
+#x <- plm(sales ~ price + pop * cpi, data = Cigar, model = "within", index = c("state", "year"))
+#margins(x)
+#x <- lm(sales ~ price + pop * cpi + factor(state), data = Cigar)
+#summary(margins(x))[1:3,]
 ```
 
 
@@ -847,12 +848,12 @@ dy/dx w.r.t. : price pop cpi
 ### R ###
 
 ```{r}
-library("plm")
-data(Cigar)
-x <- plm(sales ~ price + pop * cpi, data = Cigar, model = "within", index = c("state","year"))
-margins(x)
-x <- lm(sales ~ price + pop * cpi + factor(state), data = Cigar)
-summary(margins(x))[1:3,]
+#library("plm")
+#data(Cigar)
+#x <- plm(sales ~ price + pop * cpi, data = Cigar, model = "within", index = c("state","year"))
+#margins(x)
+#x <- lm(sales ~ price + pop * cpi + factor(state), data = Cigar)
+#summary(margins(x))[1:3,]
 ```
 
 ---
@@ -886,10 +887,10 @@ at           : price           =    68.69993 (mean)
 ### R ###
 
 ```{r}
-library("plm")
-data(Cigar)
-x <- plm(sales ~ price + pop * cpi, data = Cigar, model = "random", index = c("state","year"))
-margins(x)
+#library("plm")
+#data(Cigar)
+#x <- plm(sales ~ price + pop * cpi, data = Cigar, model = "random", index = c("state","year"))
+#margins(x)
 ```
 
 
@@ -920,9 +921,9 @@ dy/dx w.r.t. : price pop cpi
 ### R ###
 
 ```{r}
-library("plm")
-data(Cigar)
-x <- plm(sales ~ price + pop * cpi, data = Cigar, model = "random", index = c("state","year"))
-margins(x)
+#library("plm")
+#data(Cigar)
+#x <- plm(sales ~ price + pop * cpi, data = Cigar, model = "random", index = c("state","year"))
+#margins(x)
 ```
 
