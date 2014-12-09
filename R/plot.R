@@ -26,21 +26,21 @@ function(x,
                  ylim = c(min(at)-(0.04*min(at)), max(at) + (0.04*max(at))), 
                  yaxt = 'n', xlab = ylab, ylab = xlab, las = las, ...)
         if(zeroline)
-            abline(v = vline, col = "gray")
-        points(MEs, at, col=points.col, bg = points.bg, pch = pch)
+            abline(v = 0, col = "gray")
+        points(MEs, at, col = points.col, bg = points.bg, pch = pch)
         axis(2, at = at, labels = as.character(labels), las = las)
         mapply(function(z, lwd) {
             segments(MEs + (quantiles[z,1] * sqrt(x$Variance)), at, 
                      MEs + (quantiles[z,2] * sqrt(x$Variance)), at, 
-                     col = bg, lwd = lwd)
+                     col = points.col, lwd = lwd)
         }, 1:nrow(quantiles), seq(max(lwd), 0.25, length.out = nrow(quantiles)))
     } else {
         plot(NA, xlim = c(min(at)-(0.04*min(at)), max(at) + (0.04*max(at))), 
                  ylim = c(min(lb)-0.04*r, max(ub)+0.04*r), 
                  xaxt = 'n', xlab = xlab, ylab = ylab, las = las, ...)
         if(zeroline)
-            abline(h = vline, col = "gray")
-        points(at, MEs, col=points.col, bg = points.bg, pch = pch)
+            abline(h = 0, col = "gray")
+        points(at, MEs, col = points.col, bg = points.bg, pch = pch)
         axis(1, at = at, labels = as.character(labels), las = las)
         mapply(function(z, lwd) {
             segments(at, MEs + (quantiles[z,1] * sqrt(x$Variance)), 

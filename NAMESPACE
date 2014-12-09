@@ -8,10 +8,9 @@ export(margins_at)
 S3method(margins, lm)
 S3method(margins, glm)
 S3method(margins, plm)
-S3method(margins, polr)
-S3method(margins, censReg)
 
 ## methods for margins class
 S3method(print, margins)
 S3method(summary, margins)
 S3method(plot, margins)
+S3method(confint, margins)

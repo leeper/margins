@@ -1,30 +1,3 @@
-# function to cleanup I(), etc. in formulas
-gsub_bracket <- function(a, b) {
-    tmp <- regmatches(a, gregexpr(paste0("(",b,"\\().+(\\))"), a))
-    regmatches(a, gregexpr(paste0("(",b,"\\().+(\\))"), a)) <- 
-      gsub(")$","", gsub(paste0("^",b,"\\("), "", tmp))
-    a
-}
-# function to drop multipliers, powers, etc.
-drop_operators <- function(a, dropdigits = TRUE) {
-    # remove mathematical operators
-    if(dropdigits) {
-        a <- gsub("^[:digit:]+(\\^|\\+|\\-|\\*|\\|/)", "", a)
-        a <- gsub("(\\^|\\+|-|\\*|/)[[:digit:]+]$", "", a)
-    } else {
-        a <- gsub("(?<=[[:digit:]+])^(\\^|\\+|\\-|\\*|\\|/)", "", a, perl = TRUE)
-        a <- gsub("(\\^|\\+|-|\\*|/)(?=[[:digit:]+])", "", a, perl = TRUE)
-    }
-    # need to remove mathematical expressions
-    exprs <- c("exp", "log", "sin", "cos", "tan", "sinh", "cosh", 
-               "sqrt", "pnorm", "dnorm", "asin", "acos", "atan", 
-               "gamma", "lgamma", "digamma", "trigamma")
-    for(i in seq_along(exprs)){
-        a <- gsub_bracket(a, exprs[i])
-    }
-    a
-}
-
 margins_calculator <- 
 function(x, mm = NULL, ...){
     # setup objects
@@ -242,31 +215,5 @@ function(x,
     }
     
     
-    out
-}
-
-margins.polr <- function(x, newdata = NULL, 
-         ...) {
-    
-}
-
-margins.censReg <- function(x, newdata = NULL, 
-         ...) {
-    
-}
-
-print.margins <- function(x, digits = getOption('digits',4), ...){
-    tab <- 
-    cbind.data.frame('dy/dx' = colMeans(x$Effect), 
-                     'Std.Err.' = sapply(x$Variance, sqrt))
-    print(tab, digits = digits)
-    invisible(x)
-}
-
-summary.margins <- function(object, ...){
-    out <- data.frame(Factor = colnames(object$Effect), 
-                      Effect = colMeans(object$Effect),
-                      'Std.Err.' = sqrt(object$Variance),
-                      row.names = 1:ncol(object$Effect))
     out
 }

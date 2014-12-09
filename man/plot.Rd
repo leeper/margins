@@ -4,7 +4,8 @@
 \description{Plot marginal effects}
 \usage{
 \method{plot}{margins}(x, at = 1:ncol(x$Effect), which = colnames(x$Effect), 
-         labels = which, level = 0.95, pch = 21, points.col = "black", points.bg = "black",
+         labels = which, horiz = FALSE, xlab = "", ylab = "Marginal Effect",
+         level = 0.95, pch = 21, points.col = "black", points.bg = "black",
          las = 0, cex = 1, lwd = 2, zeroline = TRUE, ...)
 }
 \arguments{
@@ -12,11 +13,14 @@
     \item{at}{}
     \item{which}{}
     \item{labels}{}
+    \item{xlab}{}
+    \item{ylab}{}
+    \item{horiz}{}
     \item{level}{}
     \item{pch}{}
     \item{points.col}{}
     \item{points.bg}{}
-    \itme{las}{}
+    \item{las}{}
     \item{cex}{}
     \item{lwd}{}
     \item{zeroline}{}

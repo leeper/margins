@@ -7,6 +7,7 @@
 \alias{margins.censReg}
 \alias{print.margins}
 \alias{summary.margins}
+\alias{confint.margins}
 \title{Marginal effects for model objects}
 \description{Calculate marginal effects for estimated models}
 \usage{
