@@ -1,25 +1,52 @@
 plot.margins <- 
 function(x, 
+         at = 1:ncol(x$Effect),
          which = colnames(x$Effect), 
-         labels = which, 
+         labels = which,
+         horiz = FALSE,
+         xlab = "",
+         ylab = "Marginal Effect",
          level = 0.95,
-         bg = "black", 
+         pch = 21, 
+         points.col = "black",
+         points.bg = "black",
+         las = 0,
+         cex = 1,
          lwd = 2, 
-         vline = NULL,
+         zeroline = TRUE,
          ...) {
-    x <- x$Effect[,which]
+    MEs <- colMeans(x$Effect[,which])
     quantiles <- qnorm(cbind((1-sort(level))/2, 1-(1-sort(level))/2))
     maxl <- max(abs(quantiles))
-    lb <- x$Effect - (maxl * x[["Std. Error"]])
-    ub <- x$Effect + (maxl * x[["Std. Error"]])
+    lb <- MEs - (maxl * sqrt(x$Variance))
+    ub <- MEs + (maxl * sqrt(x$Variance))
     r <- max(ub) - min(lb)
-    dotchart(x$Effect, labels = as.character(labels), bg = bg, xlim = c(min(lb)-0.04*r, max(ub)+0.04*r), ...)
-    if(!is.null(vline))
-        abline(v = vline, col = "gray")
-    mapply(function(z, lwd) {
-        segments(x$Effect + (quantiles[z,1] * x[["Std. Error"]]), 1:nrow(x), 
-                 x$Effect + (quantiles[z,2] * x[["Std. Error"]]), 1:nrow(x), 
-                 col = bg, lwd = lwd)
-    }, 1:nrow(quantiles), seq(max(lwd), 0.25, length.out = nrow(quantiles)))
+    if(horiz) {
+        plot(NA, xlim = c(min(lb)-0.04*r, max(ub)+0.04*r),
+                 ylim = c(min(at)-(0.04*min(at)), max(at) + (0.04*max(at))), 
+                 yaxt = 'n', xlab = ylab, ylab = xlab, las = las, ...)
+        if(zeroline)
+            abline(v = vline, col = "gray")
+        points(MEs, at, col=points.col, bg = points.bg, pch = pch)
+        axis(2, at = at, labels = as.character(labels), las = las)
+        mapply(function(z, lwd) {
+            segments(MEs + (quantiles[z,1] * sqrt(x$Variance)), at, 
+                     MEs + (quantiles[z,2] * sqrt(x$Variance)), at, 
+                     col = bg, lwd = lwd)
+        }, 1:nrow(quantiles), seq(max(lwd), 0.25, length.out = nrow(quantiles)))
+    } else {
+        plot(NA, xlim = c(min(at)-(0.04*min(at)), max(at) + (0.04*max(at))), 
+                 ylim = c(min(lb)-0.04*r, max(ub)+0.04*r), 
+                 xaxt = 'n', xlab = xlab, ylab = ylab, las = las, ...)
+        if(zeroline)
+            abline(h = vline, col = "gray")
+        points(at, MEs, col=points.col, bg = points.bg, pch = pch)
+        axis(1, at = at, labels = as.character(labels), las = las)
+        mapply(function(z, lwd) {
+            segments(at, MEs + (quantiles[z,1] * sqrt(x$Variance)), 
+                     at, MEs + (quantiles[z,2] * sqrt(x$Variance)), 
+                     col = points.col, lwd = lwd)
+        }, 1:nrow(quantiles), seq(max(lwd), 0.25, length.out = nrow(quantiles)))
+    }
     invisible(x)
 }

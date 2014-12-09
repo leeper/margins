@@ -1,0 +1,23 @@
+<!--
+%\VignetteEngine{knitr}
+%\VignetteIndexEntry{Marginal Effects Plots}
+-->
+
+# Marginal Effects Plots #
+
+Using `margins` to calculate marginal effects enables several kinds of plotting. The built-in `plot` method for objects of class `margins` creates simple diagnostic plots for examining the output of `margins` in visual rather than tabular format. It is also possible to use the output of `margins` to produce more typical marginal effects plots that show the marginal effect of one variable across levels of another variable. This vignette walks through the `plot` method and then shows how to produce marginal effets plots using base graphics.
+
+## The `plot` Method ##
+
+The **margins** package implements a `plot` method for objects of class `margins`. This produces a plot similar (in spirit) to the output of Stata's `marginsplot`. It is highly customizable, but is meant primarily as a diagnostic tool to examine the results of `margins`. It simply produces, by default, a plot of marginal effects along with 95% confidence intervals for those effects. The confidence level can be modified using the `levels` argument, which is vectorized to allow multiple levels to be specified simultaneously.
+
+```{r}
+library("margins")
+x <- glm(am ~ cyl + hp + wt, data = mtcars, family=binomial)
+m <- margins(x)
+plot(m, level = c(0.67, 0.95, 0.99), horiz = TRUE, main = "Average Marginal Effects")
+```
+
+## Plotting Marginal Effects ##
+
+INSERT MARGINAL EFFECTS PLOTS HERE

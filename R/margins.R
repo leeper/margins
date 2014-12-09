@@ -6,10 +6,15 @@ gsub_bracket <- function(a, b) {
     a
 }
 # function to drop multipliers, powers, etc.
-drop_operators <- function(a) {
+drop_operators <- function(a, dropdigits = TRUE) {
     # remove mathematical operators
-    a <- gsub("^[:digit:]+[\\^\\+\\-\\*\\/]", "", a)
-    a <- gsub("[[\\^\\+-\\*/]][[:digit:]+]$", "", a)
+    if(dropdigits) {
+        a <- gsub("^[:digit:]+(\\^|\\+|\\-|\\*|\\|/)", "", a)
+        a <- gsub("(\\^|\\+|-|\\*|/)[[:digit:]+]$", "", a)
+    } else {
+        a <- gsub("(?<=[[:digit:]+])^(\\^|\\+|\\-|\\*|\\|/)", "", a, perl = TRUE)
+        a <- gsub("(\\^|\\+|-|\\*|/)(?=[[:digit:]+])", "", a, perl = TRUE)
+    }
     # need to remove mathematical expressions
     exprs <- c("exp", "log", "sin", "cos", "tan", "sinh", "cosh", 
                "sqrt", "pnorm", "dnorm", "asin", "acos", "atan", 
@@ -32,72 +37,97 @@ function(x, mm = NULL, ...){
     vc <- vcov(x) # var-cov matrix
     n <- nrow(mm)
     
-    # add variables to `mm` if they are represented in I() terms but not in their original forms
+    # fix I() variable names if they ARE NOT represented in first-order forms
     Iterms <- grepl("I\\(", tl)
-    Iterm_vars <- drop_operators(gsub_bracket(tl[Iterms],"I"))
-    w <- which(!Iterm_vars %in% tl[!Iterms])
-    if(length(w)){
-        stop("AsIs term(s) without corresponding unmodified variables in formula\n  will not have marginal effect calculated correctly")
-        #for(i in w) {
-        #    mm[,Iterm_vars[w]] <- # do something
-        #}
+    Iterms_pre <- tl[Iterms]
+    # Iterms_vars = variable names from I() expressions
+    Iterms_vars <- drop_operators(gsub_bracket(Iterms_pre,"I"), dropdigits = TRUE)
+    # Iterms_post = new variable names for I() expressions preserving information
+    Iterms_post <- drop_operators(gsub_bracket(Iterms_pre,"I"), dropdigits = FALSE)
+    Iw <- which(!Iterms_vars %in% tl[!Iterms])
+    Iterms_post <- paste0("IVAR.", Iterms_post)
+    if(length(Iw)){
+        tl[tl %in% Iterms_pre[Iw]] <- 
+        names(est)[names(est) %in% Iterms_pre[Iw]] <- 
+        colnames(mm)[colnames(mm) %in% Iterms_pre[Iw]] <- 
+        colnames(vc)[colnames(vc) %in% Iterms_pre[Iw]] <- 
+        rownames(vc)[rownames(vc) %in% Iterms_pre[Iw]] <- Iterms_post[Iw]
     }
-    
+    # fix I() variable names that ARE represented in first-order form
     tl <- gsub_bracket(tl,"I")
     names(mm) <- gsub_bracket(names(mm), "I") # I() terms
+    colnames(vc) <- rownames(vc) <- gsub_bracket(colnames(vc), "I")
+    
     anyfactors <- grepl("factor(", attributes(terms(x))$term.labels, fixed = TRUE)
     if(any(anyfactors)){
-        names(mm) <- gsub_bracket(names(mm), "factor") # factor() terms
+        # fix termorder values for factor variables
         for(i in which(anyfactors)){
             termorder <- c(termorder[0:(i-1)],
                            rep(termorder[i],nlevels(x$model[,attributes(terms(x))$term.labels[i]])-1),
                            tail(termorder, length(termorder) - i))
         }
+        # fix factor() variable names
+        Fterms <- grepl("factor\\(", tl)
+        Fterms_pre <- tl[Fterms]
+        # Fterms_vars = variable names from I() expressions
+        Fterms_vars <- drop_operators(gsub_bracket(Fterms_pre,"factor"), dropdigits = TRUE)
+        # Fterms_post = new variable names for I() expressions preserving information
+        Fterms_post <- drop_operators(gsub_bracket(Fterms_pre,"factor"), dropdigits = FALSE)
+        Fw <- which(!Fterms_vars %in% tl[!Fterms])
+        Fterms_post <- paste0("FVAR.", Fterms_post)
+        if(length(Fw)){
+            tl[tl %in% Fterms_pre[Fw]] <- 
+            names(datmeans)[names(datmeans) %in% Fterms_pre[Fw]] <- 
+            names(est)[names(est) %in% Fterms_pre[Fw]] <- 
+            colnames(mm)[colnames(mm) %in% Fterms_pre[Fw]] <- 
+            colnames(vc)[colnames(vc) %in% Fterms_pre[Fw]] <- 
+            rownames(vc)[rownames(vc) %in% Fterms_pre[Fw]] <- Fterms_post[Fw]
+        }
     }
     
-    
     # make interaction terms derivable by replacing `:` with `*`
-    # also drop factor() expressions
-    f <- gsub(":", "*", paste(gsub_bracket(est[names(est) != "(Intercept)"], "factor"), 
-                              gsub_bracket(tl, "factor"), sep="*", collapse=" + "))
+    f <- gsub(":", "*", paste(est[names(est) != "(Intercept)"], tl, sep="*", collapse=" + "))
+    
     # find unique, first-order terms
     tmpnames <- unique(tl[termorder == 1])
-    utmp <- unique(drop_operators(tmpnames))
-    u <- gsub_bracket(utmp, "factor")
+    u <- unique(drop_operators(tmpnames), dropdigits = TRUE)
     
     # Marginal Effect calculation (linear models)
     # do the calculation using the symbolic derivative
     d <- with(mm, eval(deriv3(reformulate(f)[[2]], u)))
     MEs <- attributes(d)$gradient
     
-    # Variance calculation
-    # without higher-order terms it is just:
-    vctmp <- vc
-    colnames(vctmp) <- rownames(vctmp) <- gsub_bracket(colnames(vctmp), "factor")
-    #Variances <- diag(vctmp[u,u])
-    
-    # but...using the delta method
-    if(any(termorder > 1))
-        warning("Variance estimates are incorrect for variables included in higher-order terms")
+    # Variance calculation using the delta method
     betas <- setNames(tl, paste0('beta', seq_along(tl)))
     f2 <- reformulate(gsub(":", "*", paste(names(betas), 
                                gsub_bracket(tl, "factor"), sep="*", collapse=" + ")))[[2]]
     Variances <- setNames(sapply(u, function(z) {
         this_me <- D(f2, z) # ME
         a <- all.vars(this_me)
-        a <- a[grepl("beta",a)] # coefs included in ME
+        a <- a[grepl("beta",a)] # only the coefs included in ME
         gradmat <- do.call(cbind, lapply(a, function(b) {
             #grad <- with(mm, eval(D(this_me, b))) # gradient evaluated at *data*
             grad <- with(datmeans, eval(D(this_me, b))) # gradient evaluated at *means*
-            # repeat length 1 vectors
-            #if(length(grad)==1) rep(grad, nrow(mm)) else grad
         }))
         colnames(gradmat) <- betas[a]
         # estimate variance using delta method
         gradmat %*% vc[colnames(gradmat), colnames(gradmat)] %*% t(gradmat)
     }), u)
     
-    colnames(MEs) <- utmp
+    # restore I() variable names if they are represented in I() terms but not in their original forms
+    if(length(Iw)){
+        u[u %in% Iterms_post[Iw]] <- 
+        colnames(MEs)[colnames(MEs) %in% Iterms_post[Iw]] <- 
+        names(Variances)[names(Variances) %in% Iterms_post[Iw]] <- Iterms_pre[Iw]
+    }
+    # restore factor() variable names
+    if(any(anyfactors)){
+        u[u %in% Fterms_post[Fw]] <- 
+        colnames(MEs)[colnames(MEs) %in% Fterms_post[Fw]] <- 
+        names(Variances)[names(Variances) %in% Fterms_post[Fw]] <- Fterms_pre[Fw]
+    }
+    
+    colnames(MEs) <- u
     structure(list(Effect = MEs,
                    Variance = Variances,
                    model = x), class = c("margins"))
@@ -109,15 +139,19 @@ function(x, newdata = NULL, ...) {
 }
 
 margins.lm <- function(x, newdata = NULL, ...){
-    margins_calculator(x, ...)
+    if(is.null(newdata))
+        newdata <- as.data.frame(model.matrix(x))
+    margins_calculator(x, mm = newdata, ...)
 }
 
 margins.glm <- 
 function(x, 
          newdata = NULL, 
-         type = "link", # "link" (linear/xb); "response" (probability scale)
+         type = "link", # "link" (linear/xb); "response" (probability/etc. scale)
          ...){
-    out <- margins_calculator(x, ...)
+    if(is.null(newdata))
+        newdata <- as.data.frame(model.matrix(x))
+    out <- margins_calculator(x, mm = newdata, ...)
     # configure link function
     dfun <- switch(x$family$link, 
                   probit = dnorm, 
@@ -146,7 +180,10 @@ function(x,
 
     if(type == "response"){
         # Marginal Effect calculation (response scale for GLMs)
-        out$Effect <- apply(out$Effect, 2, `*`, predict(x, newdata = as.data.frame(model.matrix(x)), type = "response"))
+        out$Effect <- apply(out$Effect, 2, `*`, predict(x, newdata = newdata, type = "response"))
+    } else {
+        # Marginal Effect calculation (link scale for GLMs)
+        out$Effect <- out$Effect
     }
     
     out
@@ -170,7 +207,9 @@ function(x,
          newdata = NULL, 
          type = "link", # "link" (linear/xb); "response" (probability scale)
          ...){
-    out <- margins_calculator(x, ...)
+    if(is.null(newdata))
+        newdata <- as.data.frame(model.matrix(x))
+    out <- margins_calculator(x, mm = newdata, ...)
     # configure link function
     dfun <- switch(x$family$link, 
                   probit = dnorm, 
@@ -199,7 +238,7 @@ function(x,
 
     if(type == "response"){
         # Marginal Effect calculation (response scale for GLMs)
-        out$Effect <- apply(out$Effect, 2, `*`, predict(x, newdata = as.data.frame(model.matrix(x)), type = "response"))
+        out$Effect <- apply(out$Effect, 2, `*`, predict(x, newdata = newdata, type = "response"))
     }
     
     
