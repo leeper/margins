@@ -31,7 +31,7 @@ R has no comparable functionality in the base tools (though `predict` implements
 
 Given the importance of models that are non-additive and/or non-linear in all statistical analyses and the difficulty of interpreting those models, there is a clear need for a simple, consistent way to estimate marginal effects for popular statistical models.
 
-This package aims to correctly calculate marginal effects that include complex terms and provide a uniform interface for doing those calculations. Thus, the package implements a single S3 generic method (`margins`) that can be easily generalized for any type of model implemented in R. [Pull requests](https://github.com/leeper/margins/pulls) for `margins` methods for any model class that is not currently supported.
+This package aims to correctly calculate marginal effects that include complex terms and provide a uniform interface for doing those calculations. Thus, the package implements a single S3 generic method (`margins`) that can be easily generalized for any type of model implemented in R. [Pull requests](https://github.com/leeper/margins/pulls) for `margins` methods for any model class that is not currently supported are more than welcome!
 
 ## Requirements and Installation ##
 
