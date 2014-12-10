@@ -1,19 +1,22 @@
-print.margins <- function(x, digits = getOption('digits',4), ...){
-    print(summary(x), digits = digits)
+print.margins <- 
+function(x, digits = getOption('digits',4), row.names = FALSE, ...){
+    print(summary(x), digits = digits, row.names = row.names, ...)
     invisible(x)
 }
 
-summary.margins <- function(object, ...){
+summary.margins <- 
+function(object, ...){
     tab <- data.frame(Factor = colnames(object$Effect), 
                       "dy/dx" = colMeans(object$Effect),
                       "Std.Err." = sqrt(object$Variance),
                       check.names = FALSE, stringsAsFactors = FALSE)
-    tab[,"t value"] <- tab[,"dy/dx"]/tab[,"Std.Err."]
-    tab[,"Pr(>|t|)"] <- 2 * pnorm(abs(tab[,"t value"]), lower.tail = FALSE)
+    tab[,"z value"] <- tab[,"dy/dx"]/tab[,"Std.Err."]
+    tab[,"Pr(>|z|)"] <- 2 * pnorm(abs(tab[,"z value"]), lower.tail = FALSE)
     tab
 }
 
-confint.margins <- function(object, parm, level = 0.95, ...) {
+confint.margins <- 
+function(object, parm, level = 0.95, ...) {
     s <- summary(object)
     pnames <- s$Factor
     if (missing(parm)) 

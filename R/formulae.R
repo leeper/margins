@@ -7,12 +7,13 @@ gsub_bracket <- function(a, b) {
 }
 # function to drop multipliers, powers, etc.
 drop_operators <- function(a, dropdigits = TRUE) {
+    a <- gsub(" ","",a)
     # remove mathematical operators
     if(dropdigits) {
         a <- gsub("^[:digit:]+(\\^|\\+|\\-|\\*|\\|/)", "", a)
         a <- gsub("(\\^|\\+|-|\\*|/)[[:digit:]+]$", "", a)
     } else {
-        a <- gsub("(?<=[[:digit:]+])^(\\^|\\+|\\-|\\*|\\|/)", "", a, perl = TRUE)
+        a <- gsub("(?<=[[:digit:]+])(\\^|\\+|\\-|\\*|\\|/)", "", a, perl = TRUE)
         a <- gsub("(\\^|\\+|-|\\*|/)(?=[[:digit:]+])", "", a, perl = TRUE)
     }
     # need to remove mathematical expressions

@@ -276,6 +276,85 @@ margins(x, type = "link")
 
 ---
 
+## GLM (Logit) Effects with factor variable on Log-Odds and probability scales ##
+
+
+### Stata ###
+
+```
+. quietly logit am i.cyl hp wt
+. margins, dydx(*) predict(xb)
+
+Average marginal effects                          Number of obs   =         32
+Model VCE    : OIM
+Expression   : Linear prediction (log odds), predict(xb)
+dy/dx w.r.t. : 6.cyl 8.cyl hp wt
+------------------------------------------------------------------------------
+             |            Delta-method
+             |      dy/dx   Std. Err.      z    P>|z|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+         cyl |
+          6  |   2.765754   3.156829     0.88   0.381    -3.421517    8.953025
+          8  |  -8.388958   13.16745    -0.64   0.524     -34.1967    17.41878
+             |
+          hp |    .103209   .0960655     1.07   0.283    -.0850759    .2914939
+          wt |  -10.67598   5.441998    -1.96   0.050     -21.3421   -.0098575
+------------------------------------------------------------------------------
+Note: dy/dx for factor levels is the discrete change from the base level.
+
+. margins, dydx(*)
+
+Average marginal effects                          Number of obs   =         32
+Model VCE    : OIM
+Expression   : Pr(am), predict()
+dy/dx w.r.t. : 6.cyl 8.cyl hp wt
+------------------------------------------------------------------------------
+             |            Delta-method
+             |      dy/dx   Std. Err.      z    P>|z|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+         cyl |
+          6  |   .1197978   .1062873     1.13   0.260    -.0885214    .3281171
+          8  |  -.3478575   .2067542    -1.68   0.092    -.7530883    .0573732
+             |
+          hp |   .0033268   .0029852     1.11   0.265    -.0025241    .0091777
+          wt |  -.3441297   .1188604    -2.90   0.004    -.5770919   -.1111675
+------------------------------------------------------------------------------
+Note: dy/dx for factor levels is the discrete change from the base level.
+
+. margins, dydx(*) continuous
+
+Average marginal effects                          Number of obs   =         32
+Model VCE    : OIM
+Expression   : Pr(am), predict()
+dy/dx w.r.t. : 6.cyl 8.cyl hp wt
+------------------------------------------------------------------------------
+             |            Delta-method
+             |      dy/dx   Std. Err.      z    P>|z|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+         cyl |
+          6  |   .0891514   .0940577     0.95   0.343    -.0951984    .2735011
+          8  |  -.2704099   .4252041    -0.64   0.525    -1.103795    .5629749
+             |
+          hp |   .0033268   .0029852     1.11   0.265    -.0025241    .0091777
+          wt |  -.3441297   .1188604    -2.90   0.004    -.5770919   -.1111675
+------------------------------------------------------------------------------
+```
+
+### R ###
+
+```{r}
+x <- glm(am ~ factor(cyl) + hp + wt, data = mtcars, family = binomial)
+# Log-odds
+margins(x, type = "link")
+# Probability
+margins(x, type = "response")
+# Probability with discrete change
+#margins(x, type = "response") # <- NEED AN OPTION TO CONTROL CONTINUOUS/DISCRETE CHANGE
+```
+
+
+---
+
 ## GLM (Logit) with interaction on probability scale ##
 
 ### Stata ###
@@ -326,3 +405,151 @@ margins(x, atmeans = TRUE, type = "response")
 margins(x, type = "response")
 ```
 
+---
+
+## GLM (Logit) with interaction on Log-Odds scale ##
+
+### Stata ###
+
+```
+. quietly logit am cyl c.hp##c.wt
+. margins, dydx(*) atmeans predict(xb)
+
+Conditional marginal effects                      Number of obs   =         32
+Model VCE    : OIM
+Expression   : Linear prediction (log odds), predict(xb)
+dy/dx w.r.t. : cyl hp wt
+at           : cyl             =      6.1875 (mean)
+               hp              =    146.6875 (mean)
+               wt              =     3.21725 (mean)
+------------------------------------------------------------------------------
+             |            Delta-method
+             |      dy/dx   Std. Err.      z    P>|z|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+         cyl |   .5156396   1.169458     0.44   0.659    -1.776456    2.807735
+          hp |   .0515116    .035699     1.44   0.149    -.0184571    .1214804
+          wt |  -12.24264   7.678428    -1.59   0.111    -27.29208    2.806807
+------------------------------------------------------------------------------
+
+. margins, dydx(*) predict(xb)
+
+Average marginal effects                          Number of obs   =         32
+Model VCE    : OIM
+Expression   : Linear prediction (log odds), predict(xb)
+dy/dx w.r.t. : cyl hp wt
+------------------------------------------------------------------------------
+             |            Delta-method
+             |      dy/dx   Std. Err.      z    P>|z|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+         cyl |   .5156396   1.169458     0.44   0.659    -1.776456    2.807735
+          hp |   .0515116    .035699     1.44   0.149    -.0184571    .1214804
+          wt |  -12.24264   7.678428    -1.59   0.111    -27.29208    2.806807
+------------------------------------------------------------------------------
+```
+
+### R ###
+
+```{r}
+x <- glm(am ~ cyl + hp * wt, data = mtcars, family = binomial)
+# MEM
+margins(x, atmeans = TRUE, type = "link")
+# AME
+margins(x, type = "link")
+```
+
+
+## GLM (Probit) Effects on Log-Odds and probability scales ##
+
+### Stata ###
+
+```
+. quietly probit am cyl c.hp##c.wt
+. margins, dydx(*) predict(xb)
+
+Average marginal effects                          Number of obs   =         32
+Model VCE    : OIM
+Expression   : Linear prediction, predict(xb)
+dy/dx w.r.t. : cyl hp wt
+------------------------------------------------------------------------------
+             |            Delta-method
+             |      dy/dx   Std. Err.      z    P>|z|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+         cyl |   .2974758   .6629205     0.45   0.654    -1.001825    1.596776
+          hp |   .0277713   .0193121     1.44   0.150    -.0100797    .0656223
+          wt |  -6.626949   4.096208    -1.62   0.106    -14.65537    1.401471
+------------------------------------------------------------------------------
+
+. margins, dydx(*)
+
+Average marginal effects                          Number of obs   =         32
+Model VCE    : OIM
+Expression   : Pr(am), predict()
+dy/dx w.r.t. : cyl hp wt
+------------------------------------------------------------------------------
+             |            Delta-method
+             |      dy/dx   Std. Err.      z    P>|z|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+         cyl |    .022611   .0498253     0.45   0.650    -.0750447    .1202667
+          hp |   .0025769   .0022607     1.14   0.254     -.001854    .0070077
+          wt |   -.508829   .2625404    -1.94   0.053    -1.023399    .0057408
+------------------------------------------------------------------------------
+```
+
+### R ###
+
+```{r}
+x <- glm(am ~ cyl + hp * wt, data = mtcars, family = binomial(link="probit"))
+# AME (log-odds)
+margins(x, type = "link")
+# AME (probability)
+margins(x, type = "response")
+```
+
+
+## GLM (Poisson) Effects on Log-Odds and probability scales ##
+
+### Stata ###
+
+```
+. quietly poisson carb cyl c.hp##c.wt
+. margins, dydx(*) predict(xb)
+
+Average marginal effects                          Number of obs   =         32
+Model VCE    : OIM
+Expression   : Linear prediction, predict(xb)
+dy/dx w.r.t. : cyl hp wt
+------------------------------------------------------------------------------
+             |            Delta-method
+             |      dy/dx   Std. Err.      z    P>|z|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+         cyl |  -.0993854   .1478936    -0.67   0.502    -.3892516    .1904808
+          hp |   .0066519   .0024217     2.75   0.006     .0019054    .0113984
+          wt |   .1225051   .2035185     0.60   0.547    -.2763837     .521394
+------------------------------------------------------------------------------
+
+. margins, dydx(*)
+
+Average marginal effects                          Number of obs   =         32
+Model VCE    : OIM
+Expression   : Predicted number of events, predict()
+dy/dx w.r.t. : cyl hp wt
+------------------------------------------------------------------------------
+             |            Delta-method
+             |      dy/dx   Std. Err.      z    P>|z|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+         cyl |  -.2795214   .4169931    -0.67   0.503    -1.096813      .53777
+          hp |   .0175935   .0067179     2.62   0.009     .0044267    .0307604
+          wt |   .2075447   .4859868     0.43   0.669    -.7449719    1.160061
+------------------------------------------------------------------------------
+```
+
+
+### R ###
+
+```{r}
+x <- glm(carb ~ cyl + hp * wt, data = mtcars, family = poisson)
+# AME (linear/link)
+margins(x, type = "link")
+# AME (probability)
+margins(x, type = "response")
+```

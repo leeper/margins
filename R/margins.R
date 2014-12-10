@@ -15,10 +15,19 @@ function(x, mm = NULL, ...){
     Iterms_pre <- tl[Iterms]
     # Iterms_vars = variable names from I() expressions
     Iterms_vars <- drop_operators(gsub_bracket(Iterms_pre,"I"), dropdigits = TRUE)
-    # Iterms_post = new variable names for I() expressions preserving information
-    Iterms_post <- drop_operators(gsub_bracket(Iterms_pre,"I"), dropdigits = FALSE)
     Iw <- which(!Iterms_vars %in% tl[!Iterms])
-    Iterms_post <- paste0("IVAR.", Iterms_post)
+    # THIS DOESN'T HANDLE I() EXPRESSIONS WITH MULTIPLE VARIABLE NAMES
+    # THIS WOULD CAPTURE MULTIPLE VARIABLE NAMES, BUT THEN CODE NEEDS TO IDENTIFY
+    # AND CHECK FOR PRESENCE OF ALL CONSTITUENT VARIABLES
+    # sapply(parse(text=Iterms_vars), all.vars)
+    if(any(sapply(parse(text=Iterms_vars), function(z) length(all.vars(z))>1))){
+        warning("Marginal effects for variables included in\n a multi-variable I() expression do not include\n effect due to I() term")
+        tmp <- gsub("(\\^|\\+|\\-|\\*|\\|/)", "", Iterms_pre)
+        Iterms_post <- paste0("IVAR.", drop_operators(gsub_bracket(tmp,"I"), dropdigits = FALSE))
+    } else {
+        # Iterms_post = new variable names for I() expressions preserving information
+        Iterms_post <- paste0("IVAR.", drop_operators(gsub_bracket(Iterms_pre,"I"), dropdigits = FALSE))
+    }
     if(length(Iw)){
         tl[tl %in% Iterms_pre[Iw]] <- 
         names(est)[names(est) %in% Iterms_pre[Iw]] <- 
@@ -44,10 +53,9 @@ function(x, mm = NULL, ...){
         Fterms_pre <- tl[Fterms]
         # Fterms_vars = variable names from I() expressions
         Fterms_vars <- drop_operators(gsub_bracket(Fterms_pre,"factor"), dropdigits = TRUE)
-        # Fterms_post = new variable names for I() expressions preserving information
-        Fterms_post <- drop_operators(gsub_bracket(Fterms_pre,"factor"), dropdigits = FALSE)
         Fw <- which(!Fterms_vars %in% tl[!Fterms])
-        Fterms_post <- paste0("FVAR.", Fterms_post)
+        # Fterms_post = new variable names for I() expressions preserving information
+        Fterms_post <- paste0("FVAR.", drop_operators(gsub_bracket(Fterms_pre,"factor"), dropdigits = FALSE))
         if(length(Fw)){
             tl[tl %in% Fterms_pre[Fw]] <- 
             names(datmeans)[names(datmeans) %in% Fterms_pre[Fw]] <- 
@@ -62,8 +70,7 @@ function(x, mm = NULL, ...){
     f <- gsub(":", "*", paste(est[names(est) != "(Intercept)"], tl, sep="*", collapse=" + "))
     
     # find unique, first-order terms
-    tmpnames <- unique(tl[termorder == 1])
-    u <- unique(drop_operators(tmpnames), dropdigits = TRUE)
+    u <- unique(drop_operators(unique(tl[termorder == 1])), dropdigits = TRUE)
     
     # Marginal Effect calculation (linear models)
     # do the calculation using the symbolic derivative
@@ -87,7 +94,7 @@ function(x, mm = NULL, ...){
         gradmat %*% vc[colnames(gradmat), colnames(gradmat)] %*% t(gradmat)
     }), u)
     
-    # restore I() variable names if they are represented in I() terms but not in their original forms
+    # restore I() variable names (if they are represented in I() terms but not in their original forms)
     if(length(Iw)){
         u[u %in% Iterms_post[Iw]] <- 
         colnames(MEs)[colnames(MEs) %in% Iterms_post[Iw]] <- 
@@ -150,17 +157,22 @@ function(x,
                   "1/mu^2" = function(z) 1, # not setup
                   stop("Unrecognized link function")
                   )
-
     if(type == "response"){
         # Marginal Effect calculation (response scale for GLMs)
-        out$Effect <- apply(out$Effect, 2, `*`, predict(x, newdata = newdata, type = "response"))
-    } else {
+        out$Effect <- apply(out$Effect,2, `*`, dfun(predict(x, newdata = newdata, type = "link")))
+        # atmeans=TRUE
+        #out$Effect <- out$Effect * as.numeric(dfun(colMeans(newdata) %*% coef(x)))
+        
+        # NEED TO MODIFY VARIANCES ???
+        warning("Variances for marginal effects on response scale are incorrect")
+        
+    } else if(type == "link"){
         # Marginal Effect calculation (link scale for GLMs)
         out$Effect <- out$Effect
+    } else {
+        stop("Unrecognized value for 'type'")
     }
-    
     out
-    
 }
 
 margins.plm <- 
