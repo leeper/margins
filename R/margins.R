@@ -159,7 +159,7 @@ function(x,
                   )
     if(type == "response"){
         # Marginal Effect calculation (response scale for GLMs)
-        out$Effect <- apply(out$Effect,2, `*`, dfun(predict(x, newdata = newdata, type = "link")))
+        out$Effect <- apply(out$Effect,2, `*`, dfun(predict(x, type = "link"))) # <- THIS RUNS PREDICTION ON ORIGINAL DATA
         # atmeans=TRUE
         #out$Effect <- out$Effect * as.numeric(dfun(colMeans(newdata) %*% coef(x)))
         
