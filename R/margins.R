@@ -1,5 +1,5 @@
 margins_calculator <- 
-function(x, mm = NULL, ...){
+function(x, mm = NULL, factors = "continuous", ...){
     # setup objects
     if(is.null(mm))
         mm <- as.data.frame(model.matrix(x)) # data
@@ -94,6 +94,10 @@ function(x, mm = NULL, ...){
         gradmat %*% vc[colnames(gradmat), colnames(gradmat)] %*% t(gradmat)
     }), u)
     
+    if(factors == "discrete"){
+        # calculate first-differences for factor variables    
+    }
+    
     # restore I() variable names (if they are represented in I() terms but not in their original forms)
     if(length(Iw)){
         u[u %in% Iterms_post[Iw]] <- 
@@ -118,20 +122,21 @@ function(x, newdata = NULL, ...) {
     UseMethod("margins")
 }
 
-margins.lm <- function(x, newdata = NULL, ...){
+margins.lm <- function(x, newdata = NULL, factors = "continuous", ...){
     if(is.null(newdata))
         newdata <- as.data.frame(model.matrix(x))
-    margins_calculator(x, mm = newdata, ...)
+    margins_calculator(x, mm = newdata, factors = factors, ...)
 }
 
 margins.glm <- 
 function(x, 
          newdata = NULL, 
+         factors = "continuous",
          type = "link", # "link" (linear/xb); "response" (probability/etc. scale)
          ...){
     if(is.null(newdata))
         newdata <- as.data.frame(model.matrix(x))
-    out <- margins_calculator(x, mm = newdata, ...)
+    out <- margins_calculator(x, mm = newdata, factors = factors, ...)
     # configure link function
     dfun <- switch(x$family$link, 
                   probit = dnorm, 
@@ -176,25 +181,26 @@ function(x,
 }
 
 margins.plm <- 
-function(x, newdata = NULL, ...) {
+function(x, newdata = NULL, factors = "continuous", ...) {
     # FOR SOME REASON THIS ISN'T CAPTURING INTERACTION TERMS
     if(x$args$model != 'pooling') {
         warning("marginal effects not likely to be correct")
-        margins_calculator(x, ...)
+        margins_calculator(x, factors = factors, ...)
         #mm <- cbind(model.matrix(x), model.matrix(~0+attributes(x$model)$index[,1]))
     } else {
-        margins_calculator(x, ...)
+        margins_calculator(x, factors = factors, ...)
     }
 }
 
 margins.pglm <- 
 function(x, 
          newdata = NULL, 
+         factors = "continuous", 
          type = "link", # "link" (linear/xb); "response" (probability scale)
          ...){
     if(is.null(newdata))
         newdata <- as.data.frame(model.matrix(x))
-    out <- margins_calculator(x, mm = newdata, ...)
+    out <- margins_calculator(x, mm = newdata, factors = factors, ...)
     # configure link function
     dfun <- switch(x$family$link, 
                   probit = dnorm, 
