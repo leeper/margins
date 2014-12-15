@@ -110,6 +110,7 @@ Expression   : Pr(am), predict()
 ### R ###
 
 ```{r}
+x <- glm(am ~ cyl + hp + wt, data = mtcars, family=binomial)
 # average predictive margins
 sapply(c(4,6,8), function(z) {
     mean(predict(x, newdata = `[<-`(x$model, , "cyl", z), type = "response"))
