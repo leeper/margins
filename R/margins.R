@@ -1,9 +1,6 @@
 margins_calculator <- 
-function(x, mm = NULL, factors = "continuous", ...){
-    # setup objects
-    if(is.null(mm))
-        mm <- as.data.frame(model.matrix(x)) # data
-    datmeans <- as.data.frame(t(as.matrix(colMeans(mm)))) # data means
+function(x, mm, factors = "continuous", ...){
+    datmeans <- as.data.frame(t(colMeans(mm))) # data means
     tl <- names(mm)[names(mm) != "(Intercept)"] # terms
     est <- coef(x) # coefficients
     termorder <- attributes(terms(x))$order # term orders
@@ -122,49 +119,53 @@ function(x, newdata = NULL, ...) {
     UseMethod("margins")
 }
 
-margins.lm <- function(x, newdata = NULL, factors = "continuous", ...){
-    if(is.null(newdata))
-        newdata <- as.data.frame(model.matrix(x))
-    margins_calculator(x, mm = newdata, factors = factors, ...)
+margins.lm <- 
+function(x, 
+         newdata = NULL, 
+         at = NULL, 
+         atmeans = FALSE, 
+         factors = "continuous", ...){
+    if(is.null(newdata)) {
+        newdata <- eval(x$call$data)
+        data_list <- at_builder(newdata, terms = x$terms, at = at, atmeans = atmeans)
+    } else {
+        data_list <- at_builder(newdata, terms = x$terms, at = at, atmeans = atmeans)
+    }
+    out <- lapply(data_list, margins_calculator, x = x, factors = factors, ...)
+    class(out) <- "marginslist"
+    out
 }
 
 margins.glm <- 
 function(x, 
          newdata = NULL, 
+         at = NULL, 
+         atmeans = FALSE, 
          factors = "continuous",
          type = "link", # "link" (linear/xb); "response" (probability/etc. scale)
          ...){
-    if(is.null(newdata))
-        newdata <- as.data.frame(model.matrix(x))
-    out <- margins_calculator(x, mm = newdata, factors = factors, ...)
     # configure link function
-    dfun <- switch(x$family$link, 
-                  probit = dnorm, 
-                  logit = dlogis,
-                  cauchit = dcauchy,
-                  log = exp,
-                  cloglog = function(z) 1 - exp(-exp(z)),
-                  inverse = function(z) 1/z,
-                  identity = function(z) 1,
-                  sqrt = function(z) z^2,
-                  "1/mu^2" = function(z) z^(-0.5),
-                  stop("Unrecognized link function")
-                  )
-    sfun <- switch(x$family$link, 
-                  probit = function(z) -z, 
-                  logit = function(z) 1 - 2 * plogis(z),
-                  cauchit = function(z) 1, # not setup
-                  log = function(z) 1, # not setup
-                  cloglog = function(z) 1, # not setup
-                  inverse = function(z) 1, # not setup
-                  identity = function(z) 1, # not setup
-                  sqrt = function(z) 1, # not setup
-                  "1/mu^2" = function(z) 1, # not setup
-                  stop("Unrecognized link function")
-                  )
+    g <- getlink(x$family$link)
+    dfun <- g$dfun
+    sfun <- g$sfun
+    
+    # calculate marginal effects
+    if(is.null(newdata)) {
+        newdata <- eval(x$call$data)
+        data_list <- at_builder(newdata, terms = x$terms, at = at, atmeans = atmeans)
+    } else {
+        data_list <- at_builder(newdata, terms = x$terms, at = at, atmeans = atmeans)
+    }
+    out <- lapply(data_list, margins_calculator, x = x, factors = factors, ...)
+    class(out) <- "marginslist"
+    
+    # handle margins types
     if(type == "response"){
         # Marginal Effect calculation (response scale for GLMs)
-        out$Effect <- apply(out$Effect,2, `*`, dfun(predict(x, type = "link"))) # <- THIS RUNS PREDICTION ON ORIGINAL DATA
+        out <- lapply(out, function(z) {
+            z$Effect <- apply(z$Effect,2, `*`, dfun(predict(x, type = "link"))) # <- THIS RUNS PREDICTION ON ORIGINAL DATA
+            z
+        })
         # atmeans=TRUE
         #out$Effect <- out$Effect * as.numeric(dfun(colMeans(newdata) %*% coef(x)))
         
@@ -173,7 +174,7 @@ function(x,
         
     } else if(type == "link"){
         # Marginal Effect calculation (link scale for GLMs)
-        out$Effect <- out$Effect
+        # 
     } else {
         stop("Unrecognized value for 'type'")
     }
@@ -181,51 +182,51 @@ function(x,
 }
 
 margins.plm <- 
-function(x, newdata = NULL, factors = "continuous", ...) {
+function(x, 
+         newdata = NULL, 
+         at = NULL, 
+         atmeans = FALSE, 
+         factors = "continuous", ...) {
+    # calculate marginal effects
+    if(is.null(newdata)) {
+        newdata <- eval(x$call$data)
+        data_list <- at_builder(newdata, terms = terms(x$formula), at = at, atmeans = atmeans)
+    } else {
+        data_list <- at_builder(newdata, terms = terms(x$formula), at = at, atmeans = atmeans)
+    }
+    
     # FOR SOME REASON THIS ISN'T CAPTURING INTERACTION TERMS
     if(x$args$model != 'pooling') {
         warning("marginal effects not likely to be correct")
-        margins_calculator(x, factors = factors, ...)
+        out <- lapply(data_list, margins_calculator, x = x, factors = factors, ...)
+        class(out) <- "marginslist"
         #mm <- cbind(model.matrix(x), model.matrix(~0+attributes(x$model)$index[,1]))
     } else {
-        margins_calculator(x, factors = factors, ...)
+        out <- lapply(data_list, margins_calculator, x = x, factors = factors, ...)
+        class(out) <- "marginslist"
     }
 }
 
 margins.pglm <- 
 function(x, 
          newdata = NULL, 
+         at = NULL, 
+         atmeans = FALSE, 
          factors = "continuous", 
          type = "link", # "link" (linear/xb); "response" (probability scale)
          ...){
-    if(is.null(newdata))
-        newdata <- as.data.frame(model.matrix(x))
-    out <- margins_calculator(x, mm = newdata, factors = factors, ...)
     # configure link function
-    dfun <- switch(x$family$link, 
-                  probit = dnorm, 
-                  logit = dlogis,
-                  cauchit = dcauchy,
-                  log = exp,
-                  cloglog = function(z) 1 - exp(-exp(z)),
-                  inverse = function(z) 1/z,
-                  identity = function(z) 1,
-                  sqrt = function(z) z^2,
-                  "1/mu^2" = function(z) z^(-0.5),
-                  stop("Unrecognized link function")
-                  )
-    sfun <- switch(x$family$link, 
-                  probit = function(z) -z, 
-                  logit = function(z) 1 - 2 * plogis(z),
-                  cauchit = function(z) 1, # not setup
-                  log = function(z) 1, # not setup
-                  cloglog = function(z) 1, # not setup
-                  inverse = function(z) 1, # not setup
-                  identity = function(z) 1, # not setup
-                  sqrt = function(z) 1, # not setup
-                  "1/mu^2" = function(z) 1, # not setup
-                  stop("Unrecognized link function")
-                  )
+    g <- getlink(x$family$link)
+    dfun <- g$dfun
+    sfun <- g$sfun
+    
+    if(is.null(newdata)) {
+        newdata <- eval(x$call$data)
+        data_list <- at_builder(newdata, terms = terms(x$formula), at = at, atmeans = atmeans)
+    } else {
+        data_list <- at_builder(newdata, terms = terms(x$formula), at = at, atmeans = atmeans)
+    }
+    out <- margins_calculator(x, mm = newdata, factors = factors, ...)
 
     if(type == "response"){
         # Marginal Effect calculation (response scale for GLMs)

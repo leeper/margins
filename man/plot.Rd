@@ -34,7 +34,7 @@
 \examples{
 # plot average marginal effects
 x <- glm(am ~ cyl + hp + wt, data = mtcars, family=binomial)
-m <- margins(x)
+m <- margins(x)[[1]]
 
 # marginal effects plot
 plot(m, main = "Average Marginal Effects")

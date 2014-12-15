@@ -15,7 +15,7 @@ The **margins** package implements a `plot` method for objects of class `margins
 library("margins")
 x <- lm(mpg ~ cyl + hp * wt, data = mtcars)
 m <- margins(x)
-plot(m, level = c(0.67, 0.95, 0.99), horiz = TRUE, main = "Average Marginal Effects")
+plot(m[[1]], level = c(0.67, 0.95, 0.99), horiz = TRUE, main = "Average Marginal Effects")
 ```
 
 ## Plotting Marginal Effects ##

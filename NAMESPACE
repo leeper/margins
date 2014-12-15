@@ -2,7 +2,6 @@
 
 # export functions
 export(margins)
-export(margins_at)
 
 ## margins methods
 S3method(margins, lm)
