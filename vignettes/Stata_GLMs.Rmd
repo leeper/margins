@@ -350,7 +350,7 @@ margins(x, type = "link")
 # Probability
 margins(x, type = "response")
 # Probability with discrete change
-#margins(x, type = "response") # <- NEED AN OPTION TO CONTROL CONTINUOUS/DISCRETE CHANGE
+#margins(x, type = "response", factors = "discrete")
 ```
 
 
