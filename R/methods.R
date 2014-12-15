@@ -12,24 +12,23 @@ function(object, ...){
                       check.names = FALSE, stringsAsFactors = FALSE)
     tab[,"z value"] <- tab[,"dy/dx"]/tab[,"Std.Err."]
     tab[,"Pr(>|z|)"] <- 2 * pnorm(abs(tab[,"z value"]), lower.tail = FALSE)
-    tab
+    cbind(tab, confint(object))
 }
 
 confint.margins <- 
 function(object, parm, level = 0.95, ...) {
-    s <- summary(object)
-    pnames <- s$Factor
+    pnames <- colnames(object$Effect)
     if (missing(parm)) 
         parm <- pnames
     else if (is.numeric(parm)) 
         parm <- pnames[parm]
-    s <- s[parm,]
-    cf <- s[,"dy/dx"]
+    cf <- colMeans(object$Effect)[parm]
     a <- (1 - level)/2
     a <- c(a, 1 - a)
     fac <- qnorm(a)
     ci <- array(NA, dim = c(length(parm), 2L), dimnames = list(parm, a))
-    ses <- s[,"Std.Err."]
+    ses <- sqrt(object$Variance)
     ci[] <- cf + ses %o% fac
+    colnames(ci) <- sprintf("%0.2f%%", 100 * a)
     ci
 }
