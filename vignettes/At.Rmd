@@ -1,0 +1,88 @@
+<!--
+%\VignetteEngine{knitr}
+%\VignetteIndexEntry{Using Optional Arguments}
+-->
+
+# Using Optional Arguments in `margins` #
+
+**margins** is intended as a port of (some of) the features of Stata's `margins` command, which includes numerous options for calculating marginal effects at the mean values of a dataset (i.e., the marginal effects at the mean), an average of the marginal effects at each value of a dataset (i.e., the average marginal effect), marginal effects at representative values, and any of those operations on various subsets of a dataset. In particular, Stata provides the following options:
+
+ - `atmeans`: calculate marginal effects at the mean (MEMs) of a dataset rather than the default behavior of calculating average marginal effects (AMEs)
+ - `at`: calculate marginal effects at (potentially representative) specified values (i.e., replacing observed values with specified replacement values before calculating marginal effects)
+ - `over`: calculate marginal effects (including MEMs and/or AMEs at observed or specified values) on subsets of the original data (e.g., the marginal effect of a treatment separately for men and women)
+ 
+Stata's `atmeans` argument is translated into `margins` as a simple logical argument. The default (`atmeans = FALSE`) produces AMEs; `atmeans = TRUE` produces MEMs.
+
+The `at` argument has also been translated into `margins`. It can be used by specifying a list of variable names and specified values for those variables at which to calculate marginal effects. When using `at`, `margins` constructs modified datasets containing the specified values and calculates marginal effects on each modified dataset.
+
+At present, `margins` does not implement the `over` option. The reason for this is simple: R already makes data subsetting operations quite simple using simple `[` extraction. If, for example, one wanted to calculate marginal effects on subsets of a data.frame, those subsets can be passed directly to `margins` via the `newdata` argument (as in a call to `predict` from the **stats** package).
+
+The rest of this vignette shows how to use `at`, `atmeans`, and `newdata` to obtain various kinds of marginal effects.
+
+---
+
+## AMEs versus MEMs ##
+
+```{r, echo = FALSE, results = 'hide'}
+options(width = 100)
+```
+
+We can start by loading the **margins** package:
+
+```{r}
+library("margins")
+```
+
+We'll use a simple example regression model based on the `mtcars` dataset:
+
+```{r}
+x <- lm(mpg ~ cyl + hp * wt, data = mtcars)
+```
+
+To obtain average marginal effects (AMEs), we simply call `margins` on the model object created by `lm`:
+
+```{r}
+margins(x)
+```
+
+The result is a list containing a single object of class `"margins"`. `"margins"` objects are printed in a tidy summary format, by default, as you can see above. To instead obtain marginal effects at the means (MEMs), we simply add `atmeans = TRUE` to the function call:
+
+```{r}
+margins(x, atmeans = TRUE)
+```
+
+---
+
+## Using the `at` Argument ##
+
+The `at` argument allows you to calculate marginal effects at representative cases (sometimes "MERs"), which are marginal effects for particularly interesting (sets of) observations in a dataset. This differs from marginal effects on subsets of the original data (see the next section for a demonstration of that). This is helpful because it allows for calculation of marginal effects for counterfactual datasets.
+
+
+MORE SOON...
+
+
+
+---
+
+## Marginal Effects on Subsets ##
+
+As noted above, Stata includes an `over` option to allow calculation of marginal effects on subsets of a dataset. This is excluded from `margins` here because subsetting in R is easy and because the distinction between Stata's `at` and `over` options can be confusing. To obtain marginal effects for subsets, let's consider a regression model that includes an indicator (dummy) variable interaction. In this case, we use the `am` variable which specifies whether a car has an automatic (0) or manual (1) transmission:
+
+```{r}
+x <- lm(mpg ~ cyl + wt + hp * am, data = mtcars)
+summary(x)
+```
+
+To obtain the marginal effects of `hp` in this model separately for automatic and manual transmission cars, we simply need to subset the `mtcars` dataset and pass those subsets to the `newdata` option in `margins`:
+
+```{r}
+dat <- split(mtcars, mtcars$am)
+
+# automatic cars
+margins(x, newdata = dat[[1]])
+
+# manual cars
+margins(x, newdata = dat[[2]])
+```
+
+This separation makes the marginal effects of `hp` extremely clear. The coefficient `hp` in the model is *-0.008945*. The coefficient on the `hp:am` interaction is *-0.017446*. The `margins` results for automatic cars (the first result above) shows the marginal effect of `hp` to be *-0.008945198*, which matches the coefficient exactly. The results for manual cars (the second result above) shows the marginal effect of `hp` to be *-0.02639158*, which is exactly the sum of the coefficients for `hp` and `hp:am`. As such, `margins` on these subsets helps clarify the substantive results of the regression models.
