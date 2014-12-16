@@ -92,7 +92,7 @@ function(x, mm, factors = "continuous", ...){
     }), u)
     
     if(factors == "discrete"){
-        # calculate first-differences for factor variables    
+        # calculate first-differences for factor variables
     }
     
     # restore I() variable names (if they are represented in I() terms but not in their original forms)
@@ -126,11 +126,9 @@ function(x,
          atmeans = FALSE, 
          factors = "continuous", ...){
     if(is.null(newdata)) {
-        newdata <- eval(x$call$data)
-        data_list <- at_builder(newdata, terms = x$terms, at = at, atmeans = atmeans)
-    } else {
-        data_list <- at_builder(newdata, terms = x$terms, at = at, atmeans = atmeans)
+        newdata <- if(!is.null(x$call$data)) eval(x$call$data) else x$model
     }
+    data_list <- at_builder(newdata, terms = x$terms, at = at, atmeans = atmeans)
     out <- lapply(data_list, margins_calculator, x = x, factors = factors, ...)
     class(out) <- "marginslist"
     out
@@ -151,11 +149,9 @@ function(x,
     
     # calculate marginal effects
     if(is.null(newdata)) {
-        newdata <- eval(x$call$data)
-        data_list <- at_builder(newdata, terms = x$terms, at = at, atmeans = atmeans)
-    } else {
-        data_list <- at_builder(newdata, terms = x$terms, at = at, atmeans = atmeans)
+        newdata <- if(!is.null(x$call$data)) eval(x$call$data) else x$model
     }
+    data_list <- at_builder(newdata, terms = x$terms, at = at, atmeans = atmeans)
     out <- lapply(data_list, margins_calculator, x = x, factors = factors, ...)
     class(out) <- "marginslist"
     
@@ -189,11 +185,9 @@ function(x,
          factors = "continuous", ...) {
     # calculate marginal effects
     if(is.null(newdata)) {
-        newdata <- eval(x$call$data)
-        data_list <- at_builder(newdata, terms = terms(x$formula), at = at, atmeans = atmeans)
-    } else {
-        data_list <- at_builder(newdata, terms = terms(x$formula), at = at, atmeans = atmeans)
+        newdata <- if(!is.null(x$call$data)) eval(x$call$data) else x$model
     }
+    data_list <- at_builder(newdata, terms = terms(x$formula), at = at, atmeans = atmeans)
     
     # FOR SOME REASON THIS ISN'T CAPTURING INTERACTION TERMS
     if(x$args$model != 'pooling') {
@@ -221,11 +215,9 @@ function(x,
     sfun <- g$sfun
     
     if(is.null(newdata)) {
-        newdata <- eval(x$call$data)
-        data_list <- at_builder(newdata, terms = terms(x$formula), at = at, atmeans = atmeans)
-    } else {
-        data_list <- at_builder(newdata, terms = terms(x$formula), at = at, atmeans = atmeans)
+        newdata <- if(!is.null(x$call$data)) eval(x$call$data) else x$model
     }
+    data_list <- at_builder(newdata, terms = terms(x$formula), at = at, atmeans = atmeans)
     out <- margins_calculator(x, mm = newdata, factors = factors, ...)
 
     if(type == "response"){
