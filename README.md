@@ -55,15 +55,21 @@ install_github('leeper/margins')
 
 ## Simple code examples ##
 
-```{r, echo = FALSE}
-options(width = 100)
-```
+
 
 Replicating Stata's results is incredibly simple using just `margins` method to obtain average marginal effects:
 
-```{r}
+
+```r
 x <- lm(mpg ~ cyl * hp + wt, data = mtcars)
 (m <- margins(x)[[1]])
+```
+
+```
+##  Factor       dy/dx   Std.Err.     z value     Pr(>|z|)       2.50%      97.50%
+##     cyl  0.03813734 0.59988963  0.06357394 9.493095e-01 -1.13762472  1.21389941
+##      hp -0.04631867 0.01451598 -3.19087366 1.418433e-03 -0.07476948 -0.01786787
+##      wt -3.11981472 0.66132188 -4.71754349 2.387094e-06 -4.41598178 -1.82364766
 ```
 
 With the exception of differences in rounding, the above results match identically what Stata's `margins` command produces. Using the `plot.margins` method also yields an aesthetically similar result to Stata's `marginsplot`:
