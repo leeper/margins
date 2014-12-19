@@ -1,0 +1,63 @@
+\documentclass{article}
+
+\title{margins: Technical Details}
+\author{Thomas J. Leeper}
+
+\begin{document}
+
+\maketitle
+
+{\abstract This vignette walks through some of the technical details behind the \textbf{margins} package, namely the statistical foundations for the quantities of interest being reported, the reasons for being interested in those quantities, and the computational details for how those quantities and their variances are calculated.}
+
+The quantity of interest typically reported by statistical software estimation commands for regression models is the regression coefficient, standard errors thereof, and various goodness-of-fit and summary statistics. This default output makes sense for additive linear models (i.e., ordinary least squares [OLS] regression). When models contain other kinds of terms (e.g., multiple higher powers of a given variable, or interactions between variables), the coefficients on those variables do not and cannot clearly communicate the influence of a given righthand-side variable on the outcome because the influence of a given variable is captured by multiple estimated coefficients. Furthermore, when models are non-linear (e.g., generalized linear models; GLMs), the coefficients are typically not directly interpretable at all (even when no power terms, interactions, or other complex terms are included). This is because the coefficients only express the influence of each separate variable onto the latent, linear scale of the outcome. For example, in a logistic (logit) regression model, the coefficients express the marginal effect of each included variable in terms of the change in log-odds that the outcome equals 1 given a unit change in the independent variable. In order to express the more intuitive change in the predicted probability that the outcome equals 1 requires conditioning on all other included variables (i.e., selecting a set of values for all righthand-side variables) and running that set of values through the link function to convert log-odds to probabilities, thus making the marginal effect (in probability terms) of one variable a function of all other variables included in the model. As such, for both OLS and GLMs, the coefficients estimated for a regression model can often provide unintuitive insight into the statistical relationships between variables and, worse, can frequently fail to communicate those relationships at all (as in GLMs, where the size of coefficients can be completely uninformative about the size of the ``effect'' of a given righthand-side variable).
+
+For these reasons, and in the interest of making intuitive tabular and visual displays of regression results, there is a growing interest in the display of substantively meaningful quantities of interest that can be drawn from regression estimates. Among these, fitted (predicted) values communicate the shape and position of the fitted regression surface (or line in a simple bivariate regression) across the multidimensional covariate space. Relatedly, the slope of the regression surface at any given point is the \textit{marginal effect} of a given variable. In OLS, this is often simply the coefficient on that variable (except in the presence of interactions, power terms, or other complexities), while in GLMs this slope is only represented by the coefficient on a given variable on the latent scale (again only in simple, additive models) but is otherwise a derivative of the fitted value surface (e.g., predicted probability surface in logit/probit; predicted count surface in event count models; etc.). Calculating derivatives of complex surfaces is essentially impossible when any non-linear, non-additive elements are part of an estimated model. Thus while the marginal effect is a useful quantity for communicating the substantive influence of a righthand-side variable, it is difficult or at least unintuitive to formulate mentally and can, in fact, be computationally challenging.
+
+In response to these two factors --- (1) the disconnect between coefficients and substantive influence, and (2) the challenge of conceptualizing and calculating more meaningful quantities of interest --- the \textbf{margins} package attempts to dramatically simplify the conversion of regression results into substantively meaningful quantities of interest. The package takes its name and general approach from the \texttt{margins} module introduced in Stata 11 [CITATION], which is a closed-source tool for calculating such effects. The package is also inspired by Clarify (and the R implementation thereof as part of Zelig; [CITATIONS]), which has similar ambitions to convert regression results into meaningful quantities of interest but takes a simulation-based approach different from the one used in \textbf{margins}. Section \ref{sec:clarify} compares the two packages in greater detail.
+
+The outline of this vignette is as follows: section \ref{sec:stats} describes the statistical background of regression estimation and the distinctions between estimated coefficients and estimated marginal effects of righthand-side variables, Section \ref{sec:quantities} describes the various quantities of interest that might be useful for interpreting regression results, Section \ref{sec:details} describes the computational implementation of \textbf{margins} used to obtain those quantities of interest, and Section \ref{sec:clarify} compares the results of the package to those produced by Stata's \texttt{margins} command and Zelig/Clarify.
+
+\section{Statistical Background}\label{sec:stats}
+
+
+% 
+
+
+\section{Quantities of Interest}\label{sec:quantities}
+
+% Fitted values
+
+
+% use 3d plot in OLS to show relationship between fitted values and marginal effects w/ interaction
+
+% AMEs versus MEMs versus MERs
+
+
+\section{Computation Details}\label{sec:details}
+
+This section describes the basic computational features of \textbf{margins}. Specifically, it describes the procedures for calculating marginal effects from the information stored in a model object (e.g., an R object of class \texttt{"lm"}) and the procedures for estimating the variances of those marginal effects.
+
+% Symbolic derivatives of formulae
+
+The most important feature of the computational approach used by \textbf{margins} is its reliance on symbolic derivatives. As noted in Section \ref{sec:stats}, the estimated marginal effect of $x_1$ is simply the derivative of the estimated regression equation with respect to $\beta_1$. Stata's \texttt{margins} command achieves this through numeric derivatives (i.e., numeric approximations of this derivation). \textbf{margins}, by contrast, follows the approach of an introductory calculus course: in effect deriving a regression formula by hand (i.e., symbolically) using a set of predefined rules (built in to R's symbolic derivation table). This means that the computational work of calculating marginal effects, once a particular regression equation is in-hand, is actually quite minimal (that computation simply uses an existing R function to produce the appropriate derivations). Most of the work of \textbf{margins} is instead in the manipulation of the estimated regression formula in order to make it symbolically derivable.
+
+% Delta method variances
+
+As in Stata, the \textbf{margins} package approximates the variances of marginal effects using the delta method, which is a linear approximation of the derivative of a set of nested functions.
+
+% GLMs!?
+
+
+\section{Comparison with Stata \texttt{margins} and Zelig/Clarify}\label{sec:clarify}
+
+\subsection{Stata's \texttt{margins}}
+
+
+\subsection{Zelig/Clarify}
+
+
+\section{Conclusion}
+
+At present, \textbf{margins} estimates quantities of interest for a wide array of model formulae used in least squares regression, many common generalized linear models, and certain panel regression models. Stata's \texttt{margins} and Zelig/Clarify produce quantities of interest for a wide array of other model types. Extension of \textbf{margins} to other model types is planned for the future. The creation of the core \texttt{margins} function as an S3 generic means that the package is easily extensible to other model types (e.g., those introduced in other user-created packages). Development of \textbf{margins} is handled on GitHub, allowing for easy contribution of bug fixes, enhancements, and additional model-specific methods.
+
+\end{document}
