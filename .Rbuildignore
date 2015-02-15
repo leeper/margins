@@ -1,4 +1,5 @@
 .travis.yml
+appveyor.yml
 travis-tool.sh
 README.Rmd
 vignettes/mtcars.csv
