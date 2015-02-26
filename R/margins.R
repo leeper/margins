@@ -1,5 +1,5 @@
 margins_calculator <- 
-function(x, mm, factors = "continuous", ...){
+function(x, mm, factors = "continuous", fitted = NULL, ...){
     datmeans <- as.data.frame(t(colMeans(mm))) # data means
     tl <- names(mm)[names(mm) != "(Intercept)"] # terms
     est <- coef(x) # coefficients
@@ -73,6 +73,8 @@ function(x, mm, factors = "continuous", ...){
     # do the calculation using the symbolic derivative
     d <- with(mm, eval(deriv3(reformulate(f)[[2]], u)))
     MEs <- attributes(d)$gradient
+    if(!is.null(fitted))
+        MEs <- apply(MEs, 2, `*`, fitted)
     
     # Variance calculation using the delta method
     betas <- setNames(tl, paste0('beta', seq_along(tl)))
@@ -83,12 +85,16 @@ function(x, mm, factors = "continuous", ...){
         a <- all.vars(this_me)
         a <- a[grepl("beta",a)] # only the coefs included in ME
         gradmat <- do.call(cbind, lapply(a, function(b) {
-            #grad <- with(mm, eval(D(this_me, b))) # gradient evaluated at *data*
-            grad <- with(datmeans, eval(D(this_me, b))) # gradient evaluated at *means*
+            grad <- with(mm, eval(D(this_me, b))) # gradient evaluated at *data*
+            #grad <- with(datmeans, eval(D(this_me, b))) # gradient evaluated at *means*
         }))
         colnames(gradmat) <- betas[a]
         # estimate variance using delta method
-        gradmat %*% vc[colnames(gradmat), colnames(gradmat)] %*% t(gradmat)
+        if(!is.null(fitted)) {
+            gradmat %*% vc[colnames(gradmat), colnames(gradmat)] %*% t(gradmat)
+        } else {
+            gradmat %*% vc[colnames(gradmat), colnames(gradmat)] %*% t(gradmat)
+        }
     }), u)
     
     if(factors == "discrete"){
@@ -152,28 +158,15 @@ function(x,
         newdata <- if(!is.null(x$call$data)) eval(x$call$data) else x$model
     }
     data_list <- at_builder(newdata, terms = x$terms, at = at, atmeans = atmeans)
-    out <- lapply(data_list, margins_calculator, x = x, factors = factors, ...)
-    class(out) <- "marginslist"
-    
-    # handle margins types
-    if(type == "response"){
-        # Marginal Effect calculation (response scale for GLMs)
-        out <- lapply(out, function(z) {
-            z$Effect <- apply(z$Effect,2, `*`, dfun(predict(x, type = "link"))) # <- THIS RUNS PREDICTION ON ORIGINAL DATA
-            z
-        })
-        # atmeans=TRUE
-        #out$Effect <- out$Effect * as.numeric(dfun(colMeans(newdata) %*% coef(x)))
-        
-        # NEED TO MODIFY VARIANCES ???
+    if(type == "link") {
+        out <- lapply(data_list, margins_calculator, x = x, factors = factors, ...)
+    } else if (type == "response") {
+        out <- lapply(data_list, margins_calculator, x = x, factors = factors, fitted = dfun(predict(x, type = "link")), ...)
         warning("Variances for marginal effects on response scale are incorrect")
-        
-    } else if(type == "link"){
-        # Marginal Effect calculation (link scale for GLMs)
-        # 
     } else {
         stop("Unrecognized value for 'type'")
     }
+    class(out) <- "marginslist"
     out
 }
 
