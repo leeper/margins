@@ -1,3 +1,8 @@
+margins <- 
+function(x, newdata = NULL, ...) {
+    UseMethod("margins")
+}
+
 print.margins <- 
 function(x, digits = 4, row.names = FALSE, ...){
     print(summary(x, digits = digits), row.names = row.names, ...)

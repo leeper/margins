@@ -10,22 +10,29 @@ function(data,
         e <- expand.grid(at)
         e <- split(e, unique(e))
         data_out <- lapply(e, function(z) {
-            out <- as.data.frame(model.matrix(object = terms, data = data))
+            # build new data
+            dat <- data
+            dat <- `[<-`(dat, , names(z), value = z)
+            # build new model.matrix
+            out <- as.data.frame(model.matrix(object = terms, data = dat)) # this will fail with factors
             out <- `[<-`(out, , names(z), value = z)
             if(atmeans) {
                 for(i in names(out)[!names(out) %in% names(at)]){
                     out[,i] <- mean(out[,i])
+                    dat[,i] <- mean(dat[,i]) # haven't check this
                 }
             }
-            out
+            list(data = dat, mm = data_out)
         })
     } else {
-        data <- model.matrix(object = terms, data = data)
+        out <- model.matrix(object = terms, data = data)
         if(atmeans) {
-            data_out <- list(as.data.frame(t(colMeans(data))))
+            dat <- list(as.data.frame(t(colMeans(data))))
+            out <- list(as.data.frame(t(colMeans(out))))
         } else {
-            data_out <- list(as.data.frame(data))
+            dat <- data
+            out <- list(as.data.frame(out))
         }
+        return(list(data = dat, mm = out))
     }
-    data_out
 }
