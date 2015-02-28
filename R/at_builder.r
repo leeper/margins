@@ -22,17 +22,19 @@ function(data,
                     dat[,i] <- mean(dat[,i]) # haven't check this
                 }
             }
-            list(data = dat, mm = data_out)
+            list(data = dat, mm = out)
         })
+        return(setNames(data_out, seq_along(data_out)))
     } else {
         out <- model.matrix(object = terms, data = data)
         if(atmeans) {
-            dat <- list(as.data.frame(t(colMeans(data))))
-            out <- list(as.data.frame(t(colMeans(out))))
+            dat <- as.data.frame(t(colMeans(data)))
+            out <- as.data.frame(t(colMeans(out)))
         } else {
             dat <- data
-            out <- list(as.data.frame(out))
+            out <- as.data.frame(out)
         }
-        return(list(data = dat, mm = out))
+        data_out <- list(data = dat, mm = out)
+        return(list(`1` = data_out))
     }
 }

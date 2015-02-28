@@ -17,7 +17,7 @@ function(x,
     data_list <- at_builder(newdata, terms = x$terms, at = at, atmeans = atmeans)
     if(type == "link") {
         out <- lapply(data_list, function(z) {
-            .margins(x = x, mm = z$mm, factors = factors, atmeans = atmeans, dpred = rep(1, nrow(z)), ...)
+            .margins(x = x, mm = z$mm, factors = factors, atmeans = atmeans, dpred = rep(1, nrow(z$mm)), ...)
         })
     } else if (type == "response") {
         out <- lapply(data_list, function(z) {
