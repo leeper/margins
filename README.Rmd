@@ -63,6 +63,7 @@ options(width = 100)
 Replicating Stata's results is incredibly simple using just `margins` method to obtain average marginal effects:
 
 ```{r}
+library("margins")
 x <- lm(mpg ~ cyl * hp + wt, data = mtcars)
 (m <- margins(x)[[1]])
 ```
