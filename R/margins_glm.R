@@ -17,11 +17,18 @@ function(x,
     data_list <- at_builder(newdata, terms = x$terms, at = at, atmeans = atmeans)
     if(type == "link") {
         out <- lapply(data_list, function(z) {
-            .margins(x = x, mm = z$mm, factors = factors, atmeans = atmeans, dpred = rep(1, nrow(z$mm)), ...)
+            .margins(x = x, mm = z$mm, factors = factors, atmeans = atmeans, 
+                     predicted = rep(1, nrow(z$mm)), dpredicted = rep(1, nrow(z$mm)), ...)
         })
     } else if (type == "response") {
         out <- lapply(data_list, function(z) {
-            .margins(x = x, mm = z$mm, factors = factors, atmeans = atmeans, dpred = dfun(predict(x, newdata = z$data, type = "link")), ...)
+            # predicted values: ME = f'(g(x)) = f'(g(x)) * g'(x)
+            predicted <- dfun(predict(x, newdata = z$data, type = "link"))
+            # Var(ME) = (f'(g(x)))' %*% Var(\beta) %*% t((f'(g(x)))')
+            dpredicted <- numDeriv::grad(dfun, predict(x, newdata = z$data, type = "response"))
+            .margins(x = x, mm = z$mm, factors = factors, atmeans = atmeans, 
+                     predicted = predicted, 
+                     dpredicted = dpredicted, ...)
         })
         warning("Variances for marginal effects on response scale are incorrect")
     } else {

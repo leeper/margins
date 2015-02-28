@@ -1,13 +1,16 @@
 .margins <- 
-function(x, mm, factors = "continuous", atmeans = FALSE, dpred, ...){
+function(x, mm, factors = "continuous", atmeans = FALSE, 
+         predicted, dpredicted, ...){
     datmeans <- as.data.frame(t(colMeans(mm))) # data means
     tl <- names(mm)[names(mm) != "(Intercept)"] # terms
     est <- coef(x) # coefficients
     termorder <- attributes(terms(x))$order # term orders
     vc <- vcov(x) # var-cov matrix
     n <- nrow(mm)
-    if(missing(dpred))
-        dpred <- rep(1, n)
+    if(missing(predicted))
+        predicted <- rep(1, n)
+    if(missing(dpredicted))
+        predicted <- rep(1, n)
     
     # fix I() variable names if they ARE NOT represented in first-order forms
     Iterms <- grepl("I\\(", tl)
@@ -72,40 +75,45 @@ function(x, mm, factors = "continuous", atmeans = FALSE, dpred, ...){
     u <- unique(drop_operators(unique(tl[termorder == 1])), dropdigits = TRUE)
     
     # Marginal Effect calculation (linear models)
+    # ME = f'(g(x)), where g(x) is regression equation
     # partial derivative of regression equation with respect to each constituent variable
-    # using symbolic derivative
+    # using symbolic derivative via `deriv3`
     d <- with(mm, eval(deriv3(reformulate(f)[[2]], u)))
     fprime <- attributes(d)$gradient
-    # multiple by fitted values (in `lm`, or if `response = "link"`, `dpred` should be a vector of 1's)
-    MEs <- apply(fprime, 2, `*`, dpred)
+    # apply chain rule for glms: ME = f'(g(x)) = f'(g(x)) * g'(x)
+    # in `lm`, or if `response = "link"`, `predicted` should be a vector of 1's
+    MEs <- apply(fprime, 2, `*`, predicted)
     if(!is.matrix(MEs))
         MEs <- t(MEs)
     
     if(factors == "discrete"){
         # calculate first-differences for factor variables
+        warning("Argument 'factors' is currently ignored. Partial effects rather than first-differences reported.")
     }
-    
-    #fhat %*% diag(length(fhat)) + MEs
-    
     
     
     # Variance calculation using the delta method
+    # Var(ME) = (f'(g(x)))' %*% Var(\beta) %*% t((f'(g(x)))')
     betas <- setNames(tl, paste0('beta', seq_along(tl)))
     f2 <- reformulate(gsub(":", "*", paste(names(betas), 
                                gsub_bracket(tl, "factor"), sep="*", collapse=" + ")))[[2]]
-    
-    est2 <- setNames(est, c(names(est)[1], names(betas)))
+    est2 <- setNames(est, c(names(est)[1], names(betas))) # play with names of coefficient vector
+    # `grad` is matrix of partial derivatives of marginal effects
     grad <- t(sapply(u, function(this_var) {
+        # this ME
         this_me <- D(f2, this_var)
+        # take the partial derivatives of this marginal effect 
         #if(atmeans)
             with(datmeans, attributes(with(as.data.frame(t(est2)), eval(deriv(this_me, names(betas)))))$gradient)
         #else
         #    with(mm, attributes(with(as.data.frame(t(est2)), eval(deriv(this_me, names(betas)))))$gradient)
     }))
-    grad <- grad * mean(dpred)
+    # apply chain rule: (f(g(x)))' = f''(g(x)) * f'(g(x)) * g'(x)
+    grad <- grad * mean(predicted) * mean(dpredicted)
     colnames(grad) <- betas
     Variances <- diag(grad %*% vc[colnames(grad), colnames(grad)] %*% t(grad))
 
+    # CLEANUP FOR OUTPUT
     # restore I() variable names (if they are represented in I() terms but not in their original forms)
     if(length(Iw)){
         u[u %in% Iterms_post[Iw]] <- 
