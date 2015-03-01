@@ -100,7 +100,7 @@ function(x, mm, factors = "continuous", atmeans = FALSE,
     # Variance calculation
     # Var(ME) = E %*% Var(\beta) %*% t(E), where E = derivatives of MEs with respect to each coefficient
     # Var(ME) = (f'(g(x)) * g'(x))' %*% Var(\beta) %*% t((f'(g(x)))')
-    # where (f'(g(x)) * g'(x))' = f'(f'(g(x)) * g'(x)) * f'(g(x)) * g'(x)
+    # where e'(f(g(x))) = e'(f'(g(x)) * g'(x)) = e'(f(g(x))) * f'(g(x)) * g'(x)
     betas <- setNames(tl, paste0('beta', seq_along(tl)))
     f2 <- reformulate(gsub(":", "*", paste(names(betas), 
                                gsub_bracket(tl, "factor"), sep="*", collapse=" + ")))[[2]]
@@ -121,7 +121,6 @@ function(x, mm, factors = "continuous", atmeans = FALSE,
     chain <- grad * mean(predicted) # close
     #chain <- grad * mean(dpredicted)
     #chain <- apply(grad, 2, `*`, t(MEs))
-    #chain <- apply(grad, 2, `*`, t(MEs) * mean(dpredicted))
     colnames(chain) <- betas
     # Apply delta method
     Variances <- diag(chain %*% vc[colnames(chain), colnames(chain)] %*% t(chain))

@@ -5,6 +5,11 @@ function(x, newdata = NULL, ...) {
 
 print.margins <- 
 function(x, digits = 4, row.names = FALSE, ...){
+    cat("Marginal Effects\n")
+    v <- attributes(x)$Variables
+    if(!is.null(v)) {
+        cat(paste0("Variables set at: ", paste0(names(v), " = ", v, collapse = "; "), "\n\n"))
+    }
     print(summary(x, digits = digits), row.names = row.names, ...)
     cat("\n")
     invisible(x)
@@ -14,11 +19,6 @@ print.marginslist <- function(x, ...) { for(i in 1:length(x)) print(x[[i]], ...)
 
 summary.margins <- 
 function(object, digits = 4, ...){
-    cat("Marginal Effects\n")
-    v <- attributes(object)$Variables
-    if(!is.null(v)) {
-        cat(paste0("Variables set at: ", paste0(names(v), " = ", v, collapse = "; "), "\n\n"))
-    }
     fmt <- paste0("%0.", ifelse(digits > 7, 7, digits), "f")
     tab <- data.frame(Factor = colnames(object$Effect), 
                       "dy/dx" = colMeans(object$Effect),
