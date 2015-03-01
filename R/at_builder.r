@@ -24,9 +24,10 @@ function(data,
                     out[,i] <- mean(out[,i])
                 } # haven't check this
             }
-            list(data = dat, mm = out)
+            structure(list(data = dat, mm = out), Variables = unlist(z))
+            
         })
-        return(setNames(data_out, seq_along(data_out)))
+        return(setNames(data_out, names(e)))
     } else {
         out <- model.matrix(object = terms, data = data)
         if(atmeans) {
@@ -37,6 +38,6 @@ function(data,
             out <- as.data.frame(out)
         }
         data_out <- list(data = dat, mm = out)
-        return(list(`1` = data_out))
+        return(structure(list(`1` = data_out), Variables = NULL))
     }
 }

@@ -12,9 +12,6 @@ library("margins")
 options(width = 100)
 ```
 
----
-
-
 ## GLM (Logit) Effects on Probability Scale ##
 
 ### Stata ###
