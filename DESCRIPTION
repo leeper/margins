@@ -10,6 +10,6 @@ Authors@R: c(person("Thomas J.", "Leeper",
                     email = "thosjleeper@gmail.com"))
 Maintainer: Thomas J. Leeper <thosjleeper@gmail.com>
 Imports: numDeriv
-Suggests: knitr, ggplot2
+Suggests: knitr, ggplot2, MASS
 Enhances: stats, plm
 VignetteBuilder: knitr
