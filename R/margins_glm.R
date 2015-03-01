@@ -6,7 +6,7 @@ function(x,
          factors = "continuous",
          type = "link", # "link" (linear/xb); "response" (probability/etc. scale)
          ...){
-    # configure link function
+    # configure link derivative function
     g <- getlink(x$family$link)
     dfun <- g$dfun
     
@@ -27,6 +27,7 @@ function(x,
             # predicted values: ME = f'(g(x)) = f'(g(x)) * g'(x)
             predicted <- dfun(predict(x, newdata = z$data, type = "link"))
             # Var(ME) = (f'(g(x)))' %*% Var(\beta) %*% t((f'(g(x)))')
+            # use numeric derivatives
             dpredicted <- numDeriv::grad(dfun, predict(x, newdata = z$data, type = "response"))
             m <- .margins(x = x, mm = z$mm, factors = factors, atmeans = atmeans, 
                           predicted = predicted, 

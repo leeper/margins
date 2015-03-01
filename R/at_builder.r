@@ -10,19 +10,19 @@ function(data,
         e <- expand.grid(at)
         e <- split(e, unique(e))
         data_out <- lapply(e, function(z) {
-            # build new data
+            # build new data for predict
             dat <- data
             dat <- `[<-`(dat, , names(z), value = z)
             # build new model.matrix
             out <- as.data.frame(model.matrix(object = terms, data = dat)) # this will fail with factors
             out <- `[<-`(out, , names(z), value = z)
             if(atmeans) {
+                for(i in names(dat)[!names(dat) %in% names(at)]){
+                    out[,i] <- mean(out[,i])
+                } # haven't check this
                 for(i in names(out)[!names(out) %in% names(at)]){
                     dat[,i] <- mean(dat[,i])
                 }
-                for(i in names(dat)[!names(dat) %in% names(dat)]){
-                    out[,i] <- mean(out[,i])
-                } # haven't check this
             }
             structure(list(data = dat, mm = out), Variables = unlist(z))
             

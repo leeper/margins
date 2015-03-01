@@ -74,13 +74,18 @@ function(x, mm, factors = "continuous", atmeans = FALSE,
     # find unique, first-order terms
     u <- unique(drop_operators(unique(tl[termorder == 1])), dropdigits = TRUE)
     
+    
+    
     # Marginal Effect calculation (linear models)
-    # ME = f'(g(x)), where g(x) is regression equation
-    # partial derivative of regression equation with respect to each constituent variable
+    # g() = regression equation
+    # f() = inverse link function
+    # ME = (f(g(x)))' = f'(g(x)) * g'(x) # <- applying chain rule
+    
+    # Take partial derivative of regression equation with respect to each constituent variable
     # using symbolic derivative via `deriv3`
     d <- with(mm, eval(deriv3(reformulate(f)[[2]], u)))
     fprime <- attributes(d)$gradient
-    # apply chain rule for glms: ME = f'(g(x)) = f'(g(x)) * g'(x)
+    # apply chain rule for glms by multiplying f'(g(x)) by g'(x) (which is saved in `predicted`)
     # in `lm`, or if `response = "link"`, `predicted` should be a vector of 1's
     MEs <- apply(fprime, 2, `*`, predicted)
     if(!is.matrix(MEs))
@@ -92,8 +97,10 @@ function(x, mm, factors = "continuous", atmeans = FALSE,
     }
     
     
-    # Variance calculation using the delta method
-    # Var(ME) = (f'(g(x)))' %*% Var(\beta) %*% t((f'(g(x)))')
+    # Variance calculation
+    # Var(ME) = E %*% Var(\beta) %*% t(E), where E = derivatives of MEs with respect to each coefficient
+    # Var(ME) = (f'(g(x)) * g'(x))' %*% Var(\beta) %*% t((f'(g(x)))')
+    # where (f'(g(x)) * g'(x))' = f'(f'(g(x)) * g'(x)) * f'(g(x)) * g'(x)
     betas <- setNames(tl, paste0('beta', seq_along(tl)))
     f2 <- reformulate(gsub(":", "*", paste(names(betas), 
                                gsub_bracket(tl, "factor"), sep="*", collapse=" + ")))[[2]]
@@ -108,10 +115,16 @@ function(x, mm, factors = "continuous", atmeans = FALSE,
         #else
         #    with(mm, attributes(with(as.data.frame(t(est2)), eval(deriv(this_me, names(betas)))))$gradient)
     }))
-    # apply chain rule: (f(g(x)))' = f''(g(x)) * f'(g(x)) * g'(x)
-    grad <- grad * mean(predicted) * mean(dpredicted)
-    colnames(grad) <- betas
-    Variances <- diag(grad %*% vc[colnames(grad), colnames(grad)] %*% t(grad))
+    # Apply chain rule
+    #chain <- grad
+    #chain <- grad * mean(predicted) * mean(dpredicted)
+    chain <- grad * mean(predicted) # close
+    #chain <- grad * mean(dpredicted)
+    #chain <- apply(grad, 2, `*`, t(MEs))
+    #chain <- apply(grad, 2, `*`, t(MEs) * mean(dpredicted))
+    colnames(chain) <- betas
+    # Apply delta method
+    Variances <- diag(chain %*% vc[colnames(chain), colnames(chain)] %*% t(chain))
 
     # CLEANUP FOR OUTPUT
     # restore I() variable names (if they are represented in I() terms but not in their original forms)
