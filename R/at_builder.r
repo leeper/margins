@@ -18,9 +18,11 @@ function(data,
             out <- `[<-`(out, , names(z), value = z)
             if(atmeans) {
                 for(i in names(out)[!names(out) %in% names(at)]){
-                    out[,i] <- mean(out[,i])
-                    dat[,i] <- mean(dat[,i]) # haven't check this
+                    dat[,i] <- mean(dat[,i])
                 }
+                for(i in names(dat)[!names(dat) %in% names(dat)]){
+                    out[,i] <- mean(out[,i])
+                } # haven't check this
             }
             list(data = dat, mm = out)
         })
