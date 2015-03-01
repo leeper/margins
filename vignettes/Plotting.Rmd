@@ -5,7 +5,7 @@
 
 # Marginal Effects Plots #
 
-Using `margins` to calculate marginal effects enables several kinds of plotting. The built-in `plot` method for objects of class `margins` creates simple diagnostic plots for examining the output of `margins` in visual rather than tabular format. It is also possible to use the output of `margins` to produce more typical marginal effects plots that show the marginal effect of one variable across levels of another variable. This vignette walks through the `plot` method and then shows how to produce marginal effets plots using base graphics.
+Using `margins` to calculate marginal effects enables several kinds of plotting. The built-in `plot` method for objects of class `margins` creates simple diagnostic plots for examining the output of `margins` in visual rather than tabular format. It is also possible to use the output of `margins` to produce more typical marginal effects plots that show the marginal effect of one variable across levels of another variable. This vignette walks through the `plot` method and then shows how to produce marginal effects plots using base graphics.
 
 ## The `plot` Method ##
 
