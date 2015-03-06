@@ -13,7 +13,7 @@ getlink <- function(x) {
                   )
     sfun <- switch(x, 
                   probit = function(z) -z, 
-                  logit = function(z) 1 - 2 * plogis(z),
+                  logit = function(z) plogis(z),
                   cauchit = function(z) 1, # not setup
                   log = function(z) 1, # not setup
                   cloglog = function(z) 1, # not setup

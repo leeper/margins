@@ -8,7 +8,6 @@ function(x,
          ...){
     # configure link derivative function
     g <- getlink(x$family$link)
-    dfun <- g$dfun
     
     # calculate marginal effects
     if(is.null(newdata)) {
@@ -25,10 +24,10 @@ function(x,
     } else if (type == "response") {
         out <- lapply(data_list, function(z) {
             # predicted values: ME = f'(g(x)) = f'(g(x)) * g'(x)
-            predicted <- dfun(predict(x, newdata = z$data, type = "link"))
+            predicted <- g$dfun(predict(x, newdata = z$data, type = "link"))
             # Var(ME) = (f'(g(x)))' %*% Var(\beta) %*% t((f'(g(x)))')
             # use numeric derivatives
-            dpredicted <- numDeriv::grad(dfun, predict(x, newdata = z$data, type = "response"))
+            dpredicted <- numDeriv::grad(g$sfun, predict(x, newdata = z$data, type = "response"))
             m <- .margins(x = x, mm = z$mm, factors = factors, atmeans = atmeans, 
                           predicted = predicted, 
                           dpredicted = dpredicted, ...)
