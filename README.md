@@ -36,6 +36,7 @@ This package aims to correctly calculate marginal effects that include complex t
 ## Requirements and Installation ##
 
 [![Build Status](https://travis-ci.org/leeper/margins.png?branch=master)](https://travis-ci.org/leeper/margins)
+[![Build status](https://ci.appveyor.com/api/projects/status/t6nxndmvvcw3gw7f/branch/master?svg=true)](https://ci.appveyor.com/project/leeper/margins/branch/master)
 
 **margins** will eventually be available on [CRAN](http://cran.r-project.org/web/packages/margins/index.html), so that it can be installed using:
 
@@ -66,10 +67,11 @@ x <- lm(mpg ~ cyl * hp + wt, data = mtcars)
 ```
 
 ```
-##  Factor       dy/dx   Std.Err.     z value     Pr(>|z|)       2.50%      97.50%
-##     cyl  0.03813734 0.59988963  0.06357394 9.493095e-01 -1.13762472  1.21389941
-##      hp -0.04631867 0.01451598 -3.19087366 1.418433e-03 -0.07476948 -0.01786787
-##      wt -3.11981472 0.66132188 -4.71754349 2.387094e-06 -4.41598178 -1.82364766
+## Marginal Effects
+##  Factor   dy/dx Std.Err. z value Pr(>|z|)   2.50%  97.50%
+##     cyl  0.0381   0.5999  0.0636   0.9493 -1.1376  1.2139
+##      hp -0.0463   0.0145 -3.1909   0.0014 -0.0748 -0.0179
+##      wt -3.1198   0.6613 -4.7175   0.0000 -4.4160 -1.8236
 ```
 
 With the exception of differences in rounding, the above results match identically what Stata's `margins` command produces. Using the `plot.margins` method also yields an aesthetically similar result to Stata's `marginsplot`:
