@@ -9,6 +9,7 @@ Authors@R: c(person("Thomas J.", "Leeper",
                     role = c("aut", "cre"),
                     email = "thosjleeper@gmail.com"))
 Maintainer: Thomas J. Leeper <thosjleeper@gmail.com>
+Imports: numDeriv
 Suggests: knitr, ggplot2
 Enhances: stats, plm
 VignetteBuilder: knitr
