@@ -1,11 +1,16 @@
-margins_calculator <- 
-function(x, mm, factors = "continuous", atmeans = FALSE, dpred = NULL, ...){
+.margins <- 
+function(x, mm, factors = "continuous", atmeans = FALSE, 
+         predicted, dpredicted, ...){
     datmeans <- as.data.frame(t(colMeans(mm))) # data means
     tl <- names(mm)[names(mm) != "(Intercept)"] # terms
     est <- coef(x) # coefficients
     termorder <- attributes(terms(x))$order # term orders
     vc <- vcov(x) # var-cov matrix
     n <- nrow(mm)
+    if(missing(predicted))
+        predicted <- rep(1, n)
+    if(missing(dpredicted))
+        predicted <- rep(1, n)
     
     # fix I() variable names if they ARE NOT represented in first-order forms
     Iterms <- grepl("I\\(", tl)
@@ -55,7 +60,7 @@ function(x, mm, factors = "continuous", atmeans = FALSE, dpred = NULL, ...){
         Fterms_post <- paste0("FVAR.", drop_operators(gsub_bracket(Fterms_pre,"factor"), dropdigits = FALSE))
         if(length(Fw)){
             tl[tl %in% Fterms_pre[Fw]] <- 
-            names(datmeans)[names(datmeans) %in% Fterms_pre[Fw]] <- 
+            #names(datmeans)[names(datmeans) %in% Fterms_pre[Fw]] <- 
             names(est)[names(est) %in% Fterms_pre[Fw]] <- 
             colnames(mm)[colnames(mm) %in% Fterms_pre[Fw]] <- 
             colnames(vc)[colnames(vc) %in% Fterms_pre[Fw]] <- 
@@ -69,41 +74,58 @@ function(x, mm, factors = "continuous", atmeans = FALSE, dpred = NULL, ...){
     # find unique, first-order terms
     u <- unique(drop_operators(unique(tl[termorder == 1])), dropdigits = TRUE)
     
+    
+    
     # Marginal Effect calculation (linear models)
-    # do the calculation using the symbolic derivative
+    # g() = regression equation
+    # f() = inverse link function
+    # ME = (f(g(x)))' = f'(g(x)) * g'(x) # <- applying chain rule
+    
+    # Take partial derivative of regression equation with respect to each constituent variable
+    # using symbolic derivative via `deriv3`
     d <- with(mm, eval(deriv3(reformulate(f)[[2]], u)))
-    MEs <- attributes(d)$gradient
-    if(!is.null(dpred))
-        MEs <- apply(MEs, 2, `*`, dpred)
+    fprime <- attributes(d)$gradient
+    # apply chain rule for glms by multiplying f'(g(x)) by g'(x) (which is saved in `predicted`)
+    # in `lm`, or if `response = "link"`, `predicted` should be a vector of 1's
+    MEs <- apply(fprime, 2, `*`, predicted)
     if(!is.matrix(MEs))
         MEs <- t(MEs)
     
-    # Variance calculation using the delta method
+    if(factors == "discrete"){
+        # calculate first-differences for factor variables
+        warning("Argument 'factors' is currently ignored. Partial effects rather than first-differences reported.")
+    }
+    
+    
+    # Variance calculation
+    # Var(ME) = E %*% Var(\beta) %*% t(E), where E = derivatives of MEs with respect to each coefficient
+    # Var(ME) = (f'(g(x)) * g'(x))' %*% Var(\beta) %*% t((f'(g(x)))')
+    # where e'(f(g(x))) = e'(f'(g(x)) * g'(x)) = e'(f(g(x))) * f'(g(x)) * g'(x)
     betas <- setNames(tl, paste0('beta', seq_along(tl)))
     f2 <- reformulate(gsub(":", "*", paste(names(betas), 
                                gsub_bracket(tl, "factor"), sep="*", collapse=" + ")))[[2]]
-    Variances <- setNames(sapply(u, function(z) {
-        this_me <- D(f2, z) # ME
-        a <- all.vars(this_me)
-        a <- a[grepl("beta",a)] # only the coefs included in ME
-        gradmat <- do.call(cbind, lapply(a, function(b) {
-            #if(atmeans)
-                grad <- with(datmeans, eval(D(this_me, b))) # gradient evaluated at *means*
-            #else
-            #    grad <- with(mm, eval(D(this_me, b))) # gradient evaluated at *data*
-            if(!is.null(dpred))
-                grad <- grad * mean(dpred) # chain rule
-            grad
-        }))
-        colnames(gradmat) <- betas[a]
-        # estimate variance using delta method
-        gradmat %*% vc[colnames(gradmat), colnames(gradmat)] %*% t(gradmat)
-    }), u)
-    
-    if(factors == "discrete"){
-        # calculate first-differences for factor variables
-    }
-    
+    est2 <- setNames(est, c(names(est)[1], names(betas))) # play with names of coefficient vector
+    # `grad` is matrix of partial derivatives of marginal effects
+    grad <- t(sapply(u, function(this_var) {
+        # this ME
+        this_me <- D(f2, this_var)
+        # take the partial derivatives of this marginal effect 
+        #if(atmeans)
+            with(datmeans, attributes(with(as.data.frame(t(est2)), eval(deriv(this_me, names(betas)))))$gradient)
+        #else
+        #    with(mm, attributes(with(as.data.frame(t(est2)), eval(deriv(this_me, names(betas)))))$gradient)
+    }))
+    # Apply chain rule
+    #chain <- grad
+    #chain <- grad * mean(predicted) * mean(dpredicted)
+    chain <- grad * mean(predicted) # close
+    #chain <- grad * mean(dpredicted)
+    #chain <- apply(grad, 2, `*`, t(MEs))
+    colnames(chain) <- betas
+    # Apply delta method
+    Variances <- diag(chain %*% vc[colnames(chain), colnames(chain)] %*% t(chain))
+
+    # CLEANUP FOR OUTPUT
     # restore I() variable names (if they are represented in I() terms but not in their original forms)
     if(length(Iw)){
         u[u %in% Iterms_post[Iw]] <- 
@@ -121,111 +143,4 @@ function(x, mm, factors = "continuous", atmeans = FALSE, dpred = NULL, ...){
     structure(list(Effect = MEs,
                    Variance = Variances,
                    model = x), class = c("margins"))
-}
-
-margins <- 
-function(x, newdata = NULL, ...) {
-    UseMethod("margins")
-}
-
-margins.lm <- 
-function(x, 
-         newdata = NULL, 
-         at = NULL, 
-         atmeans = FALSE, 
-         factors = "continuous", ...){
-    if(is.null(newdata)) {
-        newdata <- if(!is.null(x$call$data)) eval(x$call$data) else x$model
-    }
-    data_list <- at_builder(newdata, terms = x$terms, at = at, atmeans = atmeans)
-    out <- lapply(data_list, margins_calculator, x = x, factors = factors, ...)
-    class(out) <- "marginslist"
-    out
-}
-
-margins.glm <- 
-function(x, 
-         newdata = NULL, 
-         at = NULL, 
-         atmeans = FALSE, 
-         factors = "continuous",
-         type = "link", # "link" (linear/xb); "response" (probability/etc. scale)
-         ...){
-    # configure link function
-    g <- getlink(x$family$link)
-    dfun <- g$dfun
-    
-    # calculate marginal effects
-    if(is.null(newdata)) {
-        newdata <- if(!is.null(x$call$data)) eval(x$call$data) else x$model
-    }
-    data_list <- at_builder(newdata, terms = x$terms, at = at, atmeans = atmeans)
-    if(type == "link") {
-        if(atmeans)
-            out <- lapply(data_list, margins_calculator, x = x, factors = factors, atmeans = TRUE, ...)
-        else
-            out <- lapply(data_list, margins_calculator, x = x, factors = factors, ...)
-    } else if (type == "response") {
-        if(atmeans)
-            out <- lapply(data_list, function(m) margins_calculator(x = x, mm = m, factors = factors, 
-                            dpred = dfun(predict(x, newdata = m, type = "link")), atmeans = TRUE, ...))
-        else
-            out <- lapply(data_list, margins_calculator, x = x, factors = factors, dpred = dfun(predict(x, type = "link")), ...)
-        warning("Variances for marginal effects on response scale are incorrect")
-    } else {
-        stop("Unrecognized value for 'type'")
-    }
-    class(out) <- "marginslist"
-    out
-}
-
-margins.plm <- 
-function(x, 
-         newdata = NULL, 
-         at = NULL, 
-         atmeans = FALSE, 
-         factors = "continuous", ...) {
-    # calculate marginal effects
-    if(is.null(newdata)) {
-        newdata <- if(!is.null(x$call$data)) eval(x$call$data) else x$model
-    }
-    data_list <- at_builder(newdata, terms = terms(x$formula), at = at, atmeans = atmeans)
-    
-    # FOR SOME REASON THIS ISN'T CAPTURING INTERACTION TERMS
-    if(x$args$model != 'pooling') {
-        warning("marginal effects not likely to be correct")
-        out <- lapply(data_list, margins_calculator, x = x, factors = factors, ...)
-        class(out) <- "marginslist"
-        #mm <- cbind(model.matrix(x), model.matrix(~0+attributes(x$model)$index[,1]))
-    } else {
-        out <- lapply(data_list, margins_calculator, x = x, factors = factors, ...)
-        class(out) <- "marginslist"
-    }
-}
-
-margins.pglm <- 
-function(x, 
-         newdata = NULL, 
-         at = NULL, 
-         atmeans = FALSE, 
-         factors = "continuous", 
-         type = "link", # "link" (linear/xb); "response" (probability scale)
-         ...){
-    # configure link function
-    g <- getlink(x$family$link)
-    dfun <- g$dfun
-    
-    if(is.null(newdata)) {
-        newdata <- if(!is.null(x$call$data)) eval(x$call$data) else x$model
-    }
-    data_list <- at_builder(newdata, terms = terms(x$formula), at = at, atmeans = atmeans)
-    out <- margins_calculator(x, mm = newdata, factors = factors, ...)
-
-    if(type == "response"){
-        # Marginal Effect calculation (response scale for GLMs)
-        out$Effect <- apply(out$Effect, 2, `*`, predict(x, newdata = newdata, type = "response"))
-    }
-    
-    
-    out
 }

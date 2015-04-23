@@ -107,6 +107,32 @@ lines(wt_tmp, w[,5], lty = 2)
 lines(wt_tmp, w[,6], lty = 2)
 ```
 
+
+A really nice feature of Stata's margins command is that it handles factor variables gracefully. This functionality is difficult to emulate in R, but the `margins` function does its best. Here we see the marginal effects of a simple regression that includes a factor variable:
+
+```{r}
+x <- lm(mpg ~ factor(cyl) + hp + wt, data = mtcars)
+margins(x)
+```
+
+`margins` recognizes the factor and displays the marginal effect for each level of the factor separately. This is currently a problem, though, if the factor variable is interacted with something else:
+
+```{r}
+#x <- lm(mpg ~ factor(cyl)*am, data = mtcars)
+#margins(x)
+```
+
+Support for this is planned in the near future.
+
+There is a similar problem with using the `at` argument with factor variables:
+
+```{r}
+#x <- lm(mpg ~ factor(cyl), data = mtcars)
+#margins(x, at = list(cyl = c(2,4,6)))
+```
+
+
+
 ---
 
 ## Marginal Effects on Subsets ##

@@ -62,6 +62,10 @@ Replicating Stata's results is incredibly simple using just `margins` method to 
 
 
 ```r
+library("margins")
+```
+
+```r
 x <- lm(mpg ~ cyl * hp + wt, data = mtcars)
 (m <- margins(x)[[1]])
 ```

@@ -2,5 +2,6 @@
 appveyor.yml
 travis-tool.sh
 README.Rmd
+README.html
 vignettes/mtcars.csv
 vignettes/Cigar.csv

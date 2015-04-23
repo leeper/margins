@@ -1,3 +1,5 @@
+%\VignetteEngine{knitr}
+%\VignetteIndexEntry{Technical Implementation Details}
 \documentclass{article}
 
 \title{margins: Technical Details}
