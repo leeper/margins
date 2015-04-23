@@ -1,3 +1,12 @@
+.margins2 <- function(x) {
+    myfun <- function(z) {
+        dat <- x$model
+        dat$cyl <- z
+        mean(predict(x, newdata = dat))
+    }
+    numDeriv::grad(myfun, 2)
+}
+
 .margins <- 
 function(x, mm, factors = "continuous", atmeans = FALSE, 
          predicted, dpredicted, ...){
