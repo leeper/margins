@@ -1,11 +1,27 @@
-.margins2 <- function(x) {
-    myfun <- function(z) {
-        dat <- x$model
-        dat$cyl <- z
-        mean(predict(x, newdata = dat))
-    }
-    numDeriv::grad(myfun, 2)
+.discretechange <- function(x, from, to, atmeans = FALSE) {
+    # get rid of `atmeans` argument and pass arguments to aggregate
+    dat1 <- .at_builder(x$model, at = from, atmeans = atmeans)
+    dat2 <- .at_builder(x$model, at = to, atmeans = atmeans)
+    change <- predict(x, newdata = dat2) - predict(x, newdata = dat2)
+    return(change)
 }
+
+.margins2 <- function(x, at, atmeans = FALSE) {
+    myfun <- function(z) {
+        if(missing(at))
+            dat <- .at_builder(x$model, atmeans = atmeans)
+        else
+            dat <- .at_builder(x$model, at = at, atmeans = atmeans)
+        predict(x, newdata = dat)
+    }
+    d <- numDeriv::grad(myfun, 2)
+    if(atmeans)
+        return(d)
+    else
+        return(mean(d))
+}
+
+
 
 .margins <- 
 function(x, mm, factors = "continuous", atmeans = FALSE, 

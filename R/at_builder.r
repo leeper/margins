@@ -2,7 +2,7 @@ at_builder <-
 function(data,
          terms,
          at = NULL, 
-         atmeans = FALSE, 
+         atmeans = FALSE, # get rid of `atmeans` argument and pass arguments to aggregate
          ...){
     if(!is.null(at) && length(at) > 0) {
         if(any(!names(at) %in% names(data)))
@@ -31,8 +31,8 @@ function(data,
     } else {
         out <- model.matrix(object = terms, data = data)
         if(atmeans) {
-            dat <- as.data.frame(t(colMeans(data)))
-            out <- as.data.frame(t(colMeans(out)))
+            dat <- aggregate(. ~ 1, data = data, FUN = mean) # can use different funcs and args here (`median`, `quantile`, etc.)
+            out <- aggregate(. ~ 1, data = out, FUN = mean)
         } else {
             dat <- data
             out <- as.data.frame(out)
