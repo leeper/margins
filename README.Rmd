@@ -37,6 +37,7 @@ This package aims to correctly calculate marginal effects that include complex t
 
 [![Build Status](https://travis-ci.org/leeper/margins.png?branch=master)](https://travis-ci.org/leeper/margins)
 [![Build status](https://ci.appveyor.com/api/projects/status/t6nxndmvvcw3gw7f/branch/master?svg=true)](https://ci.appveyor.com/project/leeper/margins/branch/master)
+[![Project Status: Wip - Initial development is in progress, but there has not yet been a stable, usable release suitable for the public.](http://www.repostatus.org/badges/0.1.0/wip.svg)](http://www.repostatus.org/#wip)
 
 **margins** will eventually be available on [CRAN](http://cran.r-project.org/web/packages/margins/index.html), so that it can be installed using:
 
