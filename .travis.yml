@@ -1,2 +1,7 @@
 language: r
 sudo: required
+r_packages:
+- knitr
+- covr
+after_success:
+- Rscript -e 'library("covr");codecov()'
