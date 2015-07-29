@@ -1,4 +1,5 @@
 # import functions
+importFrom(webuse, webuse)
 importFrom(numDeriv, grad)
 
 # export functions

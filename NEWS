@@ -1,3 +1,4 @@
 # CHANGES TO margins 0.1.0 #
 
+* Import the webuse package for easy use of Stata datasets for examples.
 * Initial package released.
