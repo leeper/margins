@@ -4,7 +4,7 @@
 
 Note: While `margins` also implements fitted values from model estimation results, that functionality is already well-implemented by R's `predict` function, so that wheel is not reinvented here.
 
-Bigger note: This is a work-in-progress. Trust nothing.
+**Bigger note: This is a work-in-progress. Trust nothing.**
 
 ## Motivation ##
 

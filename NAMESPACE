@@ -1,4 +1,5 @@
 # import functions
+import(webuse)
 
 # export functions
 export(margins)
