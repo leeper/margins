@@ -5,3 +5,4 @@ README.Rmd
 README.html
 vignettes/mtcars.csv
 vignettes/Cigar.csv
+inst/standarderrors.pdf
