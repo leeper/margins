@@ -1,24 +1,24 @@
 
 # factory function to return prediction across 
-.predict_factory <- function(varname, model, newdata) {
+.predict_factory <- function(varname, model, datarow, type) {
     # returns a one-argument function
     function(x) {
-        dat <- `[<-`(force(newdata), , force(varname), value = x)
-        unname(predict(force(model), newdata = dat))
+        dat <- `[<-`(datarow, , varname, value = x)
+        unname(predict(model, newdata = dat, type = type))
     }
 }
 
-.pred <- function(varname, value, model, data) {
+.pred <- function(varname, value, model, data, type) {
     # pass built data to predict_factory
-    FUN <- .predict_factory(varname, model, data)
+    FUN <- .predict_factory(varname, model, data, type = type)
     
     # extract predicted value at input value (value can only be 1 number)
     FUN(value)
 }
 
-.slope <- function(value, varname, model, data) {
+.slope <- function(value, varname, model, data, type) {
     # pass built data to predict_factory
-    FUN <- .predict_factory(varname, model, data)
+    FUN <- .predict_factory(varname, model, data, type = type)
     
     # extract gradient at input value (value can only be 1 number)
     numDeriv::grad(FUN, value)
@@ -26,22 +26,25 @@
 
 
 # data.frame builder, given specified `at` values
-.data <- function(data, at) {
-    if(any(!names(at) %in% names(data)))
-        stop("Unrecognized variable name in 'at'")
+.setdata <- function(data, at = NULL) {
+    if(is.null(at))
+        return(list(data))
+    #if(any(!names(at) %in% names(data)))
+    #    stop("Unrecognized variable name in 'at'")
     e <- expand.grid(at)
     e <- split(e, unique(e))
     data_out <- lapply(e, function(z) {
         dat <- data
         dat <- `[<-`(dat, , names(z), value = z)
         dat
-        
     })
     return(setNames(data_out, names(e)))
 }
 
 # atmeans function
 .atmeans <- function(data, vars, na.rm = TRUE) {
+    if(missing(vars))
+        vars <- names(data)
     for(i in seq_along(vars)) {
         data[,vars[i]] <- mean(data[,vars[i]], na.rm = TRUE)
     }
@@ -49,6 +52,8 @@
 }
 # atquantiles function
 .atquantile <- function(data, vars, probs, na.rm = TRUE) {
+    if(missing(vars))
+        vars <- names(data)
     for(i in seq_along(vars)) {
         data[,vars[i]] <- quantile(data[,vars[i]], probs, na.rm = TRUE)
     }
@@ -68,23 +73,27 @@
 }
 
 
-
-## THIS DOESN'T WORK::::
-.predicted <- function(x, data, ..., at = NULL, atmeans = FALSE) {
+.margins <- 
+function(x, 
+         data = eval(x$call$data, parent.frame()), 
+         ..., 
+         at = NULL, 
+         atmeans = FALSE, 
+         factors = c("discrete", "continuous"), # Not implemented (should be diff between two predictions)
+         type = c("response", "terms", "link")) {
+    
+    factors <- match.arg(factors)
+    type <- match.arg(type)
     
     # variables in the model
-    v <- attributes(terms(x))$term.labels[attributes(terms(x))$order == 1]
-    v <- .cleanterms(v)
+    allvars <- attributes(terms(x))$term.labels[attributes(terms(x))$order == 1]
+    allvars <- sort(.cleanterms(allvars))
     
-    # create a data.frame
-    dat <- data[, v]
+    # variance-covariance matrix
+    vc <- vcov(x)
     
-    # pass to .data
-    if(!is.null(at)) {
-        dat <- .data(dat, at = at)
-    } else {
-        dat <- list(dat)
-    }
+    # create a data.frame and pass to .data
+    dat <- .setdata(data[, allvars, drop = FALSE], at = at)
     
     # iterate over data.frames and pass each to .slope
     out <- lapply(dat, function(d) {
@@ -94,96 +103,22 @@
             d <- .atmeans(d, vars = names(d), na.rm = TRUE)
         }
         
-        # obtain gradient with respect to each variable in `v`
-        lapply(v, function(variable) {
-            # use sapply to predict at each value of variable `v`
-            predicted <- numeric(nrow(d))
-            for(i in seq_along(d[,variable])) {
-                predicted[i] <- .pred(value = d[i,variable], varname = variable, model = x, data = d[i,])
-            }
-            predicted
-        })
-        
-    })
-    structure(out)
-}
-
-
-
-.margins <- function(x, data, ..., at = NULL, atmeans = FALSE) {
-    
-    # variables in the model
-    v <- attributes(terms(x))$term.labels[attributes(terms(x))$order == 1]
-    v <- .cleanterms(v)
-    
-    # create a data.frame
-    dat <- data[, v]
-    
-    # pass to .data
-    if(!is.null(at)) {
-        dat <- .data(dat, at = at)
-    } else {
-        dat <- list(dat)
-    }
-    
-    # iterate over data.frames and pass each to .slope
-    out <- lapply(dat, function(d) {
-        # optionally pass to .atmeans
-        if(atmeans) {
-            # need to be able to tell .atmeans which vars to set to means
-            d <- .atmeans(d, vars = names(d), na.rm = TRUE)
-        }
-        
-        # obtain gradient with respect to each variable in `v`
-        lapply(v, function(variable) {
-            # use sapply to evaluate gradient at each value of variable `v`
+        # obtain gradient with respect to each variable in `allvars`
+        thisgrad <- lapply(allvars, function(variable) {
+            # use sapply to evaluate gradient at each value of variable from `allvars`
             slope <- numeric(nrow(d))
             for(i in seq_along(d[,variable])) {
-                slope[i] <- .slope(value = d[i,variable], varname = variable, model = x, data = d[i,])
+                slope[i] <- .slope(value = d[i,variable], varname = variable, model = x, data = d[i,,drop=FALSE], type = type)
+                #pred[i] <- .slope(value = d[i,variable], varname = variable, model = x, data = d[i,,drop=FALSE])
             }
             slope
         })
-        
+        setNames(thisgrad, allvars)
     })
-    structure(out)
-}
-
-
-.discretechange <- function(x, from, to, atmeans = FALSE) {
     
     
-    # variables in the model
-    v <- attributes(terms(x))$term.labels[attributes(terms(x))$order == 1]
-    v <- .cleanterms(v)
+    # AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAH!!!
     
-    # create a data.frame
-    dat <- data[, v]
-    
-    # pass to .data
-    if(!is.null(at)) {
-        dat <- .data(dat, at = at)
-    } else {
-        dat <- list(dat)
-    }
-    
-    # iterate over data.frames and pass each (twice) to .pred
-    lapply(dat, function(d) {
-        # optionally pass to .atmeans
-        if(atmeans) {
-            # need to be able to tell .atmeans which vars to set to means
-            d <- .atmeans(d, vars = names(d), na.rm = TRUE)
-        }
-        
-        
-        # something something something
-        # do the same thing as `.margins` but instead of .slope, do a diff between two .pred values
-        
-    })
-}
-
-
-
-# need a variance function here
     # Apply chain rule
     #chain <- grad
     #chain <- grad * mean(predicted) * mean(dpredicted)
@@ -191,5 +126,16 @@
     #chain <- grad * mean(dpredicted)
     #chain <- apply(grad, 2, `*`, t(MEs))
     #colnames(chain) <- betas
-    # Apply delta method
-    #Variances <- diag(chain %*% vc[colnames(chain), colnames(chain)] %*% t(chain))
+    grad <- setNames(out, names(dat))
+    
+    # calculate variances
+    for(i in seq_along(grad)) {
+        chain <- t(colMeans(do.call("cbind", grad[[i]])))
+        colnames(chain) <- allvars
+        Variances <- diag(chain %*% vc[allvars, allvars] %*% t(chain))
+        print(sqrt(Variances))
+    }
+    
+    structure(grad, class = "margins", atmeans = atmeans)
+}
+
