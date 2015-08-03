@@ -4,7 +4,7 @@
     # returns a one-argument function
     function(x) {
         dat <- `[<-`(force(newdata), , force(varname), value = x)
-        unname(predict(model, newdata = dat))
+        unname(predict(force(model), newdata = dat))
     }
 }
 
@@ -43,21 +43,41 @@
 # atmeans function
 .atmeans <- function(data, vars, na.rm = TRUE) {
     for(i in seq_along(vars)) {
-        data[,[i]] <- mean(data[,vars[i]], na.rm = TRUE)
+        data[,vars[i]] <- mean(data[,vars[i]], na.rm = TRUE)
     }
     data
 }
+# atquantiles function
+.atquantile <- function(data, vars, probs, na.rm = TRUE) {
+    for(i in seq_along(vars)) {
+        data[,vars[i]] <- quantile(data[,vars[i]], probs, na.rm = TRUE)
+    }
+    data
+}
+# atmedians function
+.atmedians <- function(data, vars, na.rm = TRUE) {
+    .atquantile(data, vars, probs = 0.5, na.rm = na.rm)
+}
+# atmins function
+.atmins <- function(data, vars, na.rm = TRUE) {
+    .atquantile(data, vars, probs = 0, na.rm = na.rm)
+}
+# atmaxs function
+.atmaxs <- function(data, vars, na.rm = TRUE) {
+    .atquantile(data, vars, probs = 1, na.rm = na.rm)
+}
+
 
 
 ## THIS DOESN'T WORK::::
-
-.margins <- function(x, data, ..., at = NULL, atmeans = FALSE) {
+.predicted <- function(x, data, ..., at = NULL, atmeans = FALSE) {
     
     # variables in the model
-    v <- attributes(terms(x))$term.labels
+    v <- attributes(terms(x))$term.labels[attributes(terms(x))$order == 1]
+    v <- .cleanterms(v)
     
     # create a data.frame
-    dat <- model.frame(x$terms, data = data, ...)
+    dat <- data[, v]
     
     # pass to .data
     if(!is.null(at)) {
@@ -67,7 +87,47 @@
     }
     
     # iterate over data.frames and pass each to .slope
-    lapply(dat, function(d) {
+    out <- lapply(dat, function(d) {
+        # optionally pass to .atmeans
+        if(atmeans) {
+            # need to be able to tell .atmeans which vars to set to means
+            d <- .atmeans(d, vars = names(d), na.rm = TRUE)
+        }
+        
+        # obtain gradient with respect to each variable in `v`
+        lapply(v, function(variable) {
+            # use sapply to predict at each value of variable `v`
+            predicted <- numeric(nrow(d))
+            for(i in seq_along(d[,variable])) {
+                predicted[i] <- .pred(value = d[i,variable], varname = variable, model = x, data = d[i,])
+            }
+            predicted
+        })
+        
+    })
+    structure(out)
+}
+
+
+
+.margins <- function(x, data, ..., at = NULL, atmeans = FALSE) {
+    
+    # variables in the model
+    v <- attributes(terms(x))$term.labels[attributes(terms(x))$order == 1]
+    v <- .cleanterms(v)
+    
+    # create a data.frame
+    dat <- data[, v]
+    
+    # pass to .data
+    if(!is.null(at)) {
+        dat <- .data(dat, at = at)
+    } else {
+        dat <- list(dat)
+    }
+    
+    # iterate over data.frames and pass each to .slope
+    out <- lapply(dat, function(d) {
         # optionally pass to .atmeans
         if(atmeans) {
             # need to be able to tell .atmeans which vars to set to means
@@ -77,12 +137,15 @@
         # obtain gradient with respect to each variable in `v`
         lapply(v, function(variable) {
             # use sapply to evaluate gradient at each value of variable `v`
-            sapply(d[,v], function(val) {
-                .slope(value = val, varname = variable, model = x, data = d)
-            })
+            slope <- numeric(nrow(d))
+            for(i in seq_along(d[,variable])) {
+                slope[i] <- .slope(value = d[i,variable], varname = variable, model = x, data = d[i,])
+            }
+            slope
         })
         
     })
+    structure(out)
 }
 
 
@@ -90,10 +153,11 @@
     
     
     # variables in the model
-    v <- attributes(terms(x))$term.labels
+    v <- attributes(terms(x))$term.labels[attributes(terms(x))$order == 1]
+    v <- .cleanterms(v)
     
     # create a data.frame
-    dat <- model.frame(x$terms, data = data, ...)
+    dat <- data[, v]
     
     # pass to .data
     if(!is.null(at)) {
