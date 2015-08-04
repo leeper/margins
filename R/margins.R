@@ -8,6 +8,14 @@
     }
 }
 
+.pfactory2 <- function(vars, model, data, type) {
+    # returns a multi-argument function
+    F <- function() {
+        dat <- `[<-`(data, , varname, value = x)
+        unname(predict(model, newdata = dat, type = type))
+    }
+}
+
 .pred <- function(varname, value, model, data, type) {
     # pass built data to predict_factory
     FUN <- .predict_factory(varname, model, data, type = type)
@@ -18,7 +26,8 @@
 
 .slope <- function(value, varname, model, data, type) {
     # pass built data to predict_factory
-    FUN <- .predict_factory(varname, model, data, type = type)
+    FUNLIST <- lapply(varname, .predict_factory, model = model, data = data, type = type)
+    sapply(FUNLIST, function(thisfun) (thisfun)(x = value))
     
     # extract gradient at input value (value can only be 1 number)
     numDeriv::grad(FUN, value)
@@ -119,7 +128,7 @@ function(x,
     
     # AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAH!!!
     
-    # Apply chain rule
+    # Apply chain rule: Jacobian %*% V(beta) %*% t(Jacobian)
     #chain <- grad
     #chain <- grad * mean(predicted) * mean(dpredicted)
     #chain <- grad * mean(predicted) # close
@@ -130,9 +139,9 @@ function(x,
     
     # calculate variances
     for(i in seq_along(grad)) {
-        chain <- t(colMeans(do.call("cbind", grad[[i]])))
-        colnames(chain) <- allvars
-        Variances <- diag(chain %*% vc[allvars, allvars] %*% t(chain))
+        jac <- t(colMeans(do.call("cbind", grad[[i]])))
+        colnames(jac) <- allvars
+        Variances <- diag(jac %*% vc[allvars, allvars] %*% t(jac))
         print(sqrt(Variances))
     }
     
