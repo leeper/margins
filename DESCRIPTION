@@ -1,15 +1,22 @@
 Package: margins
 Type: Package
 Title: Marginal Effects for Model Objects
-Description: An R port of Stata's margins command, which can be used to calculate marginal effects or partial effects from model objects.
+Description: An R port of Stata's margins command, which can be used to
+    calculate marginal effects or partial effects from model objects.
 License: MIT + file LICENSE
-Version: 0.1.16
-Date: 2015-08-03
+Version: 0.1.17
+Date: 2016-07-26
 Authors@R: c(person("Thomas J.", "Leeper",
                     role = c("aut", "cre"),
                     email = "thosjleeper@gmail.com"))
-Maintainer: Thomas J. Leeper <thosjleeper@gmail.com>
-Imports: numDeriv, webuse
-Suggests: knitr, ggplot2, MASS
+Imports:
+    numDeriv
+Suggests:
+    MASS,
+    webuse,
+    knitr,
+    ggplot2,
+    testthat
 Enhances: stats, plm
 VignetteBuilder: knitr
+RoxygenNote: 5.0.1

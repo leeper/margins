@@ -1,3 +1,4 @@
+#' @export
 plot.margins <- 
 function(x, 
          at = 1:ncol(x$Effect),

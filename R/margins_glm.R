@@ -1,3 +1,4 @@
+#' @export
 margins.glm <- 
 function(x, 
          newdata = NULL, 

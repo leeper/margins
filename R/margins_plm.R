@@ -1,3 +1,4 @@
+#' @export
 margins.plm <- 
 function(x, 
          newdata = NULL, 
@@ -22,6 +23,7 @@ function(x,
     }
 }
 
+#' @export
 margins.pglm <- 
 function(x, 
          newdata = NULL, 
