@@ -33,8 +33,9 @@ function(data,
 
 # data.frame builder, given specified `at` values
 .setdata <- function(data, at = NULL) {
-    if(is.null(at))
+    if (is.null(at)) {
         return(list(data))
+    }
     #if(any(!names(at) %in% names(data)))
     #    stop("Unrecognized variable name in 'at'")
     e <- expand.grid(at)
@@ -49,18 +50,20 @@ function(data,
 
 # atmeans function
 .atmeans <- function(data, vars, na.rm = TRUE) {
-    if(missing(vars))
+    if (missing(vars)) {
         vars <- names(data)
-    for(i in seq_along(vars)) {
+    }
+    for (i in seq_along(vars)) {
         data[,vars[i]] <- mean(data[,vars[i]], na.rm = TRUE)
     }
     data
 }
 # atquantiles function
 .atquantile <- function(data, vars, probs, na.rm = TRUE) {
-    if(missing(vars))
+    if (missing(vars)) {
         vars <- names(data)
-    for(i in seq_along(vars)) {
+    }
+    for (i in seq_along(vars)) {
         data[,vars[i]] <- quantile(data[,vars[i]], probs, na.rm = TRUE)
     }
     data

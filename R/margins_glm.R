@@ -4,7 +4,6 @@ function(x,
          newdata = NULL, 
          at = NULL, 
          atmeans = FALSE, 
-         factors = "continuous",
          type = "link", # "link" (linear/xb); "response" (probability/etc. scale)
          ...){
     # configure link derivative function
@@ -17,7 +16,7 @@ function(x,
     data_list <- at_builder(newdata, terms = x$terms, at = at, atmeans = atmeans)
     if(type == "link") {
         out <- lapply(data_list, function(z) {
-            m <- .margins(x = x, mm = z$mm, factors = factors, atmeans = atmeans, 
+            m <- .margins(x = x, mm = z$mm, atmeans = atmeans, 
                           predicted = rep(1, nrow(z$mm)), dpredicted = rep(1, nrow(z$mm)), ...)
             attr(m, "Variables") <- attributes(z)$Variables
             m
@@ -29,7 +28,7 @@ function(x,
             # Var(ME) = (f'(g(x)))' %*% Var(\beta) %*% t((f'(g(x)))')
             # use numeric derivatives
             dpredicted <- numDeriv::grad(g$sfun, predict(x, newdata = z$data, type = "response"))
-            m <- .margins(x = x, mm = z$mm, factors = factors, atmeans = atmeans, 
+            m <- .margins(x = x, mm = z$mm, atmeans = atmeans, 
                           predicted = predicted, 
                           dpredicted = dpredicted, ...)
             attr(m, "Variables") <- attributes(z)$Variables
