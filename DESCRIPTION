@@ -10,14 +10,15 @@ Authors@R: c(person("Thomas J.", "Leeper",
                     role = c("aut", "cre"),
                     email = "thosjleeper@gmail.com"))
 Imports:
+    stats,
+    graphics,
     numDeriv,
-    MASS,
-    stats
+    MASS
 Suggests:
     webuse,
     knitr,
     ggplot2,
     testthat
-Enhances: stats, plm
+Enhances: plm
 VignetteBuilder: knitr
 RoxygenNote: 5.0.1

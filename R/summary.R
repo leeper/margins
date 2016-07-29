@@ -2,9 +2,9 @@
 summary.margins <- 
 function(object, digits = 4, level = 0.95, ...) {
     fmt <- paste0("%0.", ifelse(digits > 7, 7, digits), "f")
-    tab <- data.frame(Factor = colnames(object$Effects), 
-                      "dy/dx" = colMeans(object$Effects),
-                      "Std.Err." = sqrt(object$Variances),
+    tab <- data.frame(Factor = colnames(object[["Effects"]]), 
+                      "dy/dx" = colMeans(object[["Effects"]]),
+                      "Std.Err." = sqrt(object[["Variances"]]),
                       check.names = FALSE, stringsAsFactors = FALSE)
     tab[,"z value"] <- tab[,"dy/dx"]/tab[,"Std.Err."]
     tab[,"Pr(>|z|)"] <- 2 * pnorm(abs(tab[,"z value"]), lower.tail = FALSE)

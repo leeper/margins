@@ -64,7 +64,7 @@ function(data,
         vars <- names(data)
     }
     for (i in seq_along(vars)) {
-        data[,vars[i]] <- quantile(data[,vars[i]], probs, na.rm = TRUE)
+        data[,vars[i]] <- stats::quantile(data[,vars[i]], probs, na.rm = TRUE)
     }
     data
 }

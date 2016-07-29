@@ -118,7 +118,7 @@ In essence, the resulting `m2` marginslist contains the marginal effect of both 
 m2[[1]]
 ```
 
-Both are negative. But, to really understand what is going on, we probably need to plot the marginal effects. How best to do this is debatable, but arguably a three-dimensional plot of the "marginal effect surface" is the most informative. Let's start by looking at the marginal effects of `wt` across levels of weight and horsepower:
+Both are negative. But, to really understand what is going on, we probably need to plot the marginal effects. How best to do this is debatable, but arguably a three-dimensional plot of the response surface is the most informative. Let's start by looking at the marginal effects of `wt` across levels of weight and horsepower:
 
 ```{r}
 me_wt <- sapply(m2, function(x) {as.numeric(c(summary(x)["wt","dy/dx"]))})
@@ -271,7 +271,6 @@ Norton, Edward C., Hua Wang, and Chunrong Ai. 2004. "Computing interaction effec
 
 Stata Corporation. "margins". Software Documentation. Available from: http://www.stata.com/manuals13/rmargins.pdf.
 
-Williams, Richard. 2012. Using the margins command to estimate and interpret adjusted predictions and marginal effects.
-Stata Journal 12: 308–331.
+Williams, Richard. 2012. Using the margins command to estimate and interpret adjusted predictions and marginal effects. *Stata Journal* 12: 308–331.
 
 

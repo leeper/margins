@@ -16,10 +16,10 @@
 }
 
 .pred <- function(data, model, type = "response") {
-    #' @title Predicted value at values of independent variables
-    #' @param data The dataset on which to to calculate `predict(model)`
-    #' @param model The model object to pass to `predict()`
-    #' @param type The type of prediction. Default is \dQuote{response}.
+    # @title Predicted value at values of independent variables
+    # @param data The dataset on which to to calculate `predict(model)`
+    # @param model The model object to pass to `predict()`
+    # @param type The type of prediction. Default is \dQuote{response}.
     
     # extract predicted value at input value (value can only be 1 number)
     if (nrow(data) == 1) {
@@ -40,11 +40,11 @@
 }
 
 .slope <- function(data, model, type = c("response", "link"), method = c("Richardson", "simple", "complex")) {
-    #' @title Calculate slope at specified values of independent variables
-    #' @param data The dataset on which to to calculate `predict(model)` (and the slope thereof)
-    #' @param model The model object to pass to `predict()`
-    #' @param type The type of prediction. Default is \dQuote{response}.
-    #' @param method The differentiation method to use. Passed to `numDeriv::grad()`. One of \dQuote{Richardson}, \dQuote{simple}, \dQuote{complex}.
+    # @title Calculate slope at specified values of independent variables
+    # @param data The dataset on which to to calculate `predict(model)` (and the slope thereof)
+    # @param model The model object to pass to `predict()`
+    # @param type The type of prediction. Default is \dQuote{response}.
+    # @param method The differentiation method to use. Passed to `numDeriv::grad()`. One of \dQuote{Richardson}, \dQuote{simple}, \dQuote{complex}.
     
     type <- match.arg(type)
     method <- match.arg(method)
@@ -90,11 +90,11 @@
     
     ## THIS DOESN'T WORK...IT IS WHAT WE CAN USE FOR FACTORS
     
-    #' @title Calculate discrete change in y at specified values of discrete independent variables
-    #' @param data The dataset on which to to calculate `predict(model)` (and the slope thereof)
-    #' @param model The model object to pass to `predict()`
-    #' @param type The type of prediction. Default is \dQuote{response}.
-    #' @param method The differentiation method to use. Passed to `numDeriv::grad()`. One of \dQuote{Richardson}, \dQuote{simple}, \dQuote{complex}.
+    # @title Calculate discrete change in y at specified values of discrete independent variables
+    # @param data The dataset on which to to calculate `predict(model)` (and the slope thereof)
+    # @param model The model object to pass to `predict()`
+    # @param type The type of prediction. Default is \dQuote{response}.
+    # @param method The differentiation method to use. Passed to `numDeriv::grad()`. One of \dQuote{Richardson}, \dQuote{simple}, \dQuote{complex}.
     
     type <- match.arg(type)
     method <- match.arg(method)
@@ -104,9 +104,9 @@
         FUN0 <- .predict_factory(data, model, type = type)
         FUN1 <- .predict_factory(data, model, type = type)
         # evaluate FUN0()
-        out1 <- as.matrix(stats::setNames(FUN(unlist(data[1,])), rownames(data[1,])))
+        out1 <- as.matrix(stats::setNames(FUN0(unlist(data[1,])), rownames(data[1,])))
         # evaluate FUN1()
-        out2 <- as.matrix(stats::setNames(FUN(unlist(data[1,])), rownames(data[1,])))
+        out2 <- as.matrix(stats::setNames(FUN1(unlist(data[1,])), rownames(data[1,])))
         out <- (out2 - out1)
         rownames(out) <- rownames(data[1,])
     } else {
@@ -115,9 +115,9 @@
             FUN0 <- .predict_factory(data, model, type = type)
             FUN1 <- .predict_factory(data, model, type = type)
             # evaluate FUN0()
-            out1 <- as.matrix(stats::setNames(FUN(unlist(data[datarow,])), rownames(data[datarow,])))
+            out1 <- as.matrix(stats::setNames(FUN0(unlist(data[datarow,])), rownames(data[datarow,])))
             # evaluate FUN1()
-            out2 <- as.matrix(stats::setNames(FUN(unlist(data[datarow,])), rownames(data[datarow,])))
+            out2 <- as.matrix(stats::setNames(FUN1(unlist(data[datarow,])), rownames(data[datarow,])))
             (out2 - out1)
         })
         out <- as.matrix(stats::setNames(out, rownames(data)))

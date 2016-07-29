@@ -36,4 +36,3 @@ drop_operators <- function(a, dropdigits = TRUE) {
     v <- unique(v)
     v
 }
-
