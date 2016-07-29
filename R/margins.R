@@ -72,7 +72,7 @@ function(x,
         
         gradmat <- do.call("rbind", lapply(allvars, function(thisme) {
             FUN <- .grad_factory(data = dat, model = x, which_me = thisme, atmeans = TRUE, type = type, method = method)
-            numDeriv::grad(FUN, m$coef)
+            numDeriv::grad(FUN, x$coef)
         }))
         variances <- diag(gradmat %*% vc %*% t(gradmat))
     } else if (vce == "simulation") {

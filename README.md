@@ -4,7 +4,7 @@
 
 Note: While `margins` also implements fitted values from model estimation results, that functionality is already well-implemented by R's `predict` function, so that wheel is not reinvented here.
 
-Bigger note: This is a work-in-progress. Trust nothing.
+**Bigger note: This is a work-in-progress. Trust nothing.**
 
 ## Motivation ##
 
@@ -27,7 +27,7 @@ With the introduction of Stata's `margins` command, it has become incredibly sim
 
 ![marginsplot](http://i.imgur.com/VhoaFGp.png)
 
-R has no comparable functionality in the base tools (though `predict` implements some of the functionality for computing predicted values). Nor do any add-on packages implement appropriate marginal effect estimates. Notably, several packages provide estimates of marginal effects for different types of models. Among these are [car](http://cran.r-project.org/web/packages/car/index.html), [alr3](http://cran.r-project.org/web/packages/alr3/index.html), [mfx](http://cran.r-project.org/web/packages/mfx/index.html), [erer](http://cran.r-project.org/web/packages/erer/index.html), among others. Unfortunately, none of these packages implement marginal effects correctly (i.e., correctly account for interrelated variables such as interaction terms (e.g., `a:b`) or power terms (e.g., `I(a^2)`) and the packages all implement quite different interfaces for different types of models.
+R has no comparable functionality in the base tools (though `predict` implements some of the functionality for computing predicted values). Nor do any add-on packages implement appropriate marginal effect estimates. Notably, several packages provide estimates of marginal effects for different types of models. Among these are [car](http://cran.r-project.org/web/packages/car/index.html), [alr3](http://cran.r-project.org/web/packages/alr3/index.html), [mfx](http://cran.r-project.org/web/packages/mfx/index.html), [erer](http://cran.r-project.org/web/packages/erer/index.html), among others. Unfortunately, none of these packages implement marginal effects correctly (i.e., correctly account for interrelated variables such as interaction terms (e.g., `a:b`) or power terms (e.g., `I(a^2)`) and the packages all implement quite different interfaces for different types of models. [interplot](https://cran.r-project.org/web/packages/interplot/) provides functionality simply for plotting interaction effects but does not appear to support general marginal effects displays (in either tabular or graphical form), while [visreg](https://cran.r-project.org/web/packages/visreg/index.html) provides a more general plotting function but no tabular output.
 
 Given the importance of models that are non-linear in all statistical analyses and the difficulty of interpreting those models, there is a clear need for a simple, consistent way to estimate marginal effects for popular statistical models.
 
@@ -35,16 +35,13 @@ This package aims to correctly calculate marginal effects that include complex t
 
 ## Requirements and Installation ##
 
-[![Build Status](https://travis-ci.org/leeper/margins.png?branch=master)](https://travis-ci.org/leeper/margins)
+[![CRAN](http://www.r-pkg.org/badges/version/slopegraph)](http://cran.r-project.org/web/packages/margins/index.html)
+[![Build Status](https://travis-ci.org/leeper/margins.svg?branch=master)](https://travis-ci.org/leeper/margins)
 [![Build status](https://ci.appveyor.com/api/projects/status/t6nxndmvvcw3gw7f/branch/master?svg=true)](https://ci.appveyor.com/project/leeper/margins/branch/master)
+[![codecov.io](http://codecov.io/github/leeper/margins/coverage.svg?branch=master)](http://codecov.io/github/leeper/margins?branch=master)
+[![Project Status: Wip - Initial development is in progress, but there has not yet been a stable, usable release suitable for the public.](http://www.repostatus.org/badges/0.1.0/wip.svg)](http://www.repostatus.org/#wip)
 
-**margins** will eventually be available on [CRAN](http://cran.r-project.org/web/packages/margins/index.html), so that it can be installed using:
-
-```
-install.packages('margins')
-```
-
-The development version can be installed directly from GitHub using `devtools`:
+The development version of this package can be installed directly from GitHub using `devtools`:
 
 ```R
 if(!require('devtools')) {
@@ -63,19 +60,28 @@ Replicating Stata's results is incredibly simple using just `margins` method to 
 
 ```r
 library("margins")
-```
-
-```r
 x <- lm(mpg ~ cyl * hp + wt, data = mtcars)
 (m <- margins(x)[[1]])
 ```
 
 ```
-## Marginal Effects
-##  Factor   dy/dx Std.Err. z value Pr(>|z|)   2.50%  97.50%
-##     cyl  0.0381   0.5999  0.0636   0.9493 -1.1376  1.2139
-##      hp -0.0463   0.0145 -3.1909   0.0014 -0.0748 -0.0179
-##      wt -3.1198   0.6613 -4.7175   0.0000 -4.4160 -1.8236
+## Average Marginal Effects
+##         cyl          hp          wt 
+##  0.03813734 -0.04631867 -3.11981472
+```
+
+The default print method is just the average marginal effects. To see more details, use `summary()`:
+
+
+```r
+summary(m)
+```
+
+```
+##     Factor   dy/dx Std.Err. z value Pr(>|z|)   2.50%  97.50%
+## cyl    cyl  0.0381   0.5999  0.0636   0.9493 -1.1376  1.2139
+## hp      hp -0.0463   0.0145 -3.1909   0.0014 -0.0748 -0.0179
+## wt      wt -3.1198   0.6613 -4.7175   0.0000 -4.4160 -1.8236
 ```
 
 With the exception of differences in rounding, the above results match identically what Stata's `margins` command produces. Using the `plot.margins` method also yields an aesthetically similar result to Stata's `marginsplot`:
