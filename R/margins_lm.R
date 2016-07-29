@@ -21,16 +21,20 @@
 #' @export
 margins.lm <- 
 function(x, 
-         newdata = NULL, 
+         newdata, 
          at = NULL, 
          atmeans = FALSE, 
          ...){
-    if (is.null(newdata)) {
+    
+    # setup data
+    if (missing(newdata)) {
         newdata <- if (!is.null(x$call$data)) eval(x$call$data) else x$model
     }
     data_list <- at_builder(newdata, terms = x$terms, at = at, atmeans = atmeans)
+    
+    # calculate marginal effects
     out <- lapply(data_list, function(thisdata) {
-               m <- .margins(x = x, data = thisdata, atmeans = atmeans, type = "response", ...)
+               m <- .margins(x = x, data = thisdata, atmeans = atmeans, ...)
                attr(m, "Variables") <- attributes(thisdata)$Variables
                m
            })

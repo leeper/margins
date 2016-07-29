@@ -1,43 +1,29 @@
 #' @export
 margins.glm <- 
 function(x, 
-         newdata = NULL, 
+         newdata, 
          at = NULL, 
          atmeans = FALSE, 
-         type = "link", # "link" (linear/xb); "response" (probability/etc. scale)
          ...){
     # configure link derivative function
     g <- getlink(x$family$link)
     
-    # calculate marginal effects
-    if(is.null(newdata)) {
+    # setup data
+    if (missing(newdata)) {
         newdata <- if(!is.null(x$call$data)) eval(x$call$data) else x$model
     }
     data_list <- at_builder(newdata, terms = x$terms, at = at, atmeans = atmeans)
-    if(type == "link") {
-        out <- lapply(data_list, function(z) {
-            m <- .margins(x = x, mm = z$mm, atmeans = atmeans, 
-                          predicted = rep(1, nrow(z$mm)), dpredicted = rep(1, nrow(z$mm)), ...)
-            attr(m, "Variables") <- attributes(z)$Variables
-            m
-        })
-    } else if (type == "response") {
-        out <- lapply(data_list, function(z) {
-            # predicted values: ME = f'(g(x)) = f'(g(x)) * g'(x)
-            predicted <- g$dfun(predict(x, newdata = z$data, type = "link"))
-            # Var(ME) = (f'(g(x)))' %*% Var(\beta) %*% t((f'(g(x)))')
-            # use numeric derivatives
-            dpredicted <- numDeriv::grad(g$sfun, predict(x, newdata = z$data, type = "response"))
-            m <- .margins(x = x, mm = z$mm, atmeans = atmeans, 
-                          predicted = predicted, 
-                          dpredicted = dpredicted, ...)
-            attr(m, "Variables") <- attributes(z)$Variables
-            m
-        })
+    
+    # calculate marginal effects
+    out <- lapply(data_list, function(thisdata) {
+        m <- .margins(x = x, data = thisdata, atmeans = atmeans, ...)
+        attr(m, "Variables") <- attributes(z)$Variables
+        m
+    })
+    
+    if (type == "response") {
         warning("Variances for marginal effects on response scale are incorrect")
-    } else {
-        stop("Unrecognized value for 'type'")
     }
-    class(out) <- "marginslist"
-    out
+    
+    structure(out, class = "marginslist")
 }

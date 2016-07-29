@@ -1,6 +1,6 @@
 #' @export
 print.margins <- 
-function(x, digits = 4, row.names = FALSE, ...){
+function(x, digits = 4, row.names = FALSE, ...) {
     if (attributes(x)$atmeans) {
         cat("Marginal Effects at Means\n")
     } else {

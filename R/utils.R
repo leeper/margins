@@ -1,19 +1,3 @@
-.grad_factory <- function(data, model, atmeans = TRUE, type = "response") {
-    # factory function to return prediction holding data constant but varying coefficients
-    function(x) {
-        for (i in seq_along(x)) {
-            model[["coefficients"]][names(x)[i]] <- x[i]
-        }
-        if (isTRUE(atmeans)) {
-            data <- as.data.frame(t(colMeans(data)))
-            predict(model, newdata = data, type = type)
-        } else {
-            mean(predict(model, newdata = data, type = type), na.rm = TRUE)
-        }
-    }
-}
-
-
 .predict_factory <- function(data, model, type = "response") {
     # factory function to return prediction as a function of a named variable `x`
     #
@@ -55,13 +39,14 @@
     return(out) # obs-x-term matrix of predictions (always one column)
 }
 
-.slope <- function(data, model, type = "response", method = c("Richardson", "simple", "complex")) {
+.slope <- function(data, model, type = c("response", "link"), method = c("Richardson", "simple", "complex")) {
     #' @title Calculate slope at specified values of independent variables
     #' @param data The dataset on which to to calculate `predict(model)` (and the slope thereof)
     #' @param model The model object to pass to `predict()`
     #' @param type The type of prediction. Default is \dQuote{response}.
     #' @param method The differentiation method to use. Passed to `numDeriv::grad()`. One of \dQuote{Richardson}, \dQuote{simple}, \dQuote{complex}.
     
+    type <- match.arg(type)
     method <- match.arg(method)
     
     if (nrow(data) == 1) {
@@ -85,7 +70,23 @@
     return(out) # obs-x-term matrix of obs-specific marginal effects
 }
 
-.diff <- function(data, model, type = "response", method = c("Richardson", "simple", "complex")) {
+.grad_factory <- function(data, model, which_me, atmeans = TRUE, type = "response", method = c("Richardson", "simple", "complex")) {
+    # factory function to return prediction holding data constant but varying coefficients
+    function(x) {
+        for (i in seq_along(x)) {
+            model[["coefficients"]][names(x)[i]] <- x[i]
+        }
+        if (isTRUE(atmeans)) {
+            .slope(data = as.data.frame(t(colMeans(data))), model = model, type = type, method = method)[,which_me]
+        } else {
+            colMeans(.slope(data = data, model = model, type = type, method = method), na.rm = TRUE)[,which_me]
+        }
+    }
+}
+
+
+
+.diff <- function(data, model, type = c("response", "link"), method = c("Richardson", "simple", "complex")) {
     
     ## THIS DOESN'T WORK...IT IS WHAT WE CAN USE FOR FACTORS
     
@@ -95,6 +96,7 @@
     #' @param type The type of prediction. Default is \dQuote{response}.
     #' @param method The differentiation method to use. Passed to `numDeriv::grad()`. One of \dQuote{Richardson}, \dQuote{simple}, \dQuote{complex}.
     
+    type <- match.arg(type)
     method <- match.arg(method)
     
     if (nrow(data) == 1) {

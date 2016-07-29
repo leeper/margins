@@ -1,8 +1,11 @@
+#' @title Marginal Effects Calculator
+#' @description This is the low-level marginal effects calculator called by \code{\link{margins}}.
 #' @importFrom stats setNames
 #' @importFrom MASS mvrnorm
+#' @export
 .margins <- 
 function(x, 
-         data = eval(x$call$data, parent.frame()), 
+         data,
          atmeans = FALSE, 
          type = c("response", "terms", "link"),
          vce = c("delta", "bootstrap", "simulation"), # sloooooow....
@@ -14,18 +17,32 @@ function(x,
     allvars <- attributes(terms(x))$term.labels[attributes(terms(x))$order == 1]
     allvars <- sort(.cleanterms(allvars))
     
-    # optionally pass to .atmeans
-    if(atmeans) {
-        # need to be able to tell .atmeans which vars to set to means
-        dat <- .atmeans(data, vars = names(data), na.rm = TRUE)
+    # setup data
+    if (missing(data)) {
+        d <- eval(x$call$data, parent.frame())
+        dat <- if (!is.null(d)) d else x$model
+        rm(d)
     } else {
         dat <- data
+    }
+    if (atmeans) {
+        # optionally pass to .atmeans
+        # need to be able to tell .atmeans which vars to set to means
+        dat <- .atmeans(dat, vars = names(dat), na.rm = TRUE)
     }
     
     type <- match.arg(type)
     # obtain gradient with respect to each variable in data
     ## THIS DOES NOT HANDLE DISCRETE FACTORS
     grad <- .slope(dat, model = x, type = type, method = method)[, allvars, drop = FALSE]
+    if (inherits(x, "glm") && type == "response") {
+        pred <- .pred(dat, model = x, type = "link")
+        tmp <- apply(grad, 2, `*`, pred)
+        rm(pred)
+        rownames(tmp) <- rownames(grad)
+        grad <- tmp
+        rm(tmp)
+    }
     
     # variance estimation technique
     vce <- match.arg(vce)
@@ -41,31 +58,28 @@ function(x,
         # bootstrap the data and take the variance of bootstrapped AMEs
         variances <- apply(replicate(iterations, bootfun()), 2, var, na.rm = TRUE)
     } else if (vce == "delta") {
-        # AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAH!!!
-    
-        # Apply chain rule: Jacobian %*% V(beta) %*% t(Jacobian)
-        #chain <- grad
-        #chain <- grad * mean(predicted) * mean(dpredicted)
-        #chain <- grad * mean(predicted) # close
-        #chain <- grad * mean(dpredicted)
-        #chain <- apply(grad, 2, `*`, t(MEs))
-        #colnames(chain) <- betas
         
-        #var <- t(colMeans(grad)) %*% vc[allvars, allvars] %*% colMeans(grad)
+        # express each marginal effect as a function of all coefficients
+        # holding data constant (maybe just atmeans to start)
+        # this is what .grad_factory() will do
+        # then:  numDeriv::grad(.grad_factory(), x$coef)
+        # gives `gradmat`, such that v %*% V %*% t(v)
+        # gives the variance of each marginal effect
+        # `gradmat` should be an ME-by-beta matrix
         
-        # calculate variances
-        # variances <- numeric(length(allvars))
-        # for (i in seq_along(grad)) {
-            # jac <- t(colMeans(out))
-            # colnames(jac) <- allvars
-            # variances[i] <- diag(jac %*% vc[allvars, allvars] %*% t(jac))
-        # }
-        variances <- diag(vc[allvars, allvars, drop = FALSE])
+        # http://www.soderbom.net/lecture10notes.pdf
+        # http://stats.stackexchange.com/questions/122066/how-to-use-delta-method-for-standard-errors-of-marginal-effects
+        
+        gradmat <- do.call("rbind", lapply(allvars, function(thisme) {
+            FUN <- .grad_factory(data = dat, model = x, which_me = thisme, atmeans = TRUE, type = type, method = method)
+            numDeriv::grad(FUN, m$coef)
+        }))
+        variances <- diag(gradmat %*% vc %*% t(gradmat))
     } else if (vce == "simulation") {
         
         # copy model for quick use in estimation
         tmpmodel <- x
-        tmpmodel$model <- NULL
+        tmpmodel$model <- NULL # remove data from model for memory
         
         # simulate from multivariate normal
         coefmat <- MASS::mvrnorm(iterations, coef(x), vcov(x))
@@ -83,6 +97,7 @@ function(x,
               class = "margins", 
               type = type,
               atmeans = atmeans, 
+              df.residual = x[["df.residual"]],
               vce = vce, 
               iterations = iterations)
 }
