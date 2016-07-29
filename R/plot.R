@@ -4,7 +4,7 @@ function(x,
          at = 1:ncol(x$Effect),
          which = colnames(x$Effect), 
          labels = which,
-         horiz = FALSE,
+         horizontal = FALSE,
          xlab = "",
          ylab = "Marginal Effect",
          level = 0.95,
@@ -22,12 +22,13 @@ function(x,
     lb <- MEs - (maxl * sqrt(x$Variance))
     ub <- MEs + (maxl * sqrt(x$Variance))
     r <- max(ub) - min(lb)
-    if(horiz) {
+    if (horiz) {
         plot(NA, xlim = c(min(lb)-0.04*r, max(ub)+0.04*r),
                  ylim = c(min(at)-(0.04*min(at)), max(at) + (0.04*max(at))), 
                  yaxt = 'n', xlab = ylab, ylab = xlab, las = las, ...)
-        if(zeroline)
+        if (zeroline) {
             abline(v = 0, col = "gray")
+        }
         points(MEs, at, col = points.col, bg = points.bg, pch = pch)
         axis(2, at = at, labels = as.character(labels), las = las)
         mapply(function(z, lwd) {
@@ -39,8 +40,9 @@ function(x,
         plot(NA, xlim = c(min(at)-(0.04*min(at)), max(at) + (0.04*max(at))), 
                  ylim = c(min(lb)-0.04*r, max(ub)+0.04*r), 
                  xaxt = 'n', xlab = xlab, ylab = ylab, las = las, ...)
-        if(zeroline)
+        if (zeroline) {
             abline(h = 0, col = "gray")
+        }
         points(at, MEs, col = points.col, bg = points.bg, pch = pch)
         axis(1, at = at, labels = as.character(labels), las = las)
         mapply(function(z, lwd) {
