@@ -10,6 +10,7 @@ x <- rnorm(n)
 z <- rnorm(n)
 y <- w + x + z + w*x + w*z + x*z * w*x*z + rnorm(n)
 
+context("Golder Tests (Interaction Terms)")
 test_that("Golder Case 1a/1b correct", {
     f1.1 <- y ~ x + z + x:z
     m <- lm(f1.1)
@@ -48,7 +49,21 @@ test_that("Golder Case 3 correct", {
     expect_equal(sedydx, s[s[["Factor"]] == "x", "Std.Err."], label = "Var(dy/dx) correct")
 })
 
-f1.4 <- y ~ x + z + w + x:z + x:w + z:w + x:z:w
+test_that("Golder Case 4 correct", {
+    f1.4 <- y ~ x + z + w + x:z + x:w + z:w + x:z:w
+    m <- lm(f1.4)
+    s <- summary(margins(m)
+    dydx <- coef(m)["x"] + (z * coef(m)["x:z"]) + (w * coef(m)["x:w"]) + (z * w * coef(m)["x:z:w"])
+    sedydx <- sqrt(vcov(m)["x","x"] + (z^2 * vcov(m)["x:z","x:z"]) + (w^2 * vcov(m)["x:w","x:w"]) + 
+                   (z^2 * w^2 * vcov(m)["x:z:w","x:z:w"]) + (2 * z * vcov(m)["x","x:z"]) + 
+                   (2 * w * vcov(m)["x","x:w"]) + (2 * z * w * cov(m)["x","x:z:w"]) + 
+                   (2 * z * w * vcov(m)["x:z","x:w"]) + (2 * w * z^2 * vcov(m)["x:z","z:x:w"]) +
+                   (2 * z * w^2 * vcov(m)["x:w","x:z:w"]) )
+    expect_equal(dydx, s[s[["Factor"]] == "x", "dy/dx"], label = "dy/dx correct")
+    expect_equal(sedydx, s[s[["Factor"]] == "x", "Std.Err."], label = "Var(dy/dx) correct")
+})
+
+
 
 f2.1 <- y ~ x + I(x^2)
 f2.2 <- y ~ x + I(x^2) + z
