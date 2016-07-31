@@ -1,13 +1,15 @@
 #' @export
 confint.margins <- 
 function(object, parm, level = 0.95, ...) {
-    pnames <- colnames(object[["Effects"]])
+    pnames <- names(object)
     if (missing(parm)) {
         parm <- pnames
     } else if (is.numeric(parm))  {
         parm <- pnames[parm]
+    } else if (is.numeric(parm)) {
+        parm[!grep("^_", parm] <- paste0("_", parm[!grep("^_", parm)])
     }
-    cf <- colMeans(object[["Effects"]])[parm]
+    cf <- colMeans(object[, parm, drop = FALSE])
     a <- (1 - level)/2
     a <- c(a, 1 - a)
     fac <- qnorm(a)
