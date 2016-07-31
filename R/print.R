@@ -1,17 +1,17 @@
 #' @export
-print.marginal_effect <- 
+print.margins <- 
 function(x, digits = 4, row.names = FALSE, ...) {
     if (attributes(x)[["atmeans"]]) {
         cat("Marginal Effects at Means\n")
     } else {
         cat("Average Marginal Effects\n")
     }
-    print(colMeans(x[["Effects"]]))
+    print(colMeans(x[,grep("^_", names(x)), drop = FALSE]))
     invisible(x)
 }
 
 #' @export
-print.marginal_effectlist <- function(x, ...) {
+print.marginslist <- function(x, ...) {
     for (i in 1:length(x)) {
         print(summary(x[[i]]), ...)
         cat("\n")
