@@ -259,7 +259,7 @@ persp(as, ss, matrix(me_skin4, 10), theta=45, phi=10, shade=.75, ticktype = "det
 
 ## References ##
 
-Bartus, Tamas. 2005. "Estimation of marginal effects using margeff." *Stata Journal* 5: 309–329.
+Bartus, Tamas. 2005. "Estimation of marginal effects using margeff." *Stata Journal* 5: 309-329.
 
 Brambor, Thomas, William Clark & Matt Golder. 2006. "Understanding Interaction Models: Improving Empirical Analyses." *Political Analysis* 14: 63-82.
 
@@ -271,6 +271,6 @@ Norton, Edward C., Hua Wang, and Chunrong Ai. 2004. "Computing interaction effec
 
 Stata Corporation. "margins". Software Documentation. Available from: http://www.stata.com/manuals13/rmargins.pdf.
 
-Williams, Richard. 2012. Using the margins command to estimate and interpret adjusted predictions and marginal effects. *Stata Journal* 12: 308–331.
+Williams, Richard. 2012. Using the margins command to estimate and interpret adjusted predictions and marginal effects. *Stata Journal* 12: 308-331.
 
 
