@@ -8,6 +8,7 @@
 #' @param iterations If \code{vce = "bootstrap"}, the number of bootstrap iterations. If \code{vce = "simulation"}, the number of simulated effects to draw. Ignored otherwise.
 #' @param method A character string indicating the numeric derivative method to use when estimating marginal effects. See \code{\link[numDeriv]{grad}} for details.
 #' @param \dots Ignored.
+#' @return A data.frame of class \dQuote{margins} containing the contents of \code{data}, fitted values for \code{x}, and any estimated marginal effects. Attributes containing additional information, including the marginal effect variances and additional details.
 #' @import stats
 #' @importFrom numDeriv grad
 #' @importFrom MASS mvrnorm
@@ -41,11 +42,16 @@ function(x,
     }
     
     type <- match.arg(type)
+    
+    # obtain predicted values and standard errors
+    pred <- stats::predict(x, newdata = data, type = type, se.fit = TRUE)
+    pred.se <- pred[[2]]
+    pred <- pred[[1]]
+    
     # obtain gradient with respect to each variable in data
     ## THIS DOES NOT HANDLE DISCRETE FACTORS
     grad <- .slope(dat, model = x, type = type, method = method)[, allvars, drop = FALSE]
     if (inherits(x, "glm") && type == "response") {
-        pred <- .pred(dat, model = x, type = "response")
         tmp <- apply(grad, 2, `*`, pred)
         rm(pred)
         rownames(tmp) <- rownames(grad)
@@ -102,12 +108,16 @@ function(x,
         variances <- apply(effectmat, 1, var, na.rm = TRUE)
     }
     
-    structure(list(Effects = grad, Variances = variances), 
+    # setup return value
+    names(grad) <- paste0("_", names(grad))
+    out <- cbind(dat, "_fitted.values" = pred, "_fitted.se" = pred.se, grad)
+    structure(out, 
               class = "margins", 
+              Variances = variances,
               type = type,
               atmeans = atmeans, 
               df.residual = x[["df.residual"]],
               vce = vce, 
+              call = call,
               iterations = iterations)
 }
-
