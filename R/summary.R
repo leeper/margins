@@ -1,12 +1,17 @@
 #' @export
 summary.margins <- 
 function(object, digits = 4, level = 0.95, ...) {
-    x <- object[,grep("^_", names(object)), drop = FALSE]
-    x[, names(x) %in% c("_fitted", "_fitted.se")] <- NULL
+    if (attributes(object)[["atmeans"]]) {
+        cat("Marginal Effects at Means for:\n")
+    } else {
+        cat("Average Marginal Effects for:\n")
+    }
+    cat(capture.output(attributes(object)[["call"]]), "\n")
     fmt <- paste0("%0.", ifelse(digits > 7, 7, digits), "f")
-    tab <- data.frame(Factor = colnames(x), 
-                      "dy/dx" = colMeans(x),
-                      "Std.Err." = sqrt(x),
+    mes <- extract_marginal_effects(object)
+    tab <- data.frame(Factor = colnames(mes), 
+                      "dy/dx" = colMeans(mes),
+                      "Std.Err." = sqrt(attributes(object)[["Variances"]]),
                       check.names = FALSE, stringsAsFactors = FALSE)
     tab[,"z value"] <- tab[,"dy/dx"]/tab[,"Std.Err."]
     tab[,"Pr(>|z|)"] <- 2 * pnorm(abs(tab[,"z value"]), lower.tail = FALSE)
@@ -19,9 +24,9 @@ function(object, digits = 4, level = 0.95, ...) {
 
 #' @export
 summary.marginslist <- 
-function(object, ...) {
+function(object, row.names = FALSE, ...) {
     for (i in 1:length(object)) {
-        print(summary(object[[i]]), ...)
+        print(summary(object[[i]]), row.names = row.names, ...)
         cat("\n")
     }
 }

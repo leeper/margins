@@ -24,8 +24,8 @@
 #' @export
 plot.margins <- 
 function(x, 
-         at = NULL,
-         which = NULL, 
+         at = seq_along(extract_marginal_effects(x)),
+         which = colnames(extract_marginal_effects(x)), 
          labels = which,
          horizontal = FALSE,
          xlab = "",
@@ -41,21 +41,10 @@ function(x,
          zero.col = "gray",
          ...) {
     
-    if (is.null(which)) {
-        which <- names(x)[grep("^_", names(x))]
-        which <- which[!which %in% c("_fitted", "_fitted.se")]
-        variances <- attributes(x)[["Variance"]][which, which]
-    } else {
-        if (is.numeric(which)) {
-            which <- names(x)[which]
-        } else {
-            which[!grep("^_", which)] <- paste0("_", which[!grep("^_", which)])
-        }
-        variances <- attributes(x)[["Variance"]][which, which]
-    }
-    MEs <- colMeans(x[, which, drop = FALSE])
+    MEs <- colMeans(extract_marginal_effects(x)[, which, drop = FALSE])
     quantiles <- qnorm(cbind((1-sort(level))/2, 1-(1-sort(level))/2))
     maxl <- max(abs(quantiles))
+    variances <- attributes(x)[["Variances"]][which]
     lb <- MEs - (maxl * sqrt(variances))
     ub <- MEs + (maxl * sqrt(variances))
     r <- max(ub) - min(lb)
@@ -83,8 +72,8 @@ function(x,
         points(at, MEs, col = points.col, bg = points.bg, pch = pch)
         axis(1, at = at, labels = as.character(labels), las = las)
         mapply(function(z, lwd) {
-            segments(at, MEs + (quantiles[z,1] * sqrt(attributes(x)[["Variance"]])), 
-                     at, MEs + (quantiles[z,2] * sqrt(attributes(x)[["Variance"]])), 
+            segments(at, MEs + (quantiles[z,1] * sqrt(variances)), 
+                     at, MEs + (quantiles[z,2] * sqrt(variances)), 
                      col = points.col, lwd = lwd)
         }, 1:nrow(quantiles), seq(max(lwd), 0.25, length.out = nrow(quantiles)))
     }
