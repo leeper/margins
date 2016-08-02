@@ -8,6 +8,7 @@
 #' @param iterations If \code{vce = "bootstrap"}, the number of bootstrap iterations. If \code{vce = "simulation"}, the number of simulated effects to draw. Ignored otherwise.
 #' @param method A character string indicating the numeric derivative method to use when estimating marginal effects. See \code{\link[numDeriv]{grad}} for details.
 #' @param \dots Ignored.
+#' @return A data.frame of class \dQuote{margins} containing the contents of \code{data}, fitted values for \code{x}, and any estimated marginal effects. Attributes containing additional information, including the marginal effect variances and additional details.
 #' @import stats
 #' @importFrom numDeriv grad
 #' @importFrom MASS mvrnorm
@@ -19,7 +20,7 @@ function(x,
          type = c("response", "link", "terms"),
          vce = c("delta", "bootstrap", "simulation"),
          iterations = 500L, # if vce == "bootstrap" or "simulation"
-         method = c("Richardson", "simple", "complex"), # passed to .slope()
+         method = c("Richardson", "simple", "complex"), # passed to get_slopes()
          ...) {
     
     # variables in the model
@@ -43,10 +44,10 @@ function(x,
     type <- match.arg(type)
     # obtain gradient with respect to each variable in data
     ## THIS DOES NOT HANDLE DISCRETE FACTORS
-    grad <- .slope(dat, model = x, type = type, method = method)[, allvars, drop = FALSE]
+    grad <- get_slopes(dat, model = x, type = type, method = method)[, allvars, drop = FALSE]
     if (inherits(x, "glm") && type == "response") {
-        pred <- .pred(dat, model = x, type = "response")
-        tmp <- apply(grad, 2, `*`, pred)
+        pred <- get_prediction(dat, model = x, type = "response")
+        tmp <- lapply(grad, `*`, pred)
         rm(pred)
         rownames(tmp) <- rownames(grad)
         grad <- tmp
@@ -62,7 +63,7 @@ function(x,
         # function to calculate AME for one bootstrap subsample
         bootfun <- function() {
             s <- sample(1:nrow(dat), nrow(dat), TRUE)
-            colMeans(.slope(dat[s,], model = x, type = type, method = method)[, allvars, drop = FALSE], na.rm = TRUE)
+            colMeans(get_slopes(dat[s,], model = x, type = type, method = method)[, allvars, drop = FALSE], na.rm = TRUE)
         }
         # bootstrap the data and take the variance of bootstrapped AMEs
         variances <- apply(replicate(iterations, bootfun()), 2, var, na.rm = TRUE)
@@ -70,8 +71,8 @@ function(x,
         
         # express each marginal effect as a function of all coefficients
         # holding data constant (maybe just atmeans to start)
-        # this is what .grad_factory() will do
-        # then:  numDeriv::grad(.grad_factory(), x$coef)
+        # this is what .build_grad_fun() will do
+        # then:  numDeriv::grad(.build_grad_fun(), x$coef)
         # gives `gradmat`, such that v %*% V %*% t(v)
         # gives the variance of each marginal effect
         # `gradmat` should be an ME-by-beta matrix
@@ -80,7 +81,7 @@ function(x,
         # http://stats.stackexchange.com/questions/122066/how-to-use-delta-method-for-standard-errors-of-marginal-effects
         
         gradmat <- do.call("rbind", lapply(allvars, function(thisme) {
-            FUN <- .grad_factory(data = dat, model = x, which_me = thisme, atmeans = TRUE, type = type, method = method)
+            FUN <- .build_grad_fun(data = dat, model = x, which_me = thisme, atmeans = TRUE, type = type, method = method)
             numDeriv::grad(FUN, x[["coefficients"]])
         }))
         variances <- diag(gradmat %*% vc %*% t(gradmat))
@@ -96,16 +97,28 @@ function(x,
         # estimate AME from from each simulated coefficient vector
         effectmat <- apply(coefmat, 1, function(coefrow) {
             tmpmodel[["coefficients"]] <- coefrow
-            colMeans(.slope(dat, model = tmpmodel, type = type, method = method)[, allvars, drop = FALSE])
+            colMeans(get_slopes(dat, model = tmpmodel, type = type, method = method)[, allvars, drop = FALSE])
         })
         # calculate the variance of the simulated AMEs
         variances <- apply(effectmat, 1, var, na.rm = TRUE)
     }
     
-    structure(list(Effects = grad, Variances = variances), 
-              class = "margins", 
+    # obtain predicted values and standard errors
+    pred <- stats::predict(x, newdata = data, type = type, se.fit = TRUE)
+    class(pred[["fit"]]) <- c("fit", "numeric")
+    class(pred[["se.fit"]]) <- c("se.fit", "numeric")
+    
+    # set output classes
+    for (i in seq_along(grad)) {
+        class(grad[[i]]) <- c("marginaleffect", "numeric")
+    }
+    
+    structure(cbind(dat, fit = pred[["fit"]], se.fit = pred[["se.fit"]], grad), 
+              class = c("margins", "data.frame"), 
+              Variances = variances,
               type = type,
               atmeans = atmeans, 
+              call = x[["call"]],
               df.residual = x[["df.residual"]],
               vce = vce, 
               iterations = iterations)

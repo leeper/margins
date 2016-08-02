@@ -24,8 +24,8 @@
 #' @export
 plot.margins <- 
 function(x, 
-         at = 1:ncol(x[["Effect"]]),
-         which = colnames(x[["Effect"]]), 
+         at = seq_along(extract_marginal_effects(x)),
+         which = colnames(extract_marginal_effects(x)), 
          labels = which,
          horizontal = FALSE,
          xlab = "",
@@ -41,11 +41,12 @@ function(x,
          zero.col = "gray",
          ...) {
     
-    MEs <- colMeans(x[["Effect"]][,which])
+    MEs <- colMeans(extract_marginal_effects(x)[, which, drop = FALSE])
     quantiles <- qnorm(cbind((1-sort(level))/2, 1-(1-sort(level))/2))
     maxl <- max(abs(quantiles))
-    lb <- MEs - (maxl * sqrt(x[["Variance"]]))
-    ub <- MEs + (maxl * sqrt(x[["Variance"]]))
+    variances <- attributes(x)[["Variances"]]
+    lb <- MEs - (maxl * sqrt(variances))
+    ub <- MEs + (maxl * sqrt(variances))
     r <- max(ub) - min(lb)
     if (isTRUE(horizontal)) {
         plot(NA, xlim = c(min(lb)-0.04*r, max(ub)+0.04*r),
@@ -57,8 +58,8 @@ function(x,
         points(MEs, at, col = points.col, bg = points.bg, pch = pch)
         axis(2, at = at, labels = as.character(labels), las = las)
         mapply(function(z, lwd) {
-            segments(MEs + (quantiles[z,1] * sqrt(x[["Variance"]])), at, 
-                     MEs + (quantiles[z,2] * sqrt(x[["Variance"]])), at, 
+            segments(MEs + (quantiles[z,1] * sqrt(variances)), at, 
+                     MEs + (quantiles[z,2] * sqrt(variances)), at, 
                      col = points.col, lwd = lwd)
         }, 1:nrow(quantiles), seq(max(lwd), 0.25, length.out = nrow(quantiles)))
     } else {
@@ -71,8 +72,8 @@ function(x,
         points(at, MEs, col = points.col, bg = points.bg, pch = pch)
         axis(1, at = at, labels = as.character(labels), las = las)
         mapply(function(z, lwd) {
-            segments(at, MEs + (quantiles[z,1] * sqrt(x[["Variance"]])), 
-                     at, MEs + (quantiles[z,2] * sqrt(x[["Variance"]])), 
+            segments(at, MEs + (quantiles[z,1] * sqrt(variances)), 
+                     at, MEs + (quantiles[z,2] * sqrt(variances)), 
                      col = points.col, lwd = lwd)
         }, 1:nrow(quantiles), seq(max(lwd), 0.25, length.out = nrow(quantiles)))
     }
