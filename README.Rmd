@@ -65,12 +65,6 @@ x <- lm(mpg ~ cyl * hp + wt, data = mtcars)
 (m <- margins(x)[[1]])
 ```
 
-The default `print()` method contains just the average marginal effects. To see more details, use `summary()`:
-
-```{r}
-summary(m)
-```
-
 With the exception of differences in rounding, the above results match identically what Stata's `margins` command produces. Using the `plot()` method also yields an aesthetically similar result to Stata's `marginsplot`:
 
 ```R

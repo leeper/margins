@@ -8,7 +8,7 @@ function(object, parm, level = 0.95, ...) {
     } else if (is.numeric(parm))  {
         parm <- pnames[parm]
     } else if (is.numeric(parm)) {
-        parm[!grep("^_", parm] <- paste0("_", parm[!grep("^_", parm)])
+        parm[!grep("^_", parm)] <- paste0("_", parm[!grep("^_", parm)])
     }
     cf <- colMeans(mes)[parm]
     a <- (1 - level)/2

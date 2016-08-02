@@ -4,11 +4,11 @@
 \alias{plot.margins}
 \title{Plot Marginal Effects Estimates}
 \usage{
-\method{plot}{margins}(x, at = 1:ncol(x[["Effect"]]),
-  which = colnames(x[["Effect"]]), labels = which, horizontal = FALSE,
-  xlab = "", ylab = "Marginal Effect", level = 0.95, pch = 21,
-  points.col = "black", points.bg = "black", las = 1, cex = 1,
-  lwd = 2, zeroline = TRUE, zero.col = "gray", ...)
+\method{plot}{margins}(x, at = seq_along(extract_marginal_effects(x)),
+  which = colnames(extract_marginal_effects(x)), labels = which,
+  horizontal = FALSE, xlab = "", ylab = "Marginal Effect", level = 0.95,
+  pch = 21, points.col = "black", points.bg = "black", las = 1,
+  cex = 1, lwd = 2, zeroline = TRUE, zero.col = "gray", ...)
 }
 \arguments{
 \item{x}{An object of class \dQuote{margins}, as returned by \code{\link{margins}}.}
@@ -46,7 +46,7 @@
 \item{\dots}{Additional arguments passed to \code{\link[graphics]{plot.default}}, such as \code{title}, etc.}
 }
 \value{
-Object \code{x}, invisibly.
+Margins object \code{x}, invisibly.
 }
 \description{
 Implementation of Stata's \samp{marginsplot} as an S3 generic function

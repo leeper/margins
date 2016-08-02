@@ -25,6 +25,9 @@ marginal_effect(x, data, atmeans = FALSE, type = c("response", "link",
 
 \item{\dots}{Ignored.}
 }
+\value{
+A data.frame of class \dQuote{margins} containing the contents of \code{data}, fitted values for \code{x}, and any estimated marginal effects. Attributes containing additional information, including the marginal effect variances and additional details.
+}
 \description{
 This is the low-level marginal effects calculator called by \code{\link{margins}}.
 }
