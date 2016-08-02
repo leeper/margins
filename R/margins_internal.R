@@ -53,11 +53,8 @@ function(x,
     grad <- get_slopes(dat, model = x, type = type, method = method)[, allvars, drop = FALSE]
     if (inherits(x, "glm") && type == "response") {
         pred <- get_prediction(dat, model = x, type = "response")
-        tmp <- lapply(grad, `*`, pred)
+        grad[] <- lapply(grad, `*`, pred)
         rm(pred)
-        rownames(tmp) <- rownames(grad)
-        grad <- tmp
-        rm(tmp)
     }
     
     # variance estimation technique

@@ -1,5 +1,5 @@
-#' @title Perspective plots for models
-#' @description Draw one or more perspectives plots reflecting predictions or marginal effects from a model. Currently methods exist for \dQuote{lm} and \dQuote{glm} models.
+#' @title Conditional effect plots for models
+#' @description Draw one or more conditioanl effects plots reflecting predictions or marginal effects from a model, conditional on a covariate. Currently methods exist for \dQuote{lm} and \dQuote{glm} models.
 #' @param object A model object.
 #' @param x A character string specifying the names of variables to use as the \samp{x} dimension in the plot. See \code{\link[graphics]{persp}} for details.
 #' @param y A character string specifying the names of variables to use as the \samp{y} dimension in the plot. See \code{\link[graphics]{persp}} for details.
@@ -23,34 +23,33 @@
 #' 
 #' # marginal effect of 'drat' across drat and wt
 #' m <- lm(mpg ~ wt*drat*I(drat^2), data = mtcars)
-#' persp(m, x = "drat", y = "wt"), z = "effect", nx = 10, ny = 10, ticktype = "detailed")
+#' persp(m, c("drat", "wt"), z = "effect", nx = 10, ny = 10, ticktype = "detailed")
 #' 
 #' # a non-linear model
 #' m <- glm(am ~ wt*drat, data = mtcars, family = binomial)
 #' persp(m, theta = c(30, 60)) # prediction
 #' 
 #' # effects on linear predictor and outcome
-#' persp(m, x = "drat", y = "wt", z = "effect", type = "link")
-#' persp(m, x = "drat", y = "wt", z = "effect", type = "response")
+#' persp(m, c("drat", "wt"), z = "effect", type = "link")
+#' persp(m, c("drat", "wt"), z = "effect", type = "response")
 #' 
 #' @seealso \code{\link{plot.margins}}
-#' @importFrom graphics persp
-#' @importFrom grDevices n2mfrow
+#' @importFrom graphics plot
 #' @export
-persp.lm <- 
+cplot <- function(object, ...) {
+    UseMethod("cplot")
+}
+
+#' @export
+cplot.lm <- 
 function(object, 
          x = attributes(terms(m))[["term.labels"]][1],
          y = attributes(terms(m))[["term.labels"]][2], 
          z = c("prediction", "effect"), 
          type = c("response", "link"), 
          nx = 25L,
-         ny = nx,
-         theta = 45, 
-         phi = 10, 
-         shade = 0.75, 
-         xlab = which[1], 
-         ylab = which[2], 
-         zlab = if (match.arg(z) == "prediction") match.arg(z) else paste0(match.arg(z), " of ", which[1]),
+         xlab = x, 
+         ylab = if (match.arg(z) == "prediction") paste0("Predicted value of ", x) else paste0("Marginal Effect of ", x),
          ticktype = c("detailed", "simple"),
          ...) {
     
@@ -70,7 +69,7 @@ function(object,
     z <- match.arg(z)
     type <- match.arg(type)
     if (z == "prediction") {
-        datmeans <- cbind.data.frame(lapply(colMeans(dat[, !names(dat) %in% which, drop = FALSE]), rep, length(xvals) * length(yvals)))
+        datmeans <- cbind.data.frame(lapply(colMeans(dat[, !names(dat) %in% which, drop = FALSE]), rep, length(xvals)))
         outcome <- outer(xvals, yvals, FUN = function(a, b) {
             datmeans[, xvar] <- a
             datmeans[, yvar] <- b
@@ -88,22 +87,8 @@ function(object,
         outcome[as.matrix(expand.grid(1:nx, 1:ny))] <- vals
     }
     
-    ticktype <- match.arg(ticktype)
-    perspfun <- function(itheta, iphi, ...) {
-        persp(xvals, yvals, outcome, theta = itheta, phi = iphi, 
-              shade = 0.75, xlab = xlab, ylab = ylab, zlab = zlab, ticktype = ticktype, ...)
-    }
-    if ((length(theta) == 1) & (length(phi) == 1)) {
-        perspfun(itheta = theta, iphi = phi, ...)
-    } else {
-        p <- par(mai = rep(0.2, 4))
-        views <- expand.grid(theta = theta, phi = phi)
-        dims <- n2mfrow(nrow(views))
-        layout(matrix(1:prod(dims), nrow = dims[1], byrow = TRUE))
-        mapply(perspfun, views[["theta"]], views[["phi"]])
-        par(p)
-    }
+    plot(dat[[x]], outcome, type = "l", ...)
 }
 
 #' @export
-persp.glm <- persp.lm
+cplot.glm <- cplot.lm
