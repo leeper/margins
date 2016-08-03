@@ -52,6 +52,7 @@ function(x,
     }
     
     type <- match.arg(type)
+    method <- match.arg(method)
     
     # obtain gradient with respect to each variable in data
     ## THIS DOES NOT HANDLE DISCRETE FACTORS

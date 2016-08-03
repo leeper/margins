@@ -22,7 +22,7 @@ get_prediction <- function(data, model, type = "response") {
     return(as.data.frame(out)) # obs-x-term data.frame of predictions (always one column)
 }
 
-get_slopes <- function(data, model, type = c("response", "link"), method = c("Richardson", "simple", "complex")) {
+get_slopes <- function(data, model, type = c("response", "link"), method = c("simple", "Richardson", "complex")) {
     # @title Calculate slope at specified values of independent variables
     # @param data The dataset on which to to calculate `predict(model)` (and the slope thereof)
     # @param model The model object to pass to `predict()`
@@ -53,7 +53,7 @@ get_slopes <- function(data, model, type = c("response", "link"), method = c("Ri
     return(as.data.frame(out)) # obs-x-term data.frame of obs-specific marginal effects
 }
 
-get_prediction_diff <- function(data, model, type = c("response", "link"), method = c("Richardson", "simple", "complex")) {
+get_prediction_diff <- function(data, model, type = c("response", "link"), method = c("simple", "Richardson", "complex")) {
     
     ## THIS DOESN'T WORK...IT IS WHAT WE CAN USE FOR FACTORS
     

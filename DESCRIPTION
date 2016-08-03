@@ -10,13 +10,12 @@ Authors@R: c(person("Thomas J.", "Leeper",
                     role = c("aut", "cre"),
                     email = "thosjleeper@gmail.com"))
 Imports:
-    utils,
     stats,
     graphics,
     compiler,
+    MASS,
     numDeriv
 Suggests:
-    MASS,
     webuse,
     knitr,
     ggplot2,
