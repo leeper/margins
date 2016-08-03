@@ -1,8 +1,8 @@
 #' @title Perspective plots for models
 #' @description Draw one or more perspectives plots reflecting predictions or marginal effects from a model. Currently methods exist for \dQuote{lm} and \dQuote{glm} models.
-#' @param object A model object.
-#' @param x A character string specifying the name of variable to use as the \samp{x} dimension in the plot. See \code{\link[graphics]{persp}} for details.
-#' @param y A character string specifying the name of variable to use as the \samp{y} dimension in the plot. See \code{\link[graphics]{persp}} for details.
+#' @param x A model object.
+#' @param xvar A character string specifying the name of variable to use as the \samp{x} dimension in the plot. See \code{\link[graphics]{persp}} for details.
+#' @param yvar A character string specifying the name of variable to use as the \samp{y} dimension in the plot. See \code{\link[graphics]{persp}} for details.
 #' @param what A character string specifying whether to draw \dQuote{prediction} (fitted values from the model, calculated using \code{\link[stats]{predict}}) or \dQuote{effect} (marginal effect of \code{x}, using \code{\link{margins}}).
 #' @param type A character string specifying whether to calculate predictions on the response scale (default) or link (only relevant for non-linear models).
 #' @param nx An integer specifying the number of points across \code{x} at which to calculate the predicted value or marginal effect.
@@ -24,23 +24,23 @@
 #' 
 #' # marginal effect of 'drat' across drat and wt
 #' m <- lm(mpg ~ wt*drat*I(drat^2), data = mtcars)
-#' persp(m, x = "drat", y = "wt"), what = "effect", nx = 10, ny = 10, ticktype = "detailed")
+#' persp(m, xvar = "drat", yvar = "wt", what = "effect", nx = 10, ny = 10, ticktype = "detailed")
 #' 
 #' # a non-linear model
 #' m <- glm(am ~ wt*drat, data = mtcars, family = binomial)
 #' persp(m, theta = c(30, 60)) # prediction
 #' 
 #' # effects on linear predictor and outcome
-#' persp(m, x = "drat", y = "wt", what = "effect", type = "link")
-#' persp(m, x = "drat", y = "wt", what = "effect", type = "response")
+#' persp(m, xvar = "drat", yvar = "wt", what = "effect", type = "link")
+#' persp(m, xvar = "drat", yvar = "wt", what = "effect", type = "response")
 #' 
 #' @seealso \code{\link{plot.margins}}, \code{\link{cplot}}
 #' @importFrom graphics persp layout
 #' @export
 persp.lm <- 
-function(object, 
-         x = attributes(terms(object))[["term.labels"]][1],
-         y = attributes(terms(object))[["term.labels"]][2], 
+function(x, 
+         xvar = attributes(terms(x))[["term.labels"]][1],
+         yvar = attributes(terms(x))[["term.labels"]][2], 
          what = c("prediction", "effect"), 
          type = c("response", "link"), 
          nx = 25L,
@@ -54,15 +54,12 @@ function(object,
          ticktype = c("detailed", "simple"),
          ...) {
     
-    dat <- object[["model"]]
+    dat <- x[["model"]]
     dat[] <- lapply(dat, as.numeric) # this probably isn't a good idea
     
-    which <- c(x, y)
-    xvar <- x
     xvals <- seq(min(dat[[xvar]], na.rm = TRUE), 
                  max(dat[[xvar]], na.rm = TRUE), 
                  length.out = nx)
-    yvar <- y
     yvals <- seq(min(dat[[yvar]], na.rm = TRUE), 
                  max(dat[[yvar]], na.rm = TRUE), 
                  length.out = ny)
@@ -70,20 +67,20 @@ function(object,
     what <- match.arg(what)
     type <- match.arg(type)
     if (what == "prediction") {
-        datmeans <- cbind.data.frame(lapply(colMeans(dat[, !names(dat) %in% which, drop = FALSE]), rep, length(xvals) * length(yvals)))
+        datmeans <- cbind.data.frame(lapply(colMeans(dat[, !names(dat) %in% c(xvar, yvar), drop = FALSE]), rep, length(xvals) * length(yvals)))
         outcome <- outer(xvals, yvals, FUN = function(a, b) {
             datmeans[, xvar] <- a
             datmeans[, yvar] <- b
-            predict(object, datmeans, type = type)
+            predict(x, datmeans, type = type)
         })
     } else if (what == "effect") {
         dat2 <- expand.grid(xvals, yvals)
-        names(dat2) <- which
-        cmeans <- colMeans(dat[, !names(dat) %in% which, drop = FALSE])
+        names(dat2) <- c(xvar, yvar)
+        cmeans <- colMeans(dat[, !names(dat) %in% c(xvar, yvar), drop = FALSE])
         for (i in seq_along(cmeans)) {
             dat2[[names(cmeans)[i]]] <- cmeans[i]
         }
-        vals <- get_slopes(data = dat2, model = object, type = type)[, xvar]
+        vals <- get_slopes(data = dat2, model = x, type = type)[, xvar]
         outcome <- matrix(NA_real_, nrow = nx, ncol = ny)
         outcome[as.matrix(expand.grid(1:nx, 1:ny))] <- vals
     }

@@ -59,13 +59,15 @@ cplot(object, ...)
 
 \item{se.col}{If \code{se.type = "lines"}, a character string specifying the color of the confidence interval lines. If \code{se.type = "shade"}, the color of the shaded region border.}
 
+\item{se.fill}{If \code{se.type = "shade"}, the color of the shaded region. Ignored otherwise.}
+
 \item{se.lwd}{If \code{se.type = "lines"}, the width of the confidence interval lines. See \code{\link[graphics]{lines}}.}
 
 \item{se.lty}{If \code{se.type = "lines"}, an integer specifying the \dQuote{line type} of the confidence interval lines; if \code{se.type = "shade"}, the line type of the shaded polygon border. See \code{\link[graphics]{par}}.}
 
-\item{xaxs}{The value of \code{xaxs} (see \code{\link[graphics]{par}}).}
+\item{xaxs}{A character string specifying \code{xaxs}. See \code{\link[graphics]{par}}.}
 
-\item{yaxs}{The value of \code{xaxs} (see \code{\link[graphics]{par}}).}
+\item{yaxs}{A character string specifying \code{xaxs}. See \code{\link[graphics]{par}}.}
 
 \item{las}{An integer string specifying \code{las}. See \code{\link[graphics]{par}}.}
 
@@ -75,19 +77,13 @@ cplot(object, ...)
 
 \item{rug.size}{A numeric value specifying \code{ticksize} to \code{\link[graphics]{rug}}.}
 
-\item{se.col}{If \code{se.type = "shade"}, the color of the shaded region. Ignored otherwise.}
-
-\item{xaxs}{A character string specifying \code{xaxs}. See \code{\link[graphics]{par}}.}
-
-\item{yaxs}{A character string specifying \code{xaxs}. See \code{\link[graphics]{par}}.}
-
 \item{\dots}{Additional arguments passed to \code{\link[graphics]{plot}}.}
 }
 \description{
 Draw one or more conditioanl effects plots reflecting predictions or marginal effects from a model, conditional on a covariate. Currently methods exist for \dQuote{lm} and \dQuote{glm} models.
 }
 \details{
-Currently, this implements \dQuote{marginal effects at means} of all covariates.
+Currently, this implements \dQuote{marginal effects at means} of all covariates. And confidence intervals are not drawn for marginal effects plots.
 }
 \examples{
 require('datasets')
@@ -97,8 +93,8 @@ cplot(m)
 
 # more complex model
 m <- lm(Sepal.Length ~ Sepal.Width * Petal.Width * I(Petal.Width ^ 2), data = iris)
-## marginal effect of 'Sepal.Width' across 'Sepal.Width'
-cplot(m, x = "Sepal.Width", what = "effect", n = 10)
+## marginal effect of 'Petal.Width' across 'Petal.Width'
+cplot(m, x = "Petal.Width", what = "effect", n = 10)
 ## marginal effect of 'Petal.Width' across 'Sepal.Width'
 cplot(m, x = "Sepal.Width", dx = "Petal.Width", what = "effect", n = 10)
 

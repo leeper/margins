@@ -1,10 +1,14 @@
 at_builder <- 
 function(data,
          terms,
+         levels,
          at = NULL, 
          atmeans = FALSE, 
          ...){
     if (!is.null(at) && length(at) > 0) {
+        # check factor levels specified in `at`
+        check_factor_levels(data, at, levels)
+        # check names of `at`
         if (any(!names(at) %in% names(data))) {
             stop("Unrecognized variable name in 'at'")
         }
@@ -29,6 +33,19 @@ function(data,
         }
     }
     data_out
+}
+
+check_factor_levels <- function(data, at, levels) {
+    # function to check whether factor levels in `at` are reasonable
+    names(levels) <- clean_terms(names(levels))
+    at <- at[names(at) %in% names(levels)]
+    for (i in seq_along(at)) {
+        x <- as.character(at[[i]]) %in% levels[[names(at)[i]]]
+        if (!all(x)) {
+            stop(paste0("Illegal factor levels for variable '", names(at)[i], "'"), call. = FALSE)
+        }
+    }
+    invisible(NULL)
 }
 
 # data.frame builder, given specified `at` values

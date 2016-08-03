@@ -3,6 +3,8 @@
 S3method(confint,margins)
 S3method(cplot,glm)
 S3method(cplot,lm)
+S3method(extract_marginal_effects,margins)
+S3method(extract_marginal_effects,marginslist)
 S3method(margins,glm)
 S3method(margins,lm)
 S3method(margins,pglm)

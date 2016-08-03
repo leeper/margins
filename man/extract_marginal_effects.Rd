@@ -2,12 +2,20 @@
 % Please edit documentation in R/extract_marginal_effects.R
 \name{extract_marginal_effects}
 \alias{extract_marginal_effects}
+\alias{extract_marginal_effects.margins}
+\alias{extract_marginal_effects.marginslist}
 \title{Extract Marginal Effect columns from a \dQuote{margins} object}
 \usage{
-extract_marginal_effects(x)
+extract_marginal_effects(x, ...)
+
+\method{extract_marginal_effects}{margins}(x, ...)
+
+\method{extract_marginal_effects}{marginslist}(x, ...)
 }
 \arguments{
 \item{x}{An object of class \dQuote{margins}, as returned by \code{\link{margins}}.}
+
+\item{\dots}{Ignored.}
 }
 \value{
 A data.frame containing only those columns containing estimated marginal effects data.
@@ -17,6 +25,8 @@ Extract Marginal Effect columns from a \dQuote{margins} object
 }
 \examples{
 require('datasets')
-extract_marginal_effects(margins(lm(mpg ~ hp, data = mtcars[1:10,])))
+m <- margins(lm(mpg ~ hp, data = mtcars[1:10,]))
+extract_marginal_effects(m)
+extract_marginal_effects(m[[1]])
 }
 

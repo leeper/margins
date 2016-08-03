@@ -28,7 +28,7 @@ drop_operators <- function(a, dropdigits = TRUE) {
 }
 
 # call sub_bracket on all common formula operations
-.cleanterms <- function(terms) {
+clean_terms <- function(terms) {
     v <- gsub_bracket(terms, "factor")
     v <- gsub_bracket(v, "I")
     v <- gsub_bracket(v, "poly")

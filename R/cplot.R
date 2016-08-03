@@ -12,14 +12,12 @@
 #' @param ylab A character string specifying the value of \code{ylab} in \code{\link[graphics]{plot}}. 
 #' @param xlim A two-element numeric vector specifying the x-axis limits. Set automatically if missing.
 #' @param ylim A two-element numeric vector specifying the y-axis limits. Set automatically if missing.
-#' @param xaxs The value of \code{xaxs} (see \code{\link[graphics]{par}}).
-#' @param yaxs The value of \code{xaxs} (see \code{\link[graphics]{par}}).
 #' @param lwd An integer specifying the width of the prediction or marginal effect line. See \code{\link[graphics]{lines}}.
 #' @param col A character string specifying the color of the prediction or marginal effect line.
 #' @param lty An integer specifying the \dQuote{line type} of the prediction or marginal effect line. See \code{\link[graphics]{par}}.
 #' @param se.type A character string specifying whether to draw the confidence interval as \dQuote{lines} (the default, using \code{\link[graphics]{lines}}) or a \dQuote{shade} (using \code{\link[graphics]{polygon}}).
 #' @param se.col If \code{se.type = "lines"}, a character string specifying the color of the confidence interval lines. If \code{se.type = "shade"}, the color of the shaded region border.
-#' @param se.col If \code{se.type = "shade"}, the color of the shaded region. Ignored otherwise.
+#' @param se.fill If \code{se.type = "shade"}, the color of the shaded region. Ignored otherwise.
 #' @param se.lwd If \code{se.type = "lines"}, the width of the confidence interval lines. See \code{\link[graphics]{lines}}.
 #' @param se.lty If \code{se.type = "lines"}, an integer specifying the \dQuote{line type} of the confidence interval lines; if \code{se.type = "shade"}, the line type of the shaded polygon border. See \code{\link[graphics]{par}}.
 #' @param xaxs A character string specifying \code{xaxs}. See \code{\link[graphics]{par}}.
@@ -29,7 +27,7 @@
 #' @param rug.col A character string specifying \code{col} to \code{\link[graphics]{rug}}.
 #' @param rug.size A numeric value specifying \code{ticksize} to \code{\link[graphics]{rug}}.
 #' @param \dots Additional arguments passed to \code{\link[graphics]{plot}}. 
-#' @details Currently, this implements \dQuote{marginal effects at means} of all covariates.
+#' @details Currently, this implements \dQuote{marginal effects at means} of all covariates. And confidence intervals are not drawn for marginal effects plots.
 #' @examples
 #' require('datasets')
 #' # prediction from several angles
@@ -38,8 +36,8 @@
 #' 
 #' # more complex model
 #' m <- lm(Sepal.Length ~ Sepal.Width * Petal.Width * I(Petal.Width ^ 2), data = iris)
-#' ## marginal effect of 'Sepal.Width' across 'Sepal.Width'
-#' cplot(m, x = "Sepal.Width", what = "effect", n = 10)
+#' ## marginal effect of 'Petal.Width' across 'Petal.Width'
+#' cplot(m, x = "Petal.Width", what = "effect", n = 10)
 #' ## marginal effect of 'Petal.Width' across 'Sepal.Width'
 #' cplot(m, x = "Sepal.Width", dx = "Petal.Width", what = "effect", n = 10)
 #' 
@@ -131,7 +129,7 @@ function(object,
             rug(dat[[x]], ticksize = rug.size, col = rug.col)
         }
     } else if (what == "effect") {
-        tmpdat <- cbind.data.frame(lapply(colMeans(dat[, !names(dat) %in% c(xvar, dxvar), drop = FALSE]), rep, length(xvals)))
+        tmpdat <- cbind.data.frame(lapply(colMeans(dat[, names(dat) != xvar, drop = FALSE]), rep, length(xvals)))
         tmpdat[, xvar] <- xvals
         outcome <- get_slopes(data = tmpdat, model = object, type = type)[, dxvar]
         if (missing(ylim)) {

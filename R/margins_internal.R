@@ -25,7 +25,7 @@ function(x,
     
     # variables in the model
     allvars <- attributes(terms(x))$term.labels[attributes(terms(x))$order == 1]
-    allvars <- sort(.cleanterms(allvars))
+    allvars <- sort(clean_terms(allvars))
     
     # setup data
     if (missing(data)) {

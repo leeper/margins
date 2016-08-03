@@ -31,7 +31,7 @@ function(x,
     if (missing(newdata)) {
         newdata <- if (!is.null(x[["call"]][["data"]])) eval(x[["call"]][["data"]]) else x[["model"]]
     }
-    data_list <- at_builder(newdata, terms = x[["terms"]], at = at, atmeans = atmeans)
+    data_list <- at_builder(newdata, terms = x[["terms"]], levels = x[["xlevels"]], at = at, atmeans = atmeans)
     
     # calculate marginal effects
     out <- lapply(data_list, function(thisdata) {

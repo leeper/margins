@@ -4,19 +4,19 @@
 \alias{persp.lm}
 \title{Perspective plots for models}
 \usage{
-\method{persp}{lm}(object, x = attributes(terms(object))[["term.labels"]][1],
-  y = attributes(terms(object))[["term.labels"]][2], what = c("prediction",
+\method{persp}{lm}(x, xvar = attributes(terms(x))[["term.labels"]][1],
+  yvar = attributes(terms(x))[["term.labels"]][2], what = c("prediction",
   "effect"), type = c("response", "link"), nx = 25L, ny = nx,
   theta = 45, phi = 10, shade = 0.75, xlab = x, ylab = y, zlab = if
   (match.arg(what) == "prediction") "Predicted value" else
   paste0("Marginal effect of ", x), ticktype = c("detailed", "simple"), ...)
 }
 \arguments{
-\item{object}{A model object.}
+\item{x}{A model object.}
 
-\item{x}{A character string specifying the name of variable to use as the \samp{x} dimension in the plot. See \code{\link[graphics]{persp}} for details.}
+\item{xvar}{A character string specifying the name of variable to use as the \samp{x} dimension in the plot. See \code{\link[graphics]{persp}} for details.}
 
-\item{y}{A character string specifying the name of variable to use as the \samp{y} dimension in the plot. See \code{\link[graphics]{persp}} for details.}
+\item{yvar}{A character string specifying the name of variable to use as the \samp{y} dimension in the plot. See \code{\link[graphics]{persp}} for details.}
 
 \item{what}{A character string specifying whether to draw \dQuote{prediction} (fitted values from the model, calculated using \code{\link[stats]{predict}}) or \dQuote{effect} (marginal effect of \code{x}, using \code{\link{margins}}).}
 
@@ -56,15 +56,15 @@ persp(m, theta = c(45, 135, 225, 315))
 
 # marginal effect of 'drat' across drat and wt
 m <- lm(mpg ~ wt*drat*I(drat^2), data = mtcars)
-persp(m, x = "drat", y = "wt"), what = "effect", nx = 10, ny = 10, ticktype = "detailed")
+persp(m, xvar = "drat", yvar = "wt", what = "effect", nx = 10, ny = 10, ticktype = "detailed")
 
 # a non-linear model
 m <- glm(am ~ wt*drat, data = mtcars, family = binomial)
 persp(m, theta = c(30, 60)) # prediction
 
 # effects on linear predictor and outcome
-persp(m, x = "drat", y = "wt", what = "effect", type = "link")
-persp(m, x = "drat", y = "wt", what = "effect", type = "response")
+persp(m, xvar = "drat", yvar = "wt", what = "effect", type = "link")
+persp(m, xvar = "drat", yvar = "wt", what = "effect", type = "response")
 
 }
 \seealso{
