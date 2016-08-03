@@ -43,7 +43,7 @@ function(x,
     
     MEs <- colMeans(extract_marginal_effects(x)[, which, drop = FALSE])
     quantiles <- qnorm(cbind((1-sort(level))/2, 1-(1-sort(level))/2))
-    maxl <- max(abs(quantiles))
+    maxl <- max(abs(quantiles), na.rm = TRUE)
     variances <- attributes(x)[["Variances"]][which]
     lb <- MEs - (maxl * sqrt(variances))
     ub <- MEs + (maxl * sqrt(variances))

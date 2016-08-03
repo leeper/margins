@@ -4,18 +4,21 @@
 \alias{persp.lm}
 \title{Perspective plots for models}
 \usage{
-\method{persp}{lm}(x, which = attributes(terms(m))[["term.labels"]][1:2],
-  z = c("prediction", "effect"), type = c("response", "link"), nx = 50L,
-  ny = nx, theta = 45, phi = 10, shade = 0.75, xlab = which[1],
-  ylab = which[2], zlab = if (match.arg(z) == "prediction") match.arg(z)
-  else paste0(match.arg(z), " of ", which[1]), ...)
+\method{persp}{lm}(object, x = attributes(terms(object))[["term.labels"]][1],
+  y = attributes(terms(object))[["term.labels"]][2], what = c("prediction",
+  "effect"), type = c("response", "link"), nx = 25L, ny = nx,
+  theta = 45, phi = 10, shade = 0.75, xlab = x, ylab = y, zlab = if
+  (match.arg(what) == "prediction") "Predicted value" else
+  paste0("Marginal effect of ", x), ticktype = c("detailed", "simple"), ...)
 }
 \arguments{
-\item{x}{A model object.}
+\item{object}{A model object.}
 
-\item{which}{A two-element character vector specifying the names of variables to use as \samp{x} and \samp{y} predictor dimensions in the plot. See \code{\link[graphics]{persp}} for details.}
+\item{x}{A character string specifying the name of variable to use as the \samp{x} dimension in the plot. See \code{\link[graphics]{persp}} for details.}
 
-\item{z}{A character string specifying whether to draw \dQuote{prediction} (fitted values from the model, calculated using \code{\link[stats]{predict}}) or \dQuote{effect} (marginal effect of \code{which[1]}, using \code{\link{margins}}).}
+\item{y}{A character string specifying the name of variable to use as the \samp{y} dimension in the plot. See \code{\link[graphics]{persp}} for details.}
+
+\item{what}{A character string specifying whether to draw \dQuote{prediction} (fitted values from the model, calculated using \code{\link[stats]{predict}}) or \dQuote{effect} (marginal effect of \code{x}, using \code{\link{margins}}).}
 
 \item{type}{A character string specifying whether to calculate predictions on the response scale (default) or link (only relevant for non-linear models).}
 
@@ -33,19 +36,38 @@
 
 \item{ylab}{A character string specifying the value of \code{ylab} in \code{\link[graphics]{persp}}.}
 
-\item{zlab}{A character string specifying the value of \code{zlab} in \code{\link[graphics]{persp}}.}
+\item{zlab}{A character string specifying the value of \code{zlab} (vertical axis label) in \code{\link[graphics]{persp}}.}
+
+\item{ticktype}{A character string specifying one of: \dQuote{detailed} (the default) or \dQuote{simple}. See \code{\link[graphics]{persp}}.}
 
 \item{\dots}{Additional arguments passed to \code{\link[graphics]{persp}}.}
 }
 \description{
-Draw one or more perspectives plots reflecting predictions or marginal effects from a model.
+Draw one or more perspectives plots reflecting predictions or marginal effects from a model. Currently methods exist for \dQuote{lm} and \dQuote{glm} models.
+}
+\details{
+Currently, this implements \dQuote{marginal effects at means} of all covariates.
 }
 \examples{
 require('datasets')
+# prediction from several angles
 m <- lm(mpg ~ wt*drat, data = mtcars)
 persp(m, theta = c(45, 135, 225, 315))
 
+# marginal effect of 'drat' across drat and wt
 m <- lm(mpg ~ wt*drat*I(drat^2), data = mtcars)
-persp(m, c("drat", "wt"), z = "effect", nx = 10, ny = 10, ticktype = "detailed")
+persp(m, x = "drat", y = "wt"), what = "effect", nx = 10, ny = 10, ticktype = "detailed")
+
+# a non-linear model
+m <- glm(am ~ wt*drat, data = mtcars, family = binomial)
+persp(m, theta = c(30, 60)) # prediction
+
+# effects on linear predictor and outcome
+persp(m, x = "drat", y = "wt", what = "effect", type = "link")
+persp(m, x = "drat", y = "wt", what = "effect", type = "response")
+
+}
+\seealso{
+\code{\link{plot.margins}}, \code{\link{cplot}}
 }
 

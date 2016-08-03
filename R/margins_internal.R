@@ -118,7 +118,7 @@ function(x,
     
     structure(cbind(dat, fit = pred[["fit"]], se.fit = pred[["se.fit"]], grad), 
               class = c("margins", "data.frame"), 
-              Variances = variances,
+              Variances = setNames(variances, names(grad)),
               type = type,
               atmeans = atmeans, 
               call = x[["call"]],
