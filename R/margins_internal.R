@@ -56,7 +56,7 @@ function(x,
     
     # obtain gradient with respect to each variable in data
     ## THIS DOES NOT HANDLE DISCRETE FACTORS
-    grad <- get_slopes(dat, model = x, type = type, method = method)[, allvars, drop = FALSE]
+    mes <- get_slopes(dat, model = x, type = type, method = method)[, allvars, drop = FALSE]
     
     # variance estimation technique
     vce <- match.arg(vce)
@@ -113,14 +113,14 @@ function(x,
     class(pred[["fit"]]) <- c("fit", "numeric")
     class(pred[["se.fit"]]) <- c("se.fit", "numeric")
     
-    # set output classes
-    for (i in seq_along(grad)) {
-        class(grad[[i]]) <- c("marginaleffect", "numeric")
+    # setup output structure
+    for (i in seq_along(mes)) {
+        class(mes[[i]]) <- c("marginaleffect", "numeric")
     }
-    
-    structure(cbind(dat, fit = pred[["fit"]], se.fit = pred[["se.fit"]], grad), 
+    outdat <- cbind(dat, fit = pred[["fit"]], se.fit = pred[["se.fit"]], mes)
+    structure(outdat, 
               class = c("margins", "data.frame"), 
-              Variances = setNames(variances, names(grad)),
+              Variances = setNames(variances, names(mes)),
               type = type,
               atmeans = atmeans, 
               call = x[["call"]],

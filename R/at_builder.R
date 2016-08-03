@@ -5,6 +5,8 @@ function(data,
          at = NULL, 
          atmeans = FALSE, 
          ...){
+    
+    #names(data) <- clean_terms(names(data))
     if (!is.null(at) && length(at) > 0) {
         # check factor levels specified in `at`
         check_factor_levels(data, at, levels)
