@@ -30,7 +30,7 @@ function(x,
          type = c("response", "link", "terms"),
          vce = c("delta", "simulation", "bootstrap"),
          iterations = 50L, # if vce == "bootstrap" or "simulation"
-         method = c("Richardson", "simple", "complex"), # passed to get_slopes()
+         method = c("simple", "Richardson", "complex"), # passed to get_slopes()
          ...) {
     
     # variables in the model

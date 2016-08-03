@@ -6,7 +6,7 @@
 \usage{
 marginal_effect(x, data, atmeans = FALSE, type = c("response", "link",
   "terms"), vce = c("delta", "simulation", "bootstrap"), iterations = 50L,
-  method = c("Richardson", "simple", "complex"), ...)
+  method = c("simple", "Richardson", "complex"), ...)
 }
 \arguments{
 \item{x}{A model object.}
