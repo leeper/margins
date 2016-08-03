@@ -14,22 +14,27 @@ function(x,
          at = NULL, 
          atmeans = FALSE, 
          ...) {
-    # calculate marginal effects
-    if(is.null(newdata)) {
-        newdata <- if(!is.null(x[["call"]][["data"]])) eval(x[["call"]][["data"]]) else x[["model"]]
-    }
-    data_list <- at_builder(newdata, terms = terms(x[["formula"]]), at = at, atmeans = atmeans)
     
-    # FOR SOME REASON THIS ISN'T CAPTURING INTERACTION TERMS
-    if(x[["args"]][["model"]] != 'pooling') {
-        warning("marginal effects not likely to be correct")
-        out <- lapply(data_list, marginal_effect, x = x, ...)
-        class(out) <- "marginslist"
-        #mm <- cbind(model.matrix(x), model.matrix(~0+attributes(x$model)$index[,1]))
-    } else {
-        out <- lapply(data_list, marginal_effect, x = x, ...)
-        class(out) <- "marginslist"
+    # setup data
+    if (missing(newdata)) {
+        newdata <- if (!is.null(x[["call"]][["data"]])) eval(x[["call"]][["data"]]) else x[["model"]]
     }
+    data_list <- at_builder(newdata, terms = x[["terms"]], levels = x[["xlevels"]], at = at, atmeans = atmeans)
+    
+    # reduce memory profile
+    x[["model"]] <- NULL
+    
+    # calculate marginal effects
+    warning("Marginal effects not likely to be correct")
+    out <- lapply(data_list, function(thisdata) {
+        m <- marginal_effect(x = x, data = thisdata, atmeans = atmeans, ...)
+        attr(m, "Variables") <- attributes(thisdata)[["Variables"]]
+        attr(m, "at") <- attributes(thisdata)[["at"]]
+        m
+    })
+    
+    # return value
+    structure(out, class = "marginslist")
 }
 
 #' @rdname margins.plm
@@ -40,15 +45,24 @@ function(x,
          at = NULL, 
          atmeans = FALSE, 
          ...){
-    # configure link function
-    g <- getlink(x[["family"]][["link"]])
-    dfun <- g[["dfun"]]
-    
-    if(is.null(newdata)) {
-        newdata <- if(!is.null(x[["call"]][["data"]])) eval(x[["call"]][["data"]]) else x[["model"]]
+    # setup data
+    if (missing(newdata)) {
+        newdata <- if (!is.null(x[["call"]][["data"]])) eval(x[["call"]][["data"]]) else x[["model"]]
     }
-    data_list <- at_builder(newdata, terms = terms(x[["formula"]]), at = at, atmeans = atmeans)
-    out <- marginal_effect(x, mm = newdata, ...)
-
-    out
+    data_list <- at_builder(newdata, terms = x[["terms"]], levels = x[["xlevels"]], at = at, atmeans = atmeans)
+    
+    # reduce memory profile
+    x[["model"]] <- NULL
+    
+    # calculate marginal effects
+    warning("Marginal effects not likely to be correct")
+    out <- lapply(data_list, function(thisdata) {
+        m <- marginal_effect(x = x, data = thisdata, atmeans = atmeans, ...)
+        attr(m, "Variables") <- attributes(thisdata)[["Variables"]]
+        attr(m, "at") <- attributes(thisdata)[["at"]]
+        m
+    })
+    
+    # return value
+    structure(out, class = "marginslist")
 }
