@@ -33,6 +33,10 @@ function(x,
     }
     data_list <- at_builder(newdata, terms = x[["terms"]], levels = x[["xlevels"]], at = at, atmeans = atmeans)
     
+    # reduce memory profile
+    x[["model"]] <- NULL
+    attr(x$terms, ".Environment") <- NULL
+    
     # calculate marginal effects
     out <- lapply(data_list, function(thisdata) {
                m <- marginal_effect(x = x, data = thisdata, atmeans = atmeans, ...)

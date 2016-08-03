@@ -13,6 +13,7 @@ Imports:
     utils,
     stats,
     graphics,
+    compiler,
     numDeriv,
     MASS
 Suggests:

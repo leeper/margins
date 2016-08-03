@@ -3,7 +3,7 @@
     #
     # returns a one-argument function that expresses `predict(model)` with respect to named vector x (variable names and values)
     # this allows the passing of model `predict()` functions to `numDeriv::grad()`
-    function(x) {
+    FUN <- function(x) {
         tmpdat <- data
         if (!missing(x)) {
             for (i in seq_along(x)) {
@@ -13,6 +13,7 @@
         }
         unname(predict(model, newdata = tmpdat, type = type))
     }
+    return(cmpfun(FUN))
 }
 
 get_prediction <- function(data, model, type = "response") {
@@ -72,7 +73,7 @@ get_slopes <- function(data, model, type = c("response", "link"), method = c("Ri
 
 .build_grad_fun <- function(data, model, which_me, atmeans = TRUE, type = "response", method = c("Richardson", "simple", "complex")) {
     # factory function to return prediction holding data constant but varying coefficients
-    function(x) {
+    FUN <- function(x) {
         for (i in seq_along(x)) {
             model[["coefficients"]][names(x)[i]] <- x[i]
         }
@@ -82,6 +83,7 @@ get_slopes <- function(data, model, type = c("response", "link"), method = c("Ri
             colMeans(get_slopes(data = data, model = model, type = type, method = method), na.rm = TRUE)[,which_me]
         }
     }
+    return(cmpfun(FUN))
 }
 
 

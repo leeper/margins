@@ -3,6 +3,7 @@
 #' @param x A model object.
 #' @param \dots Addition arguments passed to methods.
 #' @seealso \code{\link{margins.lm}}, \code{\link{margins.glm}}
+#' @importFrom compiler cmpfun
 #' @export
 margins <- 
 function(x, ...) {
