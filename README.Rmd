@@ -57,7 +57,7 @@ install_github("leeper/margins")
 library("knitr")
 options(width = 100)
 opts_knit$set(upload.fun = imgur_upload, base.url = NULL)
-opts_chunk$set(fig.width=5, fig.height=5, cache=TRUE)
+opts_chunk$set(fig.width=7, fig.height=4, cache=TRUE)
 ```
 
 Replicating Stata's results is incredibly simple using just the `margins()` method to obtain average marginal effects:
@@ -65,16 +65,42 @@ Replicating Stata's results is incredibly simple using just the `margins()` meth
 ```{r margins}
 library("margins")
 x <- lm(mpg ~ cyl * hp + wt, data = mtcars)
-(m <- margins(x)[[1]])
+(m <- margins(x))
+summary(m)
 ```
 
 With the exception of differences in rounding, the above results match identically what Stata's `margins` command produces. Using the `plot()` method also yields an aesthetically similar result to Stata's `marginsplot`:
 
 ```{r marginsplot}
-plot(m)
+plot(m[[1]])
 ```
 
-The package also includes other plotting functionality to display predicted values or marginal effects. This includes methods for "lm" and "glm" class objects for the `persp()` generic 3D plotting function, and a new generic `cplot()` that displays predictions or marginal effects (from an "lm" or "glm" model) of a variable conditional across values of third variable (or itself).
+There is also a new generic `cplot()` that displays predictions or marginal effects (from an "lm" or "glm" model) of a variable conditional across values of third variable (or itself). For example, here is a graph of predicted probabilities from a logit model:
+
+```{r cplot1}
+m <- glm(am ~ wt*drat, data = mtcars, family = binomial)
+cplot(m, x = "wt", se.type = "shade")
+```
+
+and a graph of the effect of `wt` across levels of `drat`:
+
+```{r cplot2}
+cplot(m, x = "drat", dx = "wt", what = "effect", type = "response")
+```
+
+
+The package also includes other plotting functionality to display predicted values or marginal effects. This includes methods for "lm" and "glm" class objects for the `persp()` generic 3D plotting function. This enables three-dimensional representations of predicted outcomes:
+
+```{r persp1}
+persp(x, xvar = "cyl", yvar = "hp")
+```
+
+and marginal effects:
+
+```{r persp2}
+persp(x, xvar = "cyl", yvar = "wt", what = "effect", nx = 10)
+```
+
 
 The numerous package vignettes and help files contain extensive documentation and examples of all package functionality.
 
