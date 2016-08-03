@@ -72,24 +72,6 @@ margins(x, type = "response")
 
 ```
 . quietly logit am cyl hp wt
-. margins, dydx(*) atmeans predict(xb)
-
-Conditional marginal effects                      Number of obs   =         32
-Model VCE    : OIM
-Expression   : Linear prediction (log odds), predict(xb)
-dy/dx w.r.t. : cyl hp wt
-at           : cyl             =      6.1875 (mean)
-               hp              =    146.6875 (mean)
-               wt              =     3.21725 (mean)
-------------------------------------------------------------------------------
-             |            Delta-method
-             |      dy/dx   Std. Err.      z    P>|z|     [95% Conf. Interval]
--------------+----------------------------------------------------------------
-         cyl |   .4875978   1.071621     0.46   0.649    -1.612741    2.587936
-          hp |   .0325917   .0188611     1.73   0.084    -.0043753    .0695587
-          wt |   -9.14947   4.153326    -2.20   0.028    -17.28984   -1.009101
-------------------------------------------------------------------------------
-
 . margins, dydx(*) predict(xb)
 
 Average marginal effects                          Number of obs   =         32
@@ -110,9 +92,7 @@ dy/dx w.r.t. : cyl hp wt
 
 ```{r}
 x <- glm(am ~ cyl + hp + wt, data = mtcars, family = binomial)
-# MEM
-margins(x, atmeans = TRUE, type = "link")
-# AME
+# AME and MEM equivalent on "link" scale
 margins(x, type = "link")
 ```
 
@@ -255,25 +235,6 @@ margins(x, type = "response")
 ### Stata ###
 
 ```
-. quietly logit am cyl c.hp##c.wt
-. margins, dydx(*) atmeans predict(xb)
-
-Conditional marginal effects                      Number of obs   =         32
-Model VCE    : OIM
-Expression   : Linear prediction (log odds), predict(xb)
-dy/dx w.r.t. : cyl hp wt
-at           : cyl             =      6.1875 (mean)
-               hp              =    146.6875 (mean)
-               wt              =     3.21725 (mean)
-------------------------------------------------------------------------------
-             |            Delta-method
-             |      dy/dx   Std. Err.      z    P>|z|     [95% Conf. Interval]
--------------+----------------------------------------------------------------
-         cyl |   .5156396   1.169458     0.44   0.659    -1.776456    2.807735
-          hp |   .0515116    .035699     1.44   0.149    -.0184571    .1214804
-          wt |  -12.24264   7.678428    -1.59   0.111    -27.29208    2.806807
-------------------------------------------------------------------------------
-
 . margins, dydx(*) predict(xb)
 
 Average marginal effects                          Number of obs   =         32
@@ -294,9 +255,7 @@ dy/dx w.r.t. : cyl hp wt
 
 ```{r}
 x <- glm(am ~ cyl + hp * wt, data = mtcars, family = binomial)
-# MEM
-margins(x, atmeans = TRUE, type = "link")
-# AME
+# AME and MEM equivalent on "link" scale
 margins(x, type = "link")
 ```
 
