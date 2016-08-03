@@ -65,7 +65,6 @@ x <- lm(mpg ~ cyl * hp + wt, data = mtcars)
 ```
 
 ```
-## Average Marginal Effects for:
 ##  Factor   dy/dx Std.Err. z value Pr(>|z|)   2.50%  97.50%
 ##     cyl  0.0381   0.5999  0.0636   0.9493 -1.1376  1.2139
 ##      hp -0.0463   0.0145 -3.1909   0.0014 -0.0748 -0.0179
@@ -74,11 +73,14 @@ x <- lm(mpg ~ cyl * hp + wt, data = mtcars)
 
 With the exception of differences in rounding, the above results match identically what Stata's `margins` command produces. Using the `plot()` method also yields an aesthetically similar result to Stata's `marginsplot`:
 
-```R
+
+```r
 plot(m)
 ```
 
-![margins plot](http://i.imgur.com/2oC5UGO.png)
+![plot of chunk marginsplot](http://i.imgur.com/JP08IIG.png)
+
+The package also includes other plotting functionality to display predicted values or marginal effects. This includes methods for "lm" and "glm" class objects for the `persp()` generic 3D plotting function, and a new generic `cplot()` that displays predictions or marginal effects (from an "lm" or "glm" model) of a variable conditional across values of third variable (or itself).
 
 The numerous package vignettes and help files contain extensive documentation and examples of all package functionality.
 
