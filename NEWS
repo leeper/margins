@@ -1,8 +1,15 @@
-# CHANGES TO margins 0.1.14 #
+# CHANGES TO margins 0.2.0 #
 
-* Use the webuse package to handle examples.
+* Added `persp()` methods for "lm" and "glm" class objects to display 3-dimensional representations of predicted values and marginal effects.
+* Added `plot.margins()` method for mimicking Stata's `marginsplot` behavior.
+* Added `cplot()` generic and methods for "lm" and "glm" class objects to display conditional predictions and conditional marginal effects in the style of the **interplot** and **plotMElm** packages.
+* Added various variance estimation procedures for marginal effects: delta method (the default), bootstrap, and simulation (ala **Clarify**).
+* Fixed estimation of marginal effect variances for generalized linear models, so that they are correct on both "link" and "response" scales.
+* Re-implemented marginal effects estimation using numeric derivatives provided by `numDeriv::grad()` rather than symbolic differentiation. This allows `margins()` to handle almost any model that can be specified in R, including models that cannot be specified in Stata.
+* Used **compiler** to byte compile prediction and gradient fucntions, thereby improving estimation speed.
+* The internal `at_builder()` now checks for specification of illegal factor levels in `at` and errors when these are encountered.
+* Use the **webuse** package to handle examples.
 
 # CHANGES TO margins 0.1.0 #
 
-* Import the webuse package for easy use of Stata datasets for examples.
 * Initial package released.

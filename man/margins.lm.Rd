@@ -30,7 +30,7 @@ Calculate marginal effects for a linear model object.
 # basic examples
 require("datasets")
 x <- lm(mpg ~ cyl * hp + wt, data = mtcars)
-(m <- margins(x)[[1]])
+margins(x)
 
 }
 \author{

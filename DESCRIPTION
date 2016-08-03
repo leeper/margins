@@ -14,9 +14,9 @@ Imports:
     stats,
     graphics,
     compiler,
-    numDeriv,
-    MASS
+    numDeriv
 Suggests:
+    MASS,
     webuse,
     knitr,
     ggplot2,

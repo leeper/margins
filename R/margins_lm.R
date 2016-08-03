@@ -17,7 +17,7 @@
 #' # basic examples
 #' require("datasets")
 #' x <- lm(mpg ~ cyl * hp + wt, data = mtcars)
-#' (m <- margins(x)[[1]])
+#' margins(x)
 #'
 #' @export
 margins.lm <- 
@@ -35,13 +35,16 @@ function(x,
     
     # reduce memory profile
     x[["model"]] <- NULL
-    attr(x$terms, ".Environment") <- NULL
+    attr(x[["terms"]], ".Environment") <- NULL
     
     # calculate marginal effects
     out <- lapply(data_list, function(thisdata) {
-               m <- marginal_effect(x = x, data = thisdata, atmeans = atmeans, ...)
-               attr(m, "Variables") <- attributes(thisdata)[["Variables"]]
-               m
-           })
+        m <- marginal_effect(x = x, data = thisdata, atmeans = atmeans, ...)
+        attr(m, "Variables") <- attributes(thisdata)[["Variables"]]
+        attr(m, "at") <- attributes(thisdata)[["at"]]
+        m
+    })
+    
+    # return value
     structure(out, class = "marginslist")
 }

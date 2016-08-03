@@ -12,22 +12,30 @@ function(data,
         if (any(!names(at) %in% names(data))) {
             stop("Unrecognized variable name in 'at'")
         }
+        # expand `at` combinations
         e <- expand.grid(at)
         e <- split(e, unique(e))
-        data_out <- lapply(e, function(z) {
+        # create list of data.frames based on `at` combinations
+        data_out <- lapply(e, function(atvals) {
+            # create data.frame
             out <- as.data.frame(model.matrix(object = terms, data = data))
-            out <- `[<-`(out, , names(z), value = z)
+            # replace column values with `at` values
+            out <- `[<-`(out, , names(atvals), value = atvals)
+            # set columns to `atmeans`, if applicable
             if (atmeans) {
                 for (i in names(out)[!names(out) %in% names(at)]) {
-                    out[,i] <- mean(out[,i])
+                    out[,i] <- mean(out[,i], na.rm = TRUE)
                 }
             }
-            out
+            # return data, with `at` attribute
+            structure(out, at = paste(names(atvals), "=", atvals[1,], collapse = ", "))
         })
     } else {
+        # if `at` empty, simply setup data.frame and return
         data <- model.matrix(object = terms, data = data)
+        attr(data, "at") <- NULL
         if (atmeans) {
-            data_out <- list(as.data.frame(t(colMeans(data))))
+            data_out <- list(as.data.frame(t(colMeans(data, na.rm = TRUE))))
         } else {
             data_out <- list(as.data.frame(data))
         }

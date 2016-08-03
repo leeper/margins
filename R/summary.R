@@ -1,12 +1,19 @@
 #' @export
 summary.margins <- 
 function(object, digits = 4, level = 0.95, ...) {
-    #if (attributes(object)[["atmeans"]]) {
-    #    cat("Marginal Effects at Means\n")
-    #} else {
-    #    cat("Average Marginal Effects\n")
-    #}
-    #cat(invisible(capture.output(attributes(object)[["call"]])), "\n")
+    if (attributes(object)[["atmeans"]]) {
+        if (is.null(attributes(object)[["at"]])) {
+            cat("Marginal Effects at Means\n")
+        } else {
+            cat("Marginal Effects at Means, with ", attributes(object)[["at"]], "\n")
+        }
+    } else {
+        if (is.null(attributes(object)[["at"]])) {
+            cat("Average Marginal Effects\n")
+        } else {
+            cat("Average Marginal Effects, with ", attributes(object)[["at"]], "\n")
+        }
+    }
     fmt <- paste0("%0.", ifelse(digits > 7, 7, digits), "f")
     mes <- extract_marginal_effects(object)
     tab <- data.frame(Factor = names(mes), 

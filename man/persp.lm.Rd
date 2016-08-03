@@ -9,7 +9,8 @@
   "effect"), type = c("response", "link"), nx = 25L, ny = nx,
   theta = 45, phi = 10, shade = 0.75, xlab = xvar, ylab = yvar,
   zlab = if (match.arg(what) == "prediction") "Predicted value" else
-  paste0("Marginal effect of ", x), ticktype = c("detailed", "simple"), ...)
+  paste0("Marginal effect of ", xvar), ticktype = c("detailed", "simple"),
+  ...)
 }
 \arguments{
 \item{x}{A model object.}

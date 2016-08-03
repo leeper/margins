@@ -8,8 +8,18 @@
 #' @param iterations If \code{vce = "bootstrap"}, the number of bootstrap iterations. If \code{vce = "simulation"}, the number of simulated effects to draw. Ignored otherwise.
 #' @param method A character string indicating the numeric derivative method to use when estimating marginal effects. See \code{\link[numDeriv]{grad}} for details.
 #' @param \dots Ignored.
+#' @details Generally, it is not necessary to call this function directly because \code{\link{margins}} provides a simpler interface.
+#' 
+#' This is the internal, workhorse function that estimates marginal effects from model \code{x} for a data.frame, \code{data}, optionally estimating either \dQuote{average marginal effects} (when \code{atmeans = FALSE}) or \dQuote{marginal effects at means} (when \code{atmeans = TRUE}). In the former case, the marginal effects are estimated for each observation in the dataset and returned in full. In the latter, column means are taken for \code{data} and estimation is performed only these \dQuote{averaged} cases. The former is generally preferred because the latter may estimate marginal effects for cases that are unintuitive or not covered by the observed data (e.g., the effect when a binary variable in \code{data} is averaged to 0.6 rather than at 0 and 1, respectively).
+#' 
+#' To estimate marginal effects at specified values of \code{x} (other than means), use \code{\link{margins}} with the \code{at} parameter to specify values of covariates at which to estimate effects.
+#' 
+#' The choice of \code{vce} may be important. The default variance-covariance estimation procedure (\code{vce = "delta"}) uses the delta method to estimate marginal effect variances. This is the fastest method. When \code{vce = "simulation"}, coefficient estimates are repeatedly drawn from the asymptotic (multivariate normal) distribution of the model coefficients and each draw is used to estimate marginal effects, with the variance based upon the dispersion of those simulated effects. The number of interations used is given by \code{iterations}. For \code{vce = "bootstrap"}, the bootstrap is used to repeatedly subsample \code{data} and the variance of marginal effects is estimated from the variance of the bootstrap distribution. This method is markedly slower than the other two procedures and, obviously, it will probably fail if \code{atmeans = TRUE}. Again, \code{iterations} regulates the number of boostrap subsamples to draw.
+#' 
+#'
 #' @return A data.frame of class \dQuote{margins} containing the contents of \code{data}, fitted values for \code{x}, and any estimated marginal effects. Attributes containing additional information, including the marginal effect variances and additional details.
 #' @import stats
+#' @importFrom compiler cmpfun
 #' @importFrom numDeriv grad
 #' @importFrom MASS mvrnorm
 #' @export
@@ -18,8 +28,8 @@ function(x,
          data,
          atmeans = FALSE, 
          type = c("response", "link", "terms"),
-         vce = c("delta", "bootstrap", "simulation"),
-         iterations = 500L, # if vce == "bootstrap" or "simulation"
+         vce = c("delta", "simulation", "bootstrap"),
+         iterations = 50L, # if vce == "bootstrap" or "simulation"
          method = c("Richardson", "simple", "complex"), # passed to get_slopes()
          ...) {
     
@@ -43,19 +53,9 @@ function(x,
     
     type <- match.arg(type)
     
-    # obtain predicted values and standard errors
-    pred <- stats::predict(x, newdata = data, type = type, se.fit = TRUE)
-    pred.se <- pred[[2]]
-    pred <- pred[[1]]
-    
     # obtain gradient with respect to each variable in data
     ## THIS DOES NOT HANDLE DISCRETE FACTORS
     grad <- get_slopes(dat, model = x, type = type, method = method)[, allvars, drop = FALSE]
-    if (inherits(x, "glm") && type == "response") {
-        pred <- get_prediction(dat, model = x, type = "response")
-        grad[] <- lapply(grad, `*`, pred)
-        rm(pred)
-    }
     
     # variance estimation technique
     vce <- match.arg(vce)
@@ -69,7 +69,7 @@ function(x,
             colMeans(get_slopes(dat[s,], model = x, type = type, method = method)[, allvars, drop = FALSE], na.rm = TRUE)
         }
         # bootstrap the data and take the variance of bootstrapped AMEs
-        variances <- apply(replicate(iterations, bootfun()), 2, var, na.rm = TRUE)
+        variances <- apply(replicate(iterations, bootfun()), 1, var, na.rm = TRUE)
     } else if (vce == "delta") {
         
         # express each marginal effect as a function of all coefficients
@@ -84,7 +84,8 @@ function(x,
         # http://stats.stackexchange.com/questions/122066/how-to-use-delta-method-for-standard-errors-of-marginal-effects
         
         gradmat <- do.call("rbind", lapply(allvars, function(thisme) {
-            FUN <- .build_grad_fun(data = dat, model = x, which_me = thisme, atmeans = TRUE, type = type, method = method)
+            # THIS NEEDS TO BE SET TO `atmeans = atmeans` BUT IT IS SUPER, SUPER SLOW
+            FUN <- .build_grad_fun(data = dat, model = x, which_me = thisme, atmeans = atmeans, type = type, method = method)
             numDeriv::grad(FUN, x[["coefficients"]])
         }))
         variances <- diag(gradmat %*% vc %*% t(gradmat))

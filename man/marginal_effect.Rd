@@ -5,7 +5,7 @@
 \title{Marginal Effects Calculator}
 \usage{
 marginal_effect(x, data, atmeans = FALSE, type = c("response", "link",
-  "terms"), vce = c("delta", "bootstrap", "simulation"), iterations = 500L,
+  "terms"), vce = c("delta", "simulation", "bootstrap"), iterations = 50L,
   method = c("Richardson", "simple", "complex"), ...)
 }
 \arguments{
@@ -30,5 +30,14 @@ A data.frame of class \dQuote{margins} containing the contents of \code{data}, f
 }
 \description{
 This is the low-level marginal effects calculator called by \code{\link{margins}}.
+}
+\details{
+Generally, it is not necessary to call this function directly because \code{\link{margins}} provides a simpler interface.
+
+This is the internal, workhorse function that estimates marginal effects from model \code{x} for a data.frame, \code{data}, optionally estimating either \dQuote{average marginal effects} (when \code{atmeans = FALSE}) or \dQuote{marginal effects at means} (when \code{atmeans = TRUE}). In the former case, the marginal effects are estimated for each observation in the dataset and returned in full. In the latter, column means are taken for \code{data} and estimation is performed only these \dQuote{averaged} cases. The former is generally preferred because the latter may estimate marginal effects for cases that are unintuitive or not covered by the observed data (e.g., the effect when a binary variable in \code{data} is averaged to 0.6 rather than at 0 and 1, respectively).
+
+To estimate marginal effects at specified values of \code{x} (other than means), use \code{\link{margins}} with the \code{at} parameter to specify values of covariates at which to estimate effects.
+
+The choice of \code{vce} may be important. The default variance-covariance estimation procedure (\code{vce = "delta"}) uses the delta method to estimate marginal effect variances. This is the fastest method. When \code{vce = "simulation"}, coefficient estimates are repeatedly drawn from the asymptotic (multivariate normal) distribution of the model coefficients and each draw is used to estimate marginal effects, with the variance based upon the dispersion of those simulated effects. The number of interations used is given by \code{iterations}. For \code{vce = "bootstrap"}, the bootstrap is used to repeatedly subsample \code{data} and the variance of marginal effects is estimated from the variance of the bootstrap distribution. This method is markedly slower than the other two procedures and, obviously, it will probably fail if \code{atmeans = TRUE}. Again, \code{iterations} regulates the number of boostrap subsamples to draw.
 }
 

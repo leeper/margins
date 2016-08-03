@@ -36,6 +36,7 @@
 #' 
 #' @seealso \code{\link{plot.margins}}, \code{\link{cplot}}
 #' @importFrom graphics persp layout
+#' @importFrom grDevices n2mfrow
 #' @export
 persp.lm <- 
 function(x, 
@@ -50,7 +51,7 @@ function(x,
          shade = 0.75, 
          xlab = xvar, 
          ylab = yvar, 
-         zlab = if (match.arg(what) == "prediction") "Predicted value" else paste0("Marginal effect of ", x),
+         zlab = if (match.arg(what) == "prediction") "Predicted value" else paste0("Marginal effect of ", xvar),
          ticktype = c("detailed", "simple"),
          ...) {
     
@@ -90,15 +91,24 @@ function(x,
         persp(xvals, yvals, outcome, theta = itheta, phi = iphi, 
               shade = 0.75, xlab = xlab, ylab = ylab, zlab = zlab, ticktype = ticktype, ...)
     }
-    if ((length(theta) == 1) & (length(phi) == 1)) {
-        perspfun(itheta = theta, iphi = phi, ...)
+    p <- par(mai = rep(0.2, 4))
+    on.exit(par(p))
+    if ((length(theta) == 1) && (length(phi) == 1)) {
+        out <- list(perspfun(itheta = theta, iphi = phi, ...))
     } else {
-        p <- par(mai = rep(0.2, 4))
-        on.exit(par(p))
         views <- expand.grid(theta = theta, phi = phi)
-        layout(matrix(1:nrow(views), nrow = length(theta), byrow = TRUE))
-        mapply(perspfun, views[["theta"]], views[["phi"]], SIMPLIFY = FALSE)
+        if ((length(phi) == 1)) {
+            d <- n2mfrow(length(theta))
+            layout(matrix(1:nrow(views), nrow = d[1], ncol = d[2], byrow = TRUE))
+        } else if ((length(theta) == 1)) {
+            d <- n2mfrow(length(phi))
+            layout(matrix(1:nrow(views), nrow = d[1], ncol = d[2], byrow = TRUE))
+        } else {
+            layout(matrix(1:nrow(views), ncol = length(theta), byrow = TRUE))
+        }
+        out <- mapply(perspfun, views[["theta"]], views[["phi"]], SIMPLIFY = FALSE)
     }
+    invisible(out)
 }
 
 #' @export

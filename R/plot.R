@@ -79,3 +79,13 @@ function(x,
     }
     invisible(x)
 }
+
+#' @export
+plot.marginslist <- function(x, ...) {
+    if (length(x) == 1) {
+        plot(x[[1]], ...)
+    } else {
+        warning("'x' is a marginslist of multiple 'margins' objects. Only first is printed.")
+        plot(x[[1]], ...)
+    }
+}

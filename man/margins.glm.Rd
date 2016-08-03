@@ -30,7 +30,7 @@ Calculate marginal effects for a generalized linear model object.
 # basic examples
 require("datasets")
 x <- glm(mpg ~ cyl * hp + wt, data = mtcars)
-
+margins(x, type = "response")
 margins(x, type = "link")
 
 }

@@ -1,15 +1,14 @@
-#' @importFrom utils capture.output
 #' @export
 print.margins <- 
-function(x, digits = 4, row.names = FALSE, ...) {
-    print(summary(x), row.names = row.names, ...)
+function(x, digits = 4, ...) {
+    print(colMeans(extract_marginal_effects(x)), digits = digits, ...)
     invisible(x)
 }
 
 #' @export
-print.marginslist <- function(x, row.names = FALSE, ...) {
+print.marginslist <- function(x, ...) {
     for (i in 1:length(x)) {
-        print(summary(x[[i]]), row.names = row.names, ...)
+        print(x[[i]], ...)
         cat("\n")
     }
 }
