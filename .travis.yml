@@ -4,6 +4,6 @@ r_packages:
 - knitr
 - covr
 r_build_args: --no-build-vignettes
-r_check_args: --no-build-vignettes
+r_check_args: --ignore-vignettes
 after_success:
 - Rscript -e 'library("covr");codecov()'
