@@ -56,9 +56,9 @@ check_factor_levels <- function(data, at) {
 }
 
 check_at_names <- function(names, at) {
-    b <- !names(at) %in% names(data)
+    b <- !names(at) %in% names
     if (any(b)) {
-        e <- nsprintf(sum(b), "Unrecognized variable name in 'at': ", "Unrecognized variable names in 'at': ")
+        e <- ngettext(sum(b), "Unrecognized variable name in 'at': ", "Unrecognized variable names in 'at': ")
         stop(paste0(e, paste0(names(at)[b], collapse = ", ")))
     }
 }

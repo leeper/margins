@@ -53,7 +53,7 @@ get_slopes <- function(data, model, type = c("response", "link"), method = c("si
     return(as.data.frame(out)) # obs-x-term data.frame of obs-specific marginal effects
 }
 
-get_prediction_diff <- function(data, model, type = c("response", "link"), method = c("simple", "Richardson", "complex")) {
+get_prediction_diff <- function(data, model, type = c("response", "link")) {
     
     ## THIS DOESN'T WORK...IT IS WHAT WE CAN USE FOR FACTORS
     
@@ -64,7 +64,6 @@ get_prediction_diff <- function(data, model, type = c("response", "link"), metho
     # @param method The differentiation method to use. Passed to `numDeriv::grad()`. One of \dQuote{Richardson}, \dQuote{simple}, \dQuote{complex}.
     
     type <- match.arg(type)
-    method <- match.arg(method)
     
     if (nrow(data) == 1) {
         # setup functions through predict_factory
