@@ -16,10 +16,10 @@ Imports:
     MASS,
     numDeriv
 Suggests:
+    plm,
     webuse,
     knitr,
     ggplot2,
     testthat
-Enhances: plm
 VignetteBuilder: knitr
 RoxygenNote: 5.0.1
