@@ -23,11 +23,8 @@ function(data,
     
     #names(data) <- clean_terms(names(data))
     if (!is.null(at) && length(at) > 0) {
-        # check factor levels specified in `at`
-        check_factor_levels(data, at)
-        
-        # check names of `at`
-        check_at_names(names(data), at)
+        # check `at` specification against data
+        check_at(data, at)
         
         # setup list of data.frames based on at
         data_out <- set_data_to_at(data, at = at, atmeans = atmeans)
@@ -44,6 +41,17 @@ function(data,
     data_out
 }
 
+check_at <- function(data, at) {
+    # check names of `at`
+    check_at_names(names(data), at)
+    
+    # check factor levels specified in `at`
+    check_factor_levels(data, at)
+    
+    # check values of numeric values are interpolations
+    check_values(data, at)
+}
+
 check_factor_levels <- function(data, at) {
     # function to check whether factor levels in `at` are reasonable
     levels <- lapply(data, levels)
@@ -56,6 +64,17 @@ check_factor_levels <- function(data, at) {
         }
     }
     invisible(NULL)
+}
+
+check_values <- function(data, at) {
+    limits <- do.call(rbind, lapply(data[, names(at), drop = FALSE], range, na.rm = TRUE))
+    for (i in seq_along(at)) {
+        out <- (at[[i]] < limits[i,1]) | (at[[i]] > limits[i,2])
+        if (any( out ) ) {
+            warning(ngettext(sum(out), paste0("A 'at' value for '", names(at)[i], "' is outside observed data range!"),
+                                       paste0("Some 'at' values for '", names(at)[i], "' are outside observed data range!")))
+        }
+    }
 }
 
 check_at_names <- function(names, at) {
