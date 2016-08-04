@@ -75,7 +75,9 @@ With the exception of differences in rounding, the above results match identical
 plot(m[[1]])
 ```
 
-There is also a new generic `cplot()` that displays predictions or marginal effects (from an "lm" or "glm" model) of a variable conditional across values of third variable (or itself). For example, here is a graph of predicted probabilities from a logit model:
+If you are only interested in obtainin the marginal effects (without corresponding variances or the overhead of creating a "margins" object), you can call `marginal_effects(x)` directly. This may be useful, for example, for plotting, or getting a quick impression of the results.
+
+In addition to the estimation procedures and `plot()` generic, **margins** offers several plotting methods for model objects. First, there is a new generic `cplot()` that displays predictions or marginal effects (from an "lm" or "glm" model) of a variable conditional across values of third variable (or itself). For example, here is a graph of predicted probabilities from a logit model:
 
 ```{r cplot1}
 m <- glm(am ~ wt*drat, data = mtcars, family = binomial)
@@ -88,8 +90,7 @@ and a graph of the effect of `wt` across levels of `drat`:
 cplot(m, x = "drat", dx = "wt", what = "effect", type = "response")
 ```
 
-
-The package also includes other plotting functionality to display predicted values or marginal effects. This includes methods for "lm" and "glm" class objects for the `persp()` generic 3D plotting function. This enables three-dimensional representations of predicted outcomes:
+Second, the package implements methods for "lm" and "glm" class objects for the `persp()` generic plotting function. This enables three-dimensional representations of predicted outcomes:
 
 ```{r persp1}
 persp(x, xvar = "cyl", yvar = "hp")

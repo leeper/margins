@@ -2,6 +2,8 @@
 
 **margins** is an effort to port Stata's (closed source) [`margins`](http://www.stata.com/help.cgi?margins) command to R as an S3 generic method for calculating the marginal effects (or "partial effects") of covariates included in model objects (like those of classes "lm" and "glm"). A plot method for the new "margins" class additionally ports the `marginsplot` command.
 
+**Note: This is a work-in-progress. Trust nothing.**
+
 ## Motivation ##
 
 With the introduction of Stata's `margins` command, it has become incredibly simple to estimate average marginal effects (i.e., "average partial effects"), marginal effects at means (i.e., "partial effects at the average"), and marginal effects at representative cases. Indeed, in just a few lines of Stata code, regression results for almost any kind model can be transformed into meaningful quantities of interest and related plots:
@@ -37,7 +39,7 @@ Some technical details of the package are worth briefly noting. The estimation o
 [![Build Status](https://travis-ci.org/leeper/margins.svg?branch=master)](https://travis-ci.org/leeper/margins)
 [![Build status](https://ci.appveyor.com/api/projects/status/t6nxndmvvcw3gw7f/branch/master?svg=true)](https://ci.appveyor.com/project/leeper/margins/branch/master)
 [![codecov.io](http://codecov.io/github/leeper/margins/coverage.svg?branch=master)](http://codecov.io/github/leeper/margins?branch=master)
-[![Project Status: Wip - Initial development is in progress, but there has not yet been a stable, usable release suitable for the public.](http://www.repostatus.org/badges/latest/wip.svg)](http://www.repostatus.org/#wip)
+[![Project Status: Wip - Initial development is in progress, but there has not yet been a stable, usable release suitable for the public.](http://www.repostatus.org/badges/0.1.0/wip.svg)](http://www.repostatus.org/#wip)
 
 The development version of this package can be installed directly from GitHub using `devtools`:
 
@@ -88,7 +90,9 @@ plot(m[[1]])
 
 ![plot of chunk marginsplot](http://i.imgur.com/x5XtTuv.png)
 
-There is also a new generic `cplot()` that displays predictions or marginal effects (from an "lm" or "glm" model) of a variable conditional across values of third variable (or itself). For example, here is a graph of predicted probabilities from a logit model:
+If you are only interested in obtainin the marginal effects (without corresponding variances or the overhead of creating a "margins" object), you can call `marginal_effects(x)` directly. This may be useful, for example, for plotting, or getting a quick impression of the results.
+
+In addition to the estimation procedures and `plot()` generic, **margins** offers several plotting methods for model objects. First, there is a new generic `cplot()` that displays predictions or marginal effects (from an "lm" or "glm" model) of a variable conditional across values of third variable (or itself). For example, here is a graph of predicted probabilities from a logit model:
 
 
 ```r
@@ -107,8 +111,7 @@ cplot(m, x = "drat", dx = "wt", what = "effect", type = "response")
 
 ![plot of chunk cplot2](http://i.imgur.com/hVIVtL8.png)
 
-
-The package also includes other plotting functionality to display predicted values or marginal effects. This includes methods for "lm" and "glm" class objects for the `persp()` generic 3D plotting function. This enables three-dimensional representations of predicted outcomes:
+Second, the package implements methods for "lm" and "glm" class objects for the `persp()` generic plotting function. This enables three-dimensional representations of predicted outcomes:
 
 
 ```r
