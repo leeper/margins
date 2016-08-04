@@ -15,7 +15,7 @@
 
 \item{atmeans}{A logical indicating whether to calculate marginal effects at the means (i.e., partial effects at the average of all covariates), as opposed to the default average marginal effects (i.e., average partial effects), which is the default.}
 
-\item{\dots}{Arguments passed to \code{\link{marginal_effect}}.}
+\item{\dots}{Arguments passed to \code{\link{marginal_effects}}.}
 }
 \value{
 An object of class \dQuote{marginslist}, composed of one or more objects of class \dQuote{margins}.

@@ -19,7 +19,7 @@
 
 \item{atmeans}{A logical indicating whether to calculate marginal effects at the means (i.e., partial effects at the average of all covariates), as opposed to the default average marginal effects (i.e., average partial effects), which is the default.}
 
-\item{\dots}{Arguments passed to \code{\link{marginal_effect}}. One of particular relevance for GLMs is \code{type}.}
+\item{\dots}{Arguments passed to \code{\link{marginal_effects}}. One of particular relevance for GLMs is \code{type}.}
 }
 \description{
 Calculate marginal effects from estimated panel linear and panel generalized linear models
