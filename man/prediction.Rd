@@ -15,6 +15,9 @@ prediction(model, data, type = c("response", "link"))
 }
 \value{
 An data.frame with number of rows equal to number of rows in \code{data}, where each row is an observation and the two columns represent fitted/predicted values and the standard errors thereof.
+require("datasets")
+x <- lm(mpg ~ cyl * hp + wt, data = mtcars)
+prediction(x)
 }
 \description{
 Extract predicted values via \code{\link[stats]{predict}} from a model object, conditional on data

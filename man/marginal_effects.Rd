@@ -25,6 +25,12 @@ Extract marginal effects via numerical differentiation from a model object, cond
 \details{
 This function uses numeric differentiation (\code{\link[numDeriv]{grad}}) to extract marginal effects of an estimated model with respect to all variables specified in \code{data} and returns a data.frame containing the unit-specific marginal effects with respect to each variable included (or not included) in the model. (Note that this is not each \emph{coefficient}.)
 }
+\examples{
+require("datasets")
+x <- lm(mpg ~ cyl * hp + wt, data = mtcars)
+marginal_effects(x)
+
+}
 \seealso{
 \code{\link{margins}}, \code{\link{margins.lm}}, \code{\link{build_margins}}
 }

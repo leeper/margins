@@ -50,6 +50,7 @@ Draw one or more perspectives plots reflecting predictions or marginal effects f
 Currently, this implements \dQuote{marginal effects at means} of all covariates.
 }
 \examples{
+\dontrun{
 require('datasets')
 # prediction from several angles
 m <- lm(mpg ~ wt*drat, data = mtcars)
@@ -66,7 +67,7 @@ persp(m, theta = c(30, 60)) # prediction
 # effects on linear predictor and outcome
 persp(m, xvar = "drat", yvar = "wt", what = "effect", type = "link")
 persp(m, xvar = "drat", yvar = "wt", what = "effect", type = "response")
-
+}
 }
 \seealso{
 \code{\link{plot.margins}}, \code{\link{cplot}}

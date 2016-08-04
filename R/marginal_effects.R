@@ -6,6 +6,11 @@
 #' @param method A character string indicating the numeric derivative method to use when estimating marginal effects. \dQuote{simple} optimizes for speed; \dQuote{Richardson} optimizes for accuracy. See \code{\link[numDeriv]{grad}} for details.
 #' @details This function uses numeric differentiation (\code{\link[numDeriv]{grad}}) to extract marginal effects of an estimated model with respect to all variables specified in \code{data} and returns a data.frame containing the unit-specific marginal effects with respect to each variable included (or not included) in the model. (Note that this is not each \emph{coefficient}.)
 #' @return An data.frame with dimensions equal to \code{data}, where each row is an observation and each column is the marginal effect of that variable for the data values provided by \code{data}.
+#' @examples
+#' require("datasets")
+#' x <- lm(mpg ~ cyl * hp + wt, data = mtcars)
+#' marginal_effects(x)
+#'
 #' @seealso \code{\link{margins}}, \code{\link{margins.lm}}, \code{\link{build_margins}}
 #' @export
 marginal_effects <- function(model, data, type = c("response", "link"), method = c("simple", "Richardson", "complex")) {

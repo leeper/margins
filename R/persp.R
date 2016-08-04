@@ -17,6 +17,7 @@
 #' @param \dots Additional arguments passed to \code{\link[graphics]{persp}}. 
 #' @details Currently, this implements \dQuote{marginal effects at means} of all covariates.
 #' @examples
+#' \dontrun{
 #' require('datasets')
 #' # prediction from several angles
 #' m <- lm(mpg ~ wt*drat, data = mtcars)
@@ -33,7 +34,7 @@
 #' # effects on linear predictor and outcome
 #' persp(m, xvar = "drat", yvar = "wt", what = "effect", type = "link")
 #' persp(m, xvar = "drat", yvar = "wt", what = "effect", type = "response")
-#' 
+#' }
 #' @seealso \code{\link{plot.margins}}, \code{\link{cplot}}
 #' @importFrom graphics persp layout
 #' @importFrom grDevices n2mfrow

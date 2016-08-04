@@ -86,6 +86,7 @@ Draw one or more conditioanl effects plots reflecting predictions or marginal ef
 Currently, this implements \dQuote{marginal effects at means} of all covariates. And confidence intervals are not drawn for marginal effects plots.
 }
 \examples{
+\dontrun{
 require('datasets')
 # prediction from several angles
 m <- lm(Sepal.Length ~ Sepal.Width, data = iris)
@@ -105,7 +106,7 @@ cplot(m, x = "wt") # prediction
 # effects on linear predictor and outcome
 cplot(m, x = "drat", dx = "wt", what = "effect", type = "link")
 cplot(m, x = "drat", dx = "wt", what = "effect", type = "response")
-
+}
 }
 \seealso{
 \code{\link{plot.margins}}, \code{\link{persp.lm}}
