@@ -4,7 +4,7 @@ Title: Marginal Effects for Model Objects
 Description: An R port of Stata's 'margins' command, which can be used to
     calculate marginal effects or partial effects from model objects.
 License: MIT + file LICENSE
-Version: 0.1.23
+Version: 0.1.24
 Date: 2016-08-04
 Authors@R: c(person("Thomas J.", "Leeper",
                     role = c("aut", "cre"),

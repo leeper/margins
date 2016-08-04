@@ -45,19 +45,14 @@ function(model,
     mes <- marginal_effects(model = model, data = data, type = type, method = method)[, allvars, drop = FALSE]
     
     # variance estimation technique
-    variances <- get_me_variances(data = data, model = model, allvars = allvars, type = type, vce = vce, iterations = iterations, method = method)
+    variances <- get_effect_variances(data = data, model = model, allvars = allvars, 
+                                  type = type, vce = vce, iterations = iterations, method = method)
     
     # obtain predicted values and standard errors
-    pred <- stats::predict(model, newdata = data, type = type, se.fit = TRUE)
-    class(pred[["fit"]]) <- c("fit", "numeric")
-    class(pred[["se.fit"]]) <- c("se.fit", "numeric")
+    pred <- prediction(model = model, data = data, type = type)
     
     # setup output structure
-    for (i in seq_along(mes)) {
-        class(mes[[i]]) <- c("marginaleffect", "numeric")
-    }
-    outdat <- cbind(data, fit = pred[["fit"]], se.fit = pred[["se.fit"]], mes)
-    structure(outdat, 
+    structure(cbind(data, pred, mes), 
               class = c("margins", "data.frame"), 
               Variances = setNames(variances, names(mes)),
               type = type,

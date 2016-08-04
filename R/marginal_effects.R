@@ -9,11 +9,6 @@
 #' @seealso \code{\link{margins}}, \code{\link{margins.lm}}, \code{\link{build_margins}}
 #' @export
 marginal_effects <- function(model, data, type = c("response", "link"), method = c("simple", "Richardson", "complex")) {
-    # @title Calculate marginal effects of each variable at specified values of independent variables
-    # @param model The model object to pass to `predict()`
-    # @param data The dataset on which to to calculate `predict(model)` (and the slope thereof)
-    # @param type The type of prediction. Default is \dQuote{response}.
-    # @param method The differentiation method to use. Passed to `numDeriv::grad()`. One of \dQuote{Richardson}, \dQuote{simple}, \dQuote{complex}.
     
     # setup data
     if (missing(data)) {
@@ -32,13 +27,16 @@ marginal_effects <- function(model, data, type = c("response", "link"), method =
         FUN <- .build_predict_fun(data = data[datarow, , drop = FALSE], model = model, type = type)
         # extract gradient at input value
         numDeriv::grad(FUN, unlist(data[datarow,]), method = method)
+        # NEED TO HANDLE FACTORS USING `get_discrete_diff()`
     })
     
     # return obs-x-term data.frame of obs-specific marginal effects
-    structure(do.call("rbind.data.frame", out), names = names(data))
+    out <- do.call("rbind.data.frame", out)
+    out[] <- lapply(out, `class<-`, "marginaleffect")
+    structure(out, names = names(data))
 }
 
-get_prediction_diff <- function(data, model, type = c("response", "link")) {
+get_discrete_diff <- function(data, model, type = c("response", "link")) {
     
     ## THIS DOESN'T WORK...IT IS WHAT WE CAN USE FOR FACTORS
     

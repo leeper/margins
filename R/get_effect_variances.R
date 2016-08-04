@@ -1,4 +1,4 @@
-get_me_variances <- 
+get_effect_variances <- 
 function(data = data, 
          model = model, 
          allvars = all.vars(model[["terms"]])[-1],
