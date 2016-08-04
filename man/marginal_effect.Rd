@@ -11,7 +11,7 @@ marginal_effect(x, data, atmeans = FALSE, type = c("response", "link",
 \arguments{
 \item{x}{A model object.}
 
-\item{data}{A data.frame. If missing, data are extracted from the \code{x}.}
+\item{data}{A data.frame over which to calculate marginal effects.}
 
 \item{atmeans}{A logical indicating whether to estimate \dQuote{marginal effects at means} or \dQuote{average marginal effects} (the default).}
 
@@ -26,7 +26,7 @@ marginal_effect(x, data, atmeans = FALSE, type = c("response", "link",
 \item{\dots}{Ignored.}
 }
 \value{
-A data.frame of class \dQuote{margins} containing the contents of \code{data}, fitted values for \code{x}, and any estimated marginal effects. Attributes containing additional information, including the marginal effect variances and additional details.
+A data.frame of class \dQuote{margins} containing the contents of \code{data}, fitted values for \code{x}, the standard errors of the fitted values, and any estimated marginal effects. This data.frame may have repeated column names (for the original variables and the margginal effects thereof). Marginal effects columns are distinguished by their class (\dQuote{marginaleffect}) and can be extracted using \code{\link{extract_marginal_effects}}. Attributes containing additional information, including the marginal effect variances and additional details.
 }
 \description{
 This is the low-level marginal effects calculator called by \code{\link{margins}}.

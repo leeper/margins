@@ -3,10 +3,10 @@
 #' @description Calculate marginal effects from estimated panel linear and panel generalized linear models
 #' @param x A model object of class \dQuote{plm} or \dQuote{pglm}, from the \pkg{plm} package.
 #' @param newdata A data.frame containing the data at which to evaluate the marginal effects, as in \code{\link[stats]{predict}}.
-#' @param at A list of one or more named vectors, specifically values at which to calculate the marginal effects. See examples.
+#' @param at A list of one or more named vectors, specifically values at which to calculate the marginal effects. See \code{\link{build_datalist}} for details on use.
 #' @param atmeans A logical indicating whether to calculate marginal effects at the means (i.e., partial effects at the average of all covariates), as opposed to the default average marginal effects (i.e., average partial effects), which is the default.
 #' @param \dots Arguments passed to \code{\link{marginal_effect}}. One of particular relevance for GLMs is \code{type}.
-#' @seealso \code{\link{margins.lm}}, \code{\link{margins.glm}}, \code{\link{plot.margins}}
+#' @seealso \code{\link{margins.lm}}, \code{\link{margins.glm}}, \code{\link{plot.margins}}, \code{\link{extract_marginal_effects}}
 #' @export
 margins.plm <- 
 function(x, 
@@ -17,9 +17,13 @@ function(x,
     
     # setup data
     if (missing(newdata)) {
-        newdata <- if (!is.null(x[["call"]][["data"]])) eval(x[["call"]][["data"]]) else x[["model"]]
+        if (!is.null(x[["call"]][["data"]])) {
+            newdata <- eval(x[["call"]][["data"]], parent.frame()) 
+        } else { 
+            newdata <- get_all_vars(x[["terms"]], data = x[["model"]])
+        }
     }
-    data_list <- at_builder(newdata, terms = x[["terms"]], levels = x[["xlevels"]], at = at, atmeans = atmeans)
+    data_list <- build_datalist(newdata, at = at, atmeans = atmeans)
     
     # reduce memory profile
     x[["model"]] <- NULL
@@ -49,7 +53,7 @@ function(x,
     if (missing(newdata)) {
         newdata <- if (!is.null(x[["call"]][["data"]])) eval(x[["call"]][["data"]]) else x[["model"]]
     }
-    data_list <- at_builder(newdata, terms = x[["terms"]], levels = x[["xlevels"]], at = at, atmeans = atmeans)
+    data_list <- build_datalist(newdata, terms = x[["terms"]], levels = x[["xlevels"]], at = at, atmeans = atmeans)
     
     # reduce memory profile
     x[["model"]] <- NULL

@@ -14,7 +14,7 @@
 
 \item{newdata}{A data.frame containing the data at which to evaluate the marginal effects, as in \code{\link[stats]{predict}}.}
 
-\item{at}{A list of one or more named vectors, specifically values at which to calculate the marginal effects. See examples.}
+\item{at}{A list of one or more named vectors, specifically values at which to calculate the marginal effects. See \code{\link{build_datalist}} for details on use.}
 
 \item{atmeans}{A logical indicating whether to calculate marginal effects at the means (i.e., partial effects at the average of all covariates), as opposed to the default average marginal effects (i.e., average partial effects), which is the default.}
 
@@ -24,6 +24,6 @@
 Calculate marginal effects from estimated panel linear and panel generalized linear models
 }
 \seealso{
-\code{\link{margins.lm}}, \code{\link{margins.glm}}, \code{\link{plot.margins}}
+\code{\link{margins.lm}}, \code{\link{margins.glm}}, \code{\link{plot.margins}}, \code{\link{extract_marginal_effects}}
 }
 

@@ -1,7 +1,7 @@
 #' @title Marginal Effects Calculator
 #' @description This is the low-level marginal effects calculator called by \code{\link{margins}}.
 #' @param x A model object.
-#' @param data A data.frame. If missing, data are extracted from the \code{x}.
+#' @param data A data.frame over which to calculate marginal effects.
 #' @param atmeans A logical indicating whether to estimate \dQuote{marginal effects at means} or \dQuote{average marginal effects} (the default).
 #' @param type A character string indicating the type of marginal effects to estimate. Mostly relevant for non-linear models, where the reasonable options are \dQuote{response} (the default) or \dQuote{link} (i.e., on the scale of the linear predictor in a GLM).
 #' @param vce A character string indicating the type of estimation procedure to use for estimating variances. The default (\dQuote{delta}) uses the delta method. Alternatives are \dQuote{bootstrap}, which uses bootstrap estimation, or \dQuote{simulation}, which averages across simulations drawn from the joint sampling distribution of model coefficients. The latter two are extremely time intensive.
@@ -17,7 +17,7 @@
 #' The choice of \code{vce} may be important. The default variance-covariance estimation procedure (\code{vce = "delta"}) uses the delta method to estimate marginal effect variances. This is the fastest method. When \code{vce = "simulation"}, coefficient estimates are repeatedly drawn from the asymptotic (multivariate normal) distribution of the model coefficients and each draw is used to estimate marginal effects, with the variance based upon the dispersion of those simulated effects. The number of interations used is given by \code{iterations}. For \code{vce = "bootstrap"}, the bootstrap is used to repeatedly subsample \code{data} and the variance of marginal effects is estimated from the variance of the bootstrap distribution. This method is markedly slower than the other two procedures and, obviously, it will probably fail if \code{atmeans = TRUE}. Again, \code{iterations} regulates the number of boostrap subsamples to draw.
 #' 
 #'
-#' @return A data.frame of class \dQuote{margins} containing the contents of \code{data}, fitted values for \code{x}, and any estimated marginal effects. Attributes containing additional information, including the marginal effect variances and additional details.
+#' @return A data.frame of class \dQuote{margins} containing the contents of \code{data}, fitted values for \code{x}, the standard errors of the fitted values, and any estimated marginal effects. This data.frame may have repeated column names (for the original variables and the margginal effects thereof). Marginal effects columns are distinguished by their class (\dQuote{marginaleffect}) and can be extracted using \code{\link{extract_marginal_effects}}. Attributes containing additional information, including the marginal effect variances and additional details.
 #' @import stats
 #' @importFrom compiler cmpfun
 #' @importFrom numDeriv grad
@@ -34,29 +34,14 @@ function(x,
          ...) {
     
     # variables in the model
-    allvars <- attributes(terms(x))$term.labels[attributes(terms(x))$order == 1]
-    allvars <- sort(clean_terms(allvars))
-    
-    # setup data
-    if (missing(data)) {
-        d <- eval(x[["call"]][["data"]], parent.frame())
-        dat <- if (!is.null(d)) d else x[["model"]]
-        rm(d)
-    } else {
-        dat <- data
-    }
-    if (atmeans) {
-        # optionally pass to .atmeans
-        # need to be able to tell .atmeans which vars to set to means
-        dat <- .atmeans(dat, vars = names(dat), na.rm = TRUE)
-    }
+    allvars <- all.vars(x[["terms"]])[-1]
     
     type <- match.arg(type)
     method <- match.arg(method)
     
     # obtain gradient with respect to each variable in data
     ## THIS DOES NOT HANDLE DISCRETE FACTORS
-    mes <- get_slopes(dat, model = x, type = type, method = method)[, allvars, drop = FALSE]
+    mes <- get_slopes(data, model = x, type = type, method = method)[, allvars, drop = FALSE]
     
     # variance estimation technique
     vce <- match.arg(vce)
@@ -66,8 +51,8 @@ function(x,
     if (vce == "bootstrap") {
         # function to calculate AME for one bootstrap subsample
         bootfun <- function() {
-            s <- sample(1:nrow(dat), nrow(dat), TRUE)
-            colMeans(get_slopes(dat[s,], model = x, type = type, method = method)[, allvars, drop = FALSE], na.rm = TRUE)
+            s <- sample(1:nrow(data), nrow(data), TRUE)
+            colMeans(get_slopes(data[s,], model = x, type = type, method = method)[, allvars, drop = FALSE], na.rm = TRUE)
         }
         # bootstrap the data and take the variance of bootstrapped AMEs
         variances <- apply(replicate(iterations, bootfun()), 1, var, na.rm = TRUE)
@@ -86,7 +71,7 @@ function(x,
         
         gradmat <- do.call("rbind", lapply(allvars, function(thisme) {
             # THIS NEEDS TO BE SET TO `atmeans = atmeans` BUT IT IS SUPER, SUPER SLOW
-            FUN <- .build_grad_fun(data = dat, model = x, which_me = thisme, atmeans = atmeans, type = type, method = method)
+            FUN <- .build_grad_fun(data = data, model = x, which_me = thisme, atmeans = atmeans, type = type, method = method)
             numDeriv::grad(FUN, x[["coefficients"]])
         }))
         variances <- diag(gradmat %*% vc %*% t(gradmat))
@@ -102,7 +87,7 @@ function(x,
         # estimate AME from from each simulated coefficient vector
         effectmat <- apply(coefmat, 1, function(coefrow) {
             tmpmodel[["coefficients"]] <- coefrow
-            colMeans(get_slopes(dat, model = tmpmodel, type = type, method = method)[, allvars, drop = FALSE])
+            colMeans(get_slopes(data, model = tmpmodel, type = type, method = method)[, allvars, drop = FALSE])
         })
         # calculate the variance of the simulated AMEs
         variances <- apply(effectmat, 1, var, na.rm = TRUE)
@@ -117,7 +102,7 @@ function(x,
     for (i in seq_along(mes)) {
         class(mes[[i]]) <- c("marginaleffect", "numeric")
     }
-    outdat <- cbind(dat, fit = pred[["fit"]], se.fit = pred[["se.fit"]], mes)
+    outdat <- cbind(data, fit = pred[["fit"]], se.fit = pred[["se.fit"]], mes)
     structure(outdat, 
               class = c("margins", "data.frame"), 
               Variances = setNames(variances, names(mes)),
