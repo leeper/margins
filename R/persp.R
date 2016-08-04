@@ -68,11 +68,12 @@ function(x,
     what <- match.arg(what)
     type <- match.arg(type)
     if (what == "prediction") {
-        datmeans <- cbind.data.frame(lapply(colMeans(dat[, !names(dat) %in% c(xvar, yvar), drop = FALSE]), rep, length(xvals) * length(yvals)))
+        datmeans <- structure(lapply(colMeans(dat[, !names(dat) %in% c(xvar, yvar), drop = FALSE]), rep, length(xvals) * length(yvals)),
+                              class = "data.frame", row.names = seq_len(length(xvals) * length(yvals)))
         outcome <- outer(xvals, yvals, FUN = function(a, b) {
             datmeans[, xvar] <- a
             datmeans[, yvar] <- b
-            predict(x, datmeans, type = type)
+            predict(x, newdata = datmeans, type = type)
         })
     } else if (what == "effect") {
         dat2 <- expand.grid(xvals, yvals)
@@ -81,7 +82,7 @@ function(x,
         for (i in seq_along(cmeans)) {
             dat2[[names(cmeans)[i]]] <- cmeans[i]
         }
-        vals <- get_slopes(data = dat2, model = x, type = type)[, xvar]
+        vals <- marginal_effects(data = dat2, model = x, type = type)[, xvar]
         outcome <- matrix(NA_real_, nrow = nx, ncol = ny)
         outcome[as.matrix(expand.grid(1:nx, 1:ny))] <- vals
     }

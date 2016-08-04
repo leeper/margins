@@ -16,17 +16,13 @@
     return(cmpfun(FUN))
 }
 
-.build_grad_fun <- function(data, model, which_me, atmeans = TRUE, type = "response", method = c("Richardson", "simple", "complex")) {
+.build_grad_fun <- function(data, model, which_me, type = "response", method = c("Richardson", "simple", "complex")) {
     # factory function to return prediction holding data constant but varying coefficients
     FUN <- function(coefs) {
         for (i in seq_along(coefs)) {
             model[["coefficients"]][names(coefs)[i]] <- coefs[i]
         }
-        if (isTRUE(atmeans)) {
-            get_slopes(data = as.data.frame(t(colMeans(data))), model = model, type = type, method = method)[,which_me]
-        } else {
-            colMeans(get_slopes(data = data, model = model, type = type, method = method)[, which_me, drop = FALSE], na.rm = TRUE)
-        }
+        colMeans(marginal_effects(model = model, data = data, type = type, method = method)[, which_me, drop = FALSE], na.rm = TRUE)
     }
     return(cmpfun(FUN))
 }

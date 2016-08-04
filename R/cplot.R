@@ -98,9 +98,10 @@ function(object,
     what <- match.arg(what)
     type <- match.arg(type)
     if (what == "prediction") {
-        tmpdat <- cbind.data.frame(lapply(colMeans(dat[, names(dat) != xvar, drop = FALSE]), rep, length(xvals)))
+        tmpdat <- structure(lapply(colMeans(dat[, names(dat) != xvar, drop = FALSE]), rep, length(xvals)),
+                            class = "data.frame", row.names = seq_len(length(xvals)))
         tmpdat[, xvar] <- xvals
-        outcome <- predict(object, tmpdat, type = type, se.fit = TRUE)
+        outcome <- predict(object, newdata = tmpdat, type = type, se.fit = TRUE)
         a <- (1 - level)/2
         fac <- qnorm(c(a, 1 - a))
         b1 <- outcome[["fit"]] + (fac[1] * outcome[["se.fit"]])
@@ -129,9 +130,10 @@ function(object,
             rug(dat[[x]], ticksize = rug.size, col = rug.col)
         }
     } else if (what == "effect") {
-        tmpdat <- cbind.data.frame(lapply(colMeans(dat[, names(dat) != xvar, drop = FALSE]), rep, length(xvals)))
+        tmpdat <- structure(lapply(colMeans(dat[, names(dat) != xvar, drop = FALSE]), rep, length(xvals)),
+                            class = "data.frame", row.names = seq_len(length(xvals)))
         tmpdat[, xvar] <- xvals
-        outcome <- get_slopes(data = tmpdat, model = object, type = type)[, dxvar]
+        outcome <- marginal_effects(model = object, data = tmpdat, type = type)[, dxvar]
         if (missing(ylim)) {
             rng <- diff(range(outcome, na.rm = TRUE))
             if (rng < 1e-5) {

@@ -4,17 +4,22 @@
 \alias{margins}
 \title{Marginal Effects Estimation}
 \usage{
-margins(x, ...)
+margins(model, ...)
 }
 \arguments{
-\item{x}{A model object.}
+\item{model}{A model object.}
 
-\item{\dots}{Addition arguments passed to methods.}
+\item{\dots}{Additional arguments passed to methods. See, for example, \code{\link{margins.lm}}.}
 }
 \description{
-S3 generic function for estimating marginal effects from modelling objects
+S3 generic function for building a \dQuote{margins} object from a model object
+}
+\details{
+Alternatively, use \code{\link{marginal_effects}} to retrieve only marginal effects without constructing a \dQuote{margins} object.
+
+Use \code{\link{extract_marginal_effects}} to retrieve a data.frame of marginal effects from a \dQuote{margins} object.
 }
 \seealso{
-\code{\link{margins.lm}}, \code{\link{margins.glm}}
+\code{\link{marginal_effects}}, \code{\link{margins.lm}}, \code{\link{margins.glm}}
 }
 

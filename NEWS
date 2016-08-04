@@ -5,9 +5,10 @@
 * Added `cplot()` generic and methods for "lm" and "glm" class objects to display conditional predictions and conditional marginal effects in the style of the **interplot** and **plotMElm** packages.
 * Added various variance estimation procedures for marginal effects: delta method (the default), bootstrap, and simulation (ala **Clarify**).
 * Fixed estimation of marginal effect variances for generalized linear models, so that they are correct on both "link" and "response" scales.
+* Exposed two internal marginal effect estimation functions. First, `build_margins()` is called by `margins()` methods (perhaps repeatedly) and actually assembles a "margins" object from a model and data. It is never necessary to call this directly, but may be useful for very simple marginal effect estimation procedures (i.e., using original data with no `at` specification). Second, `marginal_effects()` is the very low level function that differentiates a model with respect to some input data. This is the fastest way to obtain marginal effects without the overhead of creating a "margins" object (for which variance estimation is very time-consuming).
 * Re-implemented marginal effects estimation using numeric derivatives provided by `numDeriv::grad()` rather than symbolic differentiation. This allows `margins()` to handle almost any model that can be specified in R, including models that cannot be specified in Stata.
 * Used **compiler** to byte compile prediction and gradient fucntions, thereby improving estimation speed.
-* The internal `at_builder()` now checks for specification of illegal factor levels in `at` and errors when these are encountered.
+* The internal `build_datalist()` now checks for specification of illegal factor levels in `at` and errors when these are encountered.
 * Use the **webuse** package to handle examples.
 
 # CHANGES TO margins 0.1.0 #

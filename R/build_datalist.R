@@ -10,7 +10,9 @@
 #' @examples
 #' # basic examples
 #' require("datasets")
-#' build_datalist(mtcars, at = list(cyl = c(4, 6)))
+#' build_datalist(head(mtcars), at = list(cyl = c(4, 6)))
+#'
+#' str(build_datalist(head(mtcars, at = list(cyl = c(4,6), wt = c(1,2,3)))))
 #'
 #' @export
 build_datalist <- 
@@ -34,9 +36,10 @@ function(data,
         if (atmeans) {
             data_out <- list(.atmeans(data))
         } else {
-            data_out <- list(as.data.frame(data))
+            data_out <- list(data)
         }
         attr(data_out[[1]], "at") <- NULL
+        attr(data_out[[1]], "atmeans") <- atmeans
     }
     data_out
 }
@@ -71,14 +74,14 @@ set_data_to_at <- function(data, at = NULL, atmeans = FALSE) {
     data_out <- lapply(e, function(atvals) {
         dat <- data
         dat <- `[<-`(dat, , names(atvals), value = atvals)
-        # set columns to `atmeans`, if applicable
+        
         if (atmeans) {
-            for (i in names(dat)[!names(dat) %in% names(at)]) {
-                dat[,i] <- mean(dat[,i], na.rm = TRUE)
-            }
+            # set columns to `atmeans`, if applicable
+            dat <- .atmeans(dat, names(dat)[!names(dat) %in% names(at)])
         }
+        
         # return data, with `at` attribute
-        structure(dat, at = paste(names(atvals), "=", atvals[1,], collapse = ", "))
+        structure(dat, at = atvals, atmeans = atmeans)
     })
     return(data_out)
 }
@@ -89,7 +92,7 @@ set_data_to_at <- function(data, at = NULL, atmeans = FALSE) {
         vars <- names(data)
     }
     for (i in seq_along(vars)) {
-        data[,vars[i]] <- mean(data[,vars[i]], na.rm = TRUE)
+        data[[vars[i]]] <- mean(data[[vars[i]]], na.rm = TRUE)
     }
     data
 }
@@ -99,7 +102,7 @@ set_data_to_at <- function(data, at = NULL, atmeans = FALSE) {
         vars <- names(data)
     }
     for (i in seq_along(vars)) {
-        data[,vars[i]] <- stats::quantile(data[,vars[i]], probs, na.rm = TRUE)
+        data[[vars[i]]] <- stats::quantile(data[[vars[i]]], probs, na.rm = TRUE)
     }
     data
 }

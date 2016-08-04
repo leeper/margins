@@ -5,14 +5,15 @@
 \alias{margins.plm}
 \title{Marginal Effects for Panel Regression Models}
 \usage{
-\method{margins}{plm}(x, newdata = NULL, at = NULL, atmeans = FALSE, ...)
+\method{margins}{plm}(model, data = NULL, at = NULL, atmeans = FALSE, ...)
 
-\method{margins}{pglm}(x, newdata = NULL, at = NULL, atmeans = FALSE, ...)
+\method{margins}{pglm}(model, data = NULL, at = NULL, atmeans = FALSE,
+  ...)
 }
 \arguments{
-\item{x}{A model object of class \dQuote{plm} or \dQuote{pglm}, from the \pkg{plm} package.}
+\item{model}{A model object of class \dQuote{plm} or \dQuote{pglm}, from the \pkg{plm} package.}
 
-\item{newdata}{A data.frame containing the data at which to evaluate the marginal effects, as in \code{\link[stats]{predict}}.}
+\item{data}{A data.frame containing the data at which to evaluate the marginal effects, as in \code{\link[stats]{predict}}.}
 
 \item{at}{A list of one or more named vectors, specifically values at which to calculate the marginal effects. See \code{\link{build_datalist}} for details on use.}
 

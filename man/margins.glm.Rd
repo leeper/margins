@@ -4,12 +4,12 @@
 \alias{margins.glm}
 \title{Marginal Effects for Generalized Linear Models}
 \usage{
-\method{margins}{glm}(x, newdata, at = NULL, atmeans = FALSE, ...)
+\method{margins}{glm}(model, data, at = NULL, atmeans = FALSE, ...)
 }
 \arguments{
-\item{x}{A model object of class \dQuote{glm}.}
+\item{model}{A model object of class \dQuote{glm}.}
 
-\item{newdata}{A data.frame containing the data at which to evaluate the marginal effects, as in \code{\link[stats]{predict}}.}
+\item{data}{A data.frame containing the data at which to evaluate the marginal effects, as in \code{\link[stats]{predict}}.}
 
 \item{at}{A list of one or more named vectors, specifically values at which to calculate the marginal effects. See \code{\link{build_datalist}} for details on use.}
 
@@ -24,7 +24,7 @@ An object of class \dQuote{marginslist}, composed of one or more objects of clas
 Calculate marginal effects from estimated generalized linear models
 }
 \details{
-Calculate marginal effects for a generalized linear model object.
+Calculates marginal effects for a linear model object using \code{\link{marginal_effects}} and returns a \dQuote{marginslist} list of one or more \dQuote{margins} objects.
 }
 \examples{
 # basic examples

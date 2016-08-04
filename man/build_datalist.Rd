@@ -24,7 +24,9 @@ Construct a list of data.frames based upon an input data.frame and a list of one
 \examples{
 # basic examples
 require("datasets")
-build_datalist(mtcars, at = list(cyl = c(4, 6)))
+build_datalist(head(mtcars), at = list(cyl = c(4, 6)))
+
+str(build_datalist(head(mtcars, at = list(cyl = c(4,6), wt = c(1,2,3)))))
 
 }
 \author{
