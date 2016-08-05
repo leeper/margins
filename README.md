@@ -33,24 +33,6 @@ Given the challenges of interpreting the contribution of a given regressor in an
 
 Some technical details of the package are worth briefly noting. The estimation of marginal effects relies on numeric derivatives produced using `predict()` and [`numDeriv::grad()`](https://cran.r-project.org/package=numDeriv). While symbolic differentiation of some models (e.g., linear models) is possible using `D()` and `deriv()`, R's modelling language (the "formula" class) is sufficiently general to enable the construction of model formulae that contain terms that fall outside of R's symbolic differentiation rule table (e.g., `y ~ factor(x)` or `y ~ I(FUN(x))` for any arbitrary `FUN()`). By relying on numeric differentiation, `margins()` supports *any* model that can be expressed in R formula syntax. Even Stata's `margins` command is limited in its ability to handle variable transformations (e.g., including `x` and `log(x)` as predictors) and quadratic terms (e.g., `x^3`); these scenarios are easily expressed in an R formula and easily handled, correctly, by `margins()`.
 
-## Requirements and Installation ##
-
-[![CRAN](http://www.r-pkg.org/badges/version/slopegraph)](http://cran.r-project.org/web/packages/margins/index.html)
-[![Build Status](https://travis-ci.org/leeper/margins.svg?branch=master)](https://travis-ci.org/leeper/margins)
-[![Build status](https://ci.appveyor.com/api/projects/status/t6nxndmvvcw3gw7f/branch/master?svg=true)](https://ci.appveyor.com/project/leeper/margins/branch/master)
-[![codecov.io](http://codecov.io/github/leeper/margins/coverage.svg?branch=master)](http://codecov.io/github/leeper/margins?branch=master)
-[![Project Status: Wip - Initial development is in progress, but there has not yet been a stable, usable release suitable for the public.](http://www.repostatus.org/badges/latest/wip.svg)](http://www.repostatus.org/#wip)
-
-The development version of this package can be installed directly from GitHub using `devtools`:
-
-```R
-if (!require("ghit")) {
-    install.packages("ghit")
-    library("ghit")
-}
-install_github("leeper/margins")
-```
-
 ## Simple code examples ##
 
 
@@ -131,4 +113,22 @@ persp(x, xvar = "cyl", yvar = "wt", what = "effect", nx = 10)
 
 
 The numerous package vignettes and help files contain extensive documentation and examples of all package functionality.
+
+## Requirements and Installation ##
+
+[![CRAN](http://www.r-pkg.org/badges/version/slopegraph)](http://cran.r-project.org/web/packages/margins/index.html)
+[![Build Status](https://travis-ci.org/leeper/margins.svg?branch=master)](https://travis-ci.org/leeper/margins)
+[![Build status](https://ci.appveyor.com/api/projects/status/t6nxndmvvcw3gw7f/branch/master?svg=true)](https://ci.appveyor.com/project/leeper/margins/branch/master)
+[![codecov.io](http://codecov.io/github/leeper/margins/coverage.svg?branch=master)](http://codecov.io/github/leeper/margins?branch=master)
+[![Project Status: Wip - Initial development is in progress, but there has not yet been a stable, usable release suitable for the public.](http://www.repostatus.org/badges/latest/wip.svg)](http://www.repostatus.org/#wip)
+
+The development version of this package can be installed directly from GitHub using `devtools`:
+
+```R
+if (!require("ghit")) {
+    install.packages("ghit")
+    library("ghit")
+}
+install_github("leeper/margins", build_vignettes = FALSE)
+```
 

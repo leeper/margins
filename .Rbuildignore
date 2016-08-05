@@ -8,3 +8,5 @@ vignettes/Cigar.csv
 inst/standarderrors.pdf
 /figure
 /cache
+/inst/doc/*.log
+/inst/doc/*.Rmd

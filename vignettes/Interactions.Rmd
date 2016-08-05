@@ -103,29 +103,13 @@ x2 <- lm(mpg ~ hp * wt, data = mtcars)
 margins(x2)
 ```
 
-On average across the cases in the dataset, the effect of horsepower is slightly negative. On average, the effect of weight is also negative. Both decrease fuel economy. But what is the marginal effect of each variable across the range of values we actually observe in the data. To get a handle on this, we'll do something similar to what we did above with `wt`, except now we'll do it for both `wt` and `hp`:
+On average across the cases in the dataset, the effect of horsepower is slightly negative. On average, the effect of weight is also negative. Both decrease fuel economy. But what is the marginal effect of each variable across the range of values we actually observe in the data. To get a handle on this, we can use the `persp()` method provided by margins.
 
 ```{r}
-wts <- seq(range(mtcars$wt)[1], range(mtcars$wt)[2], length.out = 10)
-hps <- seq(range(mtcars$hp)[1], range(mtcars$hp)[2], length.out = 10)
-m2 <- margins(x2, at = list(wt = wts, hp = hps))
-length(m2)
+persp(x2, "wt", "hp", theta = c(45, 135, 225, 315), what = "effect")
 ```
 
-In essence, the resulting `m2` marginslist contains the marginal effect of both `wt` and `hp` at each level of both variables. Because we requested 10 values across the range of each variable, the result is a list of 100 sets of marginal effects. We can look at these values directly, for example to understand what the marginal effects of weight and horsepower are when both variables are at their minimum:
-
-```{r}
-m2[[1]]
-```
-
-Both are negative. But, to really understand what is going on, we probably need to plot the marginal effects. How best to do this is debatable, but arguably a three-dimensional plot of the response surface is the most informative. Let's start by looking at the marginal effects of `wt` across levels of weight and horsepower:
-
-```{r}
-me_wt <- sapply(m2, function(x) {as.numeric(c(summary(x)["wt","dy/dx"]))})
-persp(wts, hps, matrix(me_wt, 10), theta=45, phi=10, shade=.75, xlab='Weight', ylab='Horsepower', zlab='Marginal Effect of Weight')
-```
-
-To make sense of this plot, it will also be helpful to have the original regression results close at-hand:
+To make sense of this set of plots (actually, the same plot seen from four different angles), it will also be helpful to have the original regression results close at-hand:
 
 ```{r}
 summary(x2)
@@ -138,8 +122,7 @@ For example, if we take the partial derivative of the regression equation with r
 If we then take the partial derivative with respect to `hp` (to obtain the marginal effect of horsepower), the equation is: `d_mpg/d_hp = (-0.12) + (0.03 * wt)`. When `wt` is zero, this partial derivative (or marginal effect) is -0.12 miles/gallon. The observed range of `wt`, however, is only: `r range(mtcars$wt)`. We can see these results in the analogous graph of the marginal effects of horsepower (below). The "front" and "back" edges of the graph are now flat (reflecting how the marginal effect of horsepower is constant across levels of horsepower), while the "front-left" and "right-back" edges of the surface are lines with slope 0.03, reflecting the coefficient on the interaction term.
 
 ```{r}
-me_hp <- sapply(m2, function(x) {as.numeric(c(summary(x)["hp","dy/dx"]))})
-persp(wts, hps, matrix(me_hp, 10), theta=45, phi=10, shade=.75, xlab='Weight', ylab='Horsepower', zlab='Marginal Effect of Horsepower')
+persp(x2, "hp", "wt", theta = c(45, 135, 225, 315), what = "effect")
 ```
 
 An alternative way of plotting these results is to take "slices" of the three-dimensional surface and present them in a two-dimensional graph, similar to what we did above with the indicator-by-continuous approach. That strategy would be especially appropriate for a categorical-by-continuous interaction where the categories of the first variable did not necessarily have a logical ordering sufficient to draw a three-dimensional surface.
@@ -161,40 +144,23 @@ This dataset contains data on 332 women, including whether or not they are diabe
 summary(g1 <- glm(type ~ age * skin, data = Pima.te, family = binomial))
 ```
 
-Logit models (like all GLMs) present the dual challenges of having coefficients that are directly uninterpretable and marginal effects that depend on the values of the data. As a result, we can see coefficients and statistical significance tests above but it's hard to make sense of those results without converting them into a more intuitive quantity, such as the predicted probability of having diabetes. We can see that increasing age and increasing skin thickness are associated with higher rates of diabetes, but the negative coefficient on the interaction term makes it hard to express the substantive size of these relationships. We can use `margins` to achieve this. By default, however, `margins` follows the `predict` function by reporting marginal effects on the scale of the linear predictor:
+Logit models (like all GLMs) present the dual challenges of having coefficients that are directly uninterpretable and marginal effects that depend on the values of the data. As a result, we can see coefficients and statistical significance tests above but it's hard to make sense of those results without converting them into a more intuitive quantity, such as the predicted probability of having diabetes. We can see that increasing age and increasing skin thickness are associated with higher rates of diabetes, but the negative coefficient on the interaction term makes it hard to express the substantive size of these relationships. We can use `margins` to achieve this. By default, however, `margins()` reports results on the response scale (thus differing from the default behavior of `stats::predict()`):
 
 ```{r}
 margins(g1)
 ```
 
-In a logit model we can interpret the above results as the marginal effect of each constituent variable on the log-odds of having diabetes. Some people find that quantity easy to work with, others do not. Predicted probabilities are universally seen as more intuitive because the marginal effects reflect the change in the predicted probability of having diabetes. To achieve this, we need to request `type = "response"` (instead of the default `type = "link"`):
+These marginal effects reflect, on average across all of the cases in our data, how much more likely a woman is to have diabetes. Because this is an *instantaneous* effect, it can be a little hard to conceptualize. I find it helpful to take a look at a predicted probability plot to understand what is going on. Let's take a look, for example, at the effect of age on the probability of having diabetes:
 
 ```{r}
-margins(g1, type = "response")
-```
-
-These marginal effects reflect, on average across all of the cases in our data, how much likely a woman is to have diabetes. Because this is an *instantaneous* effect, it can be a little hard to conceptualize. I find it helpful to take a look at a predicted probability plot to understand what is going on. Let's take a look, for example, at the effect of age on the probability of having diabetes:
-
-```{r}
-arange <- range(Pima.te$age)
-as <- seq(arange[1], arange[2], by = 1)
-plot(as, sapply(as, function(x) {
-    tmp <- Pima.te
-    tmp$age <- x
-    mean(predict(g1, newdata = tmp, type = "response"))
-}), xlab = "Age", ylab = "Pr(Diabetes|Age)", ylim = c(0,1), type = "l")
+cplot(g1, "age")
 ```
 
 The above graph shows that as age increase, the probability of having diabetes increases. When a woman is 20 years old, the probability is about .20 whereas when a woman is 80, the probability is about 0.80. In essence, the marginal effect of `age` reported above is the slope of this predicted probability plot at the mean age of women in the dataset (which is `r mean(Pima.te$age)`). Clearly, this quantity is useful (it's the impact of age for the average-aged woman) but the logit curve shows that the marginal effect of `age` differs considerably across ages and, as we know from above with linear models, also depends on the other variable in the interaction (skin thickness). To really understand what is going on, we need to graph the data. Let's look at the perspective plot like the one we drew for the OLS model, above:
 
 
 ```{r}
-as <- seq(range(Pima.te$age)[1], range(Pima.te$age)[2], length.out = 10)
-ss <- seq(range(Pima.te$skin)[1], range(Pima.te$skin)[2], length.out = 10)
-gm1 <- margins(g1, at = list(age = as, skin = ss), type = "response")
-me_age <- sapply(gm1, function(x) {as.numeric(c(summary(x)["age","dy/dx"]))})
-persp(as, ss, matrix(me_age, 10), theta=45, phi=10, shade=.75, ticktype = "detailed",
-      xlab='Age', ylab='Skin Thickness', zlab='Marginal Effect of Age')
+persp(g1, theta = c(45, 135, 225, 315), what = "prediction")
 ```
 
 This graph is much more complicated than the analogous graph for an OLS model, this is because of the conversion between the log-odds scale of the linear predictors and the distribution of the data. What we can see is that the average marginal effect of age (across all of the women in our dataset) is highest when a woman is middle age and skin thickness is low. In these conditions, the marginal change in the probability of diabetes is about 3%, but the AME of age is nearly zero at higher and lower ages. Indeed, as skin thickness increases, the marginal effect of age flattens out and actually becomes negative (such that increasing age actually decreases the probability of diabetes for women with thick arms).
@@ -202,9 +168,7 @@ This graph is much more complicated than the analogous graph for an OLS model, t
 Now let's examine the average marginal effects of skin thickness across levels of age and skin thickness:
 
 ```{r}
-me_skin <- sapply(gm1, function(x) {as.numeric(c(summary(x)["skin","dy/dx"]))})
-persp(as, ss, matrix(me_skin, 10), theta=45, phi=10, shade=.75, ticktype = "detailed",
-      xlab='Age', ylab='Skin Thickness', zlab='Marginal Effect of Skin')
+persp(g1, theta = c(45, 135, 225, 315), what = "effect")
 ```
 
 This graphs is somewhat flatter, indicating that the average marginal effects of skin thickness vary less than those for age. Yet, the AME of skin thickness is as high as 2% when age is low and skin thickness is high. Interestingly, however, this effect actually becomes negative as age increases. The marginal effect of skin thickness is radically different for young and old women. 
@@ -216,45 +180,11 @@ It is also worth comparing the above graphs to those that would result from a mo
 
 ```{r, echo = FALSE, fig.width=8, fig.height=4}
 g2 <- glm(type ~ age + skin, data = Pima.te, family = binomial)
-gm2 <- margins(g2, at = list(age = as, skin = ss), type = "response")
-par(mar = c(1,2,1,1))
-layout(matrix(1:2, nrow = 1))
-me_age2 <- sapply(gm2, function(x) {as.numeric(c(summary(x)["age","dy/dx"]))})
-persp(as, ss, matrix(me_age2, 10), theta=55, phi=30, shade=.75, ticktype = "detailed",
-      xlab='Age', ylab='Skin Thickness', zlab='Marginal Effect of Age')
-me_skin2 <- sapply(gm2, function(x) {as.numeric(c(summary(x)["skin","dy/dx"]))})
-persp(as, ss, matrix(me_skin2, 10), theta=55, phi=30, shade=.75, ticktype = "detailed",
-      xlab='Age', ylab='Skin Thickness', zlab='Marginal Effect of Skin')
+persp(g2, theta = c(45, 135, 225, 315), what = "prediction")
+persp(g2, theta = c(45, 135, 225, 315), what = "effect")
 ```
 
-Our inferences about the impact of a variable on the outcome in a GLM therefore depend quite heavily on how the interaction is modelled. It also worth pointing out that the surface of the AMEs on the log-odds (linear) scale are actually flat (as in an OLS model), so the the curved shape of the plot immediately above reflects only the conversion of the effects from the linear scale to the probability scale (and the distributions of the covariates), whereas the much more unusual surface from earlier reflects that conversion and the interaction between the two variables (and the distributions thereof). If we plot the interaction model on the scale of the log-odds, it looks much more like the plot from the OLS models, earlier:
-
-
-```{r, echo = FALSE, fig.width=8, fig.height=4}
-gm3 <- margins(g1, at = list(age = as, skin = ss), type = "link")
-par(mar = c(1,2,1,1))
-layout(matrix(1:2, nrow = 1))
-me_age3 <- sapply(gm3, function(x) {as.numeric(c(summary(x)["age","dy/dx"]))})
-persp(as, ss, matrix(me_age3, 10), theta=45, phi=10, shade=.75, ticktype = "detailed",
-      xlab='Age', ylab='Skin Thickness', zlab='Marginal Effect of Age')
-me_skin3 <- sapply(gm3, function(x) {as.numeric(c(summary(x)["skin","dy/dx"]))})
-persp(as, ss, matrix(me_skin3, 10), theta=45, phi=10, shade=.75, ticktype = "detailed",
-      xlab='Age', ylab='Skin Thickness', zlab='Marginal Effect of Skin (Log-Odds)')
-```
-
-And were we to examine a similar plot for the logit model without the interaction term, expressed in terms of log-odds, it would simply show two flat, horizontal surfaces wherein the effect of age did not depend on age or skin thickness nor did the effect of skin thickness depend on age or skin thickness.
-
-```{r, eval=FALSE, echo = FALSE, fig.width=8, fig.height=4}
-gm4 <- margins(g2, at = list(age = as, skin = ss), type = "link")
-par(mar = c(1,2,1,1))
-layout(matrix(1:2, nrow = 1))
-me_age4 <- sapply(gm4, function(x) {as.numeric(c(summary(x)["age","dy/dx"]))})
-persp(as, ss, matrix(me_age4, 10), theta=45, phi=10, shade=.75, ticktype = "detailed",
-      xlab='Age', ylab='Skin Thickness', zlab='Marginal Effect of Age')
-me_skin4 <- sapply(gm4, function(x) {as.numeric(c(summary(x)["skin","dy/dx"]))})
-persp(as, ss, matrix(me_skin4, 10), theta=45, phi=10, shade=.75, ticktype = "detailed",
-      xlab='Age', ylab='Skin Thickness', zlab='Marginal Effect of Skin (Log-Odds)')
-```
+Our inferences about the impact of a variable on the outcome in a GLM therefore depend quite heavily on how the interaction is modelled. It also worth pointing out that the surface of the AMEs on the log-odds (linear) scale are actually flat (as in an OLS model), so the the curved shape of the plot immediately above reflects only the conversion of the effects from the linear scale to the probability scale (and the distributions of the covariates), whereas the much more unusual surface from earlier reflects that conversion and the interaction between the two variables (and the distributions thereof). If we were to plot the interaction model on the scale of the log-odds, it would look much more like the plot from the OLS models (this is left as an exercise to the reader).
 
 
 ## References ##
