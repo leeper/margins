@@ -20,12 +20,10 @@ marginal_effects(model, data, type = c("response", "link"),
 An data.frame with dimensions equal to \code{data}, where each row is an observation and each column is the marginal effect of that variable for the data values provided by \code{data}.
 }
 \description{
-Extract marginal effects via numerical differentiation from a model object, conditional on data
+Extract marginal effects (via numerical differentiation) and predicted differences in factor changes from a model object, conditional on data
 }
 \details{
-This function uses numeric differentiation (\code{\link[numDeriv]{grad}}) to extract marginal effects from an estimated model with respect to all variables specified in \code{data} and returns a data.frame containing the unit-specific marginal effects with respect to each variable included (or not included) in the model. (Note that this is not each \emph{coefficient}.)
-
-Note that numerical differentiation is only used for numeric variables. For factor variables (or character variables, which are implicitly coerced to factors by modelling functions), disrete differences in outcomes are reported instead. If you want to use numerical differentiation for these variables (which you probably do not want), enter them into the original modelling function as numeric values rather than factors.
+This function uses numeric differentiation (\code{\link[numDeriv]{grad}}) to extract marginal effects from an estimated model with respect to all numeric variables specified in \code{data} and returns a data.frame containing the unit-specific marginal effects with respect to each variable included (or not included) in the model. (Note that this is not each \emph{coefficient}.) For factor variables (or character variables, which are implicitly coerced to factors by modelling functions), discrete differences in predicted outcomes are reported instead (i.e., change in predicted outcome when factor is set to a given level minus the predicted outcome when the factor is set to its baseline level). If you want to use numerical differentiation for factor variables (which you probably do not want to do), enter them into the original modelling function as numeric values rather than factors.
 
 Variable class coercion (other than \code{factor(x)}) inside a formula passed to, for example, \code{\link[stats]{lm}} may cause weird behavior, or errors.
 }
