@@ -11,7 +11,7 @@
                 tmpdat[[names(x)[i]]] <- x[i]
             }
         }
-        unname(predict(model, newdata = tmpdat, type = type))
+        unname(prediction(model = model, data = tmpdat, type = type)[["fitted"]])
     }
     return(compiler::cmpfun(FUN))
 }

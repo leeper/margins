@@ -1,6 +1,6 @@
 #' @title Extract Predictions from a Model Object
 #' @description Extract predicted values via \code{\link[stats]{predict}} from a model object, conditional on data
-#' @param model A model object, perhaps returned by \code{\link[stats]{lm}} or \code{\link[stats]{glm}}
+#' @param model A model object, perhaps returned by \code{\link[stats]{lm}} or \code{\link[stats]{glm}}.
 #' @param data A data.frame over which to calculate marginal effects.
 #' @param type A character string indicating the type of marginal effects to estimate. Mostly relevant for non-linear models, where the reasonable options are \dQuote{response} (the default) or \dQuote{link} (i.e., on the scale of the linear predictor in a GLM).
 #' @details This function is simply a wrapper around \code{\link[stats]{predict}} that returns a data.frame containing predicted values with respect to all variables specified in \code{data}. It is used internally by \code{\link{build_margins}}.
@@ -31,7 +31,7 @@ prediction <- function(model, data, type = c("response", "link")) {
     
     # obs-x-2 data.frame of predictions
     structure(list(fitted = pred[["fit"]], 
-                   se.fitted = pred[["se.fitted"]]), 
+                   se.fitted = pred[["se.fit"]]), 
               class = "data.frame", 
               row.names = 1:length(pred[["fit"]]))
 }

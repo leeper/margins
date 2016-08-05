@@ -11,4 +11,5 @@ print.marginslist <- function(x, ...) {
         print(x[[i]], ...)
         cat("\n")
     }
+    invisible(x)
 }

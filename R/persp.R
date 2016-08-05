@@ -75,7 +75,7 @@ function(x,
         outcome <- outer(xvals, yvals, FUN = function(a, b) {
             datmeans[, xvar] <- a
             datmeans[, yvar] <- b
-            predict(x, newdata = datmeans, type = type)
+            prediction(model = x, data = datmeans, type = type)[["fitted"]]
         })
     } else if (what == "effect") {
         dat2 <- expand.grid(xvals, yvals)

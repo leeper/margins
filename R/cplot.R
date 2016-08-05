@@ -103,11 +103,11 @@ function(object,
         tmpdat <- structure(lapply(colMeans(dat[, names(dat) != xvar, drop = FALSE]), rep, length(xvals)),
                             class = "data.frame", row.names = seq_len(length(xvals)))
         tmpdat[, xvar] <- xvals
-        outcome <- predict(object, newdata = tmpdat, type = type, se.fit = TRUE)
+        outcome <- prediction(model = object, data = tmpdat, type = type)
         a <- (1 - level)/2
         fac <- qnorm(c(a, 1 - a))
-        b1 <- outcome[["fit"]] + (fac[1] * outcome[["se.fit"]])
-        b2 <- outcome[["fit"]] + (fac[2] * outcome[["se.fit"]])
+        b1 <- outcome[["fitted"]] + (fac[1] * outcome[["se.fitted"]])
+        b2 <- outcome[["fitted"]] + (fac[2] * outcome[["se.fitted"]])
         if (missing(xlim)) {
             xlim <- range(dat[[x]], na.rm = TRUE)
         }
@@ -123,10 +123,10 @@ function(object,
         if (se.type == "lines") {
             lines(xvals, b1, type = "l", lwd = se.lwd, col = se.col, lty = se.lty)
             lines(xvals, b2, type = "l", lwd = se.lwd, col = se.col, lty = se.lty)
-            lines(xvals, outcome[["fit"]], type = "l", lwd = lwd, col = col, lty = lty)
+            lines(xvals, outcome[["fitted"]], type = "l", lwd = lwd, col = col, lty = lty)
         } else {
             polygon(c(xvals, rev(xvals)), c(b1, rev(b2)), col = se.fill, border = se.col, lty = se.lty)
-            lines(xvals, outcome[["fit"]], type = "l", lwd = lwd, col = col, lty = lty)
+            lines(xvals, outcome[["fitted"]], type = "l", lwd = lwd, col = col, lty = lty)
         }
         if (isTRUE(rug)) {
             rug(dat[[x]], ticksize = rug.size, col = rug.col)
@@ -135,17 +135,17 @@ function(object,
         tmpdat <- structure(lapply(colMeans(dat[, names(dat) != xvar, drop = FALSE]), rep, length(xvals)),
                             class = "data.frame", row.names = seq_len(length(xvals)))
         tmpdat[, xvar] <- xvals
-        outcome <- marginal_effects(model = object, data = tmpdat, type = type)[, dxvar]
+        outcome <- marginal_effects(model = object, data = tmpdat, type = type)[, dxvar, drop = FALSE]
         if (missing(ylim)) {
-            rng <- diff(range(outcome, na.rm = TRUE))
+            rng <- diff(range(outcome[,1], na.rm = TRUE))
             if (rng < 1e-5) {
-                ylim <- mean(outcome, na.rm = TRUE) + c(-1,1)
+                ylim <- mean(outcome[,1], na.rm = TRUE) + c(-1,1)
             } else {
-                ylim <- c(min(outcome, na.rm = TRUE) - (0.05 * rng), max(outcome, na.rm = TRUE) + (0.05 * rng))
+                ylim <- c(min(outcome[,1], na.rm = TRUE) - (0.05 * rng), max(outcome[,1], na.rm = TRUE) + (0.05 * rng))
             }
             rm(rng)
         }
-        plot(xvals, outcome, type = "l", xlab = xlab, ylab = ylab, 
+        plot(xvals, outcome[,1], type = "l", xlab = xlab, ylab = ylab, 
              xaxs = xaxs, yaxs = yaxs, lwd = lwd, col = col, lty = lty, las = las, ylim = ylim, ...)
         #lines(xvals, b1, type = "l", lwd = se.lwd, col = se.col, lty = se.lty)
         #lines(xvals, b2, type = "l", lwd = se.lwd, col = se.col, lty = se.lty)
@@ -153,6 +153,7 @@ function(object,
             rug(dat[[x]], ticksize = rug.size, col = rug.col)
         }
     }
+    invisible(outcome)
 }
 
 #' @rdname cplot

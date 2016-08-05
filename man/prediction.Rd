@@ -7,7 +7,7 @@
 prediction(model, data, type = c("response", "link"))
 }
 \arguments{
-\item{model}{A model object, perhaps returned by \code{\link[stats]{lm}} or \code{\link[stats]{glm}}}
+\item{model}{A model object, perhaps returned by \code{\link[stats]{lm}} or \code{\link[stats]{glm}}.}
 
 \item{data}{A data.frame over which to calculate marginal effects.}
 
