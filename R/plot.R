@@ -28,6 +28,7 @@
 #' plot(mar)
 #' }
 #' @seealso \code{\link{margins}}, \code{\link{persp.lm}}
+#' @keywords graphics hplot
 #' @importFrom graphics abline axis plot points segments
 #' @export
 plot.margins <- 

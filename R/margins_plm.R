@@ -6,7 +6,9 @@
 #' @param at A list of one or more named vectors, specifically values at which to calculate the marginal effects. See \code{\link{build_datalist}} for details on use.
 #' @param atmeans A logical indicating whether to calculate marginal effects at the means (i.e., partial effects at the average of all covariates), as opposed to the default average marginal effects (i.e., average partial effects), which is the default.
 #' @param \dots Arguments passed to \code{\link{marginal_effects}}. One of particular relevance for GLMs is \code{type}.
-#' @seealso \code{\link{margins.lm}}, \code{\link{margins.glm}}, \code{\link{plot.margins}}, \code{\link{extract_marginal_effects}}
+#' @return An object of class \dQuote{marginslist}, composed of one or more objects of class \dQuote{margins}.
+#' @seealso \code{\link{plot.margins}}, \code{\link{extract_marginal_effects}}
+#' @keywords models
 #' @export
 margins.plm <- 
 function(model, 

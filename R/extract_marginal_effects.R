@@ -9,6 +9,8 @@
 #' m <- margins(lm(mpg ~ hp, data = mtcars[1:10,]))
 #' extract_marginal_effects(m)
 #' extract_marginal_effects(m[[1]])
+#' @seealso \code{\link{build_margins}}, \code{\link{margins}}
+#' @keywords models
 #' @export
 extract_marginal_effects <- function(x, ...) {
     UseMethod("extract_marginal_effects")

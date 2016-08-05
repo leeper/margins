@@ -13,7 +13,7 @@
         }
         unname(predict(model, newdata = tmpdat, type = type))
     }
-    return(cmpfun(FUN))
+    return(compiler::cmpfun(FUN))
 }
 
 .build_grad_fun <- function(data, model, which_me, type = "response", method = c("Richardson", "simple", "complex")) {
@@ -24,5 +24,5 @@
         }
         colMeans(marginal_effects(model = model, data = data, type = type, method = method)[, which_me, drop = FALSE], na.rm = TRUE)
     }
-    return(cmpfun(FUN))
+    return(compiler::cmpfun(FUN))
 }

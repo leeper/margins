@@ -32,6 +32,7 @@ marginal_effects(x)
 
 }
 \seealso{
-\code{\link{margins}}, \code{\link{margins.lm}}, \code{\link{build_margins}}
+\code{\link{margins}}, \code{\link{build_margins}}, \code{\link{extract_marginal_effects}}
 }
+\keyword{models}
 

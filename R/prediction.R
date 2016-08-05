@@ -10,6 +10,7 @@
 #' prediction(x)
 #' 
 #' @seealso \code{\link{marginal_effects}}, \code{\link{build_margins}}
+#' @keywords models
 #' @export
 prediction <- function(model, data, type = c("response", "link")) {
     # setup data

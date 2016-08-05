@@ -28,4 +28,5 @@ This function is simply a wrapper around \code{\link[stats]{predict}} that retur
 \seealso{
 \code{\link{marginal_effects}}, \code{\link{build_margins}}
 }
+\keyword{models}
 

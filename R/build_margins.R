@@ -17,7 +17,8 @@
 #' 
 #'
 #' @return A data.frame of class \dQuote{margins} containing the contents of \code{data}, fitted values for \code{model}, the standard errors of the fitted values, and any estimated marginal effects. This data.frame may have repeated column names (for the original variables and the margginal effects thereof). Marginal effects columns are distinguished by their class (\dQuote{marginaleffect}) and can be extracted using \code{\link{extract_marginal_effects}}. Attributes containing additional information, including the marginal effect variances and additional details.
-#' @seealso \code{\link{margins}}, \code{\link{margins.lm}}, \code{\link{marginal_effects}}
+#' @seealso \code{\link{margins}}, \code{\link{marginal_effects}}
+#' @keywords models
 #' @import stats
 #' @importFrom compiler cmpfun
 #' @importFrom numDeriv grad
@@ -41,7 +42,6 @@ function(model,
     vce <- match.arg(vce)
     
     # obtain gradient with respect to each variable in data
-    ## THIS DOES NOT HANDLE DISCRETE FACTORS
     mes <- marginal_effects(model = model, data = data, type = type, method = method)[, allvars, drop = FALSE]
     
     # variance estimation technique

@@ -39,6 +39,7 @@ To estimate marginal effects at specified values of \code{model} (other than mea
 The choice of \code{vce} may be important. The default variance-covariance estimation procedure (\code{vce = "delta"}) uses the delta method to estimate marginal effect variances. This is the fastest method. When \code{vce = "simulation"}, coefficient estimates are repeatedly drawn from the asymptotic (multivariate normal) distribution of the model coefficients and each draw is used to estimate marginal effects, with the variance based upon the dispersion of those simulated effects. The number of interations used is given by \code{iterations}. For \code{vce = "bootstrap"}, the bootstrap is used to repeatedly subsample \code{data} and the variance of marginal effects is estimated from the variance of the bootstrap distribution. This method is markedly slower than the other two procedures and, obviously, it will probably fail if \code{atmeans = TRUE}. Again, \code{iterations} regulates the number of boostrap subsamples to draw.
 }
 \seealso{
-\code{\link{margins}}, \code{\link{margins.lm}}, \code{\link{marginal_effects}}
+\code{\link{margins}}, \code{\link{marginal_effects}}
 }
+\keyword{models}
 

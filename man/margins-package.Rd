@@ -11,7 +11,7 @@ This package is an R port of Stata's margins command, implemented as an S3 gener
 Thomas J. Leeper
 }
 \seealso{
-\code{\link{margins}}, \code{\link{margins.lm}}, \code{\link{margins.glm}}
+\code{\link{margins}}
 }
 \keyword{package}
 

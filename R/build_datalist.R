@@ -6,7 +6,7 @@
 #' @param \dots Ignored.
 #' @return A list of data.frames.
 #' @author Thomas J. Leeper
-#' @seealso \code{\link{margins.lm}}
+#' @seealso \code{\link{margins}}
 #' @examples
 #' # basic examples
 #' require("datasets")
@@ -14,6 +14,7 @@
 #'
 #' str(build_datalist(head(mtcars, at = list(cyl = c(4,6), wt = c(1,2,3)))))
 #'
+#' @keywords data manip
 #' @export
 build_datalist <- 
 function(data,

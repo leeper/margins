@@ -72,4 +72,6 @@ persp(m, xvar = "drat", yvar = "wt", what = "effect", type = "response")
 \seealso{
 \code{\link{plot.margins}}, \code{\link{cplot}}
 }
+\keyword{graphics}
+\keyword{hplot}
 

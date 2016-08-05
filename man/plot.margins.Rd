@@ -66,4 +66,6 @@ plot(mar)
 \seealso{
 \code{\link{margins}}, \code{\link{persp.lm}}
 }
+\keyword{graphics}
+\keyword{hplot}
 

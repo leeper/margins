@@ -51,6 +51,7 @@
 #' cplot(m, x = "drat", dx = "wt", what = "effect", type = "response")
 #' }
 #' @seealso \code{\link{plot.margins}}, \code{\link{persp.lm}}
+#' @keywords graphics hplot
 #' @importFrom graphics par plot lines rug polygon
 #' @export
 cplot <- function(object, ...) {

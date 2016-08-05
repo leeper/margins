@@ -21,10 +21,14 @@
 
 \item{\dots}{Arguments passed to \code{\link{marginal_effects}}. One of particular relevance for GLMs is \code{type}.}
 }
+\value{
+An object of class \dQuote{marginslist}, composed of one or more objects of class \dQuote{margins}.
+}
 \description{
 Calculate marginal effects from estimated panel linear and panel generalized linear models
 }
 \seealso{
-\code{\link{margins.lm}}, \code{\link{margins.glm}}, \code{\link{plot.margins}}, \code{\link{extract_marginal_effects}}
+\code{\link{plot.margins}}, \code{\link{extract_marginal_effects}}
 }
+\keyword{models}
 

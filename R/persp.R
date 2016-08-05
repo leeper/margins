@@ -36,6 +36,7 @@
 #' persp(m, xvar = "drat", yvar = "wt", what = "effect", type = "response")
 #' }
 #' @seealso \code{\link{plot.margins}}, \code{\link{cplot}}
+#' @keywords graphics hplot
 #' @importFrom graphics persp layout
 #' @importFrom grDevices n2mfrow
 #' @export

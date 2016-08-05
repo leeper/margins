@@ -111,4 +111,6 @@ cplot(m, x = "drat", dx = "wt", what = "effect", type = "response")
 \seealso{
 \code{\link{plot.margins}}, \code{\link{persp.lm}}
 }
+\keyword{graphics}
+\keyword{hplot}
 
