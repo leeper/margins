@@ -70,7 +70,7 @@ function(x,
             segments(MEs + (quantiles[z,1] * sqrt(variances)), at, 
                      MEs + (quantiles[z,2] * sqrt(variances)), at, 
                      col = points.col, lwd = lwd)
-        }, 1:nrow(quantiles), seq(max(lwd), 0.25, length.out = nrow(quantiles)))
+        }, seq_len(nrow(quantiles)), seq(max(lwd), 0.25, length.out = nrow(quantiles)))
     } else {
         plot(NA, xlim = c(min(at)-(0.04*min(at)), max(at) + (0.04*max(at))), 
                  ylim = c(min(lb)-0.04*r, max(ub)+0.04*r), 
@@ -84,7 +84,7 @@ function(x,
             segments(at, MEs + (quantiles[z,1] * sqrt(variances)), 
                      at, MEs + (quantiles[z,2] * sqrt(variances)), 
                      col = points.col, lwd = lwd)
-        }, 1:nrow(quantiles), seq(max(lwd), 0.25, length.out = nrow(quantiles)))
+        }, seq_len(nrow(quantiles)), seq(max(lwd), 0.25, length.out = nrow(quantiles)))
     }
     invisible(x)
 }

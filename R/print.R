@@ -7,7 +7,7 @@ function(x, digits = 4, ...) {
 
 #' @export
 print.marginslist <- function(x, ...) {
-    for (i in 1:length(x)) {
+    for (i in seq_len(length(x))) {
         print(x[[i]], ...)
         cat("\n")
     }

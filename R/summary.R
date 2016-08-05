@@ -16,6 +16,9 @@ function(object, digits = 4, level = 0.95, ...) {
             cat("Average Marginal Effects, with ", atvals, "\n")
         }
     }
+    if (!is.null(attributes(object)[["call"]])) {
+        cat(deparse(attributes(object)[["call"]]), "\n\n")
+    }
     fmt <- paste0("%0.", ifelse(digits > 7, 7, digits), "f")
     mes <- extract_marginal_effects(object)
     tab <- structure(list(Factor = names(mes), 
@@ -35,8 +38,10 @@ function(object, digits = 4, level = 0.95, ...) {
 #' @export
 summary.marginslist <- 
 function(object, row.names = FALSE, ...) {
-    for (i in 1:length(object)) {
-        print(summary(object[[i]]), row.names = row.names, ...)
+    out <- list()
+    for (i in seq_len(length(object))) {
+        out[[i]] <- print(summary(object[[i]]), row.names = row.names, ...)
         cat("\n")
     }
+    invisible(out)
 }

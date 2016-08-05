@@ -16,7 +16,7 @@ function(data = data,
     if (vce == "bootstrap") {
         # function to calculate AME for one bootstrap subsample
         bootfun <- function() {
-            s <- sample(1:nrow(data), nrow(data), TRUE)
+            s <- sample(seq_len(nrow(data)), nrow(data), TRUE)
             colMeans(marginal_effects(model = model, data = data[s,], type = type, method = method)[, allvars, drop = FALSE], na.rm = TRUE)
         }
         # bootstrap the data and take the variance of bootstrapped AMEs

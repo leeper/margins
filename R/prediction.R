@@ -33,5 +33,5 @@ prediction <- function(model, data, type = c("response", "link")) {
     structure(list(fitted = pred[["fit"]], 
                    se.fitted = pred[["se.fit"]]), 
               class = "data.frame", 
-              row.names = 1:length(pred[["fit"]]))
+              row.names = seq_len(length(pred[["fit"]])))
 }

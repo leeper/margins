@@ -102,12 +102,12 @@ function(x,
         views <- expand.grid(theta = theta, phi = phi)
         if ((length(phi) == 1)) {
             d <- n2mfrow(length(theta))
-            layout(matrix(1:nrow(views), nrow = d[1], ncol = d[2], byrow = TRUE))
+            layout(matrix(seq_len(nrow(views)), nrow = d[1], ncol = d[2], byrow = TRUE))
         } else if ((length(theta) == 1)) {
             d <- n2mfrow(length(phi))
-            layout(matrix(1:nrow(views), nrow = d[1], ncol = d[2], byrow = TRUE))
+            layout(matrix(seq_len(nrow(views)), nrow = d[1], ncol = d[2], byrow = TRUE))
         } else {
-            layout(matrix(1:nrow(views), ncol = length(theta), byrow = TRUE))
+            layout(matrix(seq_len(nrow(views)), ncol = length(theta), byrow = TRUE))
         }
         out <- mapply(perspfun, views[["theta"]], views[["phi"]], SIMPLIFY = FALSE)
     }
