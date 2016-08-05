@@ -38,14 +38,19 @@ test_that("AME/MEM not identical in GLMs", {
 })
 
 
-context("print() and summary() methods")
-test_that("print()/summary() 'margins' object", {
+context("print(), summary(), and confint() methods")
+test_that("print()/summary() for 'margins' object", {
     x <- lm(mpg ~ wt * hp, data = head(mtcars))
     m <- margins(x)
     expect_true(inherits(print(m), "marginslist"), label = "print() method for marginslist")
     expect_true(inherits(print(m[[1]]), "margins"), label = "print() method for margins")
     expect_true(inherits(summary(m), "list"), label = "summary() method for marginslist")
     expect_true(inherits(summary(m[[1]]), "data.frame"), label = "summary() method for margins")
+})
+test_that("confint() for 'margins' object", {
+    x <- lm(mpg ~ wt * hp, data = head(mtcars))
+    m <- margins(x)
+    expect_true(inherits(confint(m[[1]]), "matrix"), label = "confint() for margins")
 })
 
 
