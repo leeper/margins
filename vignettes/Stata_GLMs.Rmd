@@ -143,24 +143,6 @@ dy/dx w.r.t. : 6.cyl 8.cyl hp wt
           wt |  -.3441297   .1188604    -2.90   0.004    -.5770919   -.1111675
 ------------------------------------------------------------------------------
 Note: dy/dx for factor levels is the discrete change from the base level.
-
-. margins, dydx(*) continuous
-
-Average marginal effects                          Number of obs   =         32
-Model VCE    : OIM
-Expression   : Pr(am), predict()
-dy/dx w.r.t. : 6.cyl 8.cyl hp wt
-------------------------------------------------------------------------------
-             |            Delta-method
-             |      dy/dx   Std. Err.      z    P>|z|     [95% Conf. Interval]
--------------+----------------------------------------------------------------
-         cyl |
-          6  |   .0891514   .0940577     0.95   0.343    -.0951984    .2735011
-          8  |  -.2704099   .4252041    -0.64   0.525    -1.103795    .5629749
-             |
-          hp |   .0033268   .0029852     1.11   0.265    -.0025241    .0091777
-          wt |  -.3441297   .1188604    -2.90   0.004    -.5770919   -.1111675
-------------------------------------------------------------------------------
 ```
 
 ### R ###
@@ -169,8 +151,6 @@ dy/dx w.r.t. : 6.cyl 8.cyl hp wt
 x <- glm(am ~ factor(cyl) + hp + wt, data = mtcars, family = binomial)
 # Log-odds
 margins(x, type = "link")
-# Probability with discrete change on factors
-margins(x, type = "response", factors = "discrete")
 # Probability with continuous factors
 margins(x, type = "response")
 ```

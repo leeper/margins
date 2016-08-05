@@ -18,6 +18,13 @@ test_that("`at` behavior works", {
     expect_warning(margins(x, at = list(wt = 6)), label = "extrapolation warning")
 })
 
+test_that("factor variables work", {
+    x1 <- lm(mpg ~ factor(cyl), data = head(mtcars))
+    expect_true(inherits(marginal_effects(x1), "data.frame"), label = "factors work in formula") 
+    x2 <- lm(Sepal.Length ~ Species, data = head(iris))
+    expect_true(inherits(marginal_effects(x2), "data.frame"), label = "natural factors work")
+})
+
 test_that("AME/MEM identical in OLS models", {
     x <- lm(mpg ~ cyl * hp + wt, data = head(mtcars))
     expect_equal(mean(extract_marginal_effects(margins(x, atmeans = TRUE))), 
@@ -37,8 +44,8 @@ test_that("print()/summary() 'margins' object", {
     m <- margins(x)
     expect_true(inherits(print(m), "marginslist"), label = "print() method for marginslist")
     expect_true(inherits(print(m[[1]]), "margins"), label = "print() method for margins")
-    expect_true(inherits(print(m), "marginslist"), label = "summary() method for marginslist")
-    expect_true(inherits(print(m[[1]]), "margins"), label = "summary() method for margins")
+    expect_true(inherits(summary(m), "list"), label = "summary() method for marginslist")
+    expect_true(inherits(summary(m[[1]]), "data.frame"), label = "summary() method for margins")
 })
 
 
@@ -46,15 +53,20 @@ context("Plotting")
 test_that("persp() method for 'lm' works", {
     x <- lm(mpg ~ wt * hp, data = mtcars)
     expect_true(is.list(persp(x)))
+    expect_true(is.list(persp(x, theta = c(30, 60))))
+    expect_true(is.list(persp(x, theta = c(30, 60), phi = c(0, 10)))
+    expect_true(is.list(persp(x, what = "effect")))
 })
 
 test_that("cplot() method for 'lm' works", {
     x <- lm(mpg ~ wt * hp, data = mtcars)
     expect_true(inherits(cplot(x, what = "prediction"), "data.frame"))
+    expect_true(inherits(cplot(x, what = "prediction", se.type = "shade"), "data.frame"))
     expect_true(inherits(cplot(x, what = "effect"), "data.frame"))
 })
 
 test_that("plot() method for 'margins' works", {
     x <- lm(mpg ~ wt * hp, data = mtcars)
     expect_true(inherits(plot(margins(x)), "margins"))
+    expect_true(inherits(plot(margins(x), horizontal = TRUE), "margins"))
 })
