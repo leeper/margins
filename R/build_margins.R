@@ -42,23 +42,23 @@ function(model,
     vce <- match.arg(vce)
     
     # obtain gradient with respect to each variable in data
-    mes <- marginal_effects(model = model, data = data, type = type, method = method)[, allvars, drop = FALSE]
+    mes <- marginal_effects(model = model, data = data, type = type, method = method)
+    mes_out <- mes[, grep(allvars, names(mes)), drop = FALSE]
     
     # variance estimation technique
     variances <- get_effect_variances(data = data, model = model, allvars = allvars, 
-                                  type = type, vce = vce, iterations = iterations, method = method)
+                                      type = type, vce = vce, iterations = iterations, method = method)
     
     # obtain predicted values and standard errors
     pred <- prediction(model = model, data = data, type = type)
     
     # setup output structure
-    structure(cbind(data, pred, mes), 
+    structure(cbind(data, pred, mes_out), 
               class = c("margins", "data.frame"), 
               Variances = setNames(variances, names(mes)),
               type = type,
               call = model[["call"]],
               df.residual = model[["df.residual"]],
               vce = vce, 
-              call = call,
               iterations = iterations)
 }

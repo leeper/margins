@@ -55,25 +55,39 @@ check_at <- function(data, at) {
 
 check_factor_levels <- function(data, at) {
     # function to check whether factor levels in `at` are reasonable
-    levels <- lapply(data, levels)
+    levels <- lapply(data, function(v) {
+        if (is.factor(v)) {
+            levels(v)
+        } else if (is.character(v)) {
+            levels(factor(v))
+        } else {
+            NULL
+        } 
+    })
     levels <- levels[!sapply(levels, is.null)]
     at <- at[names(at) %in% names(levels)]
     for (i in seq_along(at)) {
-        x <- as.character(at[[i]]) %in% levels[[names(at)[i]]]
+        atvals <- as.character(at[[i]])
+        x <- atvals %in% levels[[names(at)[i]]]
         if (!all(x)) {
-            stop(paste0("Illegal factor levels for variable '", names(at)[i], "'"), call. = FALSE)
+            stop(paste0("Illegal factor levels for variable '", names(at)[i], "': ", 
+                        paste0(shQuote(atvals[!x]), collapse = ", ")), 
+                 call. = FALSE)
         }
     }
     invisible(NULL)
 }
 
 check_values <- function(data, at) {
-    limits <- do.call(rbind, lapply(data[, names(at), drop = FALSE], range, na.rm = TRUE))
+    dat <- data[, names(at), drop = FALSE]
+    dat <- dat[, !sapply(dat, class) %in% c("character", "factor"), drop = FALSE]
+    limits <- do.call(rbind, lapply(dat, range, na.rm = TRUE))
     for (i in seq_along(at)) {
         out <- (at[[i]] < limits[i,1]) | (at[[i]] > limits[i,2])
         if (any( out ) ) {
-            warning(ngettext(sum(out), paste0("A 'at' value for '", names(at)[i], "' is outside observed data range!"),
-                                       paste0("Some 'at' values for '", names(at)[i], "' are outside observed data range!")))
+            datarange <- paste0("outside observed data range (", limits[i,1], ",", limits[i,2], ")!")
+            warning(ngettext(sum(out), paste0("A 'at' value for '", names(at)[i], "' is ", datarange),
+                                       paste0("Some 'at' values for '", names(at)[i], "' are ", datarange)))
         }
     }
 }
@@ -82,7 +96,7 @@ check_at_names <- function(names, at) {
     b <- !names(at) %in% names
     if (any(b)) {
         e <- ngettext(sum(b), "Unrecognized variable name in 'at': ", "Unrecognized variable names in 'at': ")
-        stop(paste0(e, paste0(names(at)[b], collapse = ", ")))
+        stop(paste0(e, paste0("(", which(b), ") ", gsub("", "<empty>", names(at)[b]), collapse = ", ")))
     }
 }
 
