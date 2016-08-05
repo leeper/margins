@@ -21,7 +21,7 @@ test_that("`at` behavior works", {
 test_that("factor variables work", {
     x1 <- lm(mpg ~ factor(cyl), data = head(mtcars))
     expect_true(inherits(marginal_effects(x1), "data.frame"), label = "factors work in formula") 
-    x2 <- lm(Sepal.Length ~ Species, data = head(iris))
+    x2 <- lm(Sepal.Length ~ Species, data = iris)
     expect_true(inherits(marginal_effects(x2), "data.frame"), label = "natural factors work")
 })
 
@@ -59,7 +59,7 @@ test_that("persp() method for 'lm' works", {
     x <- lm(mpg ~ wt * hp, data = mtcars)
     expect_true(is.list(persp(x)))
     expect_true(is.list(persp(x, theta = c(30, 60))))
-    expect_true(is.list(persp(x, theta = c(30, 60), phi = c(0, 10)))
+    expect_true(is.list(persp(x, theta = c(30, 60), phi = c(0, 10))))
     expect_true(is.list(persp(x, what = "effect")))
 })
 

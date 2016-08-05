@@ -1,7 +1,7 @@
 get_effect_variances <- 
 function(data = data, 
          model = model, 
-         allvars = all.vars(model[["terms"]])[-1],
+         which = all.vars(model[["terms"]])[-1], # which mes do we need variances of
          type = c("response", "link", "terms"),
          vce = c("delta", "simulation", "bootstrap"),
          iterations = 50L, # if vce == "bootstrap" or "simulation"
@@ -17,7 +17,7 @@ function(data = data,
         # function to calculate AME for one bootstrap subsample
         bootfun <- function() {
             s <- sample(seq_len(nrow(data)), nrow(data), TRUE)
-            colMeans(marginal_effects(model = model, data = data[s,], type = type, method = method)[, allvars, drop = FALSE], na.rm = TRUE)
+            colMeans(marginal_effects(model = model, data = data[s,], type = type, method = method), na.rm = TRUE)
         }
         # bootstrap the data and take the variance of bootstrapped AMEs
         variances <- apply(replicate(iterations, bootfun()), 1, var, na.rm = TRUE)
@@ -34,13 +34,12 @@ function(data = data,
         # http://www.soderbom.net/lecture10notes.pdf
         # http://stats.stackexchange.com/questions/122066/how-to-use-delta-method-for-standard-errors-of-marginal-effects
         
-        # TO GET UNIT-SPECIFIC VARIANCES, NEED TO TAKE DERIVATIVE OF `.build_grad_fun()` FOR EVERY ROW SEPARATELY
+        # TODO: TO GET UNIT-SPECIFIC VARIANCES, NEED TO TAKE DERIVATIVE OF `.build_grad_fun()` FOR EVERY ROW SEPARATELY
         
-        gradmat <- do.call("rbind", lapply(allvars, function(thisme) {
-            FUN <- .build_grad_fun(data = data, model = model, which_me = thisme, type = type, method = method)
-            numDeriv::grad(FUN, model[["coefficients"]])
-        }))
+        FUN <- .build_grad_fun(data = data, model = model, type = type, method = method)
+        gradmat <- numDeriv::jacobian(FUN, model[["coefficients"]])
         variances <- diag(gradmat %*% vcov(model) %*% t(gradmat))
+        
     } else if (vce == "simulation") {
         
         # copy model for quick use in estimation
@@ -53,7 +52,7 @@ function(data = data,
         # estimate AME from from each simulated coefficient vector
         effectmat <- apply(coefmat, 1, function(coefrow) {
             tmpmodel[["coefficients"]] <- coefrow
-            colMeans(marginal_effects(data, model = tmpmodel, type = type, method = method)[, allvars, drop = FALSE])
+            colMeans(marginal_effects(data, model = tmpmodel, type = type, method = method))
         })
         # calculate the variance of the simulated AMEs
         variances <- apply(effectmat, 1, var, na.rm = TRUE)
