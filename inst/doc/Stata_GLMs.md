@@ -1,0 +1,439 @@
+<!--
+%\VignetteEngine{knitr}
+%\VignetteIndexEntry{Stata Comparison: Generalized Linear Models}
+-->
+
+# Generalized Linear Models #
+
+**margins** is intended as a port of (some of) the features of Stata's `margins` command. This vignette compares output from Stata's `margins` command for generalized linear models against the output of **margins**.
+
+
+```r
+library("margins")
+options(width = 100)
+```
+
+## GLM (Logit) Effects on Probability Scale ##
+
+### Stata ###
+
+```
+. quietly logit am cyl hp wt
+. margins, dydx(*) atmeans
+
+Conditional marginal effects                      Number of obs   =         32
+Model VCE    : OIM
+Expression   : Pr(am), predict()
+dy/dx w.r.t. : cyl hp wt
+at           : cyl             =      6.1875 (mean)
+               hp              =    146.6875 (mean)
+               wt              =     3.21725 (mean)
+------------------------------------------------------------------------------
+             |            Delta-method
+             |      dy/dx   Std. Err.      z    P>|z|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+         cyl |   .0537505   .1132654     0.47   0.635    -.1682456    .2757465
+          hp |   .0035928   .0029037     1.24   0.216    -.0020983    .0092838
+          wt |  -1.008594   .6676631    -1.51   0.131     -2.31719    .3000017
+------------------------------------------------------------------------------
+
+
+. margins, dydx(*)
+
+Average marginal effects                          Number of obs   =         32
+Model VCE    : OIM
+Expression   : Pr(am), predict()
+dy/dx w.r.t. : cyl hp wt
+------------------------------------------------------------------------------
+             |            Delta-method
+             |      dy/dx   Std. Err.      z    P>|z|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+         cyl |   .0214527   .0469746     0.46   0.648    -.0706157    .1135212
+          hp |   .0014339   .0006182     2.32   0.020     .0002224    .0026455
+          wt |  -.4025475   .1154098    -3.49   0.000    -.6287466   -.1763484
+------------------------------------------------------------------------------
+```
+
+### R ###
+
+
+```r
+x <- glm(am ~ cyl + hp + wt, data = mtcars, family = binomial)
+# MEM
+margins(x, atmeans = TRUE, type = "response")
+```
+
+```
+##       cyl        hp        wt 
+##  0.053751  0.003593 -1.008248
+```
+
+```r
+# AME
+margins(x, type = "response")
+```
+
+```
+##       cyl        hp        wt 
+##  0.021453  0.001434 -0.402544
+```
+
+---
+
+## GLM (Logit) Effects on Log-Odds Scale ##
+
+
+### Stata ###
+
+```
+. quietly logit am cyl hp wt
+. margins, dydx(*) predict(xb)
+
+Average marginal effects                          Number of obs   =         32
+Model VCE    : OIM
+Expression   : Linear prediction (log odds), predict(xb)
+dy/dx w.r.t. : cyl hp wt
+------------------------------------------------------------------------------
+             |            Delta-method
+             |      dy/dx   Std. Err.      z    P>|z|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+         cyl |   .4875978   1.071621     0.46   0.649    -1.612741    2.587936
+          hp |   .0325917   .0188611     1.73   0.084    -.0043753    .0695587
+          wt |   -9.14947   4.153326    -2.20   0.028    -17.28984   -1.009101
+------------------------------------------------------------------------------
+```
+
+### R ###
+
+
+```r
+x <- glm(am ~ cyl + hp + wt, data = mtcars, family = binomial)
+# AME and MEM equivalent on "link" scale
+margins(x, type = "link")
+```
+
+```
+##      cyl       hp       wt 
+##  0.48760  0.03259 -9.14947
+```
+
+
+---
+
+## GLM (Logit) Effects with factor variable on Log-Odds and probability scales ##
+
+
+### Stata ###
+
+```
+. quietly logit am i.cyl hp wt
+. margins, dydx(*) predict(xb)
+
+Average marginal effects                          Number of obs   =         32
+Model VCE    : OIM
+Expression   : Linear prediction (log odds), predict(xb)
+dy/dx w.r.t. : 6.cyl 8.cyl hp wt
+------------------------------------------------------------------------------
+             |            Delta-method
+             |      dy/dx   Std. Err.      z    P>|z|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+         cyl |
+          6  |   2.765754   3.156829     0.88   0.381    -3.421517    8.953025
+          8  |  -8.388958   13.16745    -0.64   0.524     -34.1967    17.41878
+             |
+          hp |    .103209   .0960655     1.07   0.283    -.0850759    .2914939
+          wt |  -10.67598   5.441998    -1.96   0.050     -21.3421   -.0098575
+------------------------------------------------------------------------------
+Note: dy/dx for factor levels is the discrete change from the base level.
+
+. margins, dydx(*)
+
+Average marginal effects                          Number of obs   =         32
+Model VCE    : OIM
+Expression   : Pr(am), predict()
+dy/dx w.r.t. : 6.cyl 8.cyl hp wt
+------------------------------------------------------------------------------
+             |            Delta-method
+             |      dy/dx   Std. Err.      z    P>|z|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+         cyl |
+          6  |   .1197978   .1062873     1.13   0.260    -.0885214    .3281171
+          8  |  -.3478575   .2067542    -1.68   0.092    -.7530883    .0573732
+             |
+          hp |   .0033268   .0029852     1.11   0.265    -.0025241    .0091777
+          wt |  -.3441297   .1188604    -2.90   0.004    -.5770919   -.1111675
+------------------------------------------------------------------------------
+Note: dy/dx for factor levels is the discrete change from the base level.
+```
+
+### R ###
+
+
+```r
+x <- glm(am ~ factor(cyl) + hp + wt, data = mtcars, family = binomial)
+# Log-odds
+margins(x, type = "link")
+```
+
+```
+## Error in model.frame.default(Terms, newdata, na.action = na.action, xlev = object$xlevels): factor factor(cyl) has new level 6.0001
+```
+
+```r
+# Probability with continuous factors
+margins(x, type = "response")
+```
+
+```
+## Error in model.frame.default(Terms, newdata, na.action = na.action, xlev = object$xlevels): factor factor(cyl) has new level 6.0001
+```
+
+
+---
+
+## GLM (Logit) with interaction on probability scale ##
+
+### Stata ###
+
+```
+. quietly logit am cyl c.hp##c.wt
+. margins, dydx(*) atmeans
+
+Conditional marginal effects                      Number of obs   =         32
+Model VCE    : OIM
+Expression   : Pr(am), predict()
+dy/dx w.r.t. : cyl hp wt
+at           : cyl             =      6.1875 (mean)
+               hp              =    146.6875 (mean)
+               wt              =     3.21725 (mean)
+------------------------------------------------------------------------------
+             |            Delta-method
+             |      dy/dx   Std. Err.      z    P>|z|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+         cyl |   .0810915   .1838916     0.44   0.659    -.2793294    .4415125
+          hp |   .0081009   .0086664     0.93   0.350    -.0088849    .0250867
+          wt |  -1.925325   1.866456    -1.03   0.302    -5.583512    1.732861
+------------------------------------------------------------------------------
+
+. margins, dydx(*)
+
+Average marginal effects                          Number of obs   =         32
+Model VCE    : OIM
+Expression   : Pr(am), predict()
+dy/dx w.r.t. : cyl hp wt
+------------------------------------------------------------------------------
+             |            Delta-method
+             |      dy/dx   Std. Err.      z    P>|z|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+         cyl |   .0215633   .0492676     0.44   0.662    -.0749994    .1181261
+          hp |   .0026673   .0023004     1.16   0.246    -.0018414     .007176
+          wt |  -.5157922   .2685806    -1.92   0.055    -1.042201    .0106162
+------------------------------------------------------------------------------
+```
+
+### R ###
+
+
+```r
+x <- glm(am ~ cyl + hp * wt, data = mtcars, family = binomial)
+```
+
+```
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+```
+
+```r
+# MEM
+margins(x, atmeans = TRUE, type = "response")
+```
+
+```
+##       cyl        hp        wt 
+##  0.081093  0.008101 -1.924606
+```
+
+```r
+# AME
+margins(x, type = "response")
+```
+
+```
+##       cyl        hp        wt 
+##  0.021563  0.002667 -0.515808
+```
+
+---
+
+## GLM (Logit) with interaction on Log-Odds scale ##
+
+### Stata ###
+
+```
+. margins, dydx(*) predict(xb)
+
+Average marginal effects                          Number of obs   =         32
+Model VCE    : OIM
+Expression   : Linear prediction (log odds), predict(xb)
+dy/dx w.r.t. : cyl hp wt
+------------------------------------------------------------------------------
+             |            Delta-method
+             |      dy/dx   Std. Err.      z    P>|z|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+         cyl |   .5156396   1.169458     0.44   0.659    -1.776456    2.807735
+          hp |   .0515116    .035699     1.44   0.149    -.0184571    .1214804
+          wt |  -12.24264   7.678428    -1.59   0.111    -27.29208    2.806807
+------------------------------------------------------------------------------
+```
+
+### R ###
+
+
+```r
+x <- glm(am ~ cyl + hp * wt, data = mtcars, family = binomial)
+```
+
+```
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+```
+
+```r
+# AME and MEM equivalent on "link" scale
+margins(x, type = "link")
+```
+
+```
+##       cyl        hp        wt 
+##   0.51564   0.05151 -12.24264
+```
+
+
+## GLM (Probit) Effects on Log-Odds and probability scales ##
+
+### Stata ###
+
+```
+. quietly probit am cyl c.hp##c.wt
+. margins, dydx(*) predict(xb)
+
+Average marginal effects                          Number of obs   =         32
+Model VCE    : OIM
+Expression   : Linear prediction, predict(xb)
+dy/dx w.r.t. : cyl hp wt
+------------------------------------------------------------------------------
+             |            Delta-method
+             |      dy/dx   Std. Err.      z    P>|z|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+         cyl |   .2974758   .6629205     0.45   0.654    -1.001825    1.596776
+          hp |   .0277713   .0193121     1.44   0.150    -.0100797    .0656223
+          wt |  -6.626949   4.096208    -1.62   0.106    -14.65537    1.401471
+------------------------------------------------------------------------------
+
+. margins, dydx(*)
+
+Average marginal effects                          Number of obs   =         32
+Model VCE    : OIM
+Expression   : Pr(am), predict()
+dy/dx w.r.t. : cyl hp wt
+------------------------------------------------------------------------------
+             |            Delta-method
+             |      dy/dx   Std. Err.      z    P>|z|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+         cyl |    .022611   .0498253     0.45   0.650    -.0750447    .1202667
+          hp |   .0025769   .0022607     1.14   0.254     -.001854    .0070077
+          wt |   -.508829   .2625404    -1.94   0.053    -1.023399    .0057408
+------------------------------------------------------------------------------
+```
+
+### R ###
+
+
+```r
+x <- glm(am ~ cyl + hp * wt, data = mtcars, family = binomial(link="probit"))
+```
+
+```
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+```
+
+```r
+# AME (log-odds)
+margins(x, type = "link")
+```
+
+```
+##      cyl       hp       wt 
+##  0.29748  0.02777 -6.62693
+```
+
+```r
+# AME (probability)
+margins(x, type = "response")
+```
+
+```
+##       cyl        hp        wt 
+##  0.022611  0.002577 -0.508841
+```
+
+
+## GLM (Poisson) Effects on Log-Odds and probability scales ##
+
+### Stata ###
+
+```
+. quietly poisson carb cyl c.hp##c.wt
+. margins, dydx(*) predict(xb)
+
+Average marginal effects                          Number of obs   =         32
+Model VCE    : OIM
+Expression   : Linear prediction, predict(xb)
+dy/dx w.r.t. : cyl hp wt
+------------------------------------------------------------------------------
+             |            Delta-method
+             |      dy/dx   Std. Err.      z    P>|z|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+         cyl |  -.0993854   .1478936    -0.67   0.502    -.3892516    .1904808
+          hp |   .0066519   .0024217     2.75   0.006     .0019054    .0113984
+          wt |   .1225051   .2035185     0.60   0.547    -.2763837     .521394
+------------------------------------------------------------------------------
+
+. margins, dydx(*)
+
+Average marginal effects                          Number of obs   =         32
+Model VCE    : OIM
+Expression   : Predicted number of events, predict()
+dy/dx w.r.t. : cyl hp wt
+------------------------------------------------------------------------------
+             |            Delta-method
+             |      dy/dx   Std. Err.      z    P>|z|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+         cyl |  -.2795214   .4169931    -0.67   0.503    -1.096813      .53777
+          hp |   .0175935   .0067179     2.62   0.009     .0044267    .0307604
+          wt |   .2075447   .4859868     0.43   0.669    -.7449719    1.160061
+------------------------------------------------------------------------------
+```
+
+
+### R ###
+
+
+```r
+x <- glm(carb ~ cyl + hp * wt, data = mtcars, family = poisson)
+# AME (linear/link)
+margins(x, type = "link")
+```
+
+```
+##       cyl        hp        wt 
+## -0.099385  0.006652  0.122505
+```
+
+```r
+# AME (probability)
+margins(x, type = "response")
+```
+
+```
+##      cyl       hp       wt 
+## -0.27952  0.01759  0.20755
+```

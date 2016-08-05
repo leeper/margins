@@ -1,0 +1,215 @@
+<!--
+%\VignetteEngine{knitr}
+%\VignetteIndexEntry{Stata Comparison: Linear Models}
+-->
+
+# Linear Models #
+
+**margins** is intended as a port of (some of) the features of Stata's `margins` command. This vignette compares output from Stata's `margins` command for linear models against the output of **margins**.
+
+
+```r
+library("margins")
+options(width = 100)
+```
+
+---
+
+## OLS marginal effects ##
+
+### Stata ###
+
+```
+. quietly reg mpg cyl hp wt
+. margins, dydx(*)
+
+Average marginal effects                          Number of obs   =         32
+Model VCE    : OLS
+Expression   : Linear prediction, predict()
+dy/dx w.r.t. : cyl hp wt
+
+------------------------------------------------------------------------------
+             |            Delta-method
+             |      dy/dx   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+         cyl |  -.9416166   .5509165    -1.71   0.098    -2.070118    .1868846
+          hp |  -.0180381   .0118763    -1.52   0.140    -.0423655    .0062893
+          wt |  -3.166973    .740576    -4.28   0.000    -4.683975   -1.649972
+------------------------------------------------------------------------------
+```
+
+### R ###
+
+
+```r
+library("margins")
+x <- lm(mpg ~ cyl + hp + wt, data = mtcars)
+# AME and MEM equivalent
+margins(x)
+```
+
+```
+##      cyl       hp       wt 
+## -0.94162 -0.01804 -3.16697
+```
+
+---
+
+
+## OLS marginal effects with interaction ##
+
+### Stata ###
+
+```
+. quietly reg mpg cyl c.hp##c.wt
+. margins, dydx(*)
+
+Average marginal effects                          Number of obs   =         32
+Model VCE    : OLS
+Expression   : Linear prediction, predict()
+dy/dx w.r.t. : cyl hp wt
+
+------------------------------------------------------------------------------
+             |            Delta-method
+             |      dy/dx   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+         cyl |  -.3652391   .5086204    -0.72   0.479    -1.408842    .6783638
+          hp |  -.0252715   .0105097    -2.40   0.023    -.0468357   -.0037073
+          wt |  -3.837584   .6730996    -5.70   0.000     -5.21867   -2.456498
+------------------------------------------------------------------------------
+```
+
+### R ###
+
+
+```r
+x <- lm(mpg ~ cyl + hp * wt, data = mtcars)
+# AME and MEM equivalent
+margins(x)
+```
+
+```
+##      cyl       hp       wt 
+## -0.36524 -0.02527 -3.83758
+```
+
+---
+
+## OLS marginal effects with factor term ##
+
+### Stata ###
+
+```
+. quietly reg mpg i.cyl hp wt
+. margins, dydx(*)
+
+Average marginal effects                          Number of obs   =         32
+Model VCE    : OLS
+Expression   : Linear prediction, predict()
+dy/dx w.r.t. : 6.cyl 8.cyl hp wt
+------------------------------------------------------------------------------
+             |            Delta-method
+             |      dy/dx   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+         cyl |
+          6  |  -3.359024    1.40167    -2.40   0.024    -6.235014   -.4830353
+          8  |  -3.185884   2.170476    -1.47   0.154    -7.639332    1.267564
+             |
+          hp |  -.0231198   .0119522    -1.93   0.064    -.0476437    .0014041
+          wt |  -3.181404   .7196011    -4.42   0.000    -4.657904   -1.704905
+------------------------------------------------------------------------------
+Note: dy/dx for factor levels is the discrete change from the base level.
+```
+
+### R ###
+
+
+```r
+x <- lm(mpg ~ factor(cyl) + hp + wt, data = mtcars)
+# AME and MEM equivalent
+margins(x)
+```
+
+```
+## Error in model.frame.default(Terms, newdata, na.action = na.action, xlev = object$xlevels): factor factor(cyl) has new level 6.0001
+```
+
+
+---
+
+## OLS marginal effects with squared term ##
+
+### Stata ###
+
+```
+. quietly reg mpg cyl c.hp##c.hp wt
+. margins, dydx(*)
+
+Average marginal effects                          Number of obs   =         32
+Model VCE    : OLS
+Expression   : Linear prediction, predict()
+dy/dx w.r.t. : cyl hp wt
+------------------------------------------------------------------------------
+             |            Delta-method
+             |      dy/dx   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+         cyl |  -.3696041   .6163571    -0.60   0.554    -1.634264    .8950561
+          hp |  -.0429018   .0178353    -2.41   0.023    -.0794969   -.0063066
+          wt |  -2.873553   .7301251    -3.94   0.001    -4.371646    -1.37546
+------------------------------------------------------------------------------
+
+```
+
+### R ###
+
+
+```r
+x <- lm(mpg ~ cyl + hp + I(hp^2) + wt, data = mtcars)
+# AME and MEM equivalent
+margins(x)
+```
+
+```
+##     cyl      hp      wt 
+## -0.3696 -0.0429 -2.8736
+```
+
+---
+
+## OLS marginal effects with squared term (but no first-order term) ##
+
+### Stata ###
+
+```
+. gen hp2 = hp^2
+. quietly reg mpg cyl hp2 wt
+. margins, dydx(*)
+
+Average marginal effects                          Number of obs   =         32
+Model VCE    : OLS
+Expression   : Linear prediction, predict()
+dy/dx w.r.t. : cyl hp2 wt
+------------------------------------------------------------------------------
+             |            Delta-method
+             |      dy/dx   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+         cyl |   -1.21919   .5030753    -2.42   0.022    -2.249693   -.1886869
+         hp2 |   -.000028   .0000276    -1.01   0.320    -.0000846    .0000286
+          wt |  -3.218637   .7570747    -4.25   0.000    -4.769435    -1.66784
+------------------------------------------------------------------------------
+```
+
+### R ###
+
+
+```r
+x <- lm(mpg ~ cyl + I(hp^2) + wt, data = mtcars)
+# AME and MEM equivalent
+margins(x)
+```
+
+```
+##       cyl        hp        wt 
+## -1.219190 -0.008211 -3.218637
+```
+
