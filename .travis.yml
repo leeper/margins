@@ -1,5 +1,6 @@
 language: r
-sudo: required
+sudo: false
+cache: packages
 r_packages:
 - knitr
 - covr
