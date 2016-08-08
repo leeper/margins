@@ -4,26 +4,30 @@
 \alias{cplot}
 \alias{cplot.glm}
 \alias{cplot.lm}
-\title{Conditional predicted value and marginal effect plots for models}
+\title{Conditional predicted value and average marginal effect plots for models}
 \usage{
 cplot(object, ...)
 
 \method{cplot}{lm}(object, x = attributes(terms(object))[["term.labels"]][1],
   dx = x, what = c("prediction", "effect"), type = c("response", "link"),
-  n = 25L, level = 0.95, xlab = x, ylab = if (match.arg(what) ==
-  "prediction") paste0("Predicted value") else paste0("Marginal effect of ",
-  dx), xlim, ylim, lwd = 2, col = "black", lty = 1, se.type = c("lines",
-  "shade"), se.col = "black", se.fill = "gray", se.lwd = 1, se.lty = 2,
-  xaxs = "i", yaxs = xaxs, las = 1, rug = TRUE, rug.col = "black",
+  method = c("simple", "Richardson", "complex"), n = 25L, level = 0.95,
+  xlab = x, ylab = if (match.arg(what) == "prediction")
+  paste0("Predicted value") else paste0("Marginal effect of ", dx), xlim, ylim,
+  lwd = 2, col = "black", lty = 1, se.type = c("lines", "shade"),
+  se.col = "black", se.fill = grDevices::gray(0.5, 0.5), se.lwd = 1,
+  se.lty = if (match.arg(se.type) == "lines") 2 else 0, xaxs = "i",
+  yaxs = xaxs, las = 1, rug = TRUE, rug.col = "black",
   rug.size = -0.02, ...)
 
 \method{cplot}{glm}(object, x = attributes(terms(object))[["term.labels"]][1],
   dx = x, what = c("prediction", "effect"), type = c("response", "link"),
-  n = 25L, level = 0.95, xlab = x, ylab = if (match.arg(what) ==
-  "prediction") paste0("Predicted value") else paste0("Marginal effect of ",
-  dx), xlim, ylim, lwd = 2, col = "black", lty = 1, se.type = c("lines",
-  "shade"), se.col = "black", se.fill = "gray", se.lwd = 1, se.lty = 2,
-  xaxs = "i", yaxs = xaxs, las = 1, rug = TRUE, rug.col = "black",
+  method = c("simple", "Richardson", "complex"), n = 25L, level = 0.95,
+  xlab = x, ylab = if (match.arg(what) == "prediction")
+  paste0("Predicted value") else paste0("Marginal effect of ", dx), xlim, ylim,
+  lwd = 2, col = "black", lty = 1, se.type = c("lines", "shade"),
+  se.col = "black", se.fill = grDevices::gray(0.5, 0.5), se.lwd = 1,
+  se.lty = if (match.arg(se.type) == "lines") 2 else 0, xaxs = "i",
+  yaxs = xaxs, las = 1, rug = TRUE, rug.col = "black",
   rug.size = -0.02, ...)
 }
 \arguments{
@@ -33,9 +37,11 @@ cplot(object, ...)
 
 \item{dx}{If \code{what = "effect"}, the variable whose conditional marginal effect should be displayed. By default it is \code{x} (so the plot displays the marginal effect of \code{x} across values of \code{x}); ignored otherwise.}
 
-\item{what}{A character string specifying whether to draw \dQuote{prediction} (fitted values from the model, calculated using \code{\link[stats]{predict}}) or \dQuote{effect} (marginal effect of \code{x}, using \code{\link{margins}}).}
+\item{what}{A character string specifying whether to draw \dQuote{prediction} (fitted values from the model, calculated using \code{\link[stats]{predict}}) or \dQuote{effect} (average marginal effect of \code{dx} conditional on \code{x}, using \code{\link{margins}}).}
 
 \item{type}{A character string specifying whether to calculate predictions on the response scale (default) or link (only relevant for non-linear models).}
+
+\item{method}{If \code{what = "effect"}, a character string indicating the numeric derivative method to use when estimating marginal effects. \dQuote{simple} optimizes for speed; \dQuote{Richardson} optimizes for accuracy. See \code{\link[numDeriv]{grad}} for details.}
 
 \item{n}{An integer specifying the number of points across \code{x} at which to calculate the predicted value or marginal effect.}
 
@@ -79,11 +85,11 @@ cplot(object, ...)
 
 \item{\dots}{Additional arguments passed to \code{\link[graphics]{plot}}.}
 }
+\value{
+A tidy data.frame containing the data used to draw the plot.
+}
 \description{
 Draw one or more conditioanl effects plots reflecting predictions or marginal effects from a model, conditional on a covariate. Currently methods exist for \dQuote{lm} and \dQuote{glm} models.
-}
-\details{
-Currently, this implements \dQuote{marginal effects at means} of all covariates. And confidence intervals are not drawn for marginal effects plots.
 }
 \examples{
 \dontrun{
@@ -93,12 +99,19 @@ m <- lm(Sepal.Length ~ Sepal.Width, data = iris)
 cplot(m)
 
 # more complex model
-m <- lm(Sepal.Length ~ Sepal.Width * Petal.Width * I(Petal.Width ^ 2), data = iris)
+m <- lm(Sepal.Length ~ Sepal.Width * Petal.Width * I(Petal.Width ^ 2), data = head(iris, 50))
 ## marginal effect of 'Petal.Width' across 'Petal.Width'
 cplot(m, x = "Petal.Width", what = "effect", n = 10)
 ## marginal effect of 'Petal.Width' across 'Sepal.Width'
-cplot(m, x = "Sepal.Width", dx = "Petal.Width", what = "effect", n = 10)
+tmp <- cplot(m, x = "Sepal.Width", dx = "Petal.Width", what = "effect", n = 10)
 
+# use ggplot2 instead of base graphics
+\dontrun{
+if (require("ggplot2")) {
+    ggplot(tmp, aes(x = Petal.Width, y = "effect")) + geom_line(lwd = 2) + 
+      geom_line(aes(y = effect + 1.96*se.effect)) + geom_line(aes(y = effect - 1.96*se.effect))
+}
+}
 # a non-linear model
 m <- glm(am ~ wt*drat, data = mtcars, family = binomial)
 cplot(m, x = "wt") # prediction

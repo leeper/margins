@@ -47,12 +47,21 @@ function(model,
     variances <- get_effect_variances(data = data, model = model, allvars = names(mes), 
                                       type = type, vc = vc, vce = vce, 
                                       iterations = iterations, method = method)
+    # get unit-specific effect variances (take derivative of `.build_grad_fun()` for every row separately)
+    if (vce == "delta") {
+        vmat <- do.call("rbind", lapply(seq_len(nrow(data)), function(datarow) {
+            delta_once(data = data[datarow,], model = model, type = type, vc = vc, method = method)
+        }))
+        colnames(vmat) <- paste0("se.", names(mes))
+        vmat <- as.data.frame(vmat)
+        vmat[] <- lapply(vmat, `class<-`, c("se.marginaleffect", "numeric"))
+    }
     
     # obtain predicted values and standard errors
     pred <- prediction(model = model, data = data, type = type)
     
     # setup output structure
-    structure(cbind(data, pred, mes), 
+    structure(if (vce == "delta") cbind(data, pred, mes, vmat) else cbind(data, pred, mes), 
               class = c("margins", "data.frame"), 
               Variances = setNames(variances, names(mes)),
               type = type,

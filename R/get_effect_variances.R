@@ -14,32 +14,10 @@ function(data = data,
     method <- match.arg(method)
     vce <- match.arg(vce)
     
-    if (vce == "bootstrap") {
-        # function to calculate AME for one bootstrap subsample
-        bootfun <- function() {
-            s <- sample(seq_len(nrow(data)), nrow(data), TRUE)
-            colMeans(marginal_effects(model = model, data = data[s,], type = type, method = method), na.rm = TRUE)
-        }
-        # bootstrap the data and take the variance of bootstrapped AMEs
-        variances <- apply(replicate(iterations, bootfun()), 1, var, na.rm = TRUE)
-    } else if (vce == "delta") {
+    if (vce == "delta") {
         
-        # express each marginal effect as a function of all coefficients
-        # holding data constant
-        # this is what .build_grad_fun() will do
-        # then:  numDeriv::grad(.build_grad_fun(), model$coef)
-        # gives `gradmat`, such that v %*% V %*% t(v)
-        # gives the variance of each marginal effect
-        # `gradmat` should be an ME-by-beta matrix
-        
-        # http://www.soderbom.net/lecture10notes.pdf
-        # http://stats.stackexchange.com/questions/122066/how-to-use-delta-method-for-standard-errors-of-marginal-effects
-        
-        # TODO: TO GET UNIT-SPECIFIC VARIANCES, NEED TO TAKE DERIVATIVE OF `.build_grad_fun()` FOR EVERY ROW SEPARATELY
-        
-        FUN <- .build_grad_fun(data = data, model = model, type = type, method = method)
-        gradmat <- numDeriv::jacobian(FUN, model[["coefficients"]])
-        variances <- diag(gradmat %*% vc %*% t(gradmat))
+        # default method
+        variances <- delta_once(data = data, model = model, type = type, vc = vc, method = method)
         
     } else if (vce == "simulation") {
         
@@ -57,6 +35,17 @@ function(data = data,
         })
         # calculate the variance of the simulated AMEs
         variances <- apply(effectmat, 1, var, na.rm = TRUE)
-    }
+        
+    } else if (vce == "bootstrap") {
+    
+        # function to calculate AME for one bootstrap subsample
+        bootfun <- function() {
+            s <- sample(seq_len(nrow(data)), nrow(data), TRUE)
+            colMeans(marginal_effects(model = model, data = data[s,], type = type, method = method), na.rm = TRUE)
+        }
+        # bootstrap the data and take the variance of bootstrapped AMEs
+        variances <- apply(replicate(iterations, bootfun()), 1, var, na.rm = TRUE)
+        
+    } 
     return(variances)
 }

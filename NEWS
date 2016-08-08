@@ -1,6 +1,12 @@
 # CHANGES TO margins 0.3.0 #
 
+
+## margins 0.2.1
+
+* `build_margins()` now returns columns containing unit-specific standard errors of marginal effects.
 * Added a `vc` argument to `build_margins()` to allow the passing of arbitrary variance-covariance matrices. (#16, h/t Alex Coppock & Gijs Schumacher)
+* `cplot()` now draws confidence intervals for "effect" plots.
+* Fixed a bug in `get_marginal_effects()` wherein the `method` argument was ignored. This improves performance significantly when using `method = "simple"` (the default differentiation method).
 
 # CHANGES TO margins 0.2.0 #
 
