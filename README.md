@@ -82,7 +82,7 @@ m <- glm(am ~ wt*drat, data = mtcars, family = binomial)
 cplot(m, x = "wt", se.type = "shade")
 ```
 
-![plot of chunk cplot1](http://i.imgur.com/v4XkG5f.png)
+![plot of chunk cplot1](http://i.imgur.com/kDjnmDo.png)
 
 and a graph of the effect of `wt` across levels of `drat`:
 
@@ -91,7 +91,7 @@ and a graph of the effect of `wt` across levels of `drat`:
 cplot(m, x = "drat", dx = "wt", what = "effect", type = "response")
 ```
 
-![plot of chunk cplot2](http://i.imgur.com/hVIVtL8.png)
+![plot of chunk cplot2](http://i.imgur.com/NH2KVV4.png)
 
 Second, the package implements methods for "lm" and "glm" class objects for the `persp()` generic plotting function. This enables three-dimensional representations of predicted outcomes:
 

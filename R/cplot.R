@@ -167,7 +167,7 @@ function(object,
     }
     
     # prediction/effect line
-    lines(xvals, if (what == "prediction") outdat[["fitted"]] else outdat[[xvar]], type = "l", lwd = lwd, col = col, lty = lty)
+    lines(xvals, if (what == "prediction") outdat[["fitted"]] else outdat[["effect"]], type = "l", lwd = lwd, col = col, lty = lty)
 
     #
     if (isTRUE(rug)) {
