@@ -1,3 +1,7 @@
+# CHANGES TO margins 0.3.0 #
+
+* Added a `vc` argument to `build_margins()` to allow the passing of arbitrary variance-covariance matrices. (#16, h/t Alex Coppock & Gijs Schumacher)
+
 # CHANGES TO margins 0.2.0 #
 
 * Added `persp()` methods for "lm" and "glm" class objects to display 3-dimensional representations of predicted values and marginal effects.

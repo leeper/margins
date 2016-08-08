@@ -48,6 +48,13 @@ x <- glm(am ~ hp, data = head(mtcars), family = binomial)
 margins(x, type = "response")
 margins(x, type = "link")
 
+# specifying a custom `vcov` argument
+library("sandwich")
+x <- lm(Sepal.Length ~ Sepal.Width, data = head(iris))
+summary(margins(x))
+## heteroskedasticity-consistent covariance matrix
+summary(margins(x, vcov = vcovHC(x)))
+
 }
 \author{
 Thomas J. Leeper

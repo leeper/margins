@@ -5,8 +5,8 @@
 \title{\dQuote{margins} Object Builder}
 \usage{
 build_margins(model, data, type = c("response", "link", "terms"),
-  vce = c("delta", "simulation", "bootstrap"), iterations = 50L,
-  method = c("simple", "Richardson", "complex"), ...)
+  vc = vcov(model), vce = c("delta", "simulation", "bootstrap"),
+  iterations = 50L, method = c("simple", "Richardson", "complex"), ...)
 }
 \arguments{
 \item{model}{A model object.}
@@ -14,6 +14,8 @@ build_margins(model, data, type = c("response", "link", "terms"),
 \item{data}{A data.frame over which to calculate marginal effects.}
 
 \item{type}{A character string indicating the type of marginal effects to estimate. Mostly relevant for non-linear models, where the reasonable options are \dQuote{response} (the default) or \dQuote{link} (i.e., on the scale of the linear predictor in a GLM).}
+
+\item{vc}{A matrix containing the variance-covariance matrix for estimated model coefficients.}
 
 \item{vce}{A character string indicating the type of estimation procedure to use for estimating variances. The default (\dQuote{delta}) uses the delta method. Alternatives are \dQuote{bootstrap}, which uses bootstrap estimation, or \dQuote{simulation}, which averages across simulations drawn from the joint sampling distribution of model coefficients. The latter two are extremely time intensive.}
 

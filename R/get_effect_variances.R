@@ -3,6 +3,7 @@ function(data = data,
          model = model, 
          which = all.vars(model[["terms"]])[-1], # which mes do we need variances of
          type = c("response", "link", "terms"),
+         vc = vcov(model),
          vce = c("delta", "simulation", "bootstrap"),
          iterations = 50L, # if vce == "bootstrap" or "simulation"
          method = c("simple", "Richardson", "complex"), # passed to marginal_effects()
@@ -38,7 +39,7 @@ function(data = data,
         
         FUN <- .build_grad_fun(data = data, model = model, type = type, method = method)
         gradmat <- numDeriv::jacobian(FUN, model[["coefficients"]])
-        variances <- diag(gradmat %*% vcov(model) %*% t(gradmat))
+        variances <- diag(gradmat %*% vc %*% t(gradmat))
         
     } else if (vce == "simulation") {
         
@@ -47,7 +48,7 @@ function(data = data,
         tmpmodel$model <- NULL # remove data from model for memory
         
         # simulate from multivariate normal
-        coefmat <- MASS::mvrnorm(iterations, coef(model), vcov(model))
+        coefmat <- MASS::mvrnorm(iterations, coef(model), vc)
         
         # estimate AME from from each simulated coefficient vector
         effectmat <- apply(coefmat, 1, function(coefrow) {

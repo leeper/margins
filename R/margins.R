@@ -33,6 +33,13 @@
 #' margins(x, type = "response")
 #' margins(x, type = "link")
 #' 
+#' # specifying a custom `vcov` argument
+#' library("sandwich")
+#' x <- lm(Sepal.Length ~ Sepal.Width, data = head(iris))
+#' summary(margins(x))
+#' ## heteroskedasticity-consistent covariance matrix
+#' summary(margins(x, vcov = vcovHC(x)))
+#' 
 #' @seealso \code{\link{marginal_effects}}, \code{\link{build_margins}}
 #' @keywords models
 #' @export
