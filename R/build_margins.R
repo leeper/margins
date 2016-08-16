@@ -26,7 +26,7 @@ build_margins <-
 function(model, 
          data,
          type = c("response", "link", "terms"),
-         vcov = vcov(model),
+         vcov = stats::vcov(model),
          vce = c("delta", "simulation", "bootstrap"),
          iterations = 50L, # if vce == "bootstrap" or "simulation"
          method = c("simple", "Richardson", "complex"), # passed to marginal_effects()

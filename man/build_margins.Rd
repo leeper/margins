@@ -5,7 +5,7 @@
 \title{\dQuote{margins} Object Builder}
 \usage{
 build_margins(model, data, type = c("response", "link", "terms"),
-  vcov = vcov(model), vce = c("delta", "simulation", "bootstrap"),
+  vcov = stats::vcov(model), vce = c("delta", "simulation", "bootstrap"),
   iterations = 50L, method = c("simple", "Richardson", "complex"), ...)
 }
 \arguments{
