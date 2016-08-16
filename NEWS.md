@@ -3,6 +3,7 @@
 ## margins 0.2.2
 
 * Removed support for "marginal effects at means" (MEMs) and the `atmeans` argument throughout package. (#35)
+* Renamed the `vc` argument to `vcov` for consistency with other packages. (#34)
 
 ## margins 0.2.1
 

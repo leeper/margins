@@ -3,7 +3,7 @@
 #' @param model A model object.
 #' @param data A data.frame over which to calculate marginal effects.
 #' @param type A character string indicating the type of marginal effects to estimate. Mostly relevant for non-linear models, where the reasonable options are \dQuote{response} (the default) or \dQuote{link} (i.e., on the scale of the linear predictor in a GLM).
-#' @param vc A matrix containing the variance-covariance matrix for estimated model coefficients.
+#' @param vcov A matrix containing the variance-covariance matrix for estimated model coefficients, a function to perform the estimation with \code{model} as its only argument
 #' @param vce A character string indicating the type of estimation procedure to use for estimating variances. The default (\dQuote{delta}) uses the delta method. Alternatives are \dQuote{bootstrap}, which uses bootstrap estimation, or \dQuote{simulation}, which averages across simulations drawn from the joint sampling distribution of model coefficients. The latter two are extremely time intensive.
 #' @param iterations If \code{vce = "bootstrap"}, the number of bootstrap iterations. If \code{vce = "simulation"}, the number of simulated effects to draw. Ignored otherwise.
 #' @param method A character string indicating the numeric derivative method to use when estimating marginal effects. \dQuote{simple} optimizes for speed; \dQuote{Richardson} optimizes for accuracy. See \code{\link[numDeriv]{grad}} for details.
@@ -26,7 +26,7 @@ build_margins <-
 function(model, 
          data,
          type = c("response", "link", "terms"),
-         vc = vcov(model),
+         vcov = vcov(model),
          vce = c("delta", "simulation", "bootstrap"),
          iterations = 50L, # if vce == "bootstrap" or "simulation"
          method = c("simple", "Richardson", "complex"), # passed to marginal_effects()
@@ -39,18 +39,21 @@ function(model,
     type <- match.arg(type)
     method <- match.arg(method)
     vce <- match.arg(vce)
+    if (is.function(vcov)) {
+        vcov <- vcov(model)
+    }
     
     # obtain gradient with respect to each variable in data
     mes <- marginal_effects(model = model, data = data, type = type, method = method)
     
     # variance estimation technique
     variances <- get_effect_variances(data = data, model = model, allvars = names(mes), 
-                                      type = type, vc = vc, vce = vce, 
+                                      type = type, vcov = vcov, vce = vce, 
                                       iterations = iterations, method = method)
     # get unit-specific effect variances (take derivative of `.build_grad_fun()` for every row separately)
     if (vce == "delta") {
         vmat <- do.call("rbind", lapply(seq_len(nrow(data)), function(datarow) {
-            delta_once(data = data[datarow,], model = model, type = type, vc = vc, method = method)
+            delta_once(data = data[datarow,], model = model, type = type, vcov = vcov, method = method)
         }))
         colnames(vmat) <- paste0("se.", names(mes))
         vmat <- as.data.frame(vmat)

@@ -2,12 +2,15 @@ delta_once <-
 function(data, 
          model, 
          type = c("response", "link", "terms"), 
-         vc = vcov(model),
+         vcov = vcov(model),
          method = c("simple", "Richardson", "complex")) {
     # take the derivative of each marginal effect from a model with respect to each model coefficient
     
     type <- match.arg(type)
     method <- match.arg(method)
+    if (is.function(vcov)) {
+        vcov <- vcov(model)
+    }
     
     # express each marginal effect as a function of all coefficients
     # holding data constant
@@ -23,6 +26,6 @@ function(data,
     
     FUN <- .build_grad_fun(data = data, model = model, type = type, method = method)
     gradmat <- numDeriv::jacobian(FUN, model[["coefficients"]], method = method)
-    vout <- diag(gradmat %*% vc %*% t(gradmat))
+    vout <- diag(gradmat %*% vcov %*% t(gradmat))
     return(vout)
 }

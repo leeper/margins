@@ -3,7 +3,7 @@ function(data = data,
          model = model, 
          which = all.vars(model[["terms"]])[-1], # which mes do we need variances of
          type = c("response", "link", "terms"),
-         vc = vcov(model),
+         vcov = vcov(model),
          vce = c("delta", "simulation", "bootstrap"),
          iterations = 50L, # if vce == "bootstrap" or "simulation"
          method = c("simple", "Richardson", "complex"), # passed to marginal_effects()
@@ -13,11 +13,14 @@ function(data = data,
     type <- match.arg(type)
     method <- match.arg(method)
     vce <- match.arg(vce)
+    if (is.function(vcov)) {
+        vcov <- vcov(model)
+    }
     
     if (vce == "delta") {
         
         # default method
-        variances <- delta_once(data = data, model = model, type = type, vc = vc, method = method)
+        variances <- delta_once(data = data, model = model, type = type, vcov = vcov, method = method)
         
     } else if (vce == "simulation") {
         
@@ -26,7 +29,7 @@ function(data = data,
         tmpmodel$model <- NULL # remove data from model for memory
         
         # simulate from multivariate normal
-        coefmat <- MASS::mvrnorm(iterations, coef(model), vc)
+        coefmat <- MASS::mvrnorm(iterations, coef(model), vcov)
         
         # estimate AME from from each simulated coefficient vector
         effectmat <- apply(coefmat, 1, function(coefrow) {
