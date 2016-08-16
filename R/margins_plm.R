@@ -4,7 +4,6 @@
 #' @param model A model object of class \dQuote{plm} or \dQuote{pglm}, from the \pkg{plm} package.
 #' @param data A data.frame containing the data at which to evaluate the marginal effects, as in \code{\link[stats]{predict}}.
 #' @param at A list of one or more named vectors, specifically values at which to calculate the marginal effects. See \code{\link{build_datalist}} for details on use.
-#' @param atmeans A logical indicating whether to calculate marginal effects at the means (i.e., partial effects at the average of all covariates), as opposed to the default average marginal effects (i.e., average partial effects), which is the default.
 #' @param \dots Arguments passed to \code{\link{marginal_effects}}. One of particular relevance for GLMs is \code{type}.
 #' @return An object of class \dQuote{marginslist}, composed of one or more objects of class \dQuote{margins}.
 #' @seealso \code{\link{plot.margins}}, \code{\link{extract_marginal_effects}}
@@ -14,7 +13,6 @@ margins.plm <-
 function(model, 
          data = NULL, 
          at = NULL, 
-         atmeans = FALSE, 
          ...) {
     
     # setup data
@@ -25,7 +23,7 @@ function(model,
             data <- get_all_vars(model[["terms"]], data = model[["model"]])
         }
     }
-    data_list <- build_datalist(data, at = at, atmeans = atmeans)
+    data_list <- build_datalist(data, at = at)
     
     # reduce memory profile
     model[["model"]] <- NULL
@@ -33,9 +31,8 @@ function(model,
     # calculate marginal effects
     warning("Marginal effects not likely to be correct")
     out <- lapply(data_list, function(thisdata) {
-        m <- build_margins(model = model, data = thisdata, atmeans = atmeans, ...)
+        m <- build_margins(model = model, data = thisdata, ...)
         attr(m, "at") <- attributes(thisdata)[["at"]]
-        attr(m, "atmeans") <- atmeans
         m
     })
     
@@ -49,7 +46,6 @@ margins.pglm <-
 function(model, 
          data = NULL, 
          at = NULL, 
-         atmeans = FALSE, 
          ...){
     # setup data
     if (missing(data)) {
@@ -59,7 +55,7 @@ function(model,
             data <- get_all_vars(model[["terms"]], data = model[["model"]])
         }
     }
-    data_list <- build_datalist(data, at = at, atmeans = atmeans)
+    data_list <- build_datalist(data, at = at)
     
     # reduce memory profile
     model[["model"]] <- NULL
@@ -67,9 +63,8 @@ function(model,
     # calculate marginal effects
     warning("Marginal effects not likely to be correct")
     out <- lapply(data_list, function(thisdata) {
-        m <- build_margins(model = model, data = thisdata, atmeans = atmeans, ...)
+        m <- build_margins(model = model, data = thisdata, ...)
         attr(m, "at") <- attributes(thisdata)[["at"]]
-        attr(m, "atmeans") <- atmeans
         m
     })
     

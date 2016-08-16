@@ -1,5 +1,8 @@
 # CHANGES TO margins 0.3.0 #
 
+## margins 0.2.2
+
+* Removed support for "marginal effects at means" (MEMs) and the `atmeans` argument throughout package. (#35)
 
 ## margins 0.2.1
 

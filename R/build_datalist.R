@@ -2,7 +2,6 @@
 #' @description Construct a list of data.frames based upon an input data.frame and a list of one or more \code{at} values
 #' @param data A data.frame containing the original data.
 #' @param at A list of one or more named vectors of values, which will be used to specify values of variables in \code{data}. See examples.
-#' @param atmeans A logical indicating whether, \emph{after} replacing values in \code{at}, to return one-row data.frames containing variable means.
 #' @param \dots Ignored.
 #' @return A list of data.frames.
 #' @author Thomas J. Leeper
@@ -19,7 +18,6 @@
 build_datalist <- 
 function(data,
          at = NULL, 
-         atmeans = FALSE, 
          ...){
     
     #names(data) <- clean_terms(names(data))
@@ -28,16 +26,11 @@ function(data,
         check_at(data, at)
         
         # setup list of data.frames based on at
-        data_out <- set_data_to_at(data, at = at, atmeans = atmeans)
+        data_out <- set_data_to_at(data, at = at)
     } else {
         # if `at` empty, simply setup data.frame and return
-        if (atmeans) {
-            data_out <- list(.atmeans(data))
-        } else {
-            data_out <- list(data)
-        }
+        data_out <- list(data)
         attr(data_out[[1]], "at") <- NULL
-        attr(data_out[[1]], "atmeans") <- atmeans
     }
     data_out
 }
@@ -101,7 +94,7 @@ check_at_names <- function(names, at) {
 }
 
 # data.frame builder, given specified `at` values
-set_data_to_at <- function(data, at = NULL, atmeans = FALSE) {
+set_data_to_at <- function(data, at = NULL) {
     # expand `at` combinations
     e <- expand.grid(at)
     e <- split(e, unique(e))
@@ -109,13 +102,8 @@ set_data_to_at <- function(data, at = NULL, atmeans = FALSE) {
         dat <- data
         dat <- `[<-`(dat, , names(atvals), value = atvals)
         
-        if (atmeans) {
-            # set columns to `atmeans`, if applicable
-            dat <- .atmeans(dat, names(dat)[!names(dat) %in% names(at)])
-        }
-        
         # return data, with `at` attribute
-        structure(dat, at = atvals, atmeans = atmeans)
+        structure(dat, at = atvals)
     })
     return(data_out)
 }

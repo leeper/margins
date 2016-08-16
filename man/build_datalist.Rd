@@ -4,14 +4,12 @@
 \alias{build_datalist}
 \title{Build list of data.frames}
 \usage{
-build_datalist(data, at = NULL, atmeans = FALSE, ...)
+build_datalist(data, at = NULL, ...)
 }
 \arguments{
 \item{data}{A data.frame containing the original data.}
 
 \item{at}{A list of one or more named vectors of values, which will be used to specify values of variables in \code{data}. See examples.}
-
-\item{atmeans}{A logical indicating whether, \emph{after} replacing values in \code{at}, to return one-row data.frames containing variable means.}
 
 \item{\dots}{Ignored.}
 }

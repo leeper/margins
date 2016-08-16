@@ -1,20 +1,11 @@
 #' @export
 summary.margins <- 
 function(object, digits = 4, level = 0.95, ...) {
-    if (attributes(object)[["atmeans"]]) {
-        if (is.null(attributes(object)[["at"]])) {
-            cat("Marginal Effects at Means\n")
-        } else {
-            atvals <- paste(names(attributes(object)[["at"]]), "=", attributes(object)[["at"]][1,], collapse = ", ")
-            cat("Marginal Effects at Means, with ", atvals, "\n")
-        }
+    if (is.null(attributes(object)[["at"]])) {
+        cat("Average Marginal Effects\n")
     } else {
-        if (is.null(attributes(object)[["at"]])) {
-            cat("Average Marginal Effects\n")
-        } else {
-            atvals <- paste(names(attributes(object)[["at"]]), "=", attributes(object)[["at"]][1,], collapse = ", ")
-            cat("Average Marginal Effects, with ", atvals, "\n")
-        }
+        atvals <- paste(names(attributes(object)[["at"]]), "=", attributes(object)[["at"]][1,], collapse = ", ")
+        cat("Average Marginal Effects, with ", atvals, "\n")
     }
     if (!is.null(attributes(object)[["call"]])) {
         cat(deparse(attributes(object)[["call"]]), "\n\n")

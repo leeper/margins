@@ -25,18 +25,6 @@ test_that("factor variables work", {
     expect_true(inherits(marginal_effects(x2), "data.frame"), label = "natural factors work")
 })
 
-test_that("AME/MEM identical in OLS models", {
-    x <- lm(mpg ~ cyl * hp + wt, data = head(mtcars))
-    expect_equal(mean(extract_marginal_effects(margins(x, atmeans = TRUE))), 
-                 mean(extract_marginal_effects(margins(x, atmeans = FALSE))), tolerance = tol)
-})
-
-test_that("AME/MEM not identical in GLMs", {
-    x <- glm(am ~ hp, data = head(mtcars), family = binomial)
-    expect_false(identical(mean(extract_marginal_effects(margins(x, atmeans = TRUE))[[1]][[1]]), 
-                           mean(extract_marginal_effects(margins(x, atmeans = FALSE))[[1]][[1]])))
-})
-
 
 context("print(), summary(), and confint() methods")
 test_that("print()/summary() for 'margins' object", {
