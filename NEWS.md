@@ -1,5 +1,9 @@
 # CHANGES TO margins 0.3.0 #
 
+## margins 0.2.3
+
+* Added a logical argument to enable/disable calculation of unit-specific marginal effect variances and set it to FALSE by default. (#36, h/t Vincent Arel-Bundock)
+
 ## margins 0.2.2
 
 * Removed support for "marginal effects at means" (MEMs) and the `atmeans` argument throughout package. (#35)

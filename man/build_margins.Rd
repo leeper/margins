@@ -6,7 +6,8 @@
 \usage{
 build_margins(model, data, type = c("response", "link", "terms"),
   vcov = stats::vcov(model), vce = c("delta", "simulation", "bootstrap"),
-  iterations = 50L, method = c("simple", "Richardson", "complex"), ...)
+  iterations = 50L, unit_ses = FALSE, method = c("simple", "Richardson",
+  "complex"), ...)
 }
 \arguments{
 \item{model}{A model object.}
@@ -20,6 +21,8 @@ build_margins(model, data, type = c("response", "link", "terms"),
 \item{vce}{A character string indicating the type of estimation procedure to use for estimating variances. The default (\dQuote{delta}) uses the delta method. Alternatives are \dQuote{bootstrap}, which uses bootstrap estimation, or \dQuote{simulation}, which averages across simulations drawn from the joint sampling distribution of model coefficients. The latter two are extremely time intensive.}
 
 \item{iterations}{If \code{vce = "bootstrap"}, the number of bootstrap iterations. If \code{vce = "simulation"}, the number of simulated effects to draw. Ignored otherwise.}
+
+\item{unit_ses}{If \code{vce = "delta"}, a logical specifying whether to calculate and return unit-specific marginal effect variances. This calculation is time consuming and the information is often not needed, so this is set to \code{FALSE} by default.}
 
 \item{method}{A character string indicating the numeric derivative method to use when estimating marginal effects. \dQuote{simple} optimizes for speed; \dQuote{Richardson} optimizes for accuracy. See \code{\link[numDeriv]{grad}} for details.}
 
