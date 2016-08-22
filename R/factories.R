@@ -23,7 +23,7 @@
         for (i in seq_along(coefs)) {
             model[["coefficients"]][names(coefs)[i]] <- coefs[i]
         }
-        colMeans(marginal_effects(model = model, data = data, type = type, method = method), na.rm = TRUE)
+        colMeans(marginal_effects(model = model, data = data, type = type), na.rm = TRUE)
     }
     return(compiler::cmpfun(FUN))
 }

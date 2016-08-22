@@ -2,13 +2,13 @@
 summary.margins <- 
 function(object, digits = 4, level = 0.95, ...) {
     if (is.null(attributes(object)[["at"]])) {
-        cat("Average Marginal Effects\n")
+        message("Average Marginal Effects")
     } else {
         atvals <- paste(names(attributes(object)[["at"]]), "=", attributes(object)[["at"]][1,], collapse = ", ")
-        cat("Average Marginal Effects, with ", atvals, "\n")
+        message("Average Marginal Effects, with ", atvals)
     }
     if (!is.null(attributes(object)[["call"]])) {
-        cat(deparse(attributes(object)[["call"]]), "\n\n")
+        message(deparse(attributes(object)[["call"]]), "\n")
     }
     fmt <- paste0("%0.", ifelse(digits > 7, 7, digits), "f")
     mes <- extract_marginal_effects(object)

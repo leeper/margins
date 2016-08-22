@@ -34,7 +34,7 @@ function(data = data,
         # estimate AME from from each simulated coefficient vector
         effectmat <- apply(coefmat, 1, function(coefrow) {
             tmpmodel[["coefficients"]] <- coefrow
-            colMeans(marginal_effects(data, model = tmpmodel, type = type, method = method))
+            colMeans(marginal_effects(data, model = tmpmodel, type = type))
         })
         # calculate the variance of the simulated AMEs
         variances <- apply(effectmat, 1, var, na.rm = TRUE)
@@ -44,7 +44,7 @@ function(data = data,
         # function to calculate AME for one bootstrap subsample
         bootfun <- function() {
             s <- sample(seq_len(nrow(data)), nrow(data), TRUE)
-            colMeans(marginal_effects(model = model, data = data[s,], type = type, method = method), na.rm = TRUE)
+            colMeans(marginal_effects(model = model, data = data[s,], type = type), na.rm = TRUE)
         }
         # bootstrap the data and take the variance of bootstrapped AMEs
         variances <- apply(replicate(iterations, bootfun()), 1, var, na.rm = TRUE)

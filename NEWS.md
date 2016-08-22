@@ -2,7 +2,7 @@
 
 ## margins 0.2.4
 
-* Modified. (#36/#37, h/t Vincent Arel-Bundock)
+* Modified `marginal_effects()` to use a vectorized approach to simple numerical differentiation. (#36/#37, h/t Vincent Arel-Bundock)
 * Removed `margins.plm()` method, which didn't actually work because "plm" does not provide a `predict()` method.
 * Updated Stata/R comparison documents included in `inst/doc`.
 * Expanded tests of unit-specific variances. (#21)

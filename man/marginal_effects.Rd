@@ -4,8 +4,7 @@
 \alias{marginal_effects}
 \title{Differentiate a Model Object}
 \usage{
-marginal_effects(model, data, type = c("response", "link"),
-  method = c("simple", "Richardson", "complex"))
+marginal_effects(model, data, type = c("response", "link"), eps = 1e-07)
 }
 \arguments{
 \item{model}{A model object, perhaps returned by \code{\link[stats]{lm}} or \code{\link[stats]{glm}}}
@@ -14,7 +13,7 @@ marginal_effects(model, data, type = c("response", "link"),
 
 \item{type}{A character string indicating the type of marginal effects to estimate. Mostly relevant for non-linear models, where the reasonable options are \dQuote{response} (the default) or \dQuote{link} (i.e., on the scale of the linear predictor in a GLM).}
 
-\item{method}{A character string indicating the numeric derivative method to use when estimating marginal effects. \dQuote{simple} optimizes for speed; \dQuote{Richardson} optimizes for accuracy. See \code{\link[numDeriv]{grad}} for details.}
+\item{eps}{A numeric value specifying the \dQuote{step} to use when calculating numerical derivatives. By default this is the smallest floating point value that can be represented on the present architecture.}
 }
 \value{
 An data.frame with dimensions equal to \code{data}, where each row is an observation and each column is the marginal effect of that variable for the data values provided by \code{data}.
