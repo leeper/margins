@@ -76,6 +76,30 @@ plot(m[[1]])
 
 If you are only interested in obtaining the marginal effects (without corresponding variances or the overhead of creating a "margins" object), you can call `marginal_effects(x)` directly. This may be useful, for example, for plotting, or getting a quick impression of the results.
 
+While there is still work to be done to improve performance, **margins** is reasonably speedy:
+
+
+```r
+library("microbenchmark")
+microbenchmark(marginal_effects(x))
+```
+
+```
+## Unit: milliseconds
+##                 expr     min       lq     mean   median       uq      max neval
+##  marginal_effects(x) 214.471 222.9181 234.4616 227.0719 238.7153 329.5586   100
+```
+
+```r
+microbenchmark(margins(x))
+```
+
+```
+## Unit: seconds
+##        expr      min       lq     mean   median       uq     max neval
+##  margins(x) 1.659949 1.759542 2.002002 1.921906 2.071543 3.18132   100
+```
+
 In addition to the estimation procedures and `plot()` generic, **margins** offers several plotting methods for model objects. First, there is a new generic `cplot()` that displays predictions or marginal effects (from an "lm" or "glm" model) of a variable conditional across values of third variable (or itself). For example, here is a graph of predicted probabilities from a logit model:
 
 
