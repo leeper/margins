@@ -42,8 +42,7 @@ dy/dx w.r.t. : cyl hp wt
 ```{r}
 library("margins")
 x <- lm(mpg ~ cyl + hp + wt, data = mtcars)
-# AME and MEM equivalent
-margins(x)
+summary(margins(x))
 ```
 
 ---
@@ -76,8 +75,7 @@ dy/dx w.r.t. : cyl hp wt
 
 ```{r}
 x <- lm(mpg ~ cyl + hp * wt, data = mtcars)
-# AME and MEM equivalent
-margins(x)
+summary(margins(x))
 ```
 
 ---
@@ -112,8 +110,7 @@ Note: dy/dx for factor levels is the discrete change from the base level.
 
 ```{r}
 x <- lm(mpg ~ factor(cyl) + hp + wt, data = mtcars)
-# AME and MEM equivalent
-margins(x)
+summary(margins(x))
 ```
 
 
@@ -146,8 +143,7 @@ dy/dx w.r.t. : cyl hp wt
 
 ```{r}
 x <- lm(mpg ~ cyl + hp + I(hp^2) + wt, data = mtcars)
-# AME and MEM equivalent
-margins(x)
+summary(margins(x))
 ```
 
 ---
@@ -179,7 +175,6 @@ dy/dx w.r.t. : cyl hp2 wt
 
 ```{r}
 x <- lm(mpg ~ cyl + I(hp^2) + wt, data = mtcars)
-# AME and MEM equivalent
-margins(x)
+summary(margins(x))
 ```
 

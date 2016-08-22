@@ -14,29 +14,10 @@ options(width = 100)
 
 ## GLM (Logit) Effects on Probability Scale ##
 
-### Stata ###
+### Stata Logit Effects on Probability and Log-Odds Scales ###
 
 ```
 . quietly logit am cyl hp wt
-. margins, dydx(*) atmeans
-
-Conditional marginal effects                      Number of obs   =         32
-Model VCE    : OIM
-Expression   : Pr(am), predict()
-dy/dx w.r.t. : cyl hp wt
-at           : cyl             =      6.1875 (mean)
-               hp              =    146.6875 (mean)
-               wt              =     3.21725 (mean)
-------------------------------------------------------------------------------
-             |            Delta-method
-             |      dy/dx   Std. Err.      z    P>|z|     [95% Conf. Interval]
--------------+----------------------------------------------------------------
-         cyl |   .0537505   .1132654     0.47   0.635    -.1682456    .2757465
-          hp |   .0035928   .0029037     1.24   0.216    -.0020983    .0092838
-          wt |  -1.008594   .6676631    -1.51   0.131     -2.31719    .3000017
-------------------------------------------------------------------------------
-
-
 . margins, dydx(*)
 
 Average marginal effects                          Number of obs   =         32
@@ -51,26 +32,7 @@ dy/dx w.r.t. : cyl hp wt
           hp |   .0014339   .0006182     2.32   0.020     .0002224    .0026455
           wt |  -.4025475   .1154098    -3.49   0.000    -.6287466   -.1763484
 ------------------------------------------------------------------------------
-```
 
-### R ###
-
-```{r}
-x <- glm(am ~ cyl + hp + wt, data = mtcars, family = binomial)
-# MEM
-margins(x, atmeans = TRUE, type = "response")
-# AME
-margins(x, type = "response")
-```
-
----
-
-## GLM (Logit) Effects on Log-Odds Scale ##
-
-
-### Stata ###
-
-```
 . quietly logit am cyl hp wt
 . margins, dydx(*) predict(xb)
 
@@ -92,8 +54,10 @@ dy/dx w.r.t. : cyl hp wt
 
 ```{r}
 x <- glm(am ~ cyl + hp + wt, data = mtcars, family = binomial)
+# AME
+summary(margins(x, type = "response"))
 # AME and MEM equivalent on "link" scale
-margins(x, type = "link")
+summary(margins(x, type = "link"))
 ```
 
 
@@ -150,38 +114,20 @@ Note: dy/dx for factor levels is the discrete change from the base level.
 ```{r}
 x <- glm(am ~ factor(cyl) + hp + wt, data = mtcars, family = binomial)
 # Log-odds
-margins(x, type = "link")
+summary(margins(x, type = "link"))
 # Probability with continuous factors
-margins(x, type = "response")
+summary(margins(x, type = "response"))
 ```
 
 
 ---
 
-## GLM (Logit) with interaction on probability scale ##
+## GLM (Logit) with interaction on probability and Log-Odds scales ##
 
 ### Stata ###
 
 ```
 . quietly logit am cyl c.hp##c.wt
-. margins, dydx(*) atmeans
-
-Conditional marginal effects                      Number of obs   =         32
-Model VCE    : OIM
-Expression   : Pr(am), predict()
-dy/dx w.r.t. : cyl hp wt
-at           : cyl             =      6.1875 (mean)
-               hp              =    146.6875 (mean)
-               wt              =     3.21725 (mean)
-------------------------------------------------------------------------------
-             |            Delta-method
-             |      dy/dx   Std. Err.      z    P>|z|     [95% Conf. Interval]
--------------+----------------------------------------------------------------
-         cyl |   .0810915   .1838916     0.44   0.659    -.2793294    .4415125
-          hp |   .0081009   .0086664     0.93   0.350    -.0088849    .0250867
-          wt |  -1.925325   1.866456    -1.03   0.302    -5.583512    1.732861
-------------------------------------------------------------------------------
-
 . margins, dydx(*)
 
 Average marginal effects                          Number of obs   =         32
@@ -196,25 +142,7 @@ dy/dx w.r.t. : cyl hp wt
           hp |   .0026673   .0023004     1.16   0.246    -.0018414     .007176
           wt |  -.5157922   .2685806    -1.92   0.055    -1.042201    .0106162
 ------------------------------------------------------------------------------
-```
 
-### R ###
-
-```{r}
-x <- glm(am ~ cyl + hp * wt, data = mtcars, family = binomial)
-# MEM
-margins(x, atmeans = TRUE, type = "response")
-# AME
-margins(x, type = "response")
-```
-
----
-
-## GLM (Logit) with interaction on Log-Odds scale ##
-
-### Stata ###
-
-```
 . margins, dydx(*) predict(xb)
 
 Average marginal effects                          Number of obs   =         32
@@ -235,8 +163,10 @@ dy/dx w.r.t. : cyl hp wt
 
 ```{r}
 x <- glm(am ~ cyl + hp * wt, data = mtcars, family = binomial)
+# AME
+summary(margins(x, type = "response"))
 # AME and MEM equivalent on "link" scale
-margins(x, type = "link")
+summary(margins(x, type = "link"))
 ```
 
 
@@ -282,9 +212,9 @@ dy/dx w.r.t. : cyl hp wt
 ```{r}
 x <- glm(am ~ cyl + hp * wt, data = mtcars, family = binomial(link="probit"))
 # AME (log-odds)
-margins(x, type = "link")
+summary(margins(x, type = "link"))
 # AME (probability)
-margins(x, type = "response")
+summary(margins(x, type = "response"))
 ```
 
 
@@ -331,7 +261,7 @@ dy/dx w.r.t. : cyl hp wt
 ```{r}
 x <- glm(carb ~ cyl + hp * wt, data = mtcars, family = poisson)
 # AME (linear/link)
-margins(x, type = "link")
+summary(margins(x, type = "link"))
 # AME (probability)
-margins(x, type = "response")
+summary(margins(x, type = "response"))
 ```

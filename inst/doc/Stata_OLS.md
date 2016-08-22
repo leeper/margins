@@ -44,13 +44,17 @@ dy/dx w.r.t. : cyl hp wt
 ```r
 library("margins")
 x <- lm(mpg ~ cyl + hp + wt, data = mtcars)
-# AME and MEM equivalent
-margins(x)
+summary(margins(x))
 ```
 
 ```
-##      cyl       hp       wt 
-## -0.94162 -0.01804 -3.16697
+## Average Marginal Effects
+## lm(formula = mpg ~ cyl + hp + wt, data = mtcars) 
+## 
+##  Factor   dy/dx Std.Err. z value Pr(>|z|)   2.50%  97.50%
+##     cyl -0.9416   0.5509 -1.7092   0.0874 -2.0214  0.1382
+##      hp -0.0180   0.0119 -1.5188   0.1288 -0.0413  0.0052
+##      wt -3.1670   0.7406 -4.2764   0.0000 -4.6185 -1.7155
 ```
 
 ---
@@ -84,13 +88,17 @@ dy/dx w.r.t. : cyl hp wt
 
 ```r
 x <- lm(mpg ~ cyl + hp * wt, data = mtcars)
-# AME and MEM equivalent
-margins(x)
+summary(margins(x))
 ```
 
 ```
-##      cyl       hp       wt 
-## -0.36524 -0.02527 -3.83758
+## Average Marginal Effects
+## lm(formula = mpg ~ cyl + hp * wt, data = mtcars) 
+## 
+##  Factor   dy/dx Std.Err. z value Pr(>|z|)   2.50%  97.50%
+##     cyl -0.3652   0.5086 -0.7181   0.4727 -1.3621  0.6316
+##      hp -0.0253   0.0105 -2.4046   0.0162 -0.0459 -0.0047
+##      wt -3.8376   0.6731 -5.7014   0.0000 -5.1568 -2.5183
 ```
 
 ---
@@ -126,12 +134,18 @@ Note: dy/dx for factor levels is the discrete change from the base level.
 
 ```r
 x <- lm(mpg ~ factor(cyl) + hp + wt, data = mtcars)
-# AME and MEM equivalent
-margins(x)
+summary(margins(x))
 ```
 
 ```
-## Error in model.frame.default(Terms, newdata, na.action = na.action, xlev = object$xlevels): factor factor(cyl) has new level 6.0001
+## Average Marginal Effects
+## lm(formula = mpg ~ factor(cyl) + hp + wt, data = mtcars) 
+## 
+##        Factor   dy/dx Std.Err. z value Pr(>|z|)   2.50%  97.50%
+##            hp -0.0231   0.0120 -1.9344   0.0531 -0.0465  0.0003
+##            wt -3.1814   0.7196 -4.4211   0.0000 -4.5918 -1.7710
+##  factor(cyl)6 -3.3590   1.4017 -2.3964   0.0166 -6.1062 -0.6118
+##  factor(cyl)8 -3.1859   2.1705 -1.4678   0.1422 -7.4399  1.0682
 ```
 
 
@@ -165,13 +179,17 @@ dy/dx w.r.t. : cyl hp wt
 
 ```r
 x <- lm(mpg ~ cyl + hp + I(hp^2) + wt, data = mtcars)
-# AME and MEM equivalent
-margins(x)
+summary(margins(x))
 ```
 
 ```
-##     cyl      hp      wt 
-## -0.3696 -0.0429 -2.8736
+## Average Marginal Effects
+## lm(formula = mpg ~ cyl + hp + I(hp^2) + wt, data = mtcars) 
+## 
+##  Factor   dy/dx Std.Err. z value Pr(>|z|)   2.50%  97.50%
+##     cyl -0.3696   0.6164 -0.5997   0.5487 -1.5776  0.8384
+##      hp -0.0429   0.0178 -2.4054   0.0162 -0.0779 -0.0079
+##      wt -2.8736   0.7301 -3.9357   0.0001 -4.3046 -1.4425
 ```
 
 ---
@@ -204,12 +222,16 @@ dy/dx w.r.t. : cyl hp2 wt
 
 ```r
 x <- lm(mpg ~ cyl + I(hp^2) + wt, data = mtcars)
-# AME and MEM equivalent
-margins(x)
+summary(margins(x))
 ```
 
 ```
-##       cyl        hp        wt 
-## -1.219190 -0.008211 -3.218637
+## Average Marginal Effects
+## lm(formula = mpg ~ cyl + I(hp^2) + wt, data = mtcars) 
+## 
+##  Factor   dy/dx Std.Err. z value Pr(>|z|)   2.50%  97.50%
+##     cyl -1.2192   0.5031 -2.4235   0.0154 -2.2052 -0.2332
+##      hp -0.0082   0.0081 -1.0124   0.3114 -0.0241  0.0077
+##      wt -3.2186   0.7571 -4.2514   0.0000 -4.7025 -1.7348
 ```
 

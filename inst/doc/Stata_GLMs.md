@@ -15,29 +15,10 @@ options(width = 100)
 
 ## GLM (Logit) Effects on Probability Scale ##
 
-### Stata ###
+### Stata Logit Effects on Probability and Log-Odds Scales ###
 
 ```
 . quietly logit am cyl hp wt
-. margins, dydx(*) atmeans
-
-Conditional marginal effects                      Number of obs   =         32
-Model VCE    : OIM
-Expression   : Pr(am), predict()
-dy/dx w.r.t. : cyl hp wt
-at           : cyl             =      6.1875 (mean)
-               hp              =    146.6875 (mean)
-               wt              =     3.21725 (mean)
-------------------------------------------------------------------------------
-             |            Delta-method
-             |      dy/dx   Std. Err.      z    P>|z|     [95% Conf. Interval]
--------------+----------------------------------------------------------------
-         cyl |   .0537505   .1132654     0.47   0.635    -.1682456    .2757465
-          hp |   .0035928   .0029037     1.24   0.216    -.0020983    .0092838
-          wt |  -1.008594   .6676631    -1.51   0.131     -2.31719    .3000017
-------------------------------------------------------------------------------
-
-
 . margins, dydx(*)
 
 Average marginal effects                          Number of obs   =         32
@@ -52,40 +33,7 @@ dy/dx w.r.t. : cyl hp wt
           hp |   .0014339   .0006182     2.32   0.020     .0002224    .0026455
           wt |  -.4025475   .1154098    -3.49   0.000    -.6287466   -.1763484
 ------------------------------------------------------------------------------
-```
 
-### R ###
-
-
-```r
-x <- glm(am ~ cyl + hp + wt, data = mtcars, family = binomial)
-# MEM
-margins(x, atmeans = TRUE, type = "response")
-```
-
-```
-##       cyl        hp        wt 
-##  0.053751  0.003593 -1.008248
-```
-
-```r
-# AME
-margins(x, type = "response")
-```
-
-```
-##       cyl        hp        wt 
-##  0.021453  0.001434 -0.402544
-```
-
----
-
-## GLM (Logit) Effects on Log-Odds Scale ##
-
-
-### Stata ###
-
-```
 . quietly logit am cyl hp wt
 . margins, dydx(*) predict(xb)
 
@@ -108,13 +56,33 @@ dy/dx w.r.t. : cyl hp wt
 
 ```r
 x <- glm(am ~ cyl + hp + wt, data = mtcars, family = binomial)
-# AME and MEM equivalent on "link" scale
-margins(x, type = "link")
+# AME
+summary(margins(x, type = "response"))
 ```
 
 ```
-##      cyl       hp       wt 
-##  0.48760  0.03259 -9.14947
+## Average Marginal Effects
+## glm(formula = am ~ cyl + hp + wt, family = binomial, data = mtcars) 
+## 
+##  Factor   dy/dx Std.Err. z value Pr(>|z|)   2.50%  97.50%
+##     cyl  0.0215   0.0469  0.4572   0.6475 -0.0705  0.1134
+##      hp  0.0014   0.0006  2.3041   0.0212  0.0002  0.0027
+##      wt -0.4025   0.1138 -3.5386   0.0004 -0.6255 -0.1796
+```
+
+```r
+# AME and MEM equivalent on "link" scale
+summary(margins(x, type = "link"))
+```
+
+```
+## Average Marginal Effects
+## glm(formula = am ~ cyl + hp + wt, family = binomial, data = mtcars) 
+## 
+##  Factor   dy/dx Std.Err. z value Pr(>|z|)    2.50%  97.50%
+##     cyl  0.4876   1.0716  0.4550   0.6491  -1.6127  2.5879
+##      hp  0.0326   0.0189  1.7280   0.0840  -0.0044  0.0696
+##      wt -9.1495   4.1533 -2.2029   0.0276 -17.2898 -1.0091
 ```
 
 
@@ -172,49 +140,45 @@ Note: dy/dx for factor levels is the discrete change from the base level.
 ```r
 x <- glm(am ~ factor(cyl) + hp + wt, data = mtcars, family = binomial)
 # Log-odds
-margins(x, type = "link")
+summary(margins(x, type = "link"))
 ```
 
 ```
-## Error in model.frame.default(Terms, newdata, na.action = na.action, xlev = object$xlevels): factor factor(cyl) has new level 6.0001
+## Average Marginal Effects
+## glm(formula = am ~ factor(cyl) + hp + wt, family = binomial,      data = mtcars) 
+## 
+##        Factor    dy/dx Std.Err. z value Pr(>|z|)    2.50%  97.50%
+##            hp   0.1032   0.0961  1.0744   0.2826  -0.0851  0.2915
+##            wt -10.6760   5.4418 -1.9618   0.0498 -21.3418 -0.0102
+##  factor(cyl)6   2.7658   3.1568  0.8761   0.3810  -3.4214  8.9529
+##  factor(cyl)8  -8.3890  13.1671 -0.6371   0.5240 -34.1960 17.4181
 ```
 
 ```r
 # Probability with continuous factors
-margins(x, type = "response")
+summary(margins(x, type = "response"))
 ```
 
 ```
-## Error in model.frame.default(Terms, newdata, na.action = na.action, xlev = object$xlevels): factor factor(cyl) has new level 6.0001
+## Average Marginal Effects
+## glm(formula = am ~ factor(cyl) + hp + wt, family = binomial,      data = mtcars) 
+## 
+##        Factor   dy/dx Std.Err. z value Pr(>|z|)   2.50%  97.50%
+##            hp  0.0033   0.0030  1.0913   0.2751 -0.0026  0.0093
+##            wt -0.3442   0.1221 -2.8193   0.0048 -0.5834 -0.1049
+##  factor(cyl)6  0.1198   0.1067  1.1233   0.2613 -0.0892  0.3288
+##  factor(cyl)8 -0.3479   0.2064 -1.6850   0.0920 -0.7525  0.0568
 ```
 
 
 ---
 
-## GLM (Logit) with interaction on probability scale ##
+## GLM (Logit) with interaction on probability and Log-Odds scales ##
 
 ### Stata ###
 
 ```
 . quietly logit am cyl c.hp##c.wt
-. margins, dydx(*) atmeans
-
-Conditional marginal effects                      Number of obs   =         32
-Model VCE    : OIM
-Expression   : Pr(am), predict()
-dy/dx w.r.t. : cyl hp wt
-at           : cyl             =      6.1875 (mean)
-               hp              =    146.6875 (mean)
-               wt              =     3.21725 (mean)
-------------------------------------------------------------------------------
-             |            Delta-method
-             |      dy/dx   Std. Err.      z    P>|z|     [95% Conf. Interval]
--------------+----------------------------------------------------------------
-         cyl |   .0810915   .1838916     0.44   0.659    -.2793294    .4415125
-          hp |   .0081009   .0086664     0.93   0.350    -.0088849    .0250867
-          wt |  -1.925325   1.866456    -1.03   0.302    -5.583512    1.732861
-------------------------------------------------------------------------------
-
 . margins, dydx(*)
 
 Average marginal effects                          Number of obs   =         32
@@ -229,46 +193,7 @@ dy/dx w.r.t. : cyl hp wt
           hp |   .0026673   .0023004     1.16   0.246    -.0018414     .007176
           wt |  -.5157922   .2685806    -1.92   0.055    -1.042201    .0106162
 ------------------------------------------------------------------------------
-```
 
-### R ###
-
-
-```r
-x <- glm(am ~ cyl + hp * wt, data = mtcars, family = binomial)
-```
-
-```
-## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
-```
-
-```r
-# MEM
-margins(x, atmeans = TRUE, type = "response")
-```
-
-```
-##       cyl        hp        wt 
-##  0.081093  0.008101 -1.924606
-```
-
-```r
-# AME
-margins(x, type = "response")
-```
-
-```
-##       cyl        hp        wt 
-##  0.021563  0.002667 -0.515808
-```
-
----
-
-## GLM (Logit) with interaction on Log-Odds scale ##
-
-### Stata ###
-
-```
 . margins, dydx(*) predict(xb)
 
 Average marginal effects                          Number of obs   =         32
@@ -297,13 +222,33 @@ x <- glm(am ~ cyl + hp * wt, data = mtcars, family = binomial)
 ```
 
 ```r
-# AME and MEM equivalent on "link" scale
-margins(x, type = "link")
+# AME
+summary(margins(x, type = "response"))
 ```
 
 ```
-##       cyl        hp        wt 
-##   0.51564   0.05151 -12.24264
+## Average Marginal Effects
+## glm(formula = am ~ cyl + hp * wt, family = binomial, data = mtcars) 
+## 
+##  Factor   dy/dx Std.Err. z value Pr(>|z|)   2.50%  97.50%
+##     cyl  0.0216   0.0486  0.4434   0.6575 -0.0738  0.1169
+##      hp  0.0027   0.0021  1.2414   0.2145 -0.0015  0.0069
+##      wt -0.5158   0.2094 -2.4629   0.0138 -0.9263 -0.1053
+```
+
+```r
+# AME and MEM equivalent on "link" scale
+summary(margins(x, type = "link"))
+```
+
+```
+## Average Marginal Effects
+## glm(formula = am ~ cyl + hp * wt, family = binomial, data = mtcars) 
+## 
+##  Factor    dy/dx Std.Err. z value Pr(>|z|)    2.50% 97.50%
+##     cyl   0.5156   1.1695  0.4409   0.6593  -1.7764 2.8077
+##      hp   0.0515   0.0357  1.4430   0.1490  -0.0185 0.1215
+##      wt -12.2426   7.6784 -1.5944   0.1108 -27.2920 2.8067
 ```
 
 
@@ -357,22 +302,32 @@ x <- glm(am ~ cyl + hp * wt, data = mtcars, family = binomial(link="probit"))
 
 ```r
 # AME (log-odds)
-margins(x, type = "link")
+summary(margins(x, type = "link"))
 ```
 
 ```
-##      cyl       hp       wt 
-##  0.29748  0.02777 -6.62693
+## Average Marginal Effects
+## glm(formula = am ~ cyl + hp * wt, family = binomial(link = "probit"),      data = mtcars) 
+## 
+##  Factor   dy/dx Std.Err. z value Pr(>|z|)    2.50% 97.50%
+##     cyl  0.2975   0.6472  0.4596   0.6458  -0.9710 1.5660
+##      hp  0.0278   0.0184  1.5075   0.1317  -0.0083 0.0639
+##      wt -6.6269   3.9095 -1.6951   0.0901 -14.2894 1.0355
 ```
 
 ```r
 # AME (probability)
-margins(x, type = "response")
+summary(margins(x, type = "response"))
 ```
 
 ```
-##       cyl        hp        wt 
-##  0.022611  0.002577 -0.508841
+## Average Marginal Effects
+## glm(formula = am ~ cyl + hp * wt, family = binomial(link = "probit"),      data = mtcars) 
+## 
+##  Factor   dy/dx Std.Err. z value Pr(>|z|)   2.50%  97.50%
+##     cyl  0.0226   0.0490  0.4615   0.6445 -0.0734  0.1186
+##      hp  0.0026   0.0020  1.2722   0.2033 -0.0014  0.0065
+##      wt -0.5088   0.2319 -2.1946   0.0282 -0.9633 -0.0544
 ```
 
 
@@ -420,20 +375,30 @@ dy/dx w.r.t. : cyl hp wt
 ```r
 x <- glm(carb ~ cyl + hp * wt, data = mtcars, family = poisson)
 # AME (linear/link)
-margins(x, type = "link")
+summary(margins(x, type = "link"))
 ```
 
 ```
-##       cyl        hp        wt 
-## -0.099385  0.006652  0.122505
+## Average Marginal Effects
+## glm(formula = carb ~ cyl + hp * wt, family = poisson, data = mtcars) 
+## 
+##  Factor   dy/dx Std.Err. z value Pr(>|z|)   2.50% 97.50%
+##     cyl -0.0994   0.1479 -0.6720   0.5016 -0.3893 0.1905
+##      hp  0.0067   0.0024  2.7468   0.0060  0.0019 0.0114
+##      wt  0.1225   0.2035  0.6019   0.5472 -0.2764 0.5214
 ```
 
 ```r
 # AME (probability)
-margins(x, type = "response")
+summary(margins(x, type = "response"))
 ```
 
 ```
-##      cyl       hp       wt 
-## -0.27952  0.01759  0.20755
+## Average Marginal Effects
+## glm(formula = carb ~ cyl + hp * wt, family = poisson, data = mtcars) 
+## 
+##  Factor   dy/dx Std.Err. z value Pr(>|z|)   2.50% 97.50%
+##     cyl -0.2795   0.4110 -0.6801   0.4965 -1.0851 0.5261
+##      hp  0.0176   0.0070  2.5043   0.0123  0.0038 0.0314
+##      wt  0.2075   0.4705  0.4411   0.6591 -0.7146 1.1297
 ```
