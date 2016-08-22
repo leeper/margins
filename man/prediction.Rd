@@ -4,7 +4,7 @@
 \alias{prediction}
 \title{Extract Predictions from a Model Object}
 \usage{
-prediction(model, data, type = c("response", "link"))
+prediction(model, data, type = c("response", "link"), ...)
 }
 \arguments{
 \item{model}{A model object, perhaps returned by \code{\link[stats]{lm}} or \code{\link[stats]{glm}}.}
@@ -12,6 +12,8 @@ prediction(model, data, type = c("response", "link"))
 \item{data}{A data.frame over which to calculate marginal effects.}
 
 \item{type}{A character string indicating the type of marginal effects to estimate. Mostly relevant for non-linear models, where the reasonable options are \dQuote{response} (the default) or \dQuote{link} (i.e., on the scale of the linear predictor in a GLM).}
+
+\item{\dots}{Additional arguments passed to \code{\link[stats]{predict}} methods.}
 }
 \value{
 An data.frame with number of rows equal to number of rows in \code{data}, where each row is an observation and the two columns represent fitted/predicted values and the standard errors thereof.
