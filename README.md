@@ -86,8 +86,8 @@ microbenchmark(marginal_effects(x))
 
 ```
 ## Unit: milliseconds
-##                 expr     min       lq     mean   median       uq      max neval
-##  marginal_effects(x) 214.471 222.9181 234.4616 227.0719 238.7153 329.5586   100
+##                 expr      min       lq     mean   median       uq      max neval
+##  marginal_effects(x) 7.942455 8.409444 9.199376 9.115538 9.792552 13.37642   100
 ```
 
 ```r
@@ -95,9 +95,9 @@ microbenchmark(margins(x))
 ```
 
 ```
-## Unit: seconds
-##        expr      min       lq     mean   median       uq     max neval
-##  margins(x) 1.659949 1.759542 2.002002 1.921906 2.071543 3.18132   100
+## Unit: milliseconds
+##        expr      min       lq     mean   median      uq      max neval
+##  margins(x) 63.40545 69.59018 74.86074 72.59378 75.9127 169.0655   100
 ```
 
 In addition to the estimation procedures and `plot()` generic, **margins** offers several plotting methods for model objects. First, there is a new generic `cplot()` that displays predictions or marginal effects (from an "lm" or "glm" model) of a variable conditional across values of third variable (or itself). For example, here is a graph of predicted probabilities from a logit model:
