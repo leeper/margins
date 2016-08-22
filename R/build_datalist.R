@@ -107,36 +107,3 @@ set_data_to_at <- function(data, at = NULL) {
     })
     return(data_out)
 }
-
-# atmeans function
-.atmeans <- function(data, vars, na.rm = TRUE) {
-    if (missing(vars)) {
-        vars <- names(data)
-    }
-    for (i in seq_along(vars)) {
-        data[[vars[i]]] <- mean(data[[vars[i]]], na.rm = TRUE)
-    }
-    data
-}
-# atquantiles function
-.atquantile <- function(data, vars, probs, na.rm = TRUE) {
-    if (missing(vars)) {
-        vars <- names(data)
-    }
-    for (i in seq_along(vars)) {
-        data[[vars[i]]] <- stats::quantile(data[[vars[i]]], probs, na.rm = TRUE)
-    }
-    data
-}
-# atmedians function
-.atmedians <- function(data, vars, na.rm = TRUE) {
-    .atquantile(data, vars, probs = 0.5, na.rm = na.rm)
-}
-# atmins function
-.atmins <- function(data, vars, na.rm = TRUE) {
-    .atquantile(data, vars, probs = 0, na.rm = na.rm)
-}
-# atmaxs function
-.atmaxs <- function(data, vars, na.rm = TRUE) {
-    .atquantile(data, vars, probs = 1, na.rm = na.rm)
-}
