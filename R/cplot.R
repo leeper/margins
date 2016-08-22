@@ -125,21 +125,20 @@ function(object,
         
         tmpdat <- structure(lapply(colMeans(dat[, names(dat) != xvar, drop = FALSE]), rep, length(xvals)),
                             class = "data.frame", row.names = seq_len(length(xvals)))
-        tmpdat[, xvar] <- xvals
-        outdat <- prediction(model = object, data = tmpdat, type = type)
+        tmpdat[[xvar]] <- xvals
+        outdat <- prediction(model = object, data = tmpdat, type = type, level = level)
         b1 <- outdat[["fitted"]] + (fac[1] * outdat[["se.fitted"]])
         b2 <- outdat[["fitted"]] + (fac[2] * outdat[["se.fitted"]])
     } else if (what == "effect") {
         tmpdat <- build_datalist(dat, at = setNames(list(xvals), xvar))
         outdat <- do.call("rbind", lapply(tmpdat, function(thisdat) {
-            s <- margins(model = object, data = thisdat, type = type, method = method)[[1]]
-            return(c(effect = mean(extract_marginal_effects(s)[[xvar]], na.rm = TRUE),
-                     se = attributes(s)[["Variances"]][xvar]))
+            suppressMessages(s <- summary(margins(model = object, data = thisdat, type = type, method = method)[[1]]))
+            return(c(effect = as.numeric(s[xvar, "dy/dx"]), se.effect = as.numeric(s[xvar, "Std.Err."])))
         }))
         outdat <- cbind(xvals, outdat)
         colnames(outdat) <- c(xvar, "effect", "se.effect")
         outdat <- as.data.frame(outdat)
-        outdat[["se.effect"]] <- sqrt(outdat[["se.effect"]])
+        outdat[["se.effect"]] <- outdat[["se.effect"]]
         b1 <- outdat[["effect"]] + (fac[1] * outdat[["se.effect"]])
         b2 <- outdat[["effect"]] + (fac[2] * outdat[["se.effect"]])
     }
