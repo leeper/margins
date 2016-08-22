@@ -1,5 +1,10 @@
 # CHANGES TO margins 0.3.0 #
 
+## margins 0.2.4
+
+* Modified. (#36/#37, h/t Vincent Arel-Bundock)
+* Expanded tests of unit-specific variances. (#21)
+
 ## margins 0.2.3
 
 * Added a logical argument to enable/disable calculation of unit-specific marginal effect variances and set it to FALSE by default. (#36, h/t Vincent Arel-Bundock)
