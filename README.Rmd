@@ -81,7 +81,7 @@ persp(x, xvar = "cyl", yvar = "hp")
 and marginal effects:
 
 ```{r persp2}
-persp(x, xvar = "cyl", yvar = "wt", what = "effect", nx = 10)
+persp(x, xvar = "cyl", yvar = "hp", what = "effect", nx = 10)
 ```
 
 

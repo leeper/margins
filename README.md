@@ -6,7 +6,7 @@
 
 ## Motivation ##
 
-With the introduction of Stata's `margins` command, it has become incredibly simple to estimate average marginal effects (i.e., "average partial effects"), marginal effects at means (i.e., "partial effects at the average"), and marginal effects at representative cases. Indeed, in just a few lines of Stata code, regression results for almost any kind model can be transformed into meaningful quantities of interest and related plots:
+With the introduction of Stata's `margins` command, it has become incredibly simple to estimate average marginal effects (i.e., "average partial effects") and marginal effects at representative cases. Indeed, in just a few lines of Stata code, regression results for almost any kind model can be transformed into meaningful quantities of interest and related plots:
 
 ```
 . import delimited mtcars.csv
@@ -57,6 +57,8 @@ summary(m)
 
 ```
 ## Average Marginal Effects
+## lm(formula = mpg ~ cyl * hp + wt, data = mtcars) 
+## 
 ##  Factor   dy/dx Std.Err. z value Pr(>|z|)   2.50%  97.50%
 ##     cyl  0.0381   0.5999  0.0636   0.9493 -1.1376  1.2139
 ##      hp -0.0463   0.0145 -3.1909   0.0014 -0.0748 -0.0179
@@ -70,7 +72,7 @@ With the exception of differences in rounding, the above results match identical
 plot(m[[1]])
 ```
 
-![plot of chunk marginsplot](http://i.imgur.com/x5XtTuv.png)
+![plot of chunk marginsplot](http://i.imgur.com/MElh69l.png)
 
 If you are only interested in obtaining the marginal effects (without corresponding variances or the overhead of creating a "margins" object), you can call `marginal_effects(x)` directly. This may be useful, for example, for plotting, or getting a quick impression of the results.
 
@@ -82,7 +84,7 @@ m <- glm(am ~ wt*drat, data = mtcars, family = binomial)
 cplot(m, x = "wt", se.type = "shade")
 ```
 
-![plot of chunk cplot1](http://i.imgur.com/kDjnmDo.png)
+![plot of chunk cplot1](http://i.imgur.com/z8ILE3c.png)
 
 and a graph of the effect of `wt` across levels of `drat`:
 
@@ -91,7 +93,7 @@ and a graph of the effect of `wt` across levels of `drat`:
 cplot(m, x = "drat", dx = "wt", what = "effect", type = "response")
 ```
 
-![plot of chunk cplot2](http://i.imgur.com/NH2KVV4.png)
+![plot of chunk cplot2](http://i.imgur.com/6C6MfBT.png)
 
 Second, the package implements methods for "lm" and "glm" class objects for the `persp()` generic plotting function. This enables three-dimensional representations of predicted outcomes:
 
@@ -100,16 +102,16 @@ Second, the package implements methods for "lm" and "glm" class objects for the 
 persp(x, xvar = "cyl", yvar = "hp")
 ```
 
-![plot of chunk persp1](http://i.imgur.com/hkBKIrU.png)
+![plot of chunk persp1](http://i.imgur.com/I9BU3Kq.png)
 
 and marginal effects:
 
 
 ```r
-persp(x, xvar = "cyl", yvar = "wt", what = "effect", nx = 10)
+persp(x, xvar = "cyl", yvar = "hp", what = "effect", nx = 10)
 ```
 
-![plot of chunk persp2](http://i.imgur.com/IaqNmQu.png)
+![plot of chunk persp2](http://i.imgur.com/G9XOzXp.png)
 
 
 The numerous package vignettes and help files contain extensive documentation and examples of all package functionality.
