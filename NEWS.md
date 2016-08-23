@@ -1,5 +1,9 @@
 # CHANGES TO margins 0.3.0 #
 
+## margins 0.2.5
+
+* Fix vignettes so package can be built with them. (#16)
+
 ## margins 0.2.4
 
 * Modified `marginal_effects()` to use a vectorized approach to simple numerical differentiation. (#36/#37, h/t Vincent Arel-Bundock)
