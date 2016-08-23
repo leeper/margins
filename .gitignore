@@ -1,3 +1,8 @@
 README.html
-inst/standarderrors.pdf
-inst/doc/*.log
+/inst/standarderrors.pdf
+/inst/doc/*.log
+/vignettes/*.log
+/vignettes/*.aux
+/vignettes/*.pdf
+/vignettes/*.sty
+/vignettes/*.tex
