@@ -72,10 +72,16 @@ m <- glm(am ~ wt*drat, data = mtcars, family = binomial)
 cplot(m, x = "wt", se.type = "shade")
 ```
 
-and a graph of the effect of `wt` across levels of `drat`:
+And fitted values with a factor independent variable:
 
 ```{r cplot2}
-cplot(m, x = "drat", dx = "wt", what = "effect", type = "response")
+cplot(lm(Sepal.Length ~ Species, data = iris))
+```
+
+and a graph of the effect of `drat` across levels of `wt`:
+
+```{r cplot3}
+cplot(m, x = "wt", dx = "drat", what = "effect", type = "response")
 ```
 
 Second, the package implements methods for "lm" and "glm" class objects for the `persp()` generic plotting function. This enables three-dimensional representations of predicted outcomes:

@@ -29,10 +29,5 @@ function(object, digits = 4, level = 0.95, ...) {
 #' @export
 summary.marginslist <- 
 function(object, row.names = FALSE, ...) {
-    out <- list()
-    for (i in seq_len(length(object))) {
-        out[[i]] <- print(summary(object[[i]]), row.names = row.names, ...)
-        cat("\n")
-    }
-    invisible(out)
+    invisible(lapply(object, summary, ...))
 }

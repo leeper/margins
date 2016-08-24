@@ -108,14 +108,23 @@ cplot(m, x = "wt", se.type = "shade")
 
 ![plot of chunk cplot1](http://i.imgur.com/z8ILE3c.png)
 
-and a graph of the effect of `wt` across levels of `drat`:
+And fitted values with a factor independent variable:
 
 
 ```r
-cplot(m, x = "drat", dx = "wt", what = "effect", type = "response")
+cplot(lm(Sepal.Length ~ Species, data = iris))
 ```
 
-![plot of chunk cplot2](http://i.imgur.com/6C6MfBT.png)
+![plot of chunk cplot2](http://i.imgur.com/i4sh4HX.png)
+
+and a graph of the effect of `drat` across levels of `wt`:
+
+
+```r
+cplot(m, x = "wt", dx = "drat", what = "effect", type = "response")
+```
+
+![plot of chunk cplot3](http://i.imgur.com/KTvvusv.png)
 
 Second, the package implements methods for "lm" and "glm" class objects for the `persp()` generic plotting function. This enables three-dimensional representations of predicted outcomes:
 

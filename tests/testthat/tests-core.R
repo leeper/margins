@@ -63,9 +63,9 @@ test_that("persp() method for 'lm' works", {
 
 test_that("cplot() method for 'lm' works", {
     x <- lm(mpg ~ wt * hp, data = mtcars)
-    expect_true(inherits(cplot(x, what = "prediction"), "data.frame"))
-    expect_true(inherits(cplot(x, what = "prediction", se.type = "shade"), "data.frame"))
-    expect_true(inherits(cplot(x, what = "effect"), "data.frame"))
+    expect_true(inherits(cplot(x, what = "prediction"), "list"))
+    expect_true(inherits(cplot(x, what = "prediction", se.type = "shade"), "list"))
+    expect_true(inherits(cplot(x, what = "effect"), "list"))
 })
 
 test_that("plot() method for 'margins' works", {

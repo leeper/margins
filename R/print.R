@@ -9,7 +9,7 @@ function(x, digits = 4, ...) {
 print.marginslist <- function(x, ...) {
     for (i in seq_len(length(x))) {
         print(x[[i]], ...)
-        cat("\n")
+        message("\n")
     }
     invisible(x)
 }

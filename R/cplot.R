@@ -4,11 +4,14 @@
 #' @param object A model object.
 #' @param x A character string specifying the name of variable to use as the x-axis dimension in the plot.
 #' @param dx If \code{what = "effect"}, the variable whose conditional marginal effect should be displayed. By default it is \code{x} (so the plot displays the marginal effect of \code{x} across values of \code{x}); ignored otherwise.
-#' @param what A character string specifying whether to draw \dQuote{prediction} (fitted values from the model, calculated using \code{\link[stats]{predict}}) or \dQuote{effect} (average marginal effect of \code{dx} conditional on \code{x}, using \code{\link{margins}}).
+#' @param what A character string specifying whether to draw a \dQuote{prediction} (fitted values from the model, calculated using \code{\link[stats]{predict}}) or an \dQuote{effect} (average marginal effect of \code{dx} conditional on \code{x}, using \code{\link{margins}}).
 #' @param type A character string specifying whether to calculate predictions on the response scale (default) or link (only relevant for non-linear models).
+#' @param data A data frame to override the default value offered in \code{object[["model"]]}.
+#' @param at Currently ignored.
 #' @param method If \code{what = "effect"}, a character string indicating the numeric derivative method to use when estimating marginal effects. \dQuote{simple} optimizes for speed; \dQuote{Richardson} optimizes for accuracy. See \code{\link[numDeriv]{grad}} for details.
 #' @param n An integer specifying the number of points across \code{x} at which to calculate the predicted value or marginal effect.
 #' @param level The confidence level required (used to draw uncertainty bounds).
+#' @param draw A logical (default \code{TRUE}), specifying whether to draw the plot. If \code{FALSE}, the data used in drawing are returned as a list of data.frames. This might be useful if you want to plot using an alternative plotting package (e.g., ggplot2).
 #' @param xlab A character string specifying the value of \code{xlab} in \code{\link[graphics]{plot}}. 
 #' @param ylab A character string specifying the value of \code{ylab} in \code{\link[graphics]{plot}}. 
 #' @param xlim A two-element numeric vector specifying the x-axis limits. Set automatically if missing.
@@ -21,6 +24,9 @@
 #' @param se.fill If \code{se.type = "shade"}, the color of the shaded region. Ignored otherwise.
 #' @param se.lwd If \code{se.type = "lines"}, the width of the confidence interval lines. See \code{\link[graphics]{lines}}.
 #' @param se.lty If \code{se.type = "lines"}, an integer specifying the \dQuote{line type} of the confidence interval lines; if \code{se.type = "shade"}, the line type of the shaded polygon border. See \code{\link[graphics]{par}}.
+#' @param factor.pch If \code{x} is a factor variable in the model, the shape to use when drawing points. See \code{\link[graphics]{points}}.
+#' @param factor.col If \code{x} is a factor variable in the model, the color to use for the border of the points. See \code{\link[graphics]{points}}.
+#' @param factor.fill If \code{x} is a factor variable in the model, the color to use for the fill of the points. See \code{\link[graphics]{points}}.
 #' @param xaxs A character string specifying \code{xaxs}. See \code{\link[graphics]{par}}.
 #' @param yaxs A character string specifying \code{xaxs}. See \code{\link[graphics]{par}}.
 #' @param las An integer string specifying \code{las}. See \code{\link[graphics]{par}}.
@@ -40,15 +46,15 @@
 #' m <- lm(Sepal.Length ~ Sepal.Width * Petal.Width * I(Petal.Width ^ 2), data = head(iris, 50))
 #' ## marginal effect of 'Petal.Width' across 'Petal.Width'
 #' cplot(m, x = "Petal.Width", what = "effect", n = 10)
-#' ## marginal effect of 'Petal.Width' across 'Sepal.Width'
-#' tmp <- cplot(m, x = "Sepal.Width", dx = "Petal.Width", what = "effect", n = 10)
-#' 
-#' # use ggplot2 instead of base graphics
-#' \dontrun{
+#'
+#' # marginal effect of 'Petal.Width' across 'Sepal.Width'
+#' ## without drawing the plot
+#' ## this might be useful for using, e.g., ggplot2 for plotting
+#' tmp <- cplot(m, x = "Sepal.Width", dx = "Petal.Width", what = "effect", n = 10, draw = FALSE)
 #' if (require("ggplot2")) {
+#'     # use ggplot2 instead of base graphics
 #'     ggplot(tmp, aes(x = Petal.Width, y = "effect")) + geom_line(lwd = 2) + 
 #'       geom_line(aes(y = effect + 1.96*se.effect)) + geom_line(aes(y = effect - 1.96*se.effect))
-#' }
 #' }
 #' # a non-linear model
 #' m <- glm(am ~ wt*drat, data = mtcars, family = binomial)
@@ -57,10 +63,11 @@
 #' # effects on linear predictor and outcome
 #' cplot(m, x = "drat", dx = "wt", what = "effect", type = "link")
 #' cplot(m, x = "drat", dx = "wt", what = "effect", type = "response")
+#' 
 #' }
 #' @seealso \code{\link{plot.margins}}, \code{\link{persp.lm}}
 #' @keywords graphics hplot
-#' @importFrom graphics par plot lines rug polygon
+#' @importFrom graphics par plot lines rug polygon segments points
 #' @export
 cplot <- function(object, ...) {
     UseMethod("cplot")
@@ -74,9 +81,12 @@ function(object,
          dx = x, 
          what = c("prediction", "effect"), 
          type = c("response", "link"), 
+         data = object[["model"]],
+         at,
          method = c("simple", "Richardson", "complex"),
          n = 25L,
          level = 0.95,
+         draw = TRUE,
          xlab = x, 
          ylab = if (match.arg(what) == "prediction") paste0("Predicted value") else paste0("Marginal effect of ", dx),
          xlim,
@@ -89,6 +99,9 @@ function(object,
          se.fill = grDevices::gray(.5,.5),
          se.lwd = 1,
          se.lty = if(match.arg(se.type) == "lines") 2 else 0,
+         factor.pch = 19,
+         factor.col = "black",
+         factor.fill = factor.col,
          xaxs = "i",
          yaxs = xaxs,
          las = 1,
@@ -97,14 +110,32 @@ function(object,
          rug.size = -0.02,
          ...) {
     
-    dat <- object[["model"]]
-    dat[] <- lapply(dat, as.numeric) # this probably isn't a good idea
-    
     xvar <- x
-    xvals <- seq(min(dat[[xvar]], na.rm = TRUE), 
-                 max(dat[[xvar]], na.rm = TRUE), 
-                 length.out = n)
-    dxvar <- dx
+    
+    # handle factors
+    classes <- attributes(terms(object))[["dataClasses"]][-1]
+    classes[classes == "character"] <- "factor"
+    nnames <- clean_terms(names(classes)[classes != "factor"])
+    fnames <- clean_terms(names(classes)[classes == "factor"])
+    fnames2 <- names(classes)[classes == "factor"] # for checking stupid variable naming behavior by R
+    x_is_factor <- (xvar %in% c(fnames, fnames2))
+    
+    # subset data
+    dat <- data[, c(nnames, fnames2), drop = FALSE]
+    names(dat)[names(dat) %in% fnames2] <- fnames
+    
+    # setup x (based on whether factor)
+    if (isTRUE(x_is_factor)) {
+        if (is.factor(dat[["xvar"]])) {
+            xvals <- as.character(levels(dat[[clean_terms(xvar)]]))
+        } else {
+            xvals <- as.character(unique(dat[[clean_terms(xvar)]]))
+        }
+    } else {
+        xvals <- seq(min(dat[[xvar]], na.rm = TRUE), 
+                     max(dat[[xvar]], na.rm = TRUE), 
+                     length.out = n)
+    } 
     
     what <- match.arg(what)
     type <- match.arg(type)
@@ -123,58 +154,99 @@ function(object,
         # colnames(outdat) <- c(xvar, "fitted", "se.fitted")
         # outdat <- as.data.frame(outdat)
         
-        tmpdat <- structure(lapply(colMeans(dat[, names(dat) != xvar, drop = FALSE]), rep, length(xvals)),
+        tmpdat <- structure(lapply(colMeans(dat[, names(dat) != xvar, drop = FALSE], na.rm = TRUE), rep, length(xvals)),
                             class = "data.frame", row.names = seq_len(length(xvals)))
         tmpdat[[xvar]] <- xvals
         outdat <- prediction(model = object, data = tmpdat, type = type, level = level)
-        b1 <- outdat[["fitted"]] + (fac[1] * outdat[["se.fitted"]])
-        b2 <- outdat[["fitted"]] + (fac[2] * outdat[["se.fitted"]])
+        out <- list(structure(list(xvals = xvals,
+                                   yvals = outdat[["fitted"]],
+                                   upper = outdat[["fitted"]] + (fac[1] * outdat[["se.fitted"]]),
+                                   lower = outdat[["fitted"]] + (fac[2] * outdat[["se.fitted"]])),
+                              class = "data.frame", row.names = seq_along(outdat[["fitted"]])))
     } else if (what == "effect") {
-        tmpdat <- build_datalist(dat, at = setNames(list(xvals), xvar))
-        outdat <- do.call("rbind", lapply(tmpdat, function(thisdat) {
-            suppressMessages(s <- summary(margins(model = object, data = thisdat, type = type, method = method)[[1]]))
-            return(c(effect = as.numeric(s[xvar, "dy/dx"]), se.effect = as.numeric(s[xvar, "Std.Err."])))
+    
+        dxvar <- dx
+        
+        suppressMessages(s <- summary(margins(model = object, data = data, at = setNames(list(xvals), xvar), type = type, method = method)))
+        outdat <- do.call("rbind.data.frame", lapply(s, function(thismargin) {
+            c(effect = as.numeric(thismargin[dx, "dy/dx"]), 
+              se.effect = as.numeric(thismargin[dx, "Std.Err."]))
         }))
-        outdat <- cbind(xvals, outdat)
-        colnames(outdat) <- c(xvar, "effect", "se.effect")
-        outdat <- as.data.frame(outdat)
-        outdat[["se.effect"]] <- outdat[["se.effect"]]
-        b1 <- outdat[["effect"]] + (fac[1] * outdat[["se.effect"]])
-        b2 <- outdat[["effect"]] + (fac[2] * outdat[["se.effect"]])
+        out <- list(structure(list(xvals = xvals,
+                                   yvals = outdat[[1]],
+                                   upper = outdat[[1]] + (fac[2] * outdat[[2]]),
+                                   lower = outdat[[1]] + (fac[1] * outdat[[2]])),
+                              class = "data.frame", row.names = seq_len(nrow(outdat))))
     }
+    
+    # optionally draw the plot; if FALSE, just the data are returned
+    if (isTRUE(draw)) {
 
-    # setup plot
-    if (missing(xlim)) {
-        xlim <- range(dat[[x]], na.rm = TRUE)
+        # setup plot
+        if (missing(xlim)) {
+            if (isTRUE(x_is_factor)) {
+                xlim <- c(0.75, length(xvals) + 0.25)
+            } else {
+                xlim <- range(dat[[x]], na.rm = TRUE)
+            }
+        }
+        if (missing(ylim)) {
+            tmp <- unlist(lapply(out, function(one) {
+                range(c(one[["upper"]], one[["lower"]]), na.rm = TRUE)
+            }))
+            rng <- diff(range(tmp, na.rm = TRUE))
+            ylim <- c(min(tmp, na.rm = TRUE) - (0.05 * rng), max(tmp, na.rm = TRUE) + (0.05 * rng))
+            rm(tmp)
+            rm(rng)
+        }
+        if (isTRUE(x_is_factor)) {
+            plot(NA, xlab = xlab, ylab = ylab, xaxt = "n", xaxs = xaxs, yaxs = yaxs, las = las, xlim = xlim, ylim = ylim, ...)
+            axis(1, at = seq_along(xvals), labels = xvals)
+        } else {
+            plot(NA, xlab = xlab, ylab = ylab, xaxs = xaxs, yaxs = yaxs, las = las, xlim = xlim, ylim = ylim, ...)
+        }
+        
+        if (isTRUE(rug)) {
+            rug(dat[[x]], ticksize = rug.size, col = rug.col)
+        }
+        
+        se.type <- match.arg(se.type)
+        
+        # function to draw one set of lines
+        draw_one <- function(xvals, yvals, upper, lower) {
+            if (isTRUE(x_is_factor)) {
+                xvals <- seq_along(xvals)
+                # uncertainty
+                for (i in seq_along(xvals)) {
+                    segments(xvals[i], upper[i], xvals[i], lower[i], pch = factor.pch, bg = factor.fill, col = factor.col)
+                }
+                
+                # prediction/effect line
+                points(xvals, yvals, pch = factor.pch, bg = factor.fill, col = factor.col)
+            } else {
+                # uncertainty
+                if (se.type == "lines") {
+                    lines(xvals, upper, type = "l", lwd = se.lwd, col = se.col, lty = se.lty)
+                    lines(xvals, lower, type = "l", lwd = se.lwd, col = se.col, lty = se.lty)
+                } else {
+                    polygon(c(xvals, rev(xvals)), c(upper, rev(lower)), col = se.fill, border = se.col, lty = se.lty)
+                }
+                
+                # prediction/effect line
+                lines(xvals, yvals, type = "l", lwd = lwd, col = col, lty = lty)
+            }
+        }
+        
+        # draw
+        lapply(out, function(linelist) {
+            draw_one(xvals = linelist[["xvals"]], 
+                     yvals = linelist[["yvals"]], 
+                     upper = linelist[["upper"]], 
+                     lower = linelist[["lower"]])
+        })
     }
-    if (missing(ylim)) {
-        tmp <- c(b1,b2)
-        rng <- diff(range(tmp, na.rm = TRUE))
-        ylim <- c(min(tmp, na.rm = TRUE) - (0.05 * rng), max(c(b1,b2), na.rm = TRUE) + (0.05 * rng))
-        rm(tmp)
-        rm(rng)
-    }
-    plot(NA, xlab = xlab, ylab = ylab, xaxs = xaxs, yaxs = yaxs, las = las, xlim = xlim, ylim = ylim, ...)
-    
-    # uncertainty
-    se.type <- match.arg(se.type)
-    if (se.type == "lines") {
-        lines(xvals, b1, type = "l", lwd = se.lwd, col = se.col, lty = se.lty)
-        lines(xvals, b2, type = "l", lwd = se.lwd, col = se.col, lty = se.lty)
-    } else {
-        polygon(c(xvals, rev(xvals)), c(b1, rev(b2)), col = se.fill, border = se.col, lty = se.lty)
-    }
-    
-    # prediction/effect line
-    lines(xvals, if (what == "prediction") outdat[["fitted"]] else outdat[["effect"]], type = "l", lwd = lwd, col = col, lty = lty)
-
-    #
-    if (isTRUE(rug)) {
-        rug(dat[[x]], ticksize = rug.size, col = rug.col)
-    }
-    
     # return data used in plot
-    invisible(outdat)
+    invisible(out)
 }
 
 #' @rdname cplot
