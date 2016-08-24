@@ -73,3 +73,11 @@ test_that("plot() method for 'margins' works", {
     expect_true(inherits(plot(margins(x)), "margins"))
     expect_true(inherits(plot(margins(x), horizontal = TRUE), "margins"))
 })
+
+test_that("minimum test of variance calculations", {
+    x <- lm(mpg ~ wt * hp, data = mtcars)
+    expect_true(inherits(plot(margins(x, vce = "delta")), "margins"))
+    expect_true(inherits(plot(margins(x, vce = "simulation", iter = 5L)), "margins"))
+    expect_true(inherits(plot(margins(x, vce = "bootstrap", iter = 5L)), "margins"))
+})
+
