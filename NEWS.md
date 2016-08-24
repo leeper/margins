@@ -2,6 +2,8 @@
 
 ## margins 0.2.5
 
+* Added (rudimentary) tests of variance methods. (#21)
+* Removed `.build_predict_fun()` factory function, as it was no longer needed.
 * Fix vignettes so package can be built with them. (#16)
 
 ## margins 0.2.4
