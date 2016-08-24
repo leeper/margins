@@ -15,10 +15,10 @@ cplot(object, ...)
   (match.arg(what) == "prediction") paste0("Predicted value") else
   paste0("Marginal effect of ", dx), xlim, ylim, lwd = 2, col = "black",
   lty = 1, se.type = c("lines", "shade"), se.col = "black",
-  se.fill = grDevices::gray(0.5, 0.5), se.lwd = 1, se.lty = if
+  se.fill = grDevices::gray(0.5, 0.5), se.lwd = lwd, se.lty = if
   (match.arg(se.type) == "lines") 2 else 0, factor.pch = 19,
-  factor.col = "black", factor.fill = factor.col, xaxs = "i",
-  yaxs = xaxs, las = 1, rug = TRUE, rug.col = "black",
+  factor.col = se.col, factor.fill = factor.col, factor.cex = 1,
+  xaxs = "i", yaxs = xaxs, las = 1, rug = TRUE, rug.col = "black",
   rug.size = -0.02, ...)
 
 \method{cplot}{glm}(object, x = attributes(terms(object))[["term.labels"]][1],
@@ -28,10 +28,10 @@ cplot(object, ...)
   (match.arg(what) == "prediction") paste0("Predicted value") else
   paste0("Marginal effect of ", dx), xlim, ylim, lwd = 2, col = "black",
   lty = 1, se.type = c("lines", "shade"), se.col = "black",
-  se.fill = grDevices::gray(0.5, 0.5), se.lwd = 1, se.lty = if
+  se.fill = grDevices::gray(0.5, 0.5), se.lwd = lwd, se.lty = if
   (match.arg(se.type) == "lines") 2 else 0, factor.pch = 19,
-  factor.col = "black", factor.fill = factor.col, xaxs = "i",
-  yaxs = xaxs, las = 1, rug = TRUE, rug.col = "black",
+  factor.col = se.col, factor.fill = factor.col, factor.cex = 1,
+  xaxs = "i", yaxs = xaxs, las = 1, rug = TRUE, rug.col = "black",
   rug.size = -0.02, ...)
 }
 \arguments{
@@ -65,11 +65,11 @@ cplot(object, ...)
 
 \item{ylim}{A two-element numeric vector specifying the y-axis limits. Set automatically if missing.}
 
-\item{lwd}{An integer specifying the width of the prediction or marginal effect line. See \code{\link[graphics]{lines}}.}
+\item{lwd}{An integer specifying the width of the prediction or marginal effect line. See \code{\link[graphics]{lines}}. If \code{x} is a factor variable in the model, this is used to set the line width of the error bars.}
 
-\item{col}{A character string specifying the color of the prediction or marginal effect line.}
+\item{col}{A character string specifying the color of the prediction or marginal effect line. If \code{x} is a factor variable in the model, this is used to set the color of the error bars.}
 
-\item{lty}{An integer specifying the \dQuote{line type} of the prediction or marginal effect line. See \code{\link[graphics]{par}}.}
+\item{lty}{An integer specifying the \dQuote{line type} of the prediction or marginal effect line. See \code{\link[graphics]{par}}. If \code{x} is a factor variable in the model, this is used to set the line type of the error bars.}
 
 \item{se.type}{A character string specifying whether to draw the confidence interval as \dQuote{lines} (the default, using \code{\link[graphics]{lines}}) or a \dQuote{shade} (using \code{\link[graphics]{polygon}}).}
 
@@ -86,6 +86,8 @@ cplot(object, ...)
 \item{factor.col}{If \code{x} is a factor variable in the model, the color to use for the border of the points. See \code{\link[graphics]{points}}.}
 
 \item{factor.fill}{If \code{x} is a factor variable in the model, the color to use for the fill of the points. See \code{\link[graphics]{points}}.}
+
+\item{factor.cex}{If \code{x} is a factor variable in the model, the \dQuote{expansion factor} to use for the point size. See \code{\link[graphics]{points}}.}
 
 \item{xaxs}{A character string specifying \code{xaxs}. See \code{\link[graphics]{par}}.}
 

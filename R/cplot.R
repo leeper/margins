@@ -16,9 +16,9 @@
 #' @param ylab A character string specifying the value of \code{ylab} in \code{\link[graphics]{plot}}. 
 #' @param xlim A two-element numeric vector specifying the x-axis limits. Set automatically if missing.
 #' @param ylim A two-element numeric vector specifying the y-axis limits. Set automatically if missing.
-#' @param lwd An integer specifying the width of the prediction or marginal effect line. See \code{\link[graphics]{lines}}.
-#' @param col A character string specifying the color of the prediction or marginal effect line.
-#' @param lty An integer specifying the \dQuote{line type} of the prediction or marginal effect line. See \code{\link[graphics]{par}}.
+#' @param lwd An integer specifying the width of the prediction or marginal effect line. See \code{\link[graphics]{lines}}. If \code{x} is a factor variable in the model, this is used to set the line width of the error bars.
+#' @param col A character string specifying the color of the prediction or marginal effect line. If \code{x} is a factor variable in the model, this is used to set the color of the error bars.
+#' @param lty An integer specifying the \dQuote{line type} of the prediction or marginal effect line. See \code{\link[graphics]{par}}. If \code{x} is a factor variable in the model, this is used to set the line type of the error bars.
 #' @param se.type A character string specifying whether to draw the confidence interval as \dQuote{lines} (the default, using \code{\link[graphics]{lines}}) or a \dQuote{shade} (using \code{\link[graphics]{polygon}}).
 #' @param se.col If \code{se.type = "lines"}, a character string specifying the color of the confidence interval lines. If \code{se.type = "shade"}, the color of the shaded region border.
 #' @param se.fill If \code{se.type = "shade"}, the color of the shaded region. Ignored otherwise.
@@ -27,6 +27,7 @@
 #' @param factor.pch If \code{x} is a factor variable in the model, the shape to use when drawing points. See \code{\link[graphics]{points}}.
 #' @param factor.col If \code{x} is a factor variable in the model, the color to use for the border of the points. See \code{\link[graphics]{points}}.
 #' @param factor.fill If \code{x} is a factor variable in the model, the color to use for the fill of the points. See \code{\link[graphics]{points}}.
+#' @param factor.cex If \code{x} is a factor variable in the model, the \dQuote{expansion factor} to use for the point size. See \code{\link[graphics]{points}}.
 #' @param xaxs A character string specifying \code{xaxs}. See \code{\link[graphics]{par}}.
 #' @param yaxs A character string specifying \code{xaxs}. See \code{\link[graphics]{par}}.
 #' @param las An integer string specifying \code{las}. See \code{\link[graphics]{par}}.
@@ -97,11 +98,12 @@ function(object,
          se.type = c("lines", "shade"),
          se.col = "black",
          se.fill = grDevices::gray(.5,.5),
-         se.lwd = 1,
+         se.lwd = lwd,
          se.lty = if(match.arg(se.type) == "lines") 2 else 0,
          factor.pch = 19,
-         factor.col = "black",
+         factor.col = se.col,
          factor.fill = factor.col,
+         factor.cex = 1,
          xaxs = "i",
          yaxs = xaxs,
          las = 1,
@@ -218,11 +220,11 @@ function(object,
                 xvals <- seq_along(xvals)
                 # uncertainty
                 for (i in seq_along(xvals)) {
-                    segments(xvals[i], upper[i], xvals[i], lower[i], pch = factor.pch, bg = factor.fill, col = factor.col)
+                    segments(xvals[i], upper[i], xvals[i], lower[i], col = col, lty = lty, lwd = lwd)
                 }
                 
                 # prediction/effect line
-                points(xvals, yvals, pch = factor.pch, bg = factor.fill, col = factor.col)
+                points(xvals, yvals, pch = factor.pch, bg = factor.fill, col = factor.col, cex = factor.cex)
             } else {
                 # uncertainty
                 if (se.type == "lines") {

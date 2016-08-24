@@ -115,7 +115,7 @@ And fitted values with a factor independent variable:
 cplot(lm(Sepal.Length ~ Species, data = iris))
 ```
 
-![plot of chunk cplot2](http://i.imgur.com/i4sh4HX.png)
+![plot of chunk cplot2](http://i.imgur.com/bVLpLhg.png)
 
 and a graph of the effect of `drat` across levels of `wt`:
 
