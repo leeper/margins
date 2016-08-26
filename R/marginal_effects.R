@@ -34,9 +34,17 @@ marginal_effects <- function(model, data, type = c("response", "link"), eps = 1e
     
     type <- match.arg(type)
     
-    # identify factors versus numeric terms in `model`
+    # extract term names from `model`
+    term_names <- all.vars(terms(model))
+    
+    # identify classes of terms in `model`
     classes <- attributes(terms(model))[["dataClasses"]][-1]
     classes[classes == "character"] <- "factor"
+    ## cleanup names of terms
+    terms2 <- sapply(names(classes), function(x) all.vars(parse(text = x)))
+    names(classes)[names(classes) %in% names(terms2)] <- terms2[names(classes) %in% names(terms2)]
+    
+    # identify factors versus numeric terms in `model`
     nnames <- clean_terms(names(classes)[classes != "factor"])
     fnames <- clean_terms(names(classes)[classes == "factor"])
     fnames2 <- names(classes)[classes == "factor"] # for checking stupid variable naming behavior by R
@@ -76,7 +84,12 @@ get_instant_pdiff <- function(data, model, variable, type = c("response", "link"
     # calculate numerical derivative
     d <- data
     P0 <- prediction(model = model, data = d, type = type)[["fitted"]]
-    d[[variable]] <- d[[variable]] + eps
+    if (is.numeric(d[[variable]])) {
+        d[[variable]] <- d[[variable]] + eps
+    } else {
+        warning(paste0("Class of variable, ", variable, ", is unrecognized. Returning NA."))
+        return(rep(NA, nrow(data)))
+    }
     P1 <- prediction(model = model, data = d, type = type)[["fitted"]]
     out <- ( P1 - P0) / eps
     
