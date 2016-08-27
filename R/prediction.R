@@ -94,3 +94,11 @@ prediction.loess <- function(model, data, type = "response", ...) {
               class = c("prediction", "data.frame"), 
               row.names = seq_len(length(pred[["fit"]])))
 }
+
+#' @export
+print.prediction <- function(x, digits = 4, ...) {
+    f <- x[["fitted"]]
+    m <- mean(x[["fitted"]], na.rm = TRUE)
+    m <- sprintf(paste0("%0.", digits, "f"), m)
+    message(paste0("Average prediction: ", m, ", for ", length(f), " ", ngettext(length(f), "observation", "observations")))
+}
