@@ -2,10 +2,12 @@
 #' @title Marginal Effects Estimation
 #' @description \code{margins} is an S3 generic function for building a \dQuote{margins} object from a model object. Methods are currently implemented for \dQuote{lm} (and, implicitly, \dQuote{glm}) class objects.
 #' @param model A model object of class \dQuote{lm}.
-#' @param data A data.frame containing the data at which to evaluate the marginal effects, as in \code{\link[stats]{predict}}.
+#' @param data A data.frame containing the data at which to evaluate the marginal effects, as in \code{\link[stats]{predict}}. This is optional, but may be required when the underlying modelling function sets \code{model = FALSE}.
 #' @param at A list of one or more named vectors, specifically values at which to calculate the marginal effects. See \code{\link{build_datalist}} for details on use.
 #' @param \dots Arguments passed to methods, and in turn to \code{\link{build_margins}}.
 #' @details Methods for this generic return a \dQuote{marginslist} list of one or more \dQuote{margins} objects. A \dQuote{margins} object is a data.frame consisting of the original data, predicted values and standard errors thereof, estimated marginal effects from the model \code{model}, with attributes describing various features of the marginal effects estimates.
+#' 
+#' Some modelling functions set \code{model = FALSE} by default. For \code{margins} to work best, this should be set to \code{TRUE}. Otherwise the \code{data} argument to \code{margins} is probably required.
 #' 
 #' See \code{\link{marginal_effects}} for details on estimation of marginal effects.
 #'
@@ -70,6 +72,38 @@ function(model,
     # calculate marginal effects
     out <- lapply(data_list, function(thisdata) {
         m <- build_margins(model = model, data = thisdata, ...)
+        attr(m, "at") <- attributes(thisdata)[["at"]]
+        m
+    })
+    
+    # return value
+    structure(out, class = "marginslist")
+}
+
+#' @rdname margins
+#' @export
+margins.loess <- function(model, 
+         data, 
+         at = NULL, 
+         ...){
+    
+    # setup data
+    if (missing(data)) {
+        if (!is.null(model[["call"]][["data"]])) {
+            data <- eval(model[["call"]][["data"]], parent.frame()) 
+        } else { 
+            data <- get_all_vars(model[["terms"]], data = model[["model"]])
+        }
+    }
+    data_list <- build_datalist(data, at = at)
+    
+    # reduce memory profile
+    model[["model"]] <- NULL
+    attr(model[["terms"]], ".Environment") <- NULL
+    
+    # calculate marginal effects
+    out <- lapply(data_list, function(thisdata) {
+        m <- build_margins(model = model, data = thisdata, vcov = NULL, vce = "none", ...)
         attr(m, "at") <- attributes(thisdata)[["at"]]
         m
     })

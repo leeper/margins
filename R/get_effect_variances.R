@@ -4,7 +4,7 @@ function(data = data,
          which = all.vars(model[["terms"]])[-1], # which mes do we need variances of
          type = c("response", "link", "terms"),
          vcov = vcov(model),
-         vce = c("delta", "simulation", "bootstrap"),
+         vce = c("delta", "simulation", "bootstrap", "none"),
          iterations = 50L, # if vce == "bootstrap" or "simulation"
          method = c("simple", "Richardson", "complex"), # passed to marginal_effects()
          ...) {
@@ -17,7 +17,11 @@ function(data = data,
         vcov <- vcov(model)
     }
     
-    if (vce == "delta") {
+    if (vce == "none") {
+        
+        return(NULL)
+        
+    } else if (vce == "delta") {
         
         # default method
         variances <- delta_once(data = data, model = model, type = type, vcov = vcov, method = method)

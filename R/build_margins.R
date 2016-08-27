@@ -29,7 +29,7 @@ function(model,
          data,
          type = c("response", "link", "terms"),
          vcov = stats::vcov(model),
-         vce = c("delta", "simulation", "bootstrap"),
+         vce = c("delta", "simulation", "bootstrap", "none"),
          iterations = 50L, # if vce == "bootstrap" or "simulation"
          unit_ses = FALSE,
          method = c("simple", "Richardson", "complex"), # passed to marginal_effects()
@@ -77,7 +77,7 @@ function(model,
                   cbind(data, pred, mes)
               }, 
               class = c("margins", "data.frame"), 
-              Variances = setNames(variances, names(mes)),
+              Variances = if (is.null(variances)) variances else setNames(variances, names(mes)),
               type = type,
               call = model[["call"]],
               df.residual = model[["df.residual"]],

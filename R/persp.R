@@ -1,3 +1,4 @@
+#' @rdname persp
 #' @title Perspective plots for models
 #' @description Draw one or more perspectives plots reflecting predictions or marginal effects from a model. Currently methods exist for \dQuote{lm} and \dQuote{glm} models.
 #' @param x A model object.
@@ -114,5 +115,10 @@ function(x,
     invisible(out)
 }
 
+#' @rdname persp
 #' @export
 persp.glm <- persp.lm
+
+#' @rdname persp
+#' @export
+persp.loess <- persp.lm

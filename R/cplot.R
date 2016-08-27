@@ -254,3 +254,7 @@ function(object,
 #' @rdname cplot
 #' @export
 cplot.glm <- cplot.lm
+
+#' @rdname cplot
+#' @export
+cplot.loess <- cplot.lm

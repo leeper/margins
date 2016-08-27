@@ -4,6 +4,7 @@
 \alias{prediction}
 \alias{prediction.glm}
 \alias{prediction.lm}
+\alias{prediction.loess}
 \title{Extract Predictions from a Model Object}
 \usage{
 prediction(model, data, ...)
@@ -11,6 +12,8 @@ prediction(model, data, ...)
 \method{prediction}{lm}(model, data, type = "response", ...)
 
 \method{prediction}{glm}(model, data, type = c("response", "link"), ...)
+
+\method{prediction}{loess}(model, data, type = "response", ...)
 }
 \arguments{
 \item{model}{A model object, perhaps returned by \code{\link[stats]{lm}} or \code{\link[stats]{glm}}.}

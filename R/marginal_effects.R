@@ -1,7 +1,7 @@
 #' @rdname marginal_effects
 #' @title Differentiate a Model Object
 #' @description Extract marginal effects (via numerical differentiation) and predicted differences in factor changes from a model object, conditional on data
-#' @param data A data.frame over which to calculate marginal effects.
+#' @param data A data.frame over which to calculate marginal effects. This is optional, but may be required when the underlying modelling function sets \code{model = FALSE}.
 #' @param model A model object, perhaps returned by \code{\link[stats]{lm}} or \code{\link[stats]{glm}}
 #' @param type A character string indicating the type of marginal effects to estimate. Mostly relevant for non-linear models, where the reasonable options are \dQuote{response} (the default) or \dQuote{link} (i.e., on the scale of the linear predictor in a GLM).
 #' @param eps A numeric value specifying the \dQuote{step} to use when calculating numerical derivatives. By default this is the smallest floating point value that can be represented on the present architecture.
@@ -82,3 +82,7 @@ marginal_effects.lm <- function(model, data, type = c("response", "link"), eps =
 #' @rdname marginal_effects
 #' @export
 marginal_effects.glm <- marginal_effects.lm
+
+#' @rdname marginal_effects
+#' @export
+marginal_effects.loess <- marginal_effects.lm

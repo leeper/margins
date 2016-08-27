@@ -3,16 +3,19 @@
 \name{margins}
 \alias{margins}
 \alias{margins.lm}
+\alias{margins.loess}
 \title{Marginal Effects Estimation}
 \usage{
 margins(model, ...)
 
 \method{margins}{lm}(model, data, at = NULL, ...)
+
+\method{margins}{loess}(model, data, at = NULL, ...)
 }
 \arguments{
 \item{model}{A model object of class \dQuote{lm}.}
 
-\item{data}{A data.frame containing the data at which to evaluate the marginal effects, as in \code{\link[stats]{predict}}.}
+\item{data}{A data.frame containing the data at which to evaluate the marginal effects, as in \code{\link[stats]{predict}}. This is optional, but may be required when the underlying modelling function sets \code{model = FALSE}.}
 
 \item{at}{A list of one or more named vectors, specifically values at which to calculate the marginal effects. See \code{\link{build_datalist}} for details on use.}
 
@@ -26,6 +29,8 @@ An object of class \dQuote{marginslist}, composed of one or more objects of clas
 }
 \details{
 Methods for this generic return a \dQuote{marginslist} list of one or more \dQuote{margins} objects. A \dQuote{margins} object is a data.frame consisting of the original data, predicted values and standard errors thereof, estimated marginal effects from the model \code{model}, with attributes describing various features of the marginal effects estimates.
+
+Some modelling functions set \code{model = FALSE} by default. For \code{margins} to work best, this should be set to \code{TRUE}. Otherwise the \code{data} argument to \code{margins} is probably required.
 
 See \code{\link{marginal_effects}} for details on estimation of marginal effects.
 
