@@ -2,9 +2,15 @@
 % Please edit documentation in R/prediction.R
 \name{prediction}
 \alias{prediction}
+\alias{prediction.glm}
+\alias{prediction.lm}
 \title{Extract Predictions from a Model Object}
 \usage{
-prediction(model, data, type = c("response", "link"), ...)
+prediction(model, data, ...)
+
+\method{prediction}{lm}(model, data, type = "response", ...)
+
+\method{prediction}{glm}(model, data, type = c("response", "link"), ...)
 }
 \arguments{
 \item{model}{A model object, perhaps returned by \code{\link[stats]{lm}} or \code{\link[stats]{glm}}.}

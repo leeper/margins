@@ -2,9 +2,17 @@
 % Please edit documentation in R/marginal_effects.R
 \name{marginal_effects}
 \alias{marginal_effects}
+\alias{marginal_effects.glm}
+\alias{marginal_effects.lm}
 \title{Differentiate a Model Object}
 \usage{
-marginal_effects(model, data, type = c("response", "link"), eps = 1e-07)
+marginal_effects(model, data, ...)
+
+\method{marginal_effects}{lm}(model, data, type = c("response", "link"),
+  eps = 1e-07)
+
+\method{marginal_effects}{glm}(model, data, type = c("response", "link"),
+  eps = 1e-07)
 }
 \arguments{
 \item{model}{A model object, perhaps returned by \code{\link[stats]{lm}} or \code{\link[stats]{glm}}}

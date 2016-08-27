@@ -1,5 +1,13 @@
 # CHANGES TO margins 0.3.0 #
 
+## margins 0.2.7
+
+* `marginal_effects()` and `prediction()` are now S3 generics, with methods for "lm" and "glm" objects, improving extensability. (#39, #40)
+
+## margins 0.2.7
+
+* `marginal_effects()` issues a warning (rather than fails) when trying to extract the marginal effect of a factor variable that was coerced to numeric in a model formula via `I()`. (#38)
+
 ## margins 0.2.5
 
 * Added better support for factor `x` variables in `cplot()`.
