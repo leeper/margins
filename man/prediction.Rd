@@ -5,6 +5,7 @@
 \alias{prediction.glm}
 \alias{prediction.lm}
 \alias{prediction.loess}
+\alias{prediction.nls}
 \title{Extract Predictions from a Model Object}
 \usage{
 prediction(model, data, ...)
@@ -14,6 +15,8 @@ prediction(model, data, ...)
 \method{prediction}{glm}(model, data, type = c("response", "link"), ...)
 
 \method{prediction}{loess}(model, data, type = "response", ...)
+
+\method{prediction}{nls}(model, data, ...)
 }
 \arguments{
 \item{model}{A model object, perhaps returned by \code{\link[stats]{lm}} or \code{\link[stats]{glm}}.}
@@ -25,7 +28,7 @@ prediction(model, data, ...)
 \item{\dots}{Additional arguments passed to \code{\link[stats]{predict}} methods.}
 }
 \value{
-An data.frame with number of rows equal to number of rows in \code{data}, where each row is an observation and the two columns represent fitted/predicted values and the standard errors thereof.
+A data.frame with class \dQuote{prediction} that has a number of rows equal to number of rows in \code{data}, where each row is an observation and the two columns represent fitted/predicted values (\code{fitted}) and the standard errors thereof (\code{se.fitted}).
 require("datasets")
 x <- lm(mpg ~ cyl * hp + wt, data = mtcars)
 prediction(x)
