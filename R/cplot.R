@@ -8,7 +8,6 @@
 #' @param type A character string specifying whether to calculate predictions on the response scale (default) or link (only relevant for non-linear models).
 #' @param data A data frame to override the default value offered in \code{object[["model"]]}.
 #' @param at Currently ignored.
-#' @param method If \code{what = "effect"}, a character string indicating the numeric derivative method to use when estimating marginal effects. \dQuote{simple} optimizes for speed; \dQuote{Richardson} optimizes for accuracy. See \code{\link[numDeriv]{grad}} for details.
 #' @param n An integer specifying the number of points across \code{x} at which to calculate the predicted value or marginal effect.
 #' @param level The confidence level required (used to draw uncertainty bounds).
 #' @param draw A logical (default \code{TRUE}), specifying whether to draw the plot. If \code{FALSE}, the data used in drawing are returned as a list of data.frames. This might be useful if you want to plot using an alternative plotting package (e.g., ggplot2).
@@ -84,7 +83,6 @@ function(object,
          type = c("response", "link"), 
          data = object[["model"]],
          at,
-         method = c("simple", "Richardson", "complex"),
          n = 25L,
          level = 0.95,
          draw = TRUE,
@@ -169,7 +167,7 @@ function(object,
     
         dxvar <- dx
         
-        suppressMessages(s <- summary(margins(model = object, data = data, at = setNames(list(xvals), xvar), type = type, method = method)))
+        suppressMessages(s <- summary(margins(model = object, data = data, at = setNames(list(xvals), xvar), type = type)))
         outdat <- do.call("rbind.data.frame", lapply(s, function(thismargin) {
             c(effect = as.numeric(thismargin[dx, "dy/dx"]), 
               se.effect = as.numeric(thismargin[dx, "Std.Err."]))

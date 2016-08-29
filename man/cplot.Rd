@@ -11,26 +11,24 @@ cplot(object, ...)
 
 \method{cplot}{lm}(object, x = attributes(terms(object))[["term.labels"]][1],
   dx = x, what = c("prediction", "effect"), type = c("response", "link"),
-  data = object[["model"]], at, method = c("simple", "Richardson",
-  "complex"), n = 25L, level = 0.95, draw = TRUE, xlab = x, ylab = if
-  (match.arg(what) == "prediction") paste0("Predicted value") else
-  paste0("Marginal effect of ", dx), xlim, ylim, lwd = 2, col = "black",
-  lty = 1, se.type = c("lines", "shade"), se.col = "black",
-  se.fill = grDevices::gray(0.5, 0.5), se.lwd = lwd, se.lty = if
-  (match.arg(se.type) == "lines") 2 else 0, factor.pch = 19,
+  data = object[["model"]], at, n = 25L, level = 0.95, draw = TRUE,
+  xlab = x, ylab = if (match.arg(what) == "prediction")
+  paste0("Predicted value") else paste0("Marginal effect of ", dx), xlim, ylim,
+  lwd = 2, col = "black", lty = 1, se.type = c("lines", "shade"),
+  se.col = "black", se.fill = grDevices::gray(0.5, 0.5), se.lwd = lwd,
+  se.lty = if (match.arg(se.type) == "lines") 2 else 0, factor.pch = 19,
   factor.col = se.col, factor.fill = factor.col, factor.cex = 1,
   xaxs = "i", yaxs = xaxs, las = 1, rug = TRUE, rug.col = "black",
   rug.size = -0.02, ...)
 
 \method{cplot}{glm}(object, x = attributes(terms(object))[["term.labels"]][1],
   dx = x, what = c("prediction", "effect"), type = c("response", "link"),
-  data = object[["model"]], at, method = c("simple", "Richardson",
-  "complex"), n = 25L, level = 0.95, draw = TRUE, xlab = x, ylab = if
-  (match.arg(what) == "prediction") paste0("Predicted value") else
-  paste0("Marginal effect of ", dx), xlim, ylim, lwd = 2, col = "black",
-  lty = 1, se.type = c("lines", "shade"), se.col = "black",
-  se.fill = grDevices::gray(0.5, 0.5), se.lwd = lwd, se.lty = if
-  (match.arg(se.type) == "lines") 2 else 0, factor.pch = 19,
+  data = object[["model"]], at, n = 25L, level = 0.95, draw = TRUE,
+  xlab = x, ylab = if (match.arg(what) == "prediction")
+  paste0("Predicted value") else paste0("Marginal effect of ", dx), xlim, ylim,
+  lwd = 2, col = "black", lty = 1, se.type = c("lines", "shade"),
+  se.col = "black", se.fill = grDevices::gray(0.5, 0.5), se.lwd = lwd,
+  se.lty = if (match.arg(se.type) == "lines") 2 else 0, factor.pch = 19,
   factor.col = se.col, factor.fill = factor.col, factor.cex = 1,
   xaxs = "i", yaxs = xaxs, las = 1, rug = TRUE, rug.col = "black",
   rug.size = -0.02, ...)
@@ -38,13 +36,12 @@ cplot(object, ...)
 \method{cplot}{loess}(object,
   x = attributes(terms(object))[["term.labels"]][1], dx = x,
   what = c("prediction", "effect"), type = c("response", "link"),
-  data = object[["model"]], at, method = c("simple", "Richardson",
-  "complex"), n = 25L, level = 0.95, draw = TRUE, xlab = x, ylab = if
-  (match.arg(what) == "prediction") paste0("Predicted value") else
-  paste0("Marginal effect of ", dx), xlim, ylim, lwd = 2, col = "black",
-  lty = 1, se.type = c("lines", "shade"), se.col = "black",
-  se.fill = grDevices::gray(0.5, 0.5), se.lwd = lwd, se.lty = if
-  (match.arg(se.type) == "lines") 2 else 0, factor.pch = 19,
+  data = object[["model"]], at, n = 25L, level = 0.95, draw = TRUE,
+  xlab = x, ylab = if (match.arg(what) == "prediction")
+  paste0("Predicted value") else paste0("Marginal effect of ", dx), xlim, ylim,
+  lwd = 2, col = "black", lty = 1, se.type = c("lines", "shade"),
+  se.col = "black", se.fill = grDevices::gray(0.5, 0.5), se.lwd = lwd,
+  se.lty = if (match.arg(se.type) == "lines") 2 else 0, factor.pch = 19,
   factor.col = se.col, factor.fill = factor.col, factor.cex = 1,
   xaxs = "i", yaxs = xaxs, las = 1, rug = TRUE, rug.col = "black",
   rug.size = -0.02, ...)
@@ -63,8 +60,6 @@ cplot(object, ...)
 \item{data}{A data frame to override the default value offered in \code{object[["model"]]}.}
 
 \item{at}{Currently ignored.}
-
-\item{method}{If \code{what = "effect"}, a character string indicating the numeric derivative method to use when estimating marginal effects. \dQuote{simple} optimizes for speed; \dQuote{Richardson} optimizes for accuracy. See \code{\link[numDeriv]{grad}} for details.}
 
 \item{n}{An integer specifying the number of points across \code{x} at which to calculate the predicted value or marginal effect.}
 

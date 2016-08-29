@@ -24,7 +24,7 @@ build_margins(model, data, type = c("response", "link", "terms"),
 
 \item{unit_ses}{If \code{vce = "delta"}, a logical specifying whether to calculate and return unit-specific marginal effect variances. This calculation is time consuming and the information is often not needed, so this is set to \code{FALSE} by default.}
 
-\item{method}{A character string indicating the numeric derivative method to use when estimating marginal effects. \dQuote{simple} optimizes for speed; \dQuote{Richardson} optimizes for accuracy. See \code{\link[numDeriv]{grad}} for details. Currently this is only used when calculating marginal effect variances.}
+\item{method}{A character string indicating the numeric derivative method to use when estimating marginal effects variances. \dQuote{simple} optimizes for speed; \dQuote{Richardson} optimizes for accuracy. See \code{\link[numDeriv]{jacobian}} for details. Currently this is only used when calculating marginal effect variances.}
 
 \item{eps}{A numeric value specifying the \dQuote{step} to use when calculating numerical derivatives. By default this is the smallest floating point value that can be represented on the present architecture.}
 
