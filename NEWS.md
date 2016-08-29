@@ -3,6 +3,7 @@
 ## margins 0.2.7
 
 * Added a `prediction()` method for "polr" objects (from `MASS::polr()`). (#3)
+* Added a `prediction()` method for "coxph" objects (from `survival::coxph()`). (#3)
 
 ## margins 0.2.7
 

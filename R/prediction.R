@@ -41,7 +41,8 @@ prediction.lm <- function(model, data, type = "response", ...) {
     structure(list(fitted = pred[["fit"]], 
                    se.fitted = pred[["se.fit"]]), 
               class = c("prediction", "data.frame"), 
-              row.names = seq_len(length(pred[["fit"]])))
+              row.names = seq_len(length(pred[["fit"]])),
+              type = type)
 }
 
 #' @rdname prediction
@@ -67,7 +68,9 @@ prediction.glm <- function(model, data, type = c("response", "link"), ...) {
     structure(list(fitted = pred[["fit"]], 
                    se.fitted = pred[["se.fit"]]), 
               class = c("prediction", "data.frame"), 
-              row.names = seq_len(length(pred[["fit"]])))
+              row.names = seq_len(length(pred[["fit"]])),
+              model.class = class(model),
+              type = type)
 }
 
 #' @rdname prediction
@@ -93,7 +96,9 @@ prediction.loess <- function(model, data, type = "response", ...) {
     structure(list(fitted = pred[["fit"]], 
                    se.fitted = pred[["se.fit"]]), 
               class = c("prediction", "data.frame"), 
-              row.names = seq_len(length(pred[["fit"]])))
+              row.names = seq_len(length(pred[["fit"]])),
+              model.class = class(model),
+              type = type)
 }
 
 #' @rdname prediction
@@ -118,7 +123,37 @@ prediction.nls <- function(model, data, ...) {
     structure(list(fitted = pred[["fit"]], 
                    se.fitted = pred[["se.fit"]]), 
               class = c("prediction", "data.frame"), 
-              row.names = seq_len(length(pred[["fit"]])))
+              row.names = seq_len(length(pred[["fit"]])),
+              model.class = class(model),
+              type = type)
+}
+
+#' @rdname prediction
+#' @export
+prediction.coxph <- function(model, data, type = c("risk", "expected", "lp"), ...) {
+    # setup data
+    if (missing(data)) {
+        if (!is.null(model[["call"]][["data"]])) {
+            data <- eval(model[["call"]][["data"]], parent.frame()) 
+        } else { 
+            data <- get_all_vars(model[["terms"]], data = model[["model"]])
+        }
+    }
+    
+    type <- match.arg(type)
+    
+    # extract predicted value at input value (value can only be 1 number)
+    pred <- predict(model, newdata = data, type = type, se.fit = TRUE, ...)
+    class(pred[["fit"]]) <- c("fit", "numeric")
+    class(pred[["se.fit"]]) <- c("se.fit", "numeric")
+    
+    # obs-x-2 data.frame of predictions
+    structure(list(fitted = pred[["fit"]], 
+                   se.fitted = pred[["se.fit"]]), 
+              class = c("prediction", "data.frame"), 
+              row.names = seq_len(length(pred[["fit"]])),
+              model.class = class(model),
+              type = type)
 }
 
 #' @rdname prediction
@@ -146,7 +181,9 @@ prediction.polr <- function(model, data, ...) {
                          se.fitted = pred[["se.fit"]]),
                     probs),
               class = c("prediction", "data.frame"), 
-              row.names = seq_len(length(pred[["fit"]])))
+              row.names = seq_len(length(pred[["fit"]])),
+              model.class = class(model),
+              type = type)
 }
 
 #' @export

@@ -2,6 +2,7 @@
 % Please edit documentation in R/prediction.R
 \name{prediction}
 \alias{prediction}
+\alias{prediction.coxph}
 \alias{prediction.glm}
 \alias{prediction.lm}
 \alias{prediction.loess}
@@ -18,6 +19,9 @@ prediction(model, data, ...)
 \method{prediction}{loess}(model, data, type = "response", ...)
 
 \method{prediction}{nls}(model, data, ...)
+
+\method{prediction}{coxph}(model, data, type = c("risk", "expected", "lp"),
+  ...)
 
 \method{prediction}{polr}(model, data, ...)
 }
