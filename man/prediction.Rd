@@ -6,6 +6,7 @@
 \alias{prediction.lm}
 \alias{prediction.loess}
 \alias{prediction.nls}
+\alias{prediction.polr}
 \title{Extract Predictions from a Model Object}
 \usage{
 prediction(model, data, ...)
@@ -17,13 +18,15 @@ prediction(model, data, ...)
 \method{prediction}{loess}(model, data, type = "response", ...)
 
 \method{prediction}{nls}(model, data, ...)
+
+\method{prediction}{polr}(model, data, ...)
 }
 \arguments{
 \item{model}{A model object, perhaps returned by \code{\link[stats]{lm}} or \code{\link[stats]{glm}}.}
 
 \item{data}{A data.frame over which to calculate marginal effects.}
 
-\item{type}{A character string indicating the type of marginal effects to estimate. Mostly relevant for non-linear models, where the reasonable options are \dQuote{response} (the default) or \dQuote{link} (i.e., on the scale of the linear predictor in a GLM).}
+\item{type}{A character string indicating the type of marginal effects to estimate. Mostly relevant for non-linear models, where the reasonable options are \dQuote{response} (the default) or \dQuote{link} (i.e., on the scale of the linear predictor in a GLM). For models of class \dQuote{polr} (from \code{\link[MASS]{polr}}), possible values are \dQuote{class} or \dQuote{probs}; both are returned.}
 
 \item{\dots}{Additional arguments passed to \code{\link[stats]{predict}} methods.}
 }

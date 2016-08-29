@@ -2,6 +2,10 @@
 
 ## margins 0.2.7
 
+* Added a `prediction()` method for "polr" objects (from `MASS::polr()`). (#3)
+
+## margins 0.2.7
+
 * `marginal_effects()` and `prediction()` are now S3 generics, with methods for "lm" and "glm" objects, improving extensability. (#39, #40)
 * `prediction()` returns a new class ("prediction") and gains a `print()` method.
 * Added preliminary support for "loess" objects, including methods for `prediction()`, `marginal_effects()`, `cplot()`, and `persp()`. No effect variances are currently calculated. (#3)

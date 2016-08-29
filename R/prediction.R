@@ -3,7 +3,7 @@
 #' @description Extract predicted values via \code{\link[stats]{predict}} from a model object, conditional on data
 #' @param model A model object, perhaps returned by \code{\link[stats]{lm}} or \code{\link[stats]{glm}}.
 #' @param data A data.frame over which to calculate marginal effects.
-#' @param type A character string indicating the type of marginal effects to estimate. Mostly relevant for non-linear models, where the reasonable options are \dQuote{response} (the default) or \dQuote{link} (i.e., on the scale of the linear predictor in a GLM).
+#' @param type A character string indicating the type of marginal effects to estimate. Mostly relevant for non-linear models, where the reasonable options are \dQuote{response} (the default) or \dQuote{link} (i.e., on the scale of the linear predictor in a GLM). For models of class \dQuote{polr} (from \code{\link[MASS]{polr}}), possible values are \dQuote{class} or \dQuote{probs}; both are returned.
 #' @param \dots Additional arguments passed to \code{\link[stats]{predict}} methods.
 #' @details This function is simply a wrapper around \code{\link[stats]{predict}} that returns a data.frame containing predicted values with respect to all variables specified in \code{data}. It is used internally by \code{\link{build_margins}}.
 #' @return A data.frame with class \dQuote{prediction} that has a number of rows equal to number of rows in \code{data}, where each row is an observation and the two columns represent fitted/predicted values (\code{fitted}) and the standard errors thereof (\code{se.fitted}).
@@ -121,10 +121,48 @@ prediction.nls <- function(model, data, ...) {
               row.names = seq_len(length(pred[["fit"]])))
 }
 
+#' @rdname prediction
+#' @export
+prediction.polr <- function(model, data, ...) {
+    # setup data
+    if (missing(data)) {
+        if (!is.null(model[["call"]][["data"]])) {
+            data <- eval(model[["call"]][["data"]], parent.frame()) 
+        } else { 
+            data <- get_all_vars(model[["terms"]], data = model[["model"]])
+        }
+    }
+    
+    # extract predicted value at input value (value can only be 1 number)
+    pred <- data.frame(fit = predict(model, newdata = data, type = "class", ...))
+    pred[["se.fit"]] <- NA_real_
+    class(pred[["fit"]]) <- c("fit", class(pred[["fit"]]))
+    class(pred[["se.fit"]]) <- c("se.fit", "numeric")
+    probs <- as.data.frame(predict(model, newdata = data, type = "probs", ...))
+    names(probs) <- paste0("Pr(", names(probs), ")")
+    
+    # obs-x-2 data.frame of predictions
+    structure(cbind(list(fitted = pred[["fit"]], 
+                         se.fitted = pred[["se.fit"]]),
+                    probs),
+              class = c("prediction", "data.frame"), 
+              row.names = seq_len(length(pred[["fit"]])))
+}
+
 #' @export
 print.prediction <- function(x, digits = 4, ...) {
     f <- x[["fitted"]]
-    m <- mean(x[["fitted"]], na.rm = TRUE)
-    m <- sprintf(paste0("%0.", digits, "f"), m)
-    message(paste0("Average prediction: ", m, ", for ", length(f), " ", ngettext(length(f), "observation", "observations")))
+    if (is.numeric(f)) {
+        m <- mean(x[["fitted"]], na.rm = TRUE)
+        m <- sprintf(paste0("%0.", digits, "f"), m)
+        message(paste0("Average prediction: ", m, ", for ", length(f), " ", ngettext(length(f), "observation", "observations")))
+    } else if (is.factor(f)) {
+        m <- sort(table(p$fitted), decreasing = TRUE)[1]
+        message(paste0("Modal prediction: ", shQuote(names(m)), " for ", m, " of ", length(f), " ", 
+                ngettext(length(f), "observation", "observations"),
+                " with total ", nlevels(f), " ", ngettext(nlevels(f), "level", "levels") ))
+    } else {
+        print(head(x), ...)
+    }
+    invisible(x)
 }
