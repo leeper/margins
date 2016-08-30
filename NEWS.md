@@ -1,5 +1,10 @@
 # CHANGES TO margins 0.3.0 #
 
+## margins 0.2.8
+
+* Added a `prediction()` method for "ivreg" objects (from `AER::ivreg()`). (#3)
+* Added a `prediction()` method for "survreg" objects (from `survival::survreg()`). (#3)
+
 ## margins 0.2.7
 
 * Added a `prediction()` method for "polr" objects (from `MASS::polr()`). (#3)
