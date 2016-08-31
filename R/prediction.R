@@ -31,6 +31,7 @@ prediction <- function(model, data, ...) {
     UseMethod("prediction")
 }
 
+#' @importFrom utils head
 #' @export
 print.prediction <- function(x, digits = 4, ...) {
     f <- x[["fitted"]]
@@ -39,7 +40,7 @@ print.prediction <- function(x, digits = 4, ...) {
         m <- sprintf(paste0("%0.", digits, "f"), m)
         message(paste0("Average prediction: ", m, ", for ", length(f), " ", ngettext(length(f), "observation", "observations")))
     } else if (is.factor(f)) {
-        m <- sort(table(p$fitted), decreasing = TRUE)[1]
+        m <- sort(table(x[["fitted"]]), decreasing = TRUE)[1]
         message(paste0("Modal prediction: ", shQuote(names(m)), " for ", m, " of ", length(f), " ", 
                 ngettext(length(f), "observation", "observations"),
                 " with total ", nlevels(f), " ", ngettext(nlevels(f), "level", "levels") ))

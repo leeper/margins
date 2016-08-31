@@ -6,12 +6,11 @@ function(data = data,
          vcov = vcov(model),
          vce = c("delta", "simulation", "bootstrap", "none"),
          iterations = 50L, # if vce == "bootstrap" or "simulation"
-         method = c("simple", "Richardson", "complex"), # passed to marginal_effects()
+         eps = 1e-4,
          ...) {
     
     # march.arg() for arguments
     type <- match.arg(type)
-    method <- match.arg(method)
     vce <- match.arg(vce)
     if (is.function(vcov)) {
         vcov <- vcov(model)
@@ -24,7 +23,7 @@ function(data = data,
     } else if (vce == "delta") {
         
         # default method
-        variances <- delta_once(data = data, model = model, type = type, vcov = vcov, method = method)
+        variances <- delta_once(data = data, model = model, type = type, vcov = vcov, eps = eps)
         
     } else if (vce == "simulation") {
         

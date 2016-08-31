@@ -29,7 +29,7 @@ By comparison, R has no robust functionality in the base tools for drawing out m
 
 Given the challenges of interpreting the contribution of a given regressor in any model that includes quadratic terms, multiplicative interactions, a non-linear transformation, or other complexities, there is a clear need for a simple, consistent way to estimate marginal effects for popular statistical models. This package aims to correctly calculate marginal effects that include complex terms and provide a uniform interface for doing those calculations. Thus, the package implements a single S3 generic method (`margins()`) that can be easily generalized for any type of model implemented in R.
 
-Some technical details of the package are worth briefly noting. The estimation of marginal effects relies on numeric derivatives produced using `predict()` and [`numDeriv::grad()`](https://cran.r-project.org/package=numDeriv). While symbolic differentiation of some models (e.g., linear models) is possible using `D()` and `deriv()`, R's modelling language (the "formula" class) is sufficiently general to enable the construction of model formulae that contain terms that fall outside of R's symbolic differentiation rule table (e.g., `y ~ factor(x)` or `y ~ I(FUN(x))` for any arbitrary `FUN()`). By relying on numeric differentiation, `margins()` supports *any* model that can be expressed in R formula syntax. Even Stata's `margins` command is limited in its ability to handle variable transformations (e.g., including `x` and `log(x)` as predictors) and quadratic terms (e.g., `x^3`); these scenarios are easily expressed in an R formula and easily handled, correctly, by `margins()`.
+Some technical details of the package are worth briefly noting. The estimation of marginal effects relies on numeric derivatives produced using `predict()` and a numerical approximation of [the Jacobian matrix](https://en.wikipedia.org/wiki/Jacobian_matrix_and_determinant). While symbolic differentiation of some models (e.g., linear models) is possible using `D()` and `deriv()`, R's modelling language (the "formula" class) is sufficiently general to enable the construction of model formulae that contain terms that fall outside of R's symbolic differentiation rule table (e.g., `y ~ factor(x)` or `y ~ I(FUN(x))` for any arbitrary `FUN()`). By relying on numeric differentiation, `margins()` supports *any* model that can be expressed in R formula syntax. Even Stata's `margins` command is limited in its ability to handle variable transformations (e.g., including `x` and `log(x)` as predictors) and quadratic terms (e.g., `x^3`); these scenarios are easily expressed in an R formula and easily handled, correctly, by `margins()`.
 
 ## Simple code examples ##
 
@@ -85,7 +85,7 @@ microbenchmark(marginal_effects(x))
 ```
 ## Unit: milliseconds
 ##                 expr      min       lq     mean   median       uq      max neval
-##  marginal_effects(x) 7.942455 8.409444 9.199376 9.115538 9.792552 13.37642   100
+##  marginal_effects(x) 8.047778 8.400351 9.020149 8.620828 9.537136 12.67893   100
 ```
 
 ```r
@@ -94,8 +94,8 @@ microbenchmark(margins(x))
 
 ```
 ## Unit: milliseconds
-##        expr      min       lq     mean   median      uq      max neval
-##  margins(x) 63.40545 69.59018 74.86074 72.59378 75.9127 169.0655   100
+##        expr      min       lq     mean   median       uq      max neval
+##  margins(x) 63.93785 67.05056 74.14901 70.09276 76.57553 180.7601   100
 ```
 
 In addition to the estimation procedures and `plot()` generic, **margins** offers several plotting methods for model objects. First, there is a new generic `cplot()` that displays predictions or marginal effects (from an "lm" or "glm" model) of a variable conditional across values of third variable (or itself). For example, here is a graph of predicted probabilities from a logit model:

@@ -6,8 +6,7 @@
 \usage{
 build_margins(model, data, type = c("response", "link", "terms"),
   vcov = stats::vcov(model), vce = c("delta", "simulation", "bootstrap",
-  "none"), iterations = 50L, unit_ses = FALSE, method = c("simple",
-  "Richardson", "complex"), eps = 1e-07, ...)
+  "none"), iterations = 50L, unit_ses = FALSE, eps = 1e-04, ...)
 }
 \arguments{
 \item{model}{A model object.}
@@ -24,9 +23,7 @@ build_margins(model, data, type = c("response", "link", "terms"),
 
 \item{unit_ses}{If \code{vce = "delta"}, a logical specifying whether to calculate and return unit-specific marginal effect variances. This calculation is time consuming and the information is often not needed, so this is set to \code{FALSE} by default.}
 
-\item{method}{A character string indicating the numeric derivative method to use when estimating marginal effects variances. \dQuote{simple} optimizes for speed; \dQuote{Richardson} optimizes for accuracy. See \code{\link[numDeriv]{jacobian}} for details. Currently this is only used when calculating marginal effect variances.}
-
-\item{eps}{A numeric value specifying the \dQuote{step} to use when calculating numerical derivatives. By default this is the smallest floating point value that can be represented on the present architecture.}
+\item{eps}{A numeric value specifying the \dQuote{step} to use when calculating numerical derivatives.}
 
 \item{\dots}{Ignored.}
 }

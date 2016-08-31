@@ -1,4 +1,4 @@
-get_instant_pdiff <- function(data, model, variable, type = c("response", "link"), eps = 1e-7) {
+get_instant_pdiff <- function(data, model, variable, type = c("response", "link"), eps = 1e-4) {
     # @title Instantaneous change in fitted values (numerical derivative)
     # @description This is an internal function used to calculate instantaneous change (numerical derivative) in y-hat between observed values in `data` and the smallest machine-precise change in the value of `data`. This is used by \code{marginal_effects} for numeric variables. It currently only uses the "simple" derivative method. This might change in the future
     # @param data The dataset on which to to calculate `predict(model)` (and the slope thereof)

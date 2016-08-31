@@ -7,8 +7,7 @@
 #' @param vce A character string indicating the type of estimation procedure to use for estimating variances. The default (\dQuote{delta}) uses the delta method. Alternatives are \dQuote{bootstrap}, which uses bootstrap estimation, or \dQuote{simulation}, which averages across simulations drawn from the joint sampling distribution of model coefficients. The latter two are extremely time intensive.
 #' @param iterations If \code{vce = "bootstrap"}, the number of bootstrap iterations. If \code{vce = "simulation"}, the number of simulated effects to draw. Ignored otherwise.
 #' @param unit_ses If \code{vce = "delta"}, a logical specifying whether to calculate and return unit-specific marginal effect variances. This calculation is time consuming and the information is often not needed, so this is set to \code{FALSE} by default.
-#' @param method A character string indicating the numeric derivative method to use when estimating marginal effects variances. \dQuote{simple} optimizes for speed; \dQuote{Richardson} optimizes for accuracy. See \code{\link[numDeriv]{jacobian}} for details. Currently this is only used when calculating marginal effect variances.
-#' @param eps A numeric value specifying the \dQuote{step} to use when calculating numerical derivatives. By default this is the smallest floating point value that can be represented on the present architecture.
+#' @param eps A numeric value specifying the \dQuote{step} to use when calculating numerical derivatives.
 #' @param \dots Ignored.
 #' @details Generally, it is not necessary to call this function directly because \code{\link{margins}} provides a simpler interface. To just get marginal effects without building a \dQuote{margins} object, call \code{\link{marginal_effects}} instead, which handles the effect estimation of a model object without building a \dQuote{margins} object.
 #' 
@@ -21,7 +20,6 @@
 #' @keywords models
 #' @import stats
 #' @importFrom compiler cmpfun
-#' @importFrom numDeriv grad
 #' @importFrom MASS mvrnorm
 #' @export
 build_margins <- 
@@ -32,8 +30,7 @@ function(model,
          vce = c("delta", "simulation", "bootstrap", "none"),
          iterations = 50L, # if vce == "bootstrap" or "simulation"
          unit_ses = FALSE,
-         method = c("simple", "Richardson", "complex"), # passed to marginal_effects()
-         eps = 1e-7,
+         eps = 1e-4,
          ...) {
     
     # variables in the model
@@ -41,7 +38,6 @@ function(model,
     
     # march.arg() for arguments
     type <- match.arg(type)
-    method <- match.arg(method)
     vce <- match.arg(vce)
     if (is.function(vcov)) {
         vcov <- vcov(model)
@@ -53,12 +49,12 @@ function(model,
     # variance estimation technique
     variances <- get_effect_variances(data = data, model = model, allvars = names(mes), 
                                       type = type, vcov = vcov, vce = vce, 
-                                      iterations = iterations, method = method)
+                                      iterations = iterations, eps = eps)
     
     # get unit-specific effect variances (take derivative of `.build_grad_fun()` for every row separately)
     if ((vce == "delta") && (isTRUE(unit_ses))) {
         vmat <- do.call("rbind", lapply(seq_len(nrow(data)), function(datarow) {
-            delta_once(data = data[datarow,], model = model, type = type, vcov = vcov, method = method)
+            delta_once(data = data[datarow,], model = model, type = type, vcov = vcov, eps = eps)
         }))
         colnames(vmat) <- paste0("se.", names(mes))
         vmat <- as.data.frame(vmat)

@@ -218,5 +218,5 @@ prediction.polr <- function(model, data, ...) {
               class = c("prediction", "data.frame"), 
               row.names = seq_len(length(pred[["fit"]])),
               model.class = class(model),
-              type = type)
+              type = NULL)
 }

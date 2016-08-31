@@ -10,13 +10,13 @@
 marginal_effects(model, data, ...)
 
 \method{marginal_effects}{lm}(model, data, type = c("response", "link"),
-  eps = 1e-07, ...)
+  eps = 1e-04, ...)
 
 \method{marginal_effects}{glm}(model, data, type = c("response", "link"),
-  eps = 1e-07, ...)
+  eps = 1e-04, ...)
 
 \method{marginal_effects}{loess}(model, data, type = c("response", "link"),
-  eps = 1e-07, ...)
+  eps = 1e-04, ...)
 }
 \arguments{
 \item{model}{A model object, perhaps returned by \code{\link[stats]{lm}} or \code{\link[stats]{glm}}}
