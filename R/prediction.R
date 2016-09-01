@@ -11,9 +11,9 @@
 #' \itemize{
 #'   \item \dQuote{lm}, see \code{\link[stats]{lm}}
 #'   \item \dQuote{glm}, see \code{\link[stats]{glm}}, \code{\link[MASS]{glm.nb}}
-#'   \item \dQuote{gls}, see \code{\link[MASS]{gls}}
-#'   \item \dQuote{polr}, see \code{\link[MASS]{polr}}
 #'   \item \dQuote{loess}, see \code{\link[stats]{loess}}
+#'   \item \dQuote{polr}, see \code{\link[MASS]{polr}}
+#'   \item \dQuote{gls}, see \code{\link[nlme]{gls}}
 #'   \item \dQuote{ivreg}, see \code{\link[AER]{ivreg}}
 #'   \item \dQuote{nls}, see \code{\link[stats]{nls}}
 #'   \item \dQuote{coxph}, see \code{\link[survival]{coxph}}

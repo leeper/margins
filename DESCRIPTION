@@ -22,6 +22,7 @@ Suggests:
     testthat
 Enhances:
     survival,
+    nlme,
     AER
 VignetteBuilder: knitr
 RoxygenNote: 5.0.1
