@@ -2,11 +2,14 @@
 % Please edit documentation in R/margins.R, R/margins_methods.R
 \name{margins}
 \alias{margins}
+\alias{margins.default}
 \alias{margins.lm}
 \alias{margins.loess}
 \title{Marginal Effects Estimation}
 \usage{
 margins(model, ...)
+
+\method{margins}{default}(model, data, at = NULL, ...)
 
 \method{margins}{lm}(model, data, at = NULL, ...)
 
@@ -15,7 +18,7 @@ margins(model, ...)
 \arguments{
 \item{model}{A model object of class \dQuote{lm}.}
 
-\item{data}{A data.frame containing the data at which to evaluate the marginal effects, as in \code{\link[stats]{predict}}. This is optional, but may be required when the underlying modelling function sets \code{model = FALSE}.}
+\item{data}{A data frame containing the data at which to evaluate the marginal effects, as in \code{\link[stats]{predict}}. This is optional, but may be required when the underlying modelling function sets \code{model = FALSE}.}
 
 \item{at}{A list of one or more named vectors, specifically values at which to calculate the marginal effects. See \code{\link{build_datalist}} for details on use.}
 
@@ -36,7 +39,7 @@ See \code{\link{marginal_effects}} for details on estimation of marginal effects
 
 The \code{margins} method for objects of class \dQuote{lm} or \dQuote{glm} simply constructs a list of data.frames (using \code{\link{build_datalist}}) and calls \code{\link{build_margins}} on each. You can call \code{build_margins} directly, but it requires the explicit specification of a dataset over which to estimate the quantities of interest.
 
-Alternatively, you can use \code{\link{marginal_effects}} to retrieve a data.frame of marginal effects without constructing a \dQuote{margins} object. That can be efficient for plotting, etc., given the time-consuming nature of variance estimation. Use \code{\link{extract_marginal_effects}} to retrieve a data.frame of marginal effects from a \dQuote{margins} object.
+Alternatively, you can use \code{\link{marginal_effects}} to retrieve a data frame of marginal effects without constructing a \dQuote{margins} object. That can be efficient for plotting, etc., given the time-consuming nature of variance estimation. Use \code{\link{extract_marginal_effects}} to retrieve a data frame of marginal effects from a \dQuote{margins} object.
 }
 \examples{
 # linear model

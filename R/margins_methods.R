@@ -1,6 +1,6 @@
 #' @rdname margins
 #' @export
-margins.lm <- 
+margins.default <- 
 function(model, 
          data, 
          at = NULL, 
@@ -30,6 +30,10 @@ function(model,
     # return value
     structure(out, class = "marginslist")
 }
+
+#' @rdname margins
+#' @export
+margins.lm <- margins.default
 
 #' @rdname margins
 #' @export

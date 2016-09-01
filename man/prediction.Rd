@@ -3,6 +3,7 @@
 \name{prediction}
 \alias{prediction}
 \alias{prediction.coxph}
+\alias{prediction.default}
 \alias{prediction.glm}
 \alias{prediction.gls}
 \alias{prediction.ivreg}
@@ -14,6 +15,8 @@
 \title{Extract Predictions from a Model Object}
 \usage{
 prediction(model, data, ...)
+
+\method{prediction}{default}(model, data, type = "response", ...)
 
 \method{prediction}{lm}(model, data, type = "response", ...)
 

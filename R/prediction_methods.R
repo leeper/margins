@@ -1,6 +1,6 @@
 #' @rdname prediction
 #' @export
-prediction.lm <- function(model, data, type = "response", ...) {
+prediction.default <- function(model, data, type = "response", ...) {
     # setup data
     if (missing(data)) {
         if (!is.null(model[["call"]][["data"]])) {
@@ -24,6 +24,10 @@ prediction.lm <- function(model, data, type = "response", ...) {
               row.names = seq_len(length(pred[["fit"]])),
               type = type)
 }
+
+#' @rdname prediction
+#' @export
+prediction.lm <- prediction.default
 
 #' @rdname prediction
 #' @export
