@@ -4,6 +4,7 @@
 \alias{prediction}
 \alias{prediction.coxph}
 \alias{prediction.glm}
+\alias{prediction.gls}
 \alias{prediction.ivreg}
 \alias{prediction.lm}
 \alias{prediction.loess}
@@ -29,6 +30,8 @@ prediction(model, data, ...)
 
 \method{prediction}{coxph}(model, data, type = c("risk", "expected", "lp"),
   ...)
+
+\method{prediction}{gls}(model, data, ...)
 
 \method{prediction}{polr}(model, data, ...)
 }
@@ -57,6 +60,7 @@ Methods are curently implemented for the following object classes:
 \itemize{
   \item \dQuote{lm}, see \code{\link[stats]{lm}}
   \item \dQuote{glm}, see \code{\link[stats]{glm}}, \code{\link[MASS]{glm.nb}}
+  \item \dQuote{gls}, see \code{\link[MASS]{gls}}
   \item \dQuote{polr}, see \code{\link[MASS]{polr}}
   \item \dQuote{loess}, see \code{\link[stats]{loess}}
   \item \dQuote{ivreg}, see \code{\link[AER]{ivreg}}

@@ -1,5 +1,9 @@
 # CHANGES TO margins 0.3.0 #
 
+## margins 0.2.11
+
+* Added a `prediction()` method for "gls" objects (from `MASS::gls()`). (#3)
+
 ## margins 0.2.10
 
 * Replaced `numDeriv::jacobian()` with an internal alternative. (#41)
