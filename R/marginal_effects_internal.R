@@ -50,13 +50,21 @@ get_factor_pdiff <- function(data, model, variable, type = c("response", "link")
                      row.names = seq_len(nrow(data)))
     
     # setup base data and prediction
-    D0 <- build_datalist(data, at = setNames(list(base), variable))[[1]]
+    if (is.factor(data[[variable]])) {
+        D0 <- build_datalist(data, at = setNames(list(base), variable))[[1]]
+    } else if (is.logical(data[[variable]])) {
+        D0 <- build_datalist(data, at = setNames(list(as.logical(base)), variable))[[1]]
+    }
     # setup functions through predict_factory
     P0 <- prediction(model = model, data = D0, type = type)[["fitted"]]
     
     # calculate difference for each factor level
     for (i in seq_along(levs)) {
-        D <- build_datalist(data, at = setNames(list(levs[i]), variable))[[1]]
+        if (is.factor(data[[variable]])) {
+            D <- build_datalist(data, at = setNames(list(levs[i]), variable))[[1]]
+        } else if (is.logical(data[[variable]])) {
+            D <- build_datalist(data, at = setNames(list(as.logical(levs[i])), variable))[[1]]
+        }
         P1 <- prediction(model = model, data = D, type = type)[["fitted"]]
         out[[outcolnames[i]]] <- P1 - P0
     }

@@ -24,19 +24,27 @@ marginal_effects.lm <- function(model, data, type = c("response", "link"), eps =
     names(classes)[names(classes) %in% names(terms2)] <- terms2[names(classes) %in% names(terms2)]
     
     # identify factors versus numeric terms in `model`
-    nnames <- clean_terms(names(classes)[classes != "factor"])
+    nnames <- clean_terms(names(classes)[!classes %in% c("factor", "logical")])
+    lnames <- clean_terms(names(classes)[classes == "logical"])
     fnames <- clean_terms(names(classes)[classes == "factor"])
     fnames2 <- names(classes)[classes == "factor"] # for checking stupid variable naming behavior by R
     
     # setup obs-x-term data.frame of obs-specific marginal effects
-    out <- structure(matrix(NA_real_, nrow = nrow(data), ncol = length(nnames)), 
+    out <- structure(matrix(NA_real_, nrow = nrow(data), ncol = length(c(nnames, lnames))), 
                      rownames = seq_len(nrow(data)))
     
     # estimate numerical derivatives with respect to each variable (for numeric terms in the model)
     for (i in seq_along(nnames)) {
         out[, i] <- get_instant_pdiff(data = data, model = model, variable = nnames[i], type = type, eps = eps)
     }
-    out <- setNames(as.data.frame(out, optional = TRUE), nnames)
+    # add discrete differences for logical terms
+    if (any(classes == "logical")) {
+        for (i in length(nnames) + seq_along(lnames)) {
+            out[, i] <- get_factor_pdiff(data = data, model = model, lnames[i], type = type)[[1]]
+        }
+    }
+    out <- setNames(as.data.frame(out, optional = TRUE), c(nnames, lnames))
+    
     # add discrete differences for factor terms
     ## exact number depends on number of factor levels
     if (any(classes == "factor")) {

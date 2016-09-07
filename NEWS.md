@@ -1,5 +1,9 @@
 # CHANGES TO margins 0.3.0 #
 
+## margins 0.2.13
+
+* Added support for calculating marginal effects of logical terms, treating them as factors. (#31)
+
 ## margins 0.2.12
 
 * Added an `image()` method for "lm", "glm", and "loess" objects, as a flat complement to existing `persp()` methods. (#42)
