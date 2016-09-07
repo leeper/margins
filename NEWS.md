@@ -1,5 +1,9 @@
 # CHANGES TO margins 0.3.0 #
 
+## margins 0.2.12
+
+* Added an `image()` method for "lm", "glm", and "loess" objects, as a flat complement to existing `persp()` methods. (#42)
+
 ## margins 0.2.11
 
 * Added a `prediction()` method for "gls" objects (from `MASS::gls()`). (#3)

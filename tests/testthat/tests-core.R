@@ -52,27 +52,6 @@ test_that("confint() for 'margins' object", {
 })
 
 
-context("Plotting")
-test_that("persp() method for 'lm' works", {
-    x <- lm(mpg ~ wt * hp, data = mtcars)
-    expect_true(is.list(persp(x)))
-    expect_true(is.list(persp(x, theta = c(30, 60))))
-    expect_true(is.list(persp(x, theta = c(30, 60), phi = c(0, 10))))
-    expect_true(is.list(persp(x, what = "effect")))
-})
-
-test_that("cplot() method for 'lm' works", {
-    x <- lm(mpg ~ wt * hp, data = mtcars)
-    expect_true(inherits(cplot(x, what = "prediction"), "list"))
-    expect_true(inherits(cplot(x, what = "prediction", se.type = "shade"), "list"))
-    expect_true(inherits(cplot(x, what = "effect"), "list"))
-})
-
-test_that("plot() method for 'margins' works", {
-    x <- lm(mpg ~ wt * hp, data = mtcars)
-    expect_true(inherits(plot(margins(x)), "margins"))
-    expect_true(inherits(plot(margins(x), horizontal = TRUE), "margins"))
-})
 
 test_that("minimum test of variance calculations", {
     x <- lm(mpg ~ wt * hp, data = mtcars)
