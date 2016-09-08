@@ -35,12 +35,12 @@ marginal_effects.lm <- function(model, data, type = c("response", "link"), eps =
     
     # estimate numerical derivatives with respect to each variable (for numeric terms in the model)
     for (i in seq_along(nnames)) {
-        out[, i] <- get_instant_pdiff(data = data, model = model, variable = nnames[i], type = type, eps = eps)
+        out[, i] <- mfx_numeric(data = data, model = model, variable = nnames[i], type = type, eps = eps)
     }
     # add discrete differences for logical terms
     if (any(classes == "logical")) {
         for (i in length(nnames) + seq_along(lnames)) {
-            out[, i] <- get_factor_pdiff(data = data, model = model, lnames[i], type = type)[[1]]
+            out[, i] <- mfx_factor(data = data, model = model, lnames[i], type = type)[[1]]
         }
     }
     out <- setNames(as.data.frame(out, optional = TRUE), c(nnames, lnames))
@@ -49,7 +49,7 @@ marginal_effects.lm <- function(model, data, type = c("response", "link"), eps =
     ## exact number depends on number of factor levels
     if (any(classes == "factor")) {
         for (i in seq_along(fnames)) {
-            out <- cbind(out, get_factor_pdiff(data = data, model = model, fnames[i], type = type, fwrap = (fnames != fnames2)[i]))
+            out <- cbind(out, mfx_factor(data = data, model = model, fnames[i], type = type, fwrap = (fnames != fnames2)[i]))
         }
     }
     for (i in seq_along(out)) {

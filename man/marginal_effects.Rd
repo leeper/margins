@@ -36,7 +36,7 @@ An data.frame with dimensions equal to \code{data}, where each row is an observa
 Extract marginal effects (via numerical differentiation) and predicted differences in factor changes from a model object, conditional on data
 }
 \details{
-This function uses numeric differentiation to extract marginal effects from an estimated model with respect to all numeric variables specified in \code{data} and returns a data.frame containing the unit-specific marginal effects with respect to each variable included (or not included) in the model. (Note that this is not each \emph{coefficient}.) For factor variables (or character variables, which are implicitly coerced to factors by modelling functions), discrete differences in predicted outcomes are reported instead (i.e., change in predicted outcome when factor is set to a given level minus the predicted outcome when the factor is set to its baseline level). If you want to use numerical differentiation for factor variables (which you probably do not want to do), enter them into the original modelling function as numeric values rather than factors.
+This function extracts unit-specific marginal effects from an estimated model with respect to \emph{all} variables specified in \code{data} and returns a data.frame. (Note that this is not each \emph{coefficient}.) See \code{\link{mfx_numeric}} for computational details, or to extract the marginal effect for only one variable. Note that for factor and logical class variables, discrete changes in the outcome are reported rather than instantaneous marginal effects.
 
 Variable class coercion (other than \code{factor(x)}) inside a formula passed to, for example, \code{\link[stats]{lm}} may cause weird behavior, or errors.
 }
@@ -50,8 +50,11 @@ x <- lm(mpg ~ factor(cyl) * factor(am), data = mtcars)
 marginal_effects(x)
 
 }
+\references{
+Miranda, Mario J. and Paul L. Fackler. 2002. Applied Computational Economics and Finance. p. 103.
+}
 \seealso{
-\code{\link{margins}}, \code{\link{build_margins}}, \code{\link{extract_marginal_effects}}
+\code{\link{mfx_numeric}}, \code{\link{margins}}, \code{\link{build_margins}}, \code{\link{extract_marginal_effects}}
 }
 \keyword{models}
 

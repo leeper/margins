@@ -1,5 +1,9 @@
 # CHANGES TO margins 0.3.0 #
 
+## margins 0.2.14
+
+* Tentatively exposed previously internal `mfx_*()` functions to provide variable-specific marginal effects calculations. (#31)
+
 ## margins 0.2.13
 
 * Added support for calculating marginal effects of logical terms, treating them as factors. (#31)

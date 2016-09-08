@@ -1,11 +1,24 @@
-get_instant_pdiff <- function(data, model, variable, type = c("response", "link"), eps = 1e-4) {
-    # @title Instantaneous change in fitted values (numerical derivative)
-    # @description This is an internal function used to calculate instantaneous change (numerical derivative) in y-hat between observed values in `data` and the smallest machine-precise change in the value of `data`. This is used by \code{marginal_effects} for numeric variables. It currently only uses the "simple" derivative method. This might change in the future
-    # @param data The dataset on which to to calculate `predict(model)` (and the slope thereof)
-    # @param model The model object to pass to `predict()`
-    # @param variable A character string specifying the variable to calculate the difference for
-    # @param type The type of prediction. Default is \dQuote{response}.
-    
+#' @rdname mfx
+#' @title Marginal Effect of a Given Variable
+#' @description Differentiate an Estimated Model with Respect to One Variable
+#' @param data The dataset on which to to calculate \eqn{\hat{y}}.
+#' @param model The model object to pass to \code{\link{prediction}}.
+#' @param variable A character string specifying the variable to calculate the derivative for.
+#' @param type The type of prediction. Default is \dQuote{response}.
+#' @param eps The value of the step \eqn{\epsilon} to use in calculation of the numerical derivative.
+#' @param fwrap A logical specifying how to name factor columns in the response.
+#' @details
+#' These functions provide a simple interface to the calculation of marginal effects for specific variables used in a model, and are the workhorse functions called internally by \code{\link{marginal_effects}}.
+#' 
+#' \code{mfx} is an S3 generic with classes implemented for specific variable types. The method for numeric variables uses one-sided numerical differentiation (\deqn{h = \max(|x|, 1) \sqrt{\epsilon}}{h = max(|x|, 1)sqrt(epsilon)}, where \eqn{\epsilon}{epsilon} is given by \code{eps}) to extract the marginal effect, or instantaneous change (numerical derivative) in \eqn{\hat{y}}. It currently only uses a \dQuote{simple}, one-sided derivative method (in the language of the numDeriv package) . This might change in the future.
+#' 
+#' For factor variables (or character variables, which are implicitly coerced to factors by modelling functions) and logical variables, discrete differences in predicted outcomes are reported instead (i.e., change in predicted outcome when factor is set to a given level minus the predicted outcome when the factor is set to its baseline level). If you want to use numerical differentiation for factor variables (which you probably do not want to do), enter them into the original modelling function as numeric values rather than factors.
+#' 
+#' @return A data.frame, typically with one column unless the variable is a factor with more than two levels.
+#' @seealso \code{\link{marginal_effects}}, \code{\link{margins}}
+#' 
+#' @export
+mfx_numeric <- function(data, model, variable, type = c("response", "link"), eps = 1e-4) {
     type <- match.arg(type)
     
     # calculate numerical derivative
@@ -23,14 +36,9 @@ get_instant_pdiff <- function(data, model, variable, type = c("response", "link"
     return(out)
 }
 
-get_factor_pdiff <- function(data, model, variable, type = c("response", "link"), fwrap = FALSE) {
-    # @title Discrete change in fitted values
-    # @description This is an internal function used to calculate discrete change in y-hat between factor levels and base factor level. This is used by \code{marginal_effects} for factor variables.
-    # @param data The dataset on which to to calculate `predict(model)` (and the slope thereof)
-    # @param model The model object to pass to `predict()`
-    # @param variable A character string specifying the variable to calculate the difference for
-    # @param type The type of prediction. Default is \dQuote{response}.
-    # @param fwrap A logical specifying how to name factor columns in the response.
+#' @rdname mfx
+#' @export
+mfx_factor <- function(data, model, variable, type = c("response", "link"), fwrap = FALSE) {
     
     type <- match.arg(type)
     
@@ -50,20 +58,20 @@ get_factor_pdiff <- function(data, model, variable, type = c("response", "link")
                      row.names = seq_len(nrow(data)))
     
     # setup base data and prediction
-    if (is.factor(data[[variable]])) {
-        D0 <- build_datalist(data, at = setNames(list(base), variable))[[1]]
-    } else if (is.logical(data[[variable]])) {
+    if (is.logical(data[[variable]])) {
         D0 <- build_datalist(data, at = setNames(list(as.logical(base)), variable))[[1]]
-    }
+    } else {
+        D0 <- build_datalist(data, at = setNames(list(base), variable))[[1]]
+    } 
     # setup functions through predict_factory
     P0 <- prediction(model = model, data = D0, type = type)[["fitted"]]
     
     # calculate difference for each factor level
     for (i in seq_along(levs)) {
-        if (is.factor(data[[variable]])) {
-            D <- build_datalist(data, at = setNames(list(levs[i]), variable))[[1]]
-        } else if (is.logical(data[[variable]])) {
+        if (is.logical(data[[variable]])) {
             D <- build_datalist(data, at = setNames(list(as.logical(levs[i])), variable))[[1]]
+        } else {
+            D <- build_datalist(data, at = setNames(list(levs[i]), variable))[[1]]
         }
         P1 <- prediction(model = model, data = D, type = type)[["fitted"]]
         out[[outcolnames[i]]] <- P1 - P0
