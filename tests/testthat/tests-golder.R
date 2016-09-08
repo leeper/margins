@@ -23,12 +23,12 @@ test_that("Golder Interaction Case 1a/1b correct", {
     # ME with respect to x
     dydx <- coef(m)["x"] + (d$z * coef(m)["x:z"])
     sedydx <- sqrt(vcov(m)["x","x"] + (d$z^2 * vcov(m)["x:z","x:z"]) + (2 * d$z * vcov(m)["x","x:z"]))
-    expect_equal(unclass(e[,"x"]), dydx, tolerance = tol, label = "dy/dx correct")
+    expect_equal(as.numeric(e[,"x"]), dydx, tolerance = tol, label = "dy/dx correct")
     expect_equal(sedydx, as.numeric(marg[["se.x"]]), tolerance = tol_se, label = "Var(dy/dx) correct")
     # ME with respect to z
     dydz <- coef(m)["z"] + (d$x * coef(m)["x:z"])
     sedydz <- sqrt(vcov(m)["z","z"] + (d$x^2 * vcov(m)["x:z","x:z"]) + (2 * d$x * vcov(m)["z","x:z"]))
-    expect_equal(unclass(e[,"z"]), dydz, tolerance = tol, label = "dy/dz correct")
+    expect_equal(as.numeric(e[,"z"]), dydz, tolerance = tol, label = "dy/dz correct")
     expect_equal(sedydz, as.numeric(marg[["se.z"]]), tolerance = tol_se, label = "Var(dy/dz) correct")
 })
 
@@ -39,7 +39,7 @@ test_that("Golder Interaction Case 2 correct", {
     e <- extract_marginal_effects(marg)
     dydx <- coef(m)["x"] + (d$z * coef(m)["x:z"])
     sedydx <- sqrt(vcov(m)["x","x"] + (d$z^2 * vcov(m)["x:z","x:z"]) + (2 * d$z * vcov(m)["x","x:z"]))
-    expect_equal(unclass(e[,"x"]), dydx, tolerance = tol, label = "dy/dx correct")
+    expect_equal(as.numeric(e[,"x"]), dydx, tolerance = tol, label = "dy/dx correct")
     expect_equal(sedydx, as.numeric(marg[["se.x"]]), tolerance = tol_se, label = "Var(dy/dx) correct")
 })
 
@@ -51,7 +51,7 @@ test_that("Golder Interaction Case 3 correct", {
     dydx <- coef(m)["x"] + (d$z * coef(m)["x:z"]) + (d$w * coef(m)["x:w"])
     sedydx <- sqrt(vcov(m)["x","x"] + (d$z^2 * vcov(m)["x:z","x:z"]) + (d$w^2 * vcov(m)["x:w","x:w"]) + 
                    (2 * d$z * vcov(m)["x","x:z"]) + (2 * d$w * vcov(m)["x","x:w"]) + (2 * d$z * d$w * vcov(m)["x:z","x:w"]) )
-    expect_equal(unclass(e[,"x"]), dydx, tolerance = tol, label = "dy/dx correct")
+    expect_equal(as.numeric(e[,"x"]), dydx, tolerance = tol, label = "dy/dx correct")
     expect_equal(sedydx, as.numeric(marg[["se.x"]]), tolerance = tol_se, label = "Var(dy/dx) correct")
 })
 
@@ -66,7 +66,7 @@ test_that("Golder Interaction Case 4 correct", {
                    (2 * d$w * vcov(m)["x","x:w"]) + (2 * d$z * d$w * vcov(m)["x","x:z:w"]) + 
                    (2 * d$z * d$w * vcov(m)["x:z","x:w"]) + (2 * d$w * d$z^2 * vcov(m)["x:z","x:z:w"]) +
                    (2 * d$z * d$w^2 * vcov(m)["x:w","x:z:w"]) )
-    expect_equal(unclass(e[,"x"]), dydx, tolerance = tol, label = "dy/dx correct")
+    expect_equal(as.numeric(e[,"x"]), dydx, tolerance = tol, label = "dy/dx correct")
     expect_equal(sedydx, as.numeric(marg[["se.x"]]), tolerance = tol_se, label = "Var(dy/dx) correct")
 })
 
@@ -80,7 +80,7 @@ test_that("Golder Quadratic Case 1 correct", {
     e <- extract_marginal_effects(marg)
     dydx <- coef(m)["x"] + (2 * coef(m)["I(x^2)"] * d$x)
     sedydx <- sqrt(vcov(m)["x","x"] + (4 * d$x^2 * vcov(m)["I(x^2)","I(x^2)"]) + (4 * d$x * vcov(m)["x","I(x^2)"]))
-    expect_equal(unclass(e[,"x"]), dydx, tolerance = tol, label = "dy/dx correct")
+    expect_equal(as.numeric(e[,"x"]), dydx, tolerance = tol, label = "dy/dx correct")
     expect_equal(sedydx, as.numeric(marg[["se.x"]]), tolerance = tol_se, label = "Var(dy/dx) correct")
 })
 
@@ -91,7 +91,7 @@ test_that("Golder Quadratic Case 2 correct", {
     e <- extract_marginal_effects(marg)
     dydx <- coef(m)["x"] + (2 * coef(m)["I(x^2)"] * d$x)
     sedydx <- sqrt(vcov(m)["x","x"] + (4 * d$x^2 * vcov(m)["I(x^2)","I(x^2)"]) + (4 * d$x * vcov(m)["x","I(x^2)"]))
-    expect_equal(unclass(e[,"x"]), dydx, tolerance = tol, label = "dy/dx correct")
+    expect_equal(as.numeric(e[,"x"]), dydx, tolerance = tol, label = "dy/dx correct")
     expect_equal(sedydx, as.numeric(marg[["se.x"]]), tolerance = tol_se, label = "Var(dy/dx) correct")
 })
 
@@ -104,12 +104,12 @@ test_that("Golder Quadratic Case 3a/3b correct", {
     dydx <- coef(m)["x"] + (2 * coef(m)["I(x^2)"] * d$x) + (d$z * coef(m)["x:z"])
     sedydx <- sqrt(vcov(m)["x","x"] + (4 * d$x^2 * vcov(m)["I(x^2)","I(x^2)"]) + (d$z^2 * vcov(m)["x:z","x:z"]) +
                    (4 * d$x * vcov(m)["x","I(x^2)"]) + (2 * d$z * vcov(m)["x","x:z"]) + (4 * d$x * d$z * vcov(m)["I(x^2)", "x:z"]) )
-    expect_equal(unclass(e[,"x"]), dydx, tolerance = tol, label = "dy/dx correct")
+    expect_equal(as.numeric(e[,"x"]), dydx, tolerance = tol, label = "dy/dx correct")
     expect_equal(sedydx, as.numeric(marg[["se.x"]]), tolerance = tol_se, label = "Var(dy/dx) correct")
     # ME with respect to z
     dydz <- coef(m)["z"] + (d$x * coef(m)["x:z"])
     sedydz <- sqrt(vcov(m)["z","z"] + (d$x^2 * vcov(m)["x:z","x:z"]) + (2 * d$x * vcov(m)["z","x:z"]))
-    expect_equal(unclass(e[,"z"]), dydz, tolerance = tol, label = "dy/dz correct")
+    expect_equal(as.numeric(e[,"z"]), dydz, tolerance = tol, label = "dy/dz correct")
     expect_equal(sedydz, as.numeric(marg[["se.z"]]), tolerance = tol_se, label = "Var(dy/dz) correct")
 })
 
@@ -127,13 +127,13 @@ test_that("Golder Quadratic Case 4a/4b correct", {
                    (4 * d$x * d$z * vcov(m)["x","I(x^2):z"]) + 
                    (8 * (d$x^2) * d$z * vcov(m)["I(x^2)","I(x^2):z"]) + 
                    (4 * d$x * (d$z^2) * vcov(m)["x:z","I(x^2):z"]) )
-    expect_equal(unclass(e[,"x"]), dydx, tolerance = tol, label = "dy/dx correct")
+    expect_equal(as.numeric(e[,"x"]), dydx, tolerance = tol, label = "dy/dx correct")
     expect_equal(sedydx, as.numeric(marg[["se.x"]]), tolerance = tol_se, label = "Var(dy/dx) correct")
     # ME with respect to z
     dydz <- coef(m)["z"] + (d$x * coef(m)["x:z"]) + (d$x^2 * coef(m)["I(x^2):z"])
     sedydz <- sqrt(vcov(m)["z","z"] + (d$x^2 * vcov(m)["x:z","x:z"]) + (d$x^4 * vcov(m)["I(x^2):z","I(x^2):z"]) + 
                    (2 * d$x * vcov(m)["z","x:z"]) + (2 * (d$x^2) * vcov(m)["z","I(x^2):z"]) + 
                    (2 * (d$x^3) * vcov(m)["x:z","I(x^2):z"]) )
-    expect_equal(unclass(e[,"z"]), dydz, tolerance = tol, label = "dy/dz correct")
+    expect_equal(as.numeric(e[,"z"]), dydz, tolerance = tol, label = "dy/dz correct")
     expect_equal(sedydz, as.numeric(marg[["se.z"]]), tolerance = tol_se, label = "Var(dy/dz) correct")
 })

@@ -29,32 +29,19 @@ marginal_effects.lm <- function(model, data, type = c("response", "link"), eps =
     fnames <- clean_terms(names(classes)[classes == "factor"])
     fnames2 <- names(classes)[classes == "factor"] # for checking stupid variable naming behavior by R
     
-    # setup obs-x-term data.frame of obs-specific marginal effects
-    out <- structure(matrix(NA_real_, nrow = nrow(data), ncol = length(c(nnames, lnames))), 
-                     rownames = seq_len(nrow(data)))
-    
     # estimate numerical derivatives with respect to each variable (for numeric terms in the model)
-    for (i in seq_along(nnames)) {
-        out[, i] <- mfx_numeric(data = data, model = model, variable = nnames[i], type = type, eps = eps)
-    }
     # add discrete differences for logical terms
-    if (any(classes == "logical")) {
-        for (i in length(nnames) + seq_along(lnames)) {
-            out[, i] <- mfx_factor(data = data, model = model, lnames[i], type = type)[[1]]
-        }
-    }
-    out <- setNames(as.data.frame(out, optional = TRUE), c(nnames, lnames))
+    out1 <- lapply(c(nnames, lnames), mfx, data = data, model = model, type = type, eps = eps)
     
     # add discrete differences for factor terms
     ## exact number depends on number of factor levels
-    if (any(classes == "factor")) {
-        for (i in seq_along(fnames)) {
-            out <- cbind(out, mfx_factor(data = data, model = model, fnames[i], type = type, fwrap = (fnames != fnames2)[i]))
-        }
+    out2 <- list()
+    for (i in seq_along(fnames)) {
+        out2[[i]] <- mfx.factor(data = data, model = model, fnames[i], type = type, fwrap = (fnames != fnames2)[i])
     }
-    for (i in seq_along(out)) {
-        class(out[[i]]) <- c("marginaleffect", "numeric")
-    }
+    
+    out <- c(out1, out2)
+    out <- do.call("cbind.data.frame", out[vapply(out, function(x) length(x) > 0, FUN.VALUE = logical(1))])
     return(out)
 }
 

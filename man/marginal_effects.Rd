@@ -36,7 +36,7 @@ An data.frame with dimensions equal to \code{data}, where each row is an observa
 Extract marginal effects (via numerical differentiation) and predicted differences in factor changes from a model object, conditional on data
 }
 \details{
-This function extracts unit-specific marginal effects from an estimated model with respect to \emph{all} variables specified in \code{data} and returns a data.frame. (Note that this is not each \emph{coefficient}.) See \code{\link{mfx_numeric}} for computational details, or to extract the marginal effect for only one variable. Note that for factor and logical class variables, discrete changes in the outcome are reported rather than instantaneous marginal effects.
+This function extracts unit-specific marginal effects from an estimated model with respect to \emph{all} variables specified in \code{data} and returns a data.frame. (Note that this is not each \emph{coefficient}.) See \code{\link{mfx}} for computational details, or to extract the marginal effect for only one variable. Note that for factor and logical class variables, discrete changes in the outcome are reported rather than instantaneous marginal effects.
 
 Variable class coercion (other than \code{factor(x)}) inside a formula passed to, for example, \code{\link[stats]{lm}} may cause weird behavior, or errors.
 }
@@ -54,7 +54,7 @@ marginal_effects(x)
 Miranda, Mario J. and Paul L. Fackler. 2002. Applied Computational Economics and Finance. p. 103.
 }
 \seealso{
-\code{\link{mfx_numeric}}, \code{\link{margins}}, \code{\link{build_margins}}, \code{\link{extract_marginal_effects}}
+\code{\link{mfx}}, \code{\link{margins}}, \code{\link{build_margins}}, \code{\link{extract_marginal_effects}}
 }
 \keyword{models}
 

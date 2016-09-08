@@ -73,7 +73,7 @@ check_factor_levels <- function(data, at) {
 
 check_values <- function(data, at) {
     dat <- data[, names(at), drop = FALSE]
-    dat <- dat[, !sapply(dat, class) %in% c("character", "factor"), drop = FALSE]
+    dat <- dat[, !sapply(dat, class) %in% c("character", "factor", "ordered", "logical"), drop = FALSE]
     limits <- do.call(rbind, lapply(dat, range, na.rm = TRUE))
     for (i in seq_along(at)) {
         out <- (at[[i]] < limits[i,1]) | (at[[i]] > limits[i,2])
