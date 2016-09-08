@@ -15,4 +15,4 @@ README.html
 /vignettes/*.pdf
 /vignettes/*.sty
 /vignettes/*.tex
-/data-raw/*
+^data-raw$
