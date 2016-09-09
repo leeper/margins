@@ -1,5 +1,5 @@
 #' @title \dQuote{margins} Object Builder
-#' @description This is the lower-level function called by \code{\link{margins}} that assembles a \dQuote{margins} object from calls to \code{\link{prediction}}, \code{\link{marginal_effects}}, and \code{\link{get_effect_variances}}.
+#' @description This is the lower-level function called by \code{\link{margins}} that assembles a \dQuote{margins} object from calls to \code{\link{prediction}}, \code{\link{marginal_effects}}, and \code{get_effect_variances} (not exported).
 #' @param model A model object.
 #' @param data A data.frame over which to calculate marginal effects.
 #' @param type A character string indicating the type of marginal effects to estimate. Mostly relevant for non-linear models, where the reasonable options are \dQuote{response} (the default) or \dQuote{link} (i.e., on the scale of the linear predictor in a GLM).

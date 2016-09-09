@@ -1,5 +1,10 @@
 # CHANGES TO margins 0.3.0 #
 
+## margins 0.2.16
+
+* Added some functionality `prediction()` methods to, hopefully, reduce memory footprint of model objects. (#26)
+* Changed the capitalization of the `variances` field in "margins" objects (to lower case), for consistency.
+
 ## margins 0.2.15
 
 * Expose previously internal `mfx()` generic and methods to provide variable-specific marginal effects calculations. (#31)
