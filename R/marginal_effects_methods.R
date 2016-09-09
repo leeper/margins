@@ -1,6 +1,6 @@
 #' @rdname marginal_effects
 #' @export
-marginal_effects.lm <- function(model, data, type = c("response", "link"), eps = 1e-4, ...) {
+marginal_effects.default <- function(model, data, type = c("response", "link"), eps = 1e-7, ...) {
     
     # setup data, if missing
     if (missing(data)) {
@@ -47,8 +47,12 @@ marginal_effects.lm <- function(model, data, type = c("response", "link"), eps =
 
 #' @rdname marginal_effects
 #' @export
-marginal_effects.glm <- marginal_effects.lm
+marginal_effects.lm <- marginal_effects.default
 
 #' @rdname marginal_effects
 #' @export
-marginal_effects.loess <- marginal_effects.lm
+marginal_effects.glm <- marginal_effects.default
+
+#' @rdname marginal_effects
+#' @export
+marginal_effects.loess <- marginal_effects.default

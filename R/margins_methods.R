@@ -37,6 +37,10 @@ margins.lm <- margins.default
 
 #' @rdname margins
 #' @export
+margins.glm <- margins.default
+
+#' @rdname margins
+#' @export
 margins.loess <- function(model, 
          data, 
          at = NULL, 

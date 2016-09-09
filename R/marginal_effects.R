@@ -7,8 +7,15 @@
 #' @param eps A numeric value specifying the \dQuote{step} to use when calculating numerical derivatives. By default this is the smallest floating point value that can be represented on the present architecture.
 #' @param \dots Arguments passed to methods. For methods, currently ignored.
 #' @details This function extracts unit-specific marginal effects from an estimated model with respect to \emph{all} variables specified in \code{data} and returns a data.frame. (Note that this is not each \emph{coefficient}.) See \code{\link{mfx}} for computational details, or to extract the marginal effect for only one variable. Note that for factor and logical class variables, discrete changes in the outcome are reported rather than instantaneous marginal effects.
+#' 
+#' Methods are currently implemented for the following object classes:
+#' \itemize{
+#'   \item \dQuote{lm}, see \code{\link[stats]{lm}}
+#'   \item \dQuote{glm}, see \code{\link[stats]{glm}}, \code{\link[MASS]{glm.nb}}
+#'   \item \dQuote{loess}, see \code{\link[stats]{loess}}
+#' }
 #'
-#' Variable class coercion (other than \code{factor(x)}) inside a formula passed to, for example, \code{\link[stats]{lm}} may cause weird behavior, or errors.
+#' @note Variable class coercion (other than \code{factor(x)}) inside a formula passed to, for example, \code{\link[stats]{lm}} may cause weird behavior, or errors.
 #'
 #' @return An data.frame with dimensions equal to \code{data}, where each row is an observation and each column is the marginal effect of that variable for the data values provided by \code{data}.
 #' @references

@@ -6,7 +6,7 @@ function(data = data,
          vcov = vcov(model),
          vce = c("delta", "simulation", "bootstrap", "none"),
          iterations = 50L, # if vce == "bootstrap" or "simulation"
-         eps = 1e-4,
+         eps = 1e-7,
          ...) {
     
     # march.arg() for arguments

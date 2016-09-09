@@ -2,16 +2,16 @@
 % Please edit documentation in R/mfx.R
 \name{mfx}
 \alias{mfx}
+\alias{mfx.default}
 \alias{mfx.factor}
 \alias{mfx.logical}
-\alias{mfx.numeric}
 \alias{mfx.ordered}
 \title{Marginal Effect of a Given Variable}
 \usage{
 mfx(data, model, variable, ...)
 
-\method{mfx}{numeric}(data, model, variable, type = c("response", "link"),
-  eps = 1e-04, ...)
+\method{mfx}{default}(data, model, variable, type = c("response", "link"),
+  eps = 1e-07, ...)
 
 \method{mfx}{factor}(data, model, variable, type = c("response", "link"),
   fwrap = FALSE, ...)
@@ -48,13 +48,20 @@ These functions provide a simple interface to the calculation of marginal effect
 
 \code{mfx} is an S3 generic with classes implemented for specific variable types. S3 method dispatch, somewhat atypically, is based upon the class of \code{data[[variable]]}.
 
-For numeric variables, the method uses one-sided numerical differentiation (\deqn{h = \max(|x|, 1) \sqrt{\epsilon}}{h = max(|x|, 1)sqrt(epsilon)}, where \eqn{\epsilon}{epsilon} is given by \code{eps}) to extract the marginal effect, or instantaneous change (numerical derivative) in \eqn{\hat{y}}. It currently only uses a \dQuote{simple}, one-sided derivative method (in the language of the numDeriv package) . This might change in the future.
+For numeric (and integer) variables, the method uses a simple \dQuote{central difference} numerical differentiation:
+\deqn{\frac{f(x + \frac{1}{2}h) - f(x - \frac{1}{2}h}){dh}}{(f(x + 0.5h) - f(x - 0.5h))/(2h)}, where (\eqn{h = \max(|x|, 1) \sqrt{\epsilon}}{h = max(|x|, 1)sqrt(epsilon)} and the value of \eqn{\epsilon}{epsilon} is given by argument \code{eps}. This procedure is subject to change in the future.
 
 For factor variables (or character variables, which are implicitly coerced to factors by modelling functions), discrete differences in predicted outcomes are reported instead (i.e., change in predicted outcome when factor is set to a given level minus the predicted outcome when the factor is set to its baseline level). If you want to use numerical differentiation for factor variables (which you probably do not want to do), enter them into the original modelling function as numeric values rather than factors.
 
 For ordered factor variables, the same approach as factors is used. This may contradict the output of modelling function summaries, which rely on \code{options("contrasts")} to determine the contrasts to use (the default being \code{\link[stats]{contr.poly}} rather than \code{\link[stats]{contr.treatment}}, the latter being used normally for unordered factors).
 
 For logical variables, the same approach as factors is used, but always moving from \code{FALSE} to \code{TRUE}.
+}
+\examples{
+require("datasets")
+x <- lm(mpg ~ cyl * hp + wt, data = head(mtcars))
+mfx(head(mtcars), x, "hp")
+
 }
 \seealso{
 \code{\link{marginal_effects}}, \code{\link{margins}}

@@ -2,6 +2,7 @@
 % Please edit documentation in R/marginal_effects.R, R/marginal_effects_methods.R
 \name{marginal_effects}
 \alias{marginal_effects}
+\alias{marginal_effects.default}
 \alias{marginal_effects.glm}
 \alias{marginal_effects.lm}
 \alias{marginal_effects.loess}
@@ -9,14 +10,17 @@
 \usage{
 marginal_effects(model, data, ...)
 
+\method{marginal_effects}{default}(model, data, type = c("response", "link"),
+  eps = 1e-07, ...)
+
 \method{marginal_effects}{lm}(model, data, type = c("response", "link"),
-  eps = 1e-04, ...)
+  eps = 1e-07, ...)
 
 \method{marginal_effects}{glm}(model, data, type = c("response", "link"),
-  eps = 1e-04, ...)
+  eps = 1e-07, ...)
 
 \method{marginal_effects}{loess}(model, data, type = c("response", "link"),
-  eps = 1e-04, ...)
+  eps = 1e-07, ...)
 }
 \arguments{
 \item{model}{A model object, perhaps returned by \code{\link[stats]{lm}} or \code{\link[stats]{glm}}}
@@ -38,6 +42,14 @@ Extract marginal effects (via numerical differentiation) and predicted differenc
 \details{
 This function extracts unit-specific marginal effects from an estimated model with respect to \emph{all} variables specified in \code{data} and returns a data.frame. (Note that this is not each \emph{coefficient}.) See \code{\link{mfx}} for computational details, or to extract the marginal effect for only one variable. Note that for factor and logical class variables, discrete changes in the outcome are reported rather than instantaneous marginal effects.
 
+Methods are currently implemented for the following object classes:
+\itemize{
+  \item \dQuote{lm}, see \code{\link[stats]{lm}}
+  \item \dQuote{glm}, see \code{\link[stats]{glm}}, \code{\link[MASS]{glm.nb}}
+  \item \dQuote{loess}, see \code{\link[stats]{loess}}
+}
+}
+\note{
 Variable class coercion (other than \code{factor(x)}) inside a formula passed to, for example, \code{\link[stats]{lm}} may cause weird behavior, or errors.
 }
 \examples{

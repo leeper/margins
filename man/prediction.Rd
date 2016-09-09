@@ -59,7 +59,7 @@ Extract predicted values via \code{\link[stats]{predict}} from a model object, c
 \details{
 This function is simply a wrapper around \code{\link[stats]{predict}} that returns a data.frame containing predicted values with respect to all variables specified in \code{data}. It is used internally by \code{\link{build_margins}}.
 
-Methods are curently implemented for the following object classes:
+Methods are currently implemented for the following object classes:
 \itemize{
   \item \dQuote{lm}, see \code{\link[stats]{lm}}
   \item \dQuote{glm}, see \code{\link[stats]{glm}}, \code{\link[MASS]{glm.nb}}

@@ -30,7 +30,7 @@ function(model,
          vce = c("delta", "simulation", "bootstrap", "none"),
          iterations = 50L, # if vce == "bootstrap" or "simulation"
          unit_ses = FALSE,
-         eps = 1e-4,
+         eps = 1e-7,
          ...) {
     
     # variables in the model

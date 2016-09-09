@@ -3,7 +3,7 @@ function(data,
          model, 
          type = c("response", "link", "terms"), 
          vcov = vcov(model),
-         eps = 1e-4) {
+         eps = 1e-7) {
     # take the derivative of each marginal effect from a model with respect to each model coefficient
     
     type <- match.arg(type)
@@ -27,7 +27,7 @@ function(data,
     return(vout)
 }
 
-.build_grad_fun <- function(data, model, type = "response", eps = 1e-4) {
+.build_grad_fun <- function(data, model, type = "response", eps = 1e-7) {
     
     # factory function to return prediction holding data constant but varying coefficients
     FUN <- function(coefs) {

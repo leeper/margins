@@ -6,7 +6,7 @@
 \usage{
 build_margins(model, data, type = c("response", "link", "terms"),
   vcov = stats::vcov(model), vce = c("delta", "simulation", "bootstrap",
-  "none"), iterations = 50L, unit_ses = FALSE, eps = 1e-04, ...)
+  "none"), iterations = 50L, unit_ses = FALSE, eps = 1e-07, ...)
 }
 \arguments{
 \item{model}{A model object.}
@@ -31,7 +31,7 @@ build_margins(model, data, type = c("response", "link", "terms"),
 A data.frame of class \dQuote{margins} containing the contents of \code{data}, fitted values for \code{model}, the standard errors of the fitted values, and any estimated marginal effects. This data.frame may have repeated column names (for the original variables and the margginal effects thereof). Marginal effects columns are distinguished by their class (\dQuote{marginaleffect}) and can be extracted using \code{\link{extract_marginal_effects}}. Attributes containing additional information, including the marginal effect variances and additional details.
 }
 \description{
-This is the lower-level function called by \code{\link{margins}} that assembles a \dQuote{margins} object from calls to \code{\link{prediction}}, \code{\link{marginal_effects}}, and \code{\link{get_effect_variances}}.
+This is the lower-level function called by \code{\link{margins}} that assembles a \dQuote{margins} object from calls to \code{\link{prediction}}, \code{\link{marginal_effects}}, and \code{get_effect_variances} (not exported).
 }
 \details{
 Generally, it is not necessary to call this function directly because \code{\link{margins}} provides a simpler interface. To just get marginal effects without building a \dQuote{margins} object, call \code{\link{marginal_effects}} instead, which handles the effect estimation of a model object without building a \dQuote{margins} object.

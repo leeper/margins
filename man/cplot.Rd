@@ -127,18 +127,22 @@ m <- lm(Sepal.Length ~ Sepal.Width, data = iris)
 cplot(m)
 
 # more complex model
-m <- lm(Sepal.Length ~ Sepal.Width * Petal.Width * I(Petal.Width ^ 2), data = head(iris, 50))
+m <- lm(Sepal.Length ~ Sepal.Width * Petal.Width * I(Petal.Width ^ 2), 
+        data = head(iris, 50))
 ## marginal effect of 'Petal.Width' across 'Petal.Width'
 cplot(m, x = "Petal.Width", what = "effect", n = 10)
 
 # marginal effect of 'Petal.Width' across 'Sepal.Width'
 ## without drawing the plot
 ## this might be useful for using, e.g., ggplot2 for plotting
-tmp <- cplot(m, x = "Sepal.Width", dx = "Petal.Width", what = "effect", n = 10, draw = FALSE)
+tmp <- cplot(m, x = "Sepal.Width", dx = "Petal.Width", 
+             what = "effect", n = 10, draw = FALSE)
 if (require("ggplot2")) {
-    # use ggplot2 instead of base graphics
-    ggplot(tmp, aes(x = Petal.Width, y = "effect")) + geom_line(lwd = 2) + 
-      geom_line(aes(y = effect + 1.96*se.effect)) + geom_line(aes(y = effect - 1.96*se.effect))
+  # use ggplot2 instead of base graphics
+  ggplot(tmp, aes(x = Petal.Width, y = "effect")) + 
+         geom_line(lwd = 2) + 
+         geom_line(aes(y = effect + 1.96*se.effect)) + 
+         geom_line(aes(y = effect - 1.96*se.effect))
 }
 # a non-linear model
 m <- glm(am ~ wt*drat, data = mtcars, family = binomial)
