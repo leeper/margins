@@ -12,6 +12,10 @@ prediction.default <- function(model, data, type = "response", ...) {
     
     type <- match.arg(type)
     
+    # reduce memory profile
+    model[["model"]] <- NULL
+    attr(model[["terms"]], ".Environment") <- NULL
+    
     # extract predicted value at input value (value can only be 1 number)
     pred <- predict(model, newdata = data, type = type, se.fit = TRUE, ...)
     class(pred[["fit"]]) <- c("fit", "numeric")
@@ -43,6 +47,10 @@ prediction.glm <- function(model, data, type = c("response", "link"), ...) {
     
     type <- match.arg(type)
     
+    # reduce memory profile
+    model[["model"]] <- NULL
+    attr(model[["terms"]], ".Environment") <- NULL
+    
     # extract predicted value at input value (value can only be 1 number)
     pred <- predict(model, newdata = data, type = type, se.fit = TRUE, ...)
     class(pred[["fit"]]) <- c("fit", "numeric")
@@ -71,6 +79,10 @@ prediction.loess <- function(model, data, type = "response", ...) {
     
     type <- match.arg(type)
     
+    # reduce memory profile
+    model[["model"]] <- NULL
+    attr(model[["terms"]], ".Environment") <- NULL
+    
     # extract predicted value at input value (value can only be 1 number)
     pred <- predict(model, newdata = data, type = type, se = TRUE, ...)
     class(pred[["fit"]]) <- c("fit", "numeric")
@@ -96,6 +108,10 @@ prediction.ivreg <- function(model, data, ...) {
             data <- get_all_vars(model[["terms"]], data = model[["model"]])
         }
     }
+    
+    # reduce memory profile
+    model[["model"]] <- NULL
+    attr(model[["terms"]], ".Environment") <- NULL
     
     # extract predicted value at input values
     pred <- data.frame(fit = predict(model, newdata = data, ...))
@@ -123,6 +139,10 @@ prediction.nls <- function(model, data, ...) {
             data <- get_all_vars(model[["terms"]], data = model[["model"]])
         }
     }
+    
+    # reduce memory profile
+    model[["model"]] <- NULL
+    attr(model[["terms"]], ".Environment") <- NULL
     
     # extract predicted value at input values
     pred <- data.frame(fit = predict(model, newdata = data, ...))
@@ -153,6 +173,10 @@ prediction.survreg <- function(model, data, type = c("response", "lp", "quantile
     
     type <- match.arg(type)
     
+    # reduce memory profile
+    model[["model"]] <- NULL
+    attr(model[["terms"]], ".Environment") <- NULL
+    
     # extract predicted value at input value (value can only be 1 number)
     pred <- predict(model, newdata = data, type = type, se.fit = TRUE, ...)
     class(pred[["fit"]]) <- c("fit", "numeric")
@@ -181,6 +205,10 @@ prediction.coxph <- function(model, data, type = c("risk", "expected", "lp"), ..
     
     type <- match.arg(type)
     
+    # reduce memory profile
+    model[["model"]] <- NULL
+    attr(model[["terms"]], ".Environment") <- NULL
+    
     # extract predicted value at input value (value can only be 1 number)
     pred <- predict(model, newdata = data, type = type, se.fit = TRUE, ...)
     class(pred[["fit"]]) <- c("fit", "numeric")
@@ -205,6 +233,10 @@ prediction.gls <- function(model, data, ...) {
     class(pred[["fit"]]) <- c("fit", class(pred[["fit"]]))
     class(pred[["se.fit"]]) <- c("se.fit", "numeric")
     
+    # reduce memory profile
+    model[["model"]] <- NULL
+    attr(model[["terms"]], ".Environment") <- NULL
+    
     # obs-x-2 data.frame of predictions
     structure(list(fitted = pred[["fit"]], 
                    se.fitted = pred[["se.fit"]]),
@@ -225,6 +257,10 @@ prediction.polr <- function(model, data, ...) {
             data <- get_all_vars(model[["terms"]], data = model[["model"]])
         }
     }
+    
+    # reduce memory profile
+    model[["model"]] <- NULL
+    attr(model[["terms"]], ".Environment") <- NULL
     
     # extract predicted value at input value (value can only be 1 number)
     pred <- data.frame(fit = predict(model, newdata = data, type = "class", ...))
