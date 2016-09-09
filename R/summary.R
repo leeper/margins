@@ -12,7 +12,7 @@ function(object, digits = 4, level = 0.95, ...) {
     }
     fmt <- paste0("%0.", ifelse(digits > 7, 7, digits), "f")
     mes <- extract_marginal_effects(object)
-    variances <- attributes(mes)[["Variances"]]
+    variances <- attributes(mes)[["variances"]]
     tab <- structure(list(Factor = names(mes), 
                           "dy/dx" = colMeans(mes, na.rm = TRUE),
                           "Std.Err." = if (is.null(variances)) rep(NA_real_, ncol(mes)) else sqrt(variances)

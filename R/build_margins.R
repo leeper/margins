@@ -1,5 +1,5 @@
 #' @title \dQuote{margins} Object Builder
-#' @description This is the low-level marginal effects calculator called by \code{\link{margins}} that assembles a \dQuote{margins} object.
+#' @description This is the lower-level function called by \code{\link{margins}} that assembles a \dQuote{margins} object from calls to \code{\link{prediction}}, \code{\link{marginal_effects}}, and \code{\link{get_effect_variances}}.
 #' @param model A model object.
 #' @param data A data.frame over which to calculate marginal effects.
 #' @param type A character string indicating the type of marginal effects to estimate. Mostly relevant for non-linear models, where the reasonable options are \dQuote{response} (the default) or \dQuote{link} (i.e., on the scale of the linear predictor in a GLM).
@@ -73,7 +73,7 @@ function(model,
                   cbind(data, pred, mes)
               }, 
               class = c("margins", "data.frame"), 
-              Variances = if (is.null(variances)) variances else setNames(variances, names(mes)),
+              variances = if (is.null(variances)) variances else setNames(variances, names(mes)),
               type = type,
               call = model[["call"]],
               df.residual = model[["df.residual"]],
