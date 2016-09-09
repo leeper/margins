@@ -97,7 +97,7 @@ cplot(lm(Sepal.Length ~ Species, data = iris))
 and a graph of the effect of `drat` across levels of `wt`:
 
 ```{r cplot3}
-cplot(m, x = "wt", dx = "drat", what = "effect", type = "response")
+cplot(m, x = "wt", dx = "drat", what = "effect", se.type = "shade")
 ```
 
 Second, the package implements methods for "lm" and "glm" class objects for the `persp()` generic plotting function. This enables three-dimensional representations of predicted outcomes:
@@ -110,6 +110,12 @@ and marginal effects:
 
 ```{r persp2}
 persp(x, xvar = "cyl", yvar = "hp", what = "effect", nx = 10)
+```
+
+And if three-dimensional plots aren't your thing, there are also analogous methods for the `image()` generic, to produce heatmap-style representations:
+
+```{r image11, fig.width=5, fig.height=5}
+image(x, xvar = "cyl", yvar = "hp", main = "Predicted Fuel Efficiency,\nby Cylinders and Horsepower")
 ```
 
 

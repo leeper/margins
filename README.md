@@ -76,7 +76,9 @@ With the exception of differences in rounding, the above results match identical
 plot(m[[1]])
 ```
 
-![plot of chunk marginsplot](http://i.imgur.com/MElh69l.png)
+```
+## Error in sqrt(variances): non-numeric argument to mathematical function
+```
 
 If you are only interested in obtaining the marginal effects (without corresponding variances or the overhead of creating a "margins" object), you can call `marginal_effects(x)` directly. Furthermore, the `mfx()` function enables the calculation of the marginal effect of a single named variable:
 
@@ -145,7 +147,7 @@ m <- glm(am ~ wt*drat, data = mtcars, family = binomial)
 cplot(m, x = "wt", se.type = "shade")
 ```
 
-![plot of chunk cplot1](http://i.imgur.com/z8ILE3c.png)
+![plot of chunk cplot1](http://i.imgur.com/MTQxT3b.png)
 
 And fitted values with a factor independent variable:
 
@@ -154,16 +156,16 @@ And fitted values with a factor independent variable:
 cplot(lm(Sepal.Length ~ Species, data = iris))
 ```
 
-![plot of chunk cplot2](http://i.imgur.com/bVLpLhg.png)
+![plot of chunk cplot2](http://i.imgur.com/RMy79An.png)
 
 and a graph of the effect of `drat` across levels of `wt`:
 
 
 ```r
-cplot(m, x = "wt", dx = "drat", what = "effect", type = "response")
+cplot(m, x = "wt", dx = "drat", what = "effect", se.type = "shade")
 ```
 
-![plot of chunk cplot3](http://i.imgur.com/KTvvusv.png)
+![plot of chunk cplot3](http://i.imgur.com/PKgItN5.png)
 
 Second, the package implements methods for "lm" and "glm" class objects for the `persp()` generic plotting function. This enables three-dimensional representations of predicted outcomes:
 
@@ -172,7 +174,7 @@ Second, the package implements methods for "lm" and "glm" class objects for the 
 persp(x, xvar = "cyl", yvar = "hp")
 ```
 
-![plot of chunk persp1](http://i.imgur.com/I9BU3Kq.png)
+![plot of chunk persp1](http://i.imgur.com/pL8iP7e.png)
 
 and marginal effects:
 
@@ -181,7 +183,16 @@ and marginal effects:
 persp(x, xvar = "cyl", yvar = "hp", what = "effect", nx = 10)
 ```
 
-![plot of chunk persp2](http://i.imgur.com/G9XOzXp.png)
+![plot of chunk persp2](http://i.imgur.com/Jg3ojfa.png)
+
+And if three-dimensional plots aren't your thing, there are also analogous methods for the `image()` generic, to produce heatmap-style representations:
+
+
+```r
+image(x, xvar = "cyl", yvar = "hp", main = "Predicted Fuel Efficiency,\nby Cylinders and Horsepower")
+```
+
+![plot of chunk image11](http://i.imgur.com/0oIPewz.png)
 
 
 The numerous package vignettes and help files contain extensive documentation and examples of all package functionality.
