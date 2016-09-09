@@ -2,8 +2,10 @@
 
 ## margins 0.2.16
 
+* Switched to using a more reliable "central difference" numerical differentiation and updated the calculation of the step size to follow `marfx` (#31, h/t Jeffrey Arnold)
 * Added some functionality `prediction()` methods to, hopefully, reduce memory footprint of model objects. (#26)
 * Changed the capitalization of the `variances` field in "margins" objects (to lower case), for consistency.
+* Fixed some small errors in documentation and improved width of examples.
 
 ## margins 0.2.15
 

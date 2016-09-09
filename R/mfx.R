@@ -13,7 +13,8 @@
 #' 
 #' \code{mfx} is an S3 generic with classes implemented for specific variable types. S3 method dispatch, somewhat atypically, is based upon the class of \code{data[[variable]]}.
 #' 
-#' For numeric variables, the method uses one-sided numerical differentiation (\deqn{h = \max(|x|, 1) \sqrt{\epsilon}}{h = max(|x|, 1)sqrt(epsilon)}, where \eqn{\epsilon}{epsilon} is given by \code{eps}) to extract the marginal effect, or instantaneous change (numerical derivative) in \eqn{\hat{y}}. It currently only uses a \dQuote{simple}, one-sided derivative method (in the language of the numDeriv package) . This might change in the future.
+#' For numeric (and integer) variables, the method uses a simple \dQuote{central difference} numerical differentiation:
+#' \deqn{\frac{f(x + \frac{1}{2}h) - f(x - \frac{1}{2}h}){dh}}{(f(x + 0.5h) - f(x - 0.5h))/(2h)}, where (\eqn{h = \max(|x|, 1) \sqrt{\epsilon}}{h = max(|x|, 1)sqrt(epsilon)} and the value of \eqn{\epsilon}{epsilon} is given by argument \code{eps}. This procedure is subject to change in the future.
 #' 
 #' For factor variables (or character variables, which are implicitly coerced to factors by modelling functions), discrete differences in predicted outcomes are reported instead (i.e., change in predicted outcome when factor is set to a given level minus the predicted outcome when the factor is set to its baseline level). If you want to use numerical differentiation for factor variables (which you probably do not want to do), enter them into the original modelling function as numeric values rather than factors.
 #' 
@@ -22,8 +23,12 @@
 #' For logical variables, the same approach as factors is used, but always moving from \code{FALSE} to \code{TRUE}.
 #' 
 #' @return A data.frame, typically with one column unless the variable is a factor with more than two levels.
-#' @seealso \code{\link{marginal_effects}}, \code{\link{margins}}
+#' @examples
+#' require("datasets")
+#' x <- lm(mpg ~ cyl * hp + wt, data = head(mtcars))
+#' mfx(head(mtcars), x, "hp")
 #' 
+#' @seealso \code{\link{marginal_effects}}, \code{\link{margins}}
 #' @export
 mfx <- function(data, model, variable, ...) {
     UseMethod("mfx", data[[variable]])
@@ -31,22 +36,33 @@ mfx <- function(data, model, variable, ...) {
 
 #' @rdname mfx
 #' @export
-mfx.numeric <- function(data, model, variable, type = c("response", "link"), eps = 1e-4, ...) {
+mfx.default <- function(data, model, variable, type = c("response", "link"), eps = 1e-7, ...) {
+    
     type <- match.arg(type)
     
-    # calculate numerical derivative
-    d <- data
-    P0 <- prediction(model = model, data = d, type = type)[["fitted"]]
-    if (is.numeric(d[[variable]])) {
-        d[[variable]] <- d[[variable]] + eps
-    } else {
+    if (!is.numeric(data[[variable]])) {
+        # return empty for unidentified variable class
         warning(paste0("Class of variable, ", variable, ", is unrecognized. Returning NA."))
         return(rep(NA, nrow(data)))
     }
-    P1 <- prediction(model = model, data = d, type = type)[["fitted"]]
+    
+    d0 <- d1 <- data
+    
+    # set value of `h` based on `eps` to deal with machine precision
+    setstep <- function(x) {
+        x + (max(abs(x), 1, na.rm = TRUE) * sqrt(eps)) - x
+    }
+    
+    # calculate numerical derivative
+    d0[[variable]] <- d0[[variable]] - setstep(d0[[variable]])
+    P0 <- prediction(model = model, data = d0, type = type)[["fitted"]]
+    
+    d1[[variable]] <- d1[[variable]] + setstep(d1[[variable]])
+    P1 <- prediction(model = model, data = d1, type = type)[["fitted"]]
+    
+    out <- ( P1 - P0) / (d1[[variable]] - d0[[variable]])
     
     # return data.frame with column of derivatives
-    out <- ( P1 - P0) / eps
     class(out) <- c("marginaleffect", "numeric")
     return(structure(setNames(list(out), variable), 
                      class = c("data.frame"), 
