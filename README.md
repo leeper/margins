@@ -55,18 +55,28 @@ x <- lm(mpg ~ cyl * hp + wt, data = mtcars)
 ##  0.03814 -0.04632 -3.11981
 ```
 
+```
+## 
+```
+
 ```r
 summary(m)
 ```
 
 ```
 ## Average Marginal Effects
-## lm(formula = mpg ~ cyl * hp + wt, data = mtcars) 
-## 
-##  Factor   dy/dx Std.Err. z value Pr(>|z|)   2.50%  97.50%
-##     cyl  0.0381   0.5999  0.0636   0.9493 -1.1376  1.2139
-##      hp -0.0463   0.0145 -3.1909   0.0014 -0.0748 -0.0179
-##      wt -3.1198   0.6613 -4.7175   0.0000 -4.4160 -1.8236
+```
+
+```
+## lm(formula = mpg ~ cyl * hp + wt, data = mtcars)
+```
+
+```
+## [[1]]
+##     Factor   dy/dx Std.Err. z value Pr(>|z|)   2.50%  97.50%
+## cyl    cyl  0.0381   0.5999  0.0636   0.9493 -1.1376  1.2139
+## hp      hp -0.0463   0.0145 -3.1909   0.0014 -0.0748 -0.0179
+## wt      wt -3.1198   0.6613 -4.7176   0.0000 -4.4160 -1.8236
 ```
 
 With the exception of differences in rounding, the above results match identically what Stata's `margins` command produces. Using the `plot()` method also yields an aesthetically similar result to Stata's `marginsplot`:
@@ -76,9 +86,7 @@ With the exception of differences in rounding, the above results match identical
 plot(m[[1]])
 ```
 
-```
-## Error in sqrt(variances): non-numeric argument to mathematical function
-```
+![plot of chunk marginsplot](http://i.imgur.com/redJXzG.png)
 
 If you are only interested in obtaining the marginal effects (without corresponding variances or the overhead of creating a "margins" object), you can call `marginal_effects(x)` directly. Furthermore, the `mfx()` function enables the calculation of the marginal effect of a single named variable:
 
@@ -147,7 +155,7 @@ m <- glm(am ~ wt*drat, data = mtcars, family = binomial)
 cplot(m, x = "wt", se.type = "shade")
 ```
 
-![plot of chunk cplot1](http://i.imgur.com/MTQxT3b.png)
+![plot of chunk cplot1](http://i.imgur.com/TgSzeLT.png)
 
 And fitted values with a factor independent variable:
 
