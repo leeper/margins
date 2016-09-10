@@ -4,8 +4,8 @@ travis-tool.sh
 README.Rmd
 README.html
 /inst/standarderrors.pdf
-/figure
-/cache
+/figure/*
+/cache/*
 /inst/doc/*.log
 /inst/doc/*.Rmd
 /vignettes/mtcars.csv
