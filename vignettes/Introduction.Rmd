@@ -1,9 +1,21 @@
-<!--
-%\VignetteEngine{knitr}
-%\VignetteIndexEntry{Introduction to 'margins'}
--->
+---
+title: "An Introduction to 'margins'"
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    fig_caption: false
+    toc: true
+    toc_float:
+      collapsed: false
+      smooth_scroll: false
+    toc_depth: 3
+vignette: >
+  %\VignetteIndexEntry{Introduction to 'margins'}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
 
-# 'margins'
+# An Introduction to 'margins'
 
 **margins** is an effort to port Stata's (closed source) [`margins`](http://www.stata.com/help.cgi?margins) command to R as an S3 generic method for calculating the marginal effects (or "partial effects") of covariates included in model objects (like those of classes "lm" and "glm"). A plot method for the new "margins" class additionally ports the `marginsplot` command.
 
@@ -41,59 +53,22 @@ With the exception of differences in rounding, the above results match identical
 plot(m[[1]])
 ```
 
-
-## Marginal Effects Plots
-
-Using `margins` to calculate marginal effects enables several kinds of plotting. The built-in `plot` method for objects of class `margins` creates simple diagnostic plots for examining the output of `margins` in visual rather than tabular format. It is also possible to use the output of `margins` to produce more typical marginal effects plots that show the marginal effect of one variable across levels of another variable. This vignette walks through the `plot` method and then shows how to produce marginal effects plots using base graphics.
-
-### The `plot()` method for "margins" objects
-
-The **margins** package implements a `plot()` method for objects of class "margins" (seen above). This produces a plot similar (in spirit) to the output of Stata's `marginsplot`. It is highly customizable, but is meant primarily as a diagnostic tool to examine the results of `margins`. It simply produces, by default, a plot of marginal effects along with 95% confidence intervals for those effects. The confidence level can be modified using the `levels` argument, which is vectorized to allow multiple levels to be specified simultaneously.
-
-### More advanced plotting
-
-There are two common ways of visually representing the substantive results of a regression model: (1) fitted values plots, which display the fitted conditional mean outcome across levels of a covariate, and (2) marginal effects plots, which display the estimated marginal effect of a variable across levels of a covariate. This section discusses both approaches. Fitted value plots can be created using R's `predict()` function or the wrapper to it provided by `margins::prediction()`, and both types of plots can be implemented using new functions `cplot()` (to provide condition predicted value or effect plots) and a `persp()` method for "lm" objects to display the same type of relationships in three-dimensions (i.e., across two conditioning covariates).
-
-For example, we can use `cplot()` to quickly display the predicted fuel economy of a vehicle from a model:
-
-
-```{r, results = "hold"}
-x <- lm(mpg ~ cyl + wt * am, data = mtcars)
-cplot(x, "cyl")
-cplot(x, "wt")
-```
-
-The slopes of the predicted value lines are the marginal effect of `wt` when `am == 0` and `am == 1`. We can obtain these slopes using `margins` and specifying the `at` argument:
-
-```{r}
-margins(x, at = list(am = 0:1))
-```
-
-A final plotting function - the `persp()` method for "lm" objects implemented by **margins** - gives even more functionality:
-
-```{r}
-persp(x, "cyl", "wt")
-```
-
-Richer examples of this are included in [the "Interpreting Interactions" vignette](Interactions.html).
-
 ## Using Optional Arguments in `margins`
 
 **margins** is intended as a port of (some of) the features of Stata's `margins` command, which includes numerous options for calculating marginal effects at the mean values of a dataset (i.e., the marginal effects at the mean), an average of the marginal effects at each value of a dataset (i.e., the average marginal effect), marginal effects at representative values, and any of those operations on various subsets of a dataset. In particular, Stata provides the following options:
 
- - `atmeans`: calculate marginal effects at the mean (MEMs) of a dataset rather than the default behavior of calculating average marginal effects (AMEs)
  - `at`: calculate marginal effects at (potentially representative) specified values (i.e., replacing observed values with specified replacement values before calculating marginal effects)
+ - `atmeans`: calculate marginal effects at the mean (MEMs) of a dataset rather than the default behavior of calculating average marginal effects (AMEs)
  - `over`: calculate marginal effects (including MEMs and/or AMEs at observed or specified values) on subsets of the original data (e.g., the marginal effect of a treatment separately for men and women)
  
-Stata's `atmeans` argument is translated into `margins` as a simple logical argument. The default (`atmeans = FALSE`) produces AMEs; `atmeans = TRUE` produces MEMs.
+The `at` argument has also been translated into `margins()`. It can be used by specifying a list of variable names and specified values for those variables at which to calculate marginal effects. When using `at`, `margins()` constructs modified datasets - using `build_datalist()` - containing the specified values and calculates marginal effects on each modified dataset.
 
-The `at` argument has also been translated into `margins`. It can be used by specifying a list of variable names and specified values for those variables at which to calculate marginal effects. When using `at`, `margins` constructs modified datasets containing the specified values and calculates marginal effects on each modified dataset.
+Stata's `atmeans` argument is not implemented in `margins()` for various reasons, including because it is possible to achieve the effect manually through an operation like `data$var <- mean(data$var, na.rm = TRUE)` and passing the modified data frame to `margins()`. 
 
-At present, `margins` does not implement the `over` option. The reason for this is simple: R already makes data subsetting operations quite simple using simple `[` extraction. If, for example, one wanted to calculate marginal effects on subsets of a data.frame, those subsets can be passed directly to `margins` via the `newdata` argument (as in a call to `predict` from the **stats** package).
+At present, `margins()` does not implement the `over` option. The reason for this is simple: R already makes data subsetting operations quite simple using simple `[` extraction. If, for example, one wanted to calculate marginal effects on subsets of a data.frame, those subsets can be passed directly to `margins()` via the `newdata` argument (as in a call to `prediction()`).
 
-The rest of this vignette shows how to use `at`, `atmeans`, and `newdata` to obtain various kinds of marginal effects.
+The rest of this vignette shows how to use `at` and `data` to obtain various kinds of marginal effects.
 
----
 
 ### AMEs versus MEMs
 
@@ -119,23 +94,15 @@ To obtain average marginal effects (AMEs), we simply call `margins` on the model
 margins(x)
 ```
 
-The result is a list containing a single object of class `"margins"`. `"margins"` objects are printed in a tidy summary format, by default, as you can see above. To instead obtain marginal effects at the means (MEMs), we simply add `atmeans = TRUE` to the function call:
+The result is a list containing a single object of class `"margins"`. `"margins"` objects are printed in a tidy summary format, by default, as you can see above. 
 
-```{r}
-margins(x, atmeans = TRUE)
-```
-
-Of course in an ordinary least squares regression, this option makes no difference for the resulting marginal effects because the regression coefficients are marginal effects. In a generalized linear model (e.g., logit), however, this difference would be consequential as can be seen in the trivial example below. Note that if marginal effects were calculated on the log-odds or latent scale (using option `type = "link"`), the `atmeans` option would also be inconsequential. But, examing marginal effects on the probability scale (using option `type = "response"`), there is a difference in the apparent marginal effects of the terms included in the explicit interaction: `hp` and `wt`. In a large sample, the difference between AMEs and MEMs would likely disappear.
+In an ordinary least squares regression, there is really only one way of examining marginal effects (that is, on the scale of the outcome variable). In a generalized linear model (e.g., logit), however, it is possible to examine true "marginal effects" (i.e., the marginal contribution of each variable on the scale of the linear predictor) or "partial effects" (i.e., the contribution of each variable on the outcome scale, conditional on the other variables involved in the link function transformation of the linear predictor). The latter are the default in `margins()`, which implicitly sets the argument `type = "response"` in `prediction()` methods. To obtain the former, simply set `type = "link"`. There's some debate about which of these is preferred and even what to call the two different quantities of interest. Regardless of all of that, here's how you obtain either:
 
 ```{r}
 x <- glm(am ~ cyl + hp * wt, data = mtcars, family = binomial)
-# AMEs
 margins(x, type = "response")
-# MEMs
-margins(x, atmeans = TRUE, type = "response")
+margins(x, type = "link") # the default
 ```
-
----
 
 ### Using the `at` Argument
 
@@ -186,3 +153,243 @@ margins(x)
 
 `margins` recognizes the factor and displays the marginal effect for each level of the factor separately. This may not work with `at` specifications (yet).
 
+
+---
+
+## Marginal Effects Plots
+
+Using `margins()` to calculate marginal effects enables several kinds of plotting. The built-in `plot()` method for objects of class `margins` creates simple diagnostic plots for examining the output of `margins` in visual rather than tabular format. It is also possible to use the output of `margins` to produce more typical marginal effects plots that show the marginal effect of one variable across levels of another variable. This vignette walks through the `plot` method and then shows how to produce marginal effects plots using base graphics.
+
+### The `plot()` method for "margins" objects
+
+The **margins** package implements a `plot()` method for objects of class "margins" (seen above). This produces a plot similar (in spirit) to the output of Stata's `marginsplot`. It is highly customizable, but is meant primarily as a diagnostic tool to examine the results of `margins`. It simply produces, by default, a plot of marginal effects along with 95% confidence intervals for those effects. The confidence level can be modified using the `levels` argument, which is vectorized to allow multiple levels to be specified simultaneously.
+
+### More advanced plotting
+
+There are two common ways of visually representing the substantive results of a regression model: (1) fitted values plots, which display the fitted conditional mean outcome across levels of a covariate, and (2) marginal effects plots, which display the estimated marginal effect of a variable across levels of a covariate. This section discusses both approaches. Fitted value plots can be created using R's `predict()` function or the wrapper to it provided by `margins::prediction()`, and both types of plots can be implemented using new functions `cplot()` (to provide condition predicted value or effect plots) and a `persp()` method for "lm" objects to display the same type of relationships in three-dimensions (i.e., across two conditioning covariates).
+
+For example, we can use `cplot()` to quickly display the predicted fuel economy of a vehicle from a model:
+
+
+```{r, results = "hold"}
+x <- lm(mpg ~ cyl + wt * am, data = mtcars)
+cplot(x, "cyl")
+cplot(x, "wt")
+```
+
+The slopes of the predicted value lines are the marginal effect of `wt` when `am == 0` and `am == 1`. We can obtain these slopes using `margins` and specifying the `at` argument:
+
+```{r}
+margins(x, at = list(am = 0:1))
+```
+
+A final plotting function - the `persp()` method for "lm" objects implemented by **margins** - gives even more functionality:
+
+```{r}
+persp(x, "cyl", "wt")
+```
+
+Richer examples of this are included in [the "Interpreting Interactions" vignette](Interactions.html).
+
+
+---
+
+## Interpreting Interactions with Marginal Effects
+
+One of principal motives for developing **margins** is to facilitate the substantive interpretation of interaction terms in regression models. A large literature now describes the difficulties of such interpretations in both linear and non-linear regression models. This vignette walks through some of that interpretation.
+
+### Interactions in OLS
+
+If we begin with a simple example of a regression model with an interaction term, the difficulties of interpretation become almost immediately clear. In this first model, we'll use the `mtcars` dataset to understand vehicle fuel economy as a function of `am` (transmission type), `wt` (weight), and their interaction. As Brambor et al. (2006) make clear, the most common mistake in such models is estimating the model without the constituent variables. We can see why this is a problem by estimating the model with and without the constituent terms:
+
+```{r}
+library("margins")
+summary(lm(mpg ~ am:wt, data = mtcars))
+summary(lm(mpg ~ am * wt, data = mtcars))
+```
+
+Clearly the models produce radically different estimates and goodness-of-fit to the original data. As a result, it's important to use all constituent terms in the model even if they are thought *a priori* to have coefficients of zero. Now let's see how we can use `margins` to interpret this simple indicator-by-continuous interaction:
+
+```{r}
+x1 <- lm(mpg ~ am * wt, data = mtcars)
+margins(x1)
+```
+
+By default, `margins` will supply the average marginal effects of the constituent variables in the model. Note how the `am:wt` term is not expressed in the margins results. This is because the contribution of the `am:wt` term is incorporated into the marginal effects for the constituent variables. Because there is a significant interaction, we can see this by examining margins at different levels of the constituent variables. The `am` variable is an indicator that takes on values of 0 and 1:
+
+```{r}
+margins(x1, at = list(am = 0:1))
+```
+
+Now `margins` returns two `margins` objects, one for each combination of values specified in `at`. We can see in the above that automatic cars (`am == 0`), the marginal effect of a 1000 pound increase in vehicle weight is a reduction in fuel economy of 3.79 miles per gallon. For manual transmission cars (`am == 1`), this reduction in fuel economy is larger at 9.08 miles per gallon.
+
+The `at` argument also accepts multiple named combinations of variables, so we can specify particular values of both `am` and `wt` for which we would like to understand the marginal effect of each variable. For example, we might want to look at the effects of each variable for manual and automatic vehicles but also across some representative values of the `wt` distribution. Note that the order of values in the `at` object does matter:
+
+```{r}
+wts <- seq(range(mtcars$wt)[1], range(mtcars$wt)[2], length.out = 10)
+m1 <- margins(x1, at = list(wt = wts, am = 0:1))
+length(m1)
+```
+
+As you can see above, the result is a a relatively long list of `margins` objects. Looking at them directly might be difficult. But, we can plot them to try to better understand what is going on. Because `am` is an indicator and `wt` is continuous, the easiest way to do this is probably to plot the marginal effect of each variable across the range of `wt`, separately for automatica and manual cars.
+
+```{r, fig.height=4, fig.width=8}
+layout(matrix(1:2, nrow = 1))
+me_am0 <- sapply(m1[1:10], function(x) {as.numeric(c(summary(x)[,"dy/dx"], summary(x)[,"Std.Err."]))})
+me_am1 <- sapply(m1[11:20], function(x) {as.numeric(c(summary(x)[,"dy/dx"], summary(x)[,"Std.Err."]))})
+
+plot(NA, xlim = range(mtcars$wt), ylim = c(-15,5), main = "Automatic Transmission Cars",
+     xlab = "Weight (1000 lbs)", ylab = "Marginal Effect on Fuel Economy")
+lines(wts, me_am0[1,], col = "black")
+lines(wts, me_am0[1,] - me_am0[3,], col = "black", lty = 2) # SE
+lines(wts, me_am0[1,] + me_am0[3,], col = "black", lty = 2) # SE
+lines(wts, me_am0[2,], col = "gray")
+lines(wts, me_am0[2,] - me_am0[4,], col = "gray", lty = 2) # SE
+lines(wts, me_am0[2,] + me_am0[4,], col = "gray", lty = 2) # SE
+
+plot(NA, xlim = range(mtcars$wt), ylim = c(-15,5), main = "Manual Transmission Cars",
+     xlab = "Weight (1000 lbs)", ylab = "Marginal Effect of Transmission")
+lines(wts, me_am1[1,], col = "black")
+lines(wts, me_am1[1,] - me_am1[3,], col = "black", lty = 2) # SE
+lines(wts, me_am1[1,] + me_am1[3,], col = "black", lty = 2) # SE
+lines(wts, me_am1[2,], col = "gray")
+lines(wts, me_am1[2,] - me_am1[4,], col = "gray", lty = 2) # SE
+lines(wts, me_am1[2,] + me_am1[4,], col = "gray", lty = 2) # SE
+```
+
+These graphs make clear that the marginal effect of `wt` across levels of `wt` is constant because it is included only as a linear term (without, for example, power terms like `wt^2`). Under those conditions (where `am` was interacted with `wt` and `wt^2`), the graph would look quite different:
+
+```{r, echo=FALSE, fig.height=4, fig.width=8}
+x1tmp <- lm(mpg ~ am * wt + am * I(wt^2), data = mtcars)
+m1tmp <- margins(x1tmp, at = list(wt = wts, am = 0:1))
+me_am0 <- sapply(m1tmp[1:10], function(x) {as.numeric(c(summary(x)[,"dy/dx"], summary(x)[,"Std.Err."]))})
+me_am1 <- sapply(m1tmp[11:20], function(x) {as.numeric(c(summary(x)[,"dy/dx"], summary(x)[,"Std.Err."]))})
+
+layout(matrix(1:2, nrow = 1))
+plot(NA, xlim = range(mtcars$wt), ylim = c(-15,5), main = "Automatic Transmission Cars",
+     xlab = "Weight (1000 lbs)", ylab = "Marginal Effect on Fuel Economy")
+lines(wts, me_am0[1,], col = "black")
+lines(wts, me_am0[1,] - me_am0[3,], col = "black", lty = 2) # SE
+lines(wts, me_am0[1,] + me_am0[3,], col = "black", lty = 2) # SE
+lines(wts, me_am0[2,], col = "gray")
+lines(wts, me_am0[2,] - me_am0[4,], col = "gray", lty = 2) # SE
+lines(wts, me_am0[2,] + me_am0[4,], col = "gray", lty = 2) # SE
+
+plot(NA, xlim = range(mtcars$wt), ylim = c(-15,5), main = "Manual Transmission Cars",
+     xlab = "Weight (1000 lbs)", ylab = "Marginal Effect of Transmission")
+lines(wts, me_am1[1,], col = "black")
+lines(wts, me_am1[1,] - me_am1[3,], col = "black", lty = 2) # SE
+lines(wts, me_am1[1,] + me_am1[3,], col = "black", lty = 2) # SE
+lines(wts, me_am1[2,], col = "gray")
+lines(wts, me_am1[2,] - me_am1[4,], col = "gray", lty = 2) # SE
+lines(wts, me_am1[2,] + me_am1[4,], col = "gray", lty = 2) # SE
+```
+
+Thus, interpreting indicator-by-continuous interaction terms is relatively easy just by looking at the `margins` output because the effect of the continuous term is constant each level of the indicator and the *slope* of the marginal effect for the indicator term is constant across levels of the continuous term.
+
+Interpreting continuous-by-continuous interaction terms is slightly more complex because the marginal effect of both constituent variables always depends on the level of the other variable. We'll use the horsepower (`hp`) variable from `mtcars` to understand this type of interaction. We can start by looking at the AMEs:
+
+```{r}
+x2 <- lm(mpg ~ hp * wt, data = mtcars)
+margins(x2)
+```
+
+On average across the cases in the dataset, the effect of horsepower is slightly negative. On average, the effect of weight is also negative. Both decrease fuel economy. But what is the marginal effect of each variable across the range of values we actually observe in the data. To get a handle on this, we can use the `persp()` method provided by margins.
+
+```{r}
+persp(x2, "wt", "hp", theta = c(45, 135, 225, 315), what = "effect")
+```
+
+To make sense of this set of plots (actually, the same plot seen from four different angles), it will also be helpful to have the original regression results close at-hand:
+
+```{r}
+summary(x2)
+```
+
+If we express the regression results as an equation: `mpg = 49.81 + (-0.12 * hp) + (-8.22 * wt) + (0.03 * hp*wt)`, it will be easy to see how the three-dimensional surface above reflects various partial derivatives of the regression equation.
+
+For example, if we take the partial derivative of the regression equation with respect to `wt` (i.e., the marginal effect of weight), the equation is: `d_mpg/d_wt = (-8.22) + (0.03 * hp)`. This means that the marginal effect of weight is large and negative when horsepower is zero (which never occurs in the `mtcars` dataset) and decreases in magnitude and becoming more positive as horsepower increases. We can see this in the above graph that the marginal effect of weight is constant across levels of `weight` because `wt` does not enter into the partial derivative. Across levels, of horsepower, however, the marginal effect becomes more positive. This is clear looking at the "front" or "back" edges of the surface, which are straight-linear increases. The slope of those edges is 0.03 (the coefficient on the interaction term).
+
+If we then take the partial derivative with respect to `hp` (to obtain the marginal effect of horsepower), the equation is: `d_mpg/d_hp = (-0.12) + (0.03 * wt)`. When `wt` is zero, this partial derivative (or marginal effect) is -0.12 miles/gallon. The observed range of `wt`, however, is only: `r range(mtcars$wt)`. We can see these results in the analogous graph of the marginal effects of horsepower (below). The "front" and "back" edges of the graph are now flat (reflecting how the marginal effect of horsepower is constant across levels of horsepower), while the "front-left" and "right-back" edges of the surface are lines with slope 0.03, reflecting the coefficient on the interaction term.
+
+```{r}
+persp(x2, "hp", "wt", theta = c(45, 135, 225, 315), what = "effect")
+```
+
+An alternative way of plotting these results is to take "slices" of the three-dimensional surface and present them in a two-dimensional graph, similar to what we did above with the indicator-by-continuous approach. That strategy would be especially appropriate for a categorical-by-continuous interaction where the categories of the first variable did not necessarily have a logical ordering sufficient to draw a three-dimensional surface.
+
+### Interactions in Logit
+
+Interaction terms in generalized linear models have been even more controversial than interaction terms in linear regression (Norton et al. 2004). The result is a realization over the past decade that almost all extant interpretations of GLMs with interaction terms (or hypothesizing moderating effects) have been misinterpreted. Stata's `margins` command and the debate that preceded it have led to a substantial change in analytic practices.
+
+For this, we'll use the `Pima.te` dataset from **MASS**, which should be preinstalled in R, but we'll manually load it just in case:
+
+```{r}
+utils::data(Pima.te, package = "MASS")
+head(Pima.te)
+```
+
+This dataset contains data on 332 women, including whether or not they are diabetic (`type`). We'll examine a simple model with an interaction term between age and a skin thickness measure to explain diabetes status in these women:
+
+```{r}
+summary(g1 <- glm(type ~ age * skin, data = Pima.te, family = binomial))
+```
+
+Logit models (like all GLMs) present the dual challenges of having coefficients that are directly uninterpretable and marginal effects that depend on the values of the data. As a result, we can see coefficients and statistical significance tests above but it's hard to make sense of those results without converting them into a more intuitive quantity, such as the predicted probability of having diabetes. We can see that increasing age and increasing skin thickness are associated with higher rates of diabetes, but the negative coefficient on the interaction term makes it hard to express the substantive size of these relationships. We can use `margins` to achieve this. By default, however, `margins()` reports results on the response scale (thus differing from the default behavior of `stats::predict()`):
+
+```{r}
+margins(g1)
+```
+
+These marginal effects reflect, on average across all of the cases in our data, how much more likely a woman is to have diabetes. Because this is an *instantaneous* effect, it can be a little hard to conceptualize. I find it helpful to take a look at a predicted probability plot to understand what is going on. Let's take a look, for example, at the effect of age on the probability of having diabetes:
+
+```{r}
+cplot(g1, "age")
+```
+
+The above graph shows that as age increase, the probability of having diabetes increases. When a woman is 20 years old, the probability is about .20 whereas when a woman is 80, the probability is about 0.80. In essence, the marginal effect of `age` reported above is the slope of this predicted probability plot at the mean age of women in the dataset (which is `r mean(Pima.te$age)`). Clearly, this quantity is useful (it's the impact of age for the average-aged woman) but the logit curve shows that the marginal effect of `age` differs considerably across ages and, as we know from above with linear models, also depends on the other variable in the interaction (skin thickness). To really understand what is going on, we need to graph the data. Let's look at the perspective plot like the one we drew for the OLS model, above:
+
+
+```{r}
+persp(g1, theta = c(45, 135, 225, 315), what = "prediction")
+```
+
+This graph is much more complicated than the analogous graph for an OLS model, this is because of the conversion between the log-odds scale of the linear predictors and the distribution of the data. What we can see is that the average marginal effect of age (across all of the women in our dataset) is highest when a woman is middle age and skin thickness is low. In these conditions, the marginal change in the probability of diabetes is about 3%, but the AME of age is nearly zero at higher and lower ages. Indeed, as skin thickness increases, the marginal effect of age flattens out and actually becomes negative (such that increasing age actually decreases the probability of diabetes for women with thick arms).
+
+Now let's examine the average marginal effects of skin thickness across levels of age and skin thickness:
+
+```{r}
+persp(g1, theta = c(45, 135, 225, 315), what = "effect")
+```
+
+This graphs is somewhat flatter, indicating that the average marginal effects of skin thickness vary less than those for age. Yet, the AME of skin thickness is as high as 2% when age is low and skin thickness is high. Interestingly, however, this effect actually becomes negative as age increases. The marginal effect of skin thickness is radically different for young and old women. 
+
+For either of these cases, it would also be appropriate to draw two-dimensional plots of "slides" of these surfaces and incorporate measures of uncertainty. It is extremely difficult to convey standard errors or confidence intervals in a three-dimensional plot, so those could be quite valuable.
+
+
+It is also worth comparing the above graphs to those that would result from a model without the interaction term between `age` and `skin`. It looks quite different (note, however, that it is also drawn from a higher perspective to better see the shape of the surface):
+
+```{r, echo = FALSE, fig.width=8, fig.height=4}
+g2 <- glm(type ~ age + skin, data = Pima.te, family = binomial)
+persp(g2, theta = c(45, 135, 225, 315), what = "prediction")
+persp(g2, theta = c(45, 135, 225, 315), what = "effect")
+```
+
+Our inferences about the impact of a variable on the outcome in a GLM therefore depend quite heavily on how the interaction is modelled. It also worth pointing out that the surface of the AMEs on the log-odds (linear) scale are actually flat (as in an OLS model), so the the curved shape of the plot immediately above reflects only the conversion of the effects from the linear scale to the probability scale (and the distributions of the covariates), whereas the much more unusual surface from earlier reflects that conversion and the interaction between the two variables (and the distributions thereof). If we were to plot the interaction model on the scale of the log-odds, it would look much more like the plot from the OLS models (this is left as an exercise to the reader).
+
+
+## References
+
+Bartus, Tamas. 2005. "Estimation of marginal effects using margeff." *Stata Journal* 5: 309-329.
+
+Brambor, Thomas, William Clark & Matt Golder. 2006. "Understanding Interaction Models: Improving Empirical Analyses." *Political Analysis* 14: 63-82.
+
+Greene, William H. 2012. *Econometric Analysis.* 7th ed. Upper Saddle River, NJ: Prentice Hall.
+
+Long, J. Scott. 1997. *Regression Models for Categorical and Limited Dependent Variables.* Sage Publications: Thousand Oaks, CA. 
+
+Norton, Edward C., Hua Wang, and Chunrong Ai. 2004. "Computing interaction effects and standard errors in logit and probit models." *The Stata Journal* 4(2): 154-167.
+
+Stata Corporation. "margins". Software Documentation. Available from: http://www.stata.com/manuals13/rmargins.pdf.
+
+Williams, Richard. 2012. "Using the margins command to estimate and interpret adjusted predictions and marginal effects." *Stata Journal* 12: 308-331.
