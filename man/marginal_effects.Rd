@@ -49,9 +49,6 @@ Methods are currently implemented for the following object classes:
   \item \dQuote{loess}, see \code{\link[stats]{loess}}
 }
 }
-\note{
-Variable class coercion (other than \code{factor(x)}) inside a formula passed to, for example, \code{\link[stats]{lm}} may cause weird behavior, or errors.
-}
 \examples{
 require("datasets")
 x <- lm(mpg ~ cyl * hp + wt, data = mtcars)

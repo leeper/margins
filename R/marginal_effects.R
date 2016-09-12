@@ -15,8 +15,6 @@
 #'   \item \dQuote{loess}, see \code{\link[stats]{loess}}
 #' }
 #'
-#' @note Variable class coercion (other than \code{factor(x)}) inside a formula passed to, for example, \code{\link[stats]{lm}} may cause weird behavior, or errors.
-#'
 #' @return An data.frame with dimensions equal to \code{data}, where each row is an observation and each column is the marginal effect of that variable for the data values provided by \code{data}.
 #' @examples
 #' require("datasets")

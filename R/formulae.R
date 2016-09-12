@@ -30,6 +30,7 @@ drop_operators <- function(a, dropdigits = TRUE) {
 # call sub_bracket on all common formula operations
 clean_terms <- function(terms) {
     v <- gsub_bracket(terms, "factor")
+    v <- gsub_bracket(v, "ordered")
     v <- gsub_bracket(v, "I")
     v <- gsub_bracket(v, "poly")
     v <- drop_operators(v)

@@ -2,6 +2,7 @@
 
 ## margins 0.2.17
 
+* Fixes to handling of factors and ordered variables converted within formulae. (#38)
 * Reconfigured the `data` argument in `margins()` and `prediction()` to be clearer about what is happening when it is set to missing.
 
 ## margins 0.2.16

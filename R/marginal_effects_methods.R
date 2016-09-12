@@ -20,10 +20,10 @@ function(model,
     names(classes)[names(classes) %in% names(terms2)] <- terms2[names(classes) %in% names(terms2)]
     
     # identify factors versus numeric terms in `model`
-    nnames <- clean_terms(names(classes)[!classes %in% c("factor", "logical")])
+    nnames <- clean_terms(names(classes)[!classes %in% c("factor", "ordered", "logical")])
     lnames <- clean_terms(names(classes)[classes == "logical"])
-    fnames <- clean_terms(names(classes)[classes == "factor"])
-    fnames2 <- names(classes)[classes == "factor"] # for checking stupid variable naming behavior by R
+    fnames <- clean_terms(names(classes)[classes %in% c("factor", "ordered")])
+    fnames2 <- names(classes)[classes %in% c("factor", "ordered")] # for checking stupid variable naming behavior by R
     
     # estimate numerical derivatives with respect to each variable (for numeric terms in the model)
     # add discrete differences for logical terms
