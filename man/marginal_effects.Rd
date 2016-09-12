@@ -6,7 +6,7 @@
 \alias{marginal_effects.glm}
 \alias{marginal_effects.lm}
 \alias{marginal_effects.loess}
-\title{Differentiate a Model Object}
+\title{Differentiate a Model Object with Respect to All Variables}
 \usage{
 marginal_effects(model, data, ...)
 
@@ -37,10 +37,10 @@ marginal_effects(model, data, ...)
 An data.frame with dimensions equal to \code{data}, where each row is an observation and each column is the marginal effect of that variable for the data values provided by \code{data}.
 }
 \description{
-Extract marginal effects (via numerical differentiation) and predicted differences in factor changes from a model object, conditional on data
+Extract marginal effects from a model object, conditional on data, using \code{\link{dydx}}.
 }
 \details{
-This function extracts unit-specific marginal effects from an estimated model with respect to \emph{all} variables specified in \code{data} and returns a data.frame. (Note that this is not each \emph{coefficient}.) See \code{\link{mfx}} for computational details, or to extract the marginal effect for only one variable. Note that for factor and logical class variables, discrete changes in the outcome are reported rather than instantaneous marginal effects.
+This function extracts unit-specific marginal effects from an estimated model with respect to \emph{all} variables specified in \code{data} and returns a data.frame. (Note that this is not each \emph{coefficient}.) See \code{\link{dydx}} for computational details, or to extract the marginal effect for only one variable. Note that for factor and logical class variables, discrete changes in the outcome are reported rather than instantaneous marginal effects.
 
 Methods are currently implemented for the following object classes:
 \itemize{
@@ -62,11 +62,8 @@ x <- lm(mpg ~ factor(cyl) * factor(am), data = mtcars)
 marginal_effects(x)
 
 }
-\references{
-Miranda, Mario J. and Paul L. Fackler. 2002. Applied Computational Economics and Finance. p. 103.
-}
 \seealso{
-\code{\link{mfx}}, \code{\link{margins}}, \code{\link{build_margins}}, \code{\link{extract_marginal_effects}}
+\code{\link{dydx}}, \code{\link{margins}}, \code{\link{build_margins}}, \code{\link{extract_marginal_effects}}
 }
 \keyword{models}
 

@@ -38,7 +38,7 @@ Methods for this generic return a \dQuote{marginslist} list of one or more \dQuo
 
 Some modelling functions set \code{model = FALSE} by default. For \code{margins} to work best, this should be set to \code{TRUE}. Otherwise the \code{data} argument to \code{margins} is probably required.
 
-See \code{\link{mfx}} for details on estimation of marginal effects.
+See \code{\link{dydx}} for details on estimation of marginal effects.
 
 Methods are currently implemented for the following object classes:
 \itemize{

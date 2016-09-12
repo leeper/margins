@@ -35,14 +35,14 @@ test_that("factor variables work", {
     expect_true(inherits(marginal_effects(x2), "data.frame"), label = "natural factors work")
 })
 
-test_that("mfx() works", {
+test_that("dydx() works", {
     mtcars$am <- as.logical(mtcars$am)
     mtcars$cyl <- factor(mtcars$cyl)
     x <- lm(mpg ~ wt + am + cyl, data = head(mtcars))
-    expect_true(inherits(mfx(head(mtcars), x, "wt"), "data.frame"), label = "mfx dispatch works for numeric")
-    expect_true(inherits(mfx(head(mtcars), x, "cyl"), "data.frame"), label = "mfx dispatch works for factor")
-    expect_true(inherits(mfx(head(mtcars), x, "am"), "data.frame"), label = "mfx dispatch works for logical")
-    expect_true(inherits(marginal_effects(x), "data.frame"), label = "mfx dispatch works via marginal_effects()")
+    expect_true(inherits(dydx(head(mtcars), x, "wt"), "data.frame"), label = "dydx dispatch works for numeric")
+    expect_true(inherits(dydx(head(mtcars), x, "cyl"), "data.frame"), label = "dydx dispatch works for factor")
+    expect_true(inherits(dydx(head(mtcars), x, "am"), "data.frame"), label = "dydx dispatch works for logical")
+    expect_true(inherits(marginal_effects(x), "data.frame"), label = "dydx dispatch works via marginal_effects()")
     rm(mtcars)
 })
 

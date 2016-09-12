@@ -88,7 +88,7 @@ plot(m[[1]])
 
 ![plot of chunk marginsplot](http://i.imgur.com/redJXzG.png)
 
-If you are only interested in obtaining the marginal effects (without corresponding variances or the overhead of creating a "margins" object), you can call `marginal_effects(x)` directly. Furthermore, the `mfx()` function enables the calculation of the marginal effect of a single named variable:
+If you are only interested in obtaining the marginal effects (without corresponding variances or the overhead of creating a "margins" object), you can call `marginal_effects(x)` directly. Furthermore, the `dydx()` function enables the calculation of the marginal effect of a single named variable:
 
 
 ```r
@@ -108,7 +108,7 @@ head(marginal_effects(x))
 
 ```r
 # marginal effect of one variable
-head(mfx(mtcars, x, "hp"))
+head(dydx(mtcars, x, "hp"))
 ```
 
 ```

@@ -1,4 +1,4 @@
-#' @rdname mfx
+#' @rdname dydx
 #' @title Marginal Effect of a Given Variable
 #' @description Differentiate an Estimated Model with Respect to One Variable
 #' @param data The dataset on which to to calculate \eqn{\hat{y}}.
@@ -11,32 +11,39 @@
 #' @details
 #' These functions provide a simple interface to the calculation of marginal effects for specific variables used in a model, and are the workhorse functions called internally by \code{\link{marginal_effects}}.
 #' 
-#' \code{mfx} is an S3 generic with classes implemented for specific variable types. S3 method dispatch, somewhat atypically, is based upon the class of \code{data[[variable]]}.
+#' \code{dydx} is an S3 generic with classes implemented for specific variable types. S3 method dispatch, somewhat atypically, is based upon the class of \code{data[[variable]]}.
 #' 
-#' For numeric (and integer) variables, the method uses a simple \dQuote{central difference} numerical differentiation:
+#' For numeric (and integer) variables, the method calculates an instantaneous marginal effect using a simple \dQuote{central difference} numerical differentiation:
 #' \deqn{\frac{f(x + \frac{1}{2}h) - f(x - \frac{1}{2}h}){dh}}{(f(x + 0.5h) - f(x - 0.5h))/(2h)}, where (\eqn{h = \max(|x|, 1) \sqrt{\epsilon}}{h = max(|x|, 1)sqrt(epsilon)} and the value of \eqn{\epsilon}{epsilon} is given by argument \code{eps}. This procedure is subject to change in the future.
 #' 
-#' For factor variables (or character variables, which are implicitly coerced to factors by modelling functions), discrete differences in predicted outcomes are reported instead (i.e., change in predicted outcome when factor is set to a given level minus the predicted outcome when the factor is set to its baseline level). If you want to use numerical differentiation for factor variables (which you probably do not want to do), enter them into the original modelling function as numeric values rather than factors.
+#' For factor variables (or character variables, which are implicitly coerced to factors by modelling functions), discrete first-differences in predicted outcomes are reported instead (i.e., change in predicted outcome when factor is set to a given level minus the predicted outcome when the factor is set to its baseline level). These are sometimes called \dQuote{partial effects}. If you want to use numerical differentiation for factor variables (which you probably do not want to do), enter them into the original modelling function as numeric values rather than factors.
 #' 
 #' For ordered factor variables, the same approach as factors is used. This may contradict the output of modelling function summaries, which rely on \code{options("contrasts")} to determine the contrasts to use (the default being \code{\link[stats]{contr.poly}} rather than \code{\link[stats]{contr.treatment}}, the latter being used normally for unordered factors).
 #' 
 #' For logical variables, the same approach as factors is used, but always moving from \code{FALSE} to \code{TRUE}.
 #' 
 #' @return A data.frame, typically with one column unless the variable is a factor with more than two levels.
+#' @references
+#'   Miranda, Mario J. and Paul L. Fackler. 2002. \emph{Applied Computational Economics and Finance}. p. 103.
+#' 
+#'   Greene, William H. 2012. \emph{Econometric Analysis}. 7th edition. pp. 733--741.
+#' 
+#'   Cameron, A. Colin and Pravin K. Trivedi. 2010. \emph{Microeconometric Using Stata}. Revised edition. pp. 106--108, 343--356, 476--478.
+#' 
 #' @examples
 #' require("datasets")
 #' x <- lm(mpg ~ cyl * hp + wt, data = head(mtcars))
-#' mfx(head(mtcars), x, "hp")
+#' dydx(head(mtcars), x, "hp")
 #' 
 #' @seealso \code{\link{marginal_effects}}, \code{\link{margins}}
 #' @export
-mfx <- function(data, model, variable, ...) {
-    UseMethod("mfx", data[[variable]])
+dydx <- function(data, model, variable, ...) {
+    UseMethod("dydx", data[[variable]])
 }
 
-#' @rdname mfx
+#' @rdname dydx
 #' @export
-mfx.default <- function(data, model, variable, type = c("response", "link"), eps = 1e-7, ...) {
+dydx.default <- function(data, model, variable, type = c("response", "link"), eps = 1e-7, ...) {
     
     type <- match.arg(type)
     
@@ -69,9 +76,9 @@ mfx.default <- function(data, model, variable, type = c("response", "link"), eps
                      row.names = seq_len(nrow(data))))
 }
 
-#' @rdname mfx
+#' @rdname dydx
 #' @export
-mfx.factor <- function(data, model, variable, type = c("response", "link"), fwrap = FALSE, ...) {
+dydx.factor <- function(data, model, variable, type = c("response", "link"), fwrap = FALSE, ...) {
     
     type <- match.arg(type)
     
@@ -106,13 +113,13 @@ mfx.factor <- function(data, model, variable, type = c("response", "link"), fwra
     return(out)
 }
 
-#' @rdname mfx
+#' @rdname dydx
 #' @export
-mfx.ordered <- mfx.factor
+dydx.ordered <- dydx.factor
 
-#' @rdname mfx
+#' @rdname dydx
 #' @export
-mfx.logical <- function(data, model, variable, type = c("response", "link"), ...) {
+dydx.logical <- function(data, model, variable, type = c("response", "link"), ...) {
     
     type <- match.arg(type)
     

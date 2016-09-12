@@ -9,7 +9,7 @@
 
 ## margins 0.2.15
 
-* Expose previously internal `mfx()` generic and methods to provide variable-specific marginal effects calculations. (#31)
+* Expose previously internal `dydx()` generic and methods to provide variable-specific marginal effects calculations. (#31)
 * Added example dataset from **marfx** package. (#31)
 
 ## margins 0.2.13

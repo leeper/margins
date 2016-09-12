@@ -61,14 +61,14 @@ With the exception of differences in rounding, the above results match identical
 plot(m[[1]])
 ```
 
-If you are only interested in obtaining the marginal effects (without corresponding variances or the overhead of creating a "margins" object), you can call `marginal_effects(x)` directly. Furthermore, the `mfx()` function enables the calculation of the marginal effect of a single named variable:
+If you are only interested in obtaining the marginal effects (without corresponding variances or the overhead of creating a "margins" object), you can call `marginal_effects(x)` directly. Furthermore, the `dydx()` function enables the calculation of the marginal effect of a single named variable:
 
-```{r mfx}
+```{r dydx}
 # all marginal effects, as a data.frame
 head(marginal_effects(x))
 
 # marginal effect of one variable
-head(mfx(mtcars, x, "hp"))
+head(dydx(mtcars, x, "hp"))
 ```
 
 These functions may be useful, for example, for plotting, or getting a quick impression of the results.
