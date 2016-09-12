@@ -2,18 +2,11 @@
 #' @export
 margins.default <- 
 function(model, 
-         data, 
+         data = find_data(model, parent.frame()), 
          at = NULL, 
          ...){
     
     # setup data
-    if (missing(data)) {
-        if (!is.null(model[["call"]][["data"]])) {
-            data <- eval(model[["call"]][["data"]], parent.frame()) 
-        } else { 
-            data <- get_all_vars(model[["terms"]], data = model[["model"]])
-        }
-    }
     data_list <- build_datalist(data, at = at)
     
     # reduce memory profile

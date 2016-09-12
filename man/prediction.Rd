@@ -16,27 +16,32 @@
 \usage{
 prediction(model, data, ...)
 
-\method{prediction}{default}(model, data, type = "response", ...)
+\method{prediction}{default}(model, data = find_data(model, parent.frame()),
+  type = "response", ...)
 
-\method{prediction}{lm}(model, data, type = "response", ...)
+\method{prediction}{lm}(model, data = find_data(model, parent.frame()),
+  type = "response", ...)
 
-\method{prediction}{glm}(model, data, type = c("response", "link"), ...)
+\method{prediction}{glm}(model, data = find_data(model, parent.frame()),
+  type = c("response", "link"), ...)
 
-\method{prediction}{loess}(model, data, type = "response", ...)
+\method{prediction}{loess}(model, data = find_data(model, parent.frame()),
+  type = "response", ...)
 
-\method{prediction}{ivreg}(model, data, ...)
-
-\method{prediction}{nls}(model, data, ...)
-
-\method{prediction}{survreg}(model, data, type = c("response", "lp",
-  "quantile", "uquantile"), ...)
-
-\method{prediction}{coxph}(model, data, type = c("risk", "expected", "lp"),
+\method{prediction}{ivreg}(model, data = find_data(model, parent.frame()),
   ...)
+
+\method{prediction}{nls}(model, data = find_data(model, parent.frame()), ...)
+
+\method{prediction}{survreg}(model, data = find_data(model, parent.frame()),
+  type = c("response", "lp", "quantile", "uquantile"), ...)
+
+\method{prediction}{coxph}(model, data = find_data(model, parent.frame()),
+  type = c("risk", "expected", "lp"), ...)
 
 \method{prediction}{gls}(model, data, ...)
 
-\method{prediction}{polr}(model, data, ...)
+\method{prediction}{polr}(model, data = find_data(model, parent.frame()), ...)
 }
 \arguments{
 \item{model}{A model object, perhaps returned by \code{\link[stats]{lm}} or \code{\link[stats]{glm}}.}

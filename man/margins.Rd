@@ -10,11 +10,14 @@
 \usage{
 margins(model, ...)
 
-\method{margins}{default}(model, data, at = NULL, ...)
+\method{margins}{default}(model, data = find_data(model, parent.frame()),
+  at = NULL, ...)
 
-\method{margins}{lm}(model, data, at = NULL, ...)
+\method{margins}{lm}(model, data = find_data(model, parent.frame()),
+  at = NULL, ...)
 
-\method{margins}{glm}(model, data, at = NULL, ...)
+\method{margins}{glm}(model, data = find_data(model, parent.frame()),
+  at = NULL, ...)
 
 \method{margins}{loess}(model, data, at = NULL, ...)
 }

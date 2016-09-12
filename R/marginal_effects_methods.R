@@ -1,15 +1,11 @@
 #' @rdname marginal_effects
 #' @export
-marginal_effects.default <- function(model, data, type = c("response", "link"), eps = 1e-7, ...) {
-    
-    # setup data, if missing
-    if (missing(data)) {
-        if (!is.null(model[["call"]][["data"]])) {
-            data <- eval(model[["call"]][["data"]], parent.frame()) 
-        } else { 
-            data <- get_all_vars(model[["terms"]], data = model[["model"]])
-        }
-    }
+marginal_effects.default <- 
+function(model, 
+         data = find_data(model, parent.frame()), 
+         type = c("response", "link"), 
+         eps = 1e-7, 
+         ...) {
     
     type <- match.arg(type)
     

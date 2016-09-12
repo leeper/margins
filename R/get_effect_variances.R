@@ -1,5 +1,5 @@
 get_effect_variances <- 
-function(data = data, 
+function(data, 
          model = model, 
          which = all.vars(model[["terms"]])[-1], # which mes do we need variances of
          type = c("response", "link", "terms"),

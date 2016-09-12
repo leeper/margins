@@ -10,17 +10,17 @@
 \usage{
 marginal_effects(model, data, ...)
 
-\method{marginal_effects}{default}(model, data, type = c("response", "link"),
-  eps = 1e-07, ...)
+\method{marginal_effects}{default}(model, data = find_data(model,
+  parent.frame()), type = c("response", "link"), eps = 1e-07, ...)
 
-\method{marginal_effects}{lm}(model, data, type = c("response", "link"),
-  eps = 1e-07, ...)
+\method{marginal_effects}{lm}(model, data = find_data(model, parent.frame()),
+  type = c("response", "link"), eps = 1e-07, ...)
 
-\method{marginal_effects}{glm}(model, data, type = c("response", "link"),
-  eps = 1e-07, ...)
+\method{marginal_effects}{glm}(model, data = find_data(model, parent.frame()),
+  type = c("response", "link"), eps = 1e-07, ...)
 
-\method{marginal_effects}{loess}(model, data, type = c("response", "link"),
-  eps = 1e-07, ...)
+\method{marginal_effects}{loess}(model, data = find_data(model,
+  parent.frame()), type = c("response", "link"), eps = 1e-07, ...)
 }
 \arguments{
 \item{model}{A model object, perhaps returned by \code{\link[stats]{lm}} or \code{\link[stats]{glm}}}

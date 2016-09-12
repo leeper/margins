@@ -1,5 +1,9 @@
 # CHANGES TO margins 0.3.0 #
 
+## margins 0.2.17
+
+* Reconfigured the `data` argument in `margins()` and `prediction()` to be clearer about what is happening when it is set to missing.
+
 ## margins 0.2.16
 
 * Switched to using a more reliable "central difference" numerical differentiation and updated the calculation of the step size to follow `marfx` (#31, h/t Jeffrey Arnold)

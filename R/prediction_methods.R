@@ -1,14 +1,8 @@
 #' @rdname prediction
 #' @export
-prediction.default <- function(model, data, type = "response", ...) {
+prediction.default <- function(model, data = find_data(model, parent.frame()), type = "response", ...) {
     # setup data
-    if (missing(data)) {
-        if (!is.null(model[["call"]][["data"]])) {
-            data <- eval(model[["call"]][["data"]], parent.frame()) 
-        } else { 
-            data <- get_all_vars(model[["terms"]], data = model[["model"]])
-        }
-    }
+    data <- data
     
     type <- match.arg(type)
     
@@ -35,15 +29,9 @@ prediction.lm <- prediction.default
 
 #' @rdname prediction
 #' @export
-prediction.glm <- function(model, data, type = c("response", "link"), ...) {
+prediction.glm <- function(model, data = find_data(model, parent.frame()), type = c("response", "link"), ...) {
     # setup data
-    if (missing(data)) {
-        if (!is.null(model[["call"]][["data"]])) {
-            data <- eval(model[["call"]][["data"]], parent.frame()) 
-        } else { 
-            data <- get_all_vars(model[["terms"]], data = model[["model"]])
-        }
-    }
+    data <- data
     
     type <- match.arg(type)
     
@@ -67,15 +55,9 @@ prediction.glm <- function(model, data, type = c("response", "link"), ...) {
 
 #' @rdname prediction
 #' @export
-prediction.loess <- function(model, data, type = "response", ...) {
+prediction.loess <- function(model, data = find_data(model, parent.frame()), type = "response", ...) {
     # setup data
-    if (missing(data)) {
-        if (!is.null(model[["call"]][["data"]])) {
-            data <- eval(model[["call"]][["data"]], parent.frame()) 
-        } else { 
-            data <- get_all_vars(model[["terms"]], data = model[["model"]])
-        }
-    }
+    data <- data
     
     type <- match.arg(type)
     
@@ -99,15 +81,9 @@ prediction.loess <- function(model, data, type = "response", ...) {
 
 #' @rdname prediction
 #' @export
-prediction.ivreg <- function(model, data, ...) {
+prediction.ivreg <- function(model, data = find_data(model, parent.frame()), ...) {
     # setup data
-    if (missing(data)) {
-        if (!is.null(model[["call"]][["data"]])) {
-            data <- eval(model[["call"]][["data"]], parent.frame()) 
-        } else { 
-            data <- get_all_vars(model[["terms"]], data = model[["model"]])
-        }
-    }
+    data <- data
     
     # reduce memory profile
     model[["model"]] <- NULL
@@ -130,15 +106,9 @@ prediction.ivreg <- function(model, data, ...) {
 
 #' @rdname prediction
 #' @export
-prediction.nls <- function(model, data, ...) {
+prediction.nls <- function(model, data = find_data(model, parent.frame()), ...) {
     # setup data
-    if (missing(data)) {
-        if (!is.null(model[["call"]][["data"]])) {
-            data <- eval(model[["call"]][["data"]], parent.frame()) 
-        } else { 
-            data <- get_all_vars(model[["terms"]], data = model[["model"]])
-        }
-    }
+    data <- data
     
     # reduce memory profile
     model[["model"]] <- NULL
@@ -161,15 +131,13 @@ prediction.nls <- function(model, data, ...) {
 
 #' @rdname prediction
 #' @export
-prediction.survreg <- function(model, data, type = c("response", "lp", "quantile", "uquantile"), ...) {
+prediction.survreg <- 
+function(model, 
+         data = find_data(model, parent.frame()), 
+         type = c("response", "lp", "quantile", "uquantile"), 
+         ...) {
     # setup data
-    if (missing(data)) {
-        if (!is.null(model[["call"]][["data"]])) {
-            data <- eval(model[["call"]][["data"]], parent.frame()) 
-        } else { 
-            data <- get_all_vars(model[["terms"]], data = model[["model"]])
-        }
-    }
+    data <- data
     
     type <- match.arg(type)
     
@@ -193,15 +161,9 @@ prediction.survreg <- function(model, data, type = c("response", "lp", "quantile
 
 #' @rdname prediction
 #' @export
-prediction.coxph <- function(model, data, type = c("risk", "expected", "lp"), ...) {
+prediction.coxph <- function(model, data = find_data(model, parent.frame()), type = c("risk", "expected", "lp"), ...) {
     # setup data
-    if (missing(data)) {
-        if (!is.null(model[["call"]][["data"]])) {
-            data <- eval(model[["call"]][["data"]], parent.frame()) 
-        } else { 
-            data <- get_all_vars(model[["terms"]], data = model[["model"]])
-        }
-    }
+    data <- data
     
     type <- match.arg(type)
     
@@ -226,6 +188,8 @@ prediction.coxph <- function(model, data, type = c("risk", "expected", "lp"), ..
 #' @rdname prediction
 #' @export
 prediction.gls <- function(model, data, ...) {
+    # setup data
+    data <- data
     
     # extract predicted value at input value (value can only be 1 number)
     pred <- data.frame(fit = predict(model, newdata = data, type = "class", ...))
@@ -248,15 +212,9 @@ prediction.gls <- function(model, data, ...) {
 
 #' @rdname prediction
 #' @export
-prediction.polr <- function(model, data, ...) {
+prediction.polr <- function(model, data = find_data(model, parent.frame()), ...) {
     # setup data
-    if (missing(data)) {
-        if (!is.null(model[["call"]][["data"]])) {
-            data <- eval(model[["call"]][["data"]], parent.frame()) 
-        } else { 
-            data <- get_all_vars(model[["terms"]], data = model[["model"]])
-        }
-    }
+    data <- data
     
     # reduce memory profile
     model[["model"]] <- NULL
