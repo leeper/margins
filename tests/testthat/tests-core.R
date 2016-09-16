@@ -3,20 +3,43 @@ tol <- 0.0001
 
 library("datasets")
 
+context("Basic accuracy tests")
+test_that("Test accuracy for lm()", {
+    x <- lm(mpg ~ wt, data = mtcars)
+    m <- marginal_effects(x)
+    expect_equal(coef(x)[["wt"]], mean(m[["wt"]]), tolerance = tol, label = "marginal effect is coefficient in lm()")
+})
+test_that("Test accuracy for glm()", {
+    x <- glm(am ~ wt, data = mtcars, family = binomial)
+    m1 <- marginal_effects(x)
+    expect_true(coef(x)[["wt"]] != mean(m1[["wt"]]), label = "marginal effect (type = 'response') is not coefficient in glm()")
+    m1b <- marginal_effects(x, type = "link")
+    expect_equal(coef(x)[["wt"]], mean(m1b[["wt"]]), tolerance = tol, label = "marginal effect (type = 'link') is coefficient in glm()")
+    m2 <- marginal_effects(x, type = "link")
+    expect_equal(coef(x)[["wt"]], mean(m2[["wt"]]), tolerance = tol, label = "marginal effect is not coefficient in glm()")
+    p <- predict(x, type = "response")
+    manual <- coef(x)[["wt"]] * p * (1-p)
+    expect_equal(as.numeric(manual), as.numeric(m1[["wt"]]), tolerance = tol, label = "marginal effect is correct for logit glm()")
+})
+
+
 context("Test `prediction()` behavior")
 test_that("Test build_datalist()", {
     expect_true(inherits(prediction(lm(mpg ~ cyl, data = mtcars), data = mtcars), "data.frame"), label = "prediction() works w data arg (LM)")
-    expect_true(inherits(prediction(lm(mpg ~ cyl, data = mtcars), data = mtcars), "data.frame"), label = "prediction() works w data arg (GLM)")
+    expect_true(inherits(prediction(glm(mpg ~ cyl, data = mtcars), data = mtcars), "data.frame"), label = "prediction() works w data arg (GLM)")
     expect_true(inherits(prediction(lm(mpg ~ cyl, data = mtcars)), "data.frame"), label = "prediction() works w/o data arg (LM)")
-    expect_true(inherits(prediction(lm(mpg ~ cyl, data = mtcars)), "data.frame"), label = "prediction() works w/o data arg (GLM)")
+    expect_true(inherits(prediction(glm(mpg ~ cyl, data = mtcars)), "data.frame"), label = "prediction() works w/o data arg (GLM)")
 })
 
 context("Test `build_datalist()` behavior")
 test_that("Test build_datalist()", {
     expect_true(length(build_datalist(mtcars, at = list(cyl = c(4,6)))) == 2)
     expect_true(length(build_datalist(mtcars, at = list(cyl = c(4,6), wt = c(1,1.5)))) == 4)
-    #expect_error(build_datalist(mtcars, at = list(cyl = 8)), label = "factor error in build_datalist()")
+    m <- mtcars
+    m[["cyl"]] <- factor(m[["cyl"]])
+    expect_error(build_datalist(m, at = list(cyl = 10)), label = "factor error in build_datalist()")
     expect_warning(build_datalist(mtcars, at = list(wt = 100)), label = "extrapolation warning in build_datalist()")
+    rm(m)
 })
 
 
