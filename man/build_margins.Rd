@@ -25,7 +25,7 @@ build_margins(model, data, type = c("response", "link", "terms"),
 
 \item{eps}{A numeric value specifying the \dQuote{step} to use when calculating numerical derivatives.}
 
-\item{\dots}{Ignored.}
+\item{\dots}{Arguments passed through various internal functions to \code{\link{dydx}} methods.}
 }
 \value{
 A data.frame of class \dQuote{margins} containing the contents of \code{data}, fitted values for \code{model}, the standard errors of the fitted values, and any estimated marginal effects. This data.frame may have repeated column names (for the original variables and the margginal effects thereof). Marginal effects columns are distinguished by their class (\dQuote{marginaleffect}) and can be extracted using \code{\link{extract_marginal_effects}}. Attributes containing additional information, including the marginal effect variances and additional details.

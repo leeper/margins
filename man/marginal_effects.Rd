@@ -31,7 +31,7 @@ marginal_effects(model, data, ...)
 
 \item{eps}{A numeric value specifying the \dQuote{step} to use when calculating numerical derivatives. By default this is the smallest floating point value that can be represented on the present architecture.}
 
-\item{\dots}{Arguments passed to methods. For methods, currently ignored.}
+\item{\dots}{Arguments passed to methods, and onward to \code{\link{dydx}} methods.}
 }
 \value{
 An data.frame with dimensions equal to \code{data}, where each row is an observation and each column is the marginal effect of that variable for the data values provided by \code{data}.

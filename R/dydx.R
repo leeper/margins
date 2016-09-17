@@ -1,11 +1,12 @@
 #' @rdname dydx
 #' @title Marginal Effect of a Given Variable
-#' @description Differentiate an Estimated Model with Respect to One Variable
+#' @description Differentiate an Estimated Model Function with Respect to One Variable, or calculate a discrete difference (\dQuote{first difference}) as appropriate.
 #' @param data The dataset on which to to calculate \eqn{\hat{y}}.
 #' @param model The model object to pass to \code{\link{prediction}}.
-#' @param variable A character string specifying the variable to calculate the derivative for.
+#' @param variable A character string specifying the variable to calculate the derivative or discrete change for.
 #' @param type The type of prediction. Default is \dQuote{response}.
-#' @param eps The value of the step \eqn{\epsilon} to use in calculation of the numerical derivative.
+#' @param change For numeric variables, a character string specifying the type of change to express. The default is the numerical approximation of the derivative. Alternative values are occasionally desired quantities: \dQuote{minmax} (the discrete change moving from \code{min(x)} to \code{max(x)}), \dQuote{iqr} (the move from the 1st quartile to 3rd quartile of \code{x}), or \dQuote{sd} (the change from \code{mean(x) - sd(x)} to \code{mean(x) + sd(x)}), or a two-element numeric vector expressing values of the variable to calculate the prediction for (and difference the associated predictions).
+#' @param eps If \code{change == "dydx"} (the default), the value of the step \eqn{\epsilon} to use in calculation of the numerical derivative for numeric variables.
 #' @param fwrap A logical specifying how to name factor columns in the response.
 #' @param \dots Ignored.
 #' @details
@@ -33,8 +34,23 @@
 #' @examples
 #' require("datasets")
 #' x <- lm(mpg ~ cyl * hp + wt, data = head(mtcars))
+#' # marginal effect (numerical derivative)
 #' dydx(head(mtcars), x, "hp")
 #' 
+#' # other discrete differences
+#' ## change from min(mtcars$hp) to max(mtcars$hp)
+#' dydx(head(mtcars), x, "hp", change = "minmax")
+#' ## change from 1st quartile to 3rd quartile
+#' dydx(head(mtcars), x, "hp", change = "iqr")
+#' ## change from mean(mtcars$hp) +/- sd(mtcars$hp)
+#' dydx(head(mtcars), x, "hp", change = "sd")
+#' ## change between arbitrary values of mtcars$hp
+#' dydx(head(mtcars), x, "hp", change = c(75,150))
+#' 
+#' # factor variables
+#' mtcars[["cyl"]] <- factor(mtcars$cyl)
+#' x <- lm(mpg ~ cyl, data = head(mtcars))
+#' dydx(head(mtcars), x, "cyl")
 #' @seealso \code{\link{marginal_effects}}, \code{\link{margins}}
 #' @export
 dydx <- function(data, model, variable, ...) {
@@ -43,14 +59,27 @@ dydx <- function(data, model, variable, ...) {
 
 #' @rdname dydx
 #' @export
-dydx.default <- function(data, model, variable, type = c("response", "link"), eps = 1e-7, ...) {
+dydx.default <- 
+function(data, 
+         model, 
+         variable, 
+         type = c("response", "link"), 
+         change = c("dydx", "minmax", "iqr", "sd"),
+         eps = 1e-7, ...) {
     
     type <- match.arg(type)
-    
+    if (is.numeric(change)) {
+        stopifnot(length(change) == 2)
+        lwr <- change[1]
+        upr <- change[2]
+        change <- "numeric"
+    } else {
+        change <- match.arg(change)
+    }
     if (!is.numeric(data[[variable]])) {
         # return empty for unidentified variable class
         warning(paste0("Class of variable, ", variable, ", is unrecognized. Returning NA."))
-        return(rep(NA, nrow(data)))
+        return(rep(NA_real_, nrow(data)))
     }
     
     d0 <- d1 <- data
@@ -60,15 +89,39 @@ dydx.default <- function(data, model, variable, type = c("response", "link"), ep
         x + (max(abs(x), 1, na.rm = TRUE) * sqrt(eps)) - x
     }
     
-    # calculate numerical derivative
-    d0[[variable]] <- d0[[variable]] - setstep(d0[[variable]])
-    P0 <- prediction(model = model, data = d0, type = type)[["fitted"]]
+    if (change == "dydx") {
+        # calculate numerical derivative
+        d0[[variable]] <- d0[[variable]] - setstep(d0[[variable]])
+        d1[[variable]] <- d1[[variable]] + setstep(d1[[variable]])
+    } else if (change == "minmax") {
+        # change from min(x) to max(x)
+        d0[[variable]] <- min(d0[[variable]], na.rm = TRUE)
+        d1[[variable]] <- max(d1[[variable]], na.rm = TRUE)
+    } else if (change == "iqr") {
+        # change from fivenum(x)[2] to fivenum(x)[4]
+        fnum <- fivenum(d0[[variable]], na.rm = TRUE)
+        d0[[variable]] <- fnum[2]
+        d1[[variable]] <- fnum[4]
+    } else if (change == "sd") {
+        # change from mean(x) - sd(x) to mean(x) + sd(x)
+        mn <- mean(d0[[variable]], na.rm = TRUE)
+        sn <- sd(d0[[variable]], na.rm = TRUE)
+        d0[[variable]] <- mn - sn
+        d1[[variable]] <- mn + sn
+    } else if (change == "numeric") {
+        # otherwise `change` was numeric so calculate an arbitrary step
+        d0[[variable]] <- lwr
+        d1[[variable]] <- upr
+    }
     
-    d1[[variable]] <- d1[[variable]] + setstep(d1[[variable]])
+    P0 <- prediction(model = model, data = d0, type = type)[["fitted"]]
     P1 <- prediction(model = model, data = d1, type = type)[["fitted"]]
     
-    out <- ( P1 - P0) / (d1[[variable]] - d0[[variable]])
-    
+    if (change == "dydx") {
+        out <- (P1 - P0) / (d1[[variable]] - d0[[variable]])
+    } else {
+        out <- (P1 - P0)
+    }
     # return data.frame with column of derivatives
     class(out) <- c("marginaleffect", "numeric")
     return(structure(setNames(list(out), variable), 

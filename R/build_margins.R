@@ -8,7 +8,7 @@
 #' @param iterations If \code{vce = "bootstrap"}, the number of bootstrap iterations. If \code{vce = "simulation"}, the number of simulated effects to draw. Ignored otherwise.
 #' @param unit_ses If \code{vce = "delta"}, a logical specifying whether to calculate and return unit-specific marginal effect variances. This calculation is time consuming and the information is often not needed, so this is set to \code{FALSE} by default.
 #' @param eps A numeric value specifying the \dQuote{step} to use when calculating numerical derivatives.
-#' @param \dots Ignored.
+#' @param \dots Arguments passed through various internal functions to \code{\link{dydx}} methods.
 #' @details Generally, it is not necessary to call this function directly because \code{\link{margins}} provides a simpler interface. To just get marginal effects without building a \dQuote{margins} object, call \code{\link{marginal_effects}} instead, which handles the effect estimation of a model object without building a \dQuote{margins} object.
 #' 
 #' This is the package's core function that assembles a \dQuote{margins} object, through sequential calls to \code{\link{prediction}}, \code{\link{marginal_effects}}, and an internal function (\code{get_effect_variances()}) to calculate variances. See documentation pages for those functions for details on implementation and return values.
@@ -44,17 +44,17 @@ function(model,
     }
     
     # obtain gradient with respect to each variable in data
-    mes <- marginal_effects(model = model, data = data, type = type, eps = eps)
+    mes <- marginal_effects(model = model, data = data, type = type, eps = eps, ...)
     
     # variance estimation technique
     variances <- get_effect_variances(data = data, model = model, allvars = names(mes), 
                                       type = type, vcov = vcov, vce = vce, 
-                                      iterations = iterations, eps = eps)
+                                      iterations = iterations, eps = eps, ...)
     
     # get unit-specific effect variances (take derivative of `.build_grad_fun()` for every row separately)
     if ((vce == "delta") && (isTRUE(unit_ses))) {
         vmat <- do.call("rbind", lapply(seq_len(nrow(data)), function(datarow) {
-            delta_once(data = data[datarow,], model = model, type = type, vcov = vcov, eps = eps)
+            delta_once(data = data[datarow,], model = model, type = type, vcov = vcov, eps = eps, ...)
         }))
         colnames(vmat) <- paste0("se.", names(mes))
         vmat <- as.data.frame(vmat)

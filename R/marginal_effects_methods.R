@@ -27,13 +27,13 @@ function(model,
     
     # estimate numerical derivatives with respect to each variable (for numeric terms in the model)
     # add discrete differences for logical terms
-    out1 <- lapply(c(nnames, lnames), dydx, data = data, model = model, type = type, eps = eps)
+    out1 <- lapply(c(nnames, lnames), dydx, data = data, model = model, type = type, eps = eps, ...)
     
     # add discrete differences for factor terms
     ## exact number depends on number of factor levels
     out2 <- list()
     for (i in seq_along(fnames)) {
-        out2[[i]] <- dydx.factor(data = data, model = model, fnames[i], type = type, fwrap = (fnames != fnames2)[i])
+        out2[[i]] <- dydx.factor(data = data, model = model, fnames[i], type = type, fwrap = (fnames != fnames2)[i], ...)
     }
     
     out <- c(out1, out2)

@@ -11,7 +11,7 @@
 dydx(data, model, variable, ...)
 
 \method{dydx}{default}(data, model, variable, type = c("response", "link"),
-  eps = 1e-07, ...)
+  change = c("dydx", "minmax", "iqr", "sd"), eps = 1e-07, ...)
 
 \method{dydx}{factor}(data, model, variable, type = c("response", "link"),
   fwrap = FALSE, ...)
@@ -27,11 +27,13 @@ dydx(data, model, variable, ...)
 
 \item{model}{The model object to pass to \code{\link{prediction}}.}
 
-\item{variable}{A character string specifying the variable to calculate the derivative for.}
+\item{variable}{A character string specifying the variable to calculate the derivative or discrete change for.}
 
 \item{type}{The type of prediction. Default is \dQuote{response}.}
 
-\item{eps}{The value of the step \eqn{\epsilon} to use in calculation of the numerical derivative.}
+\item{change}{For numeric variables, a character string specifying the type of change to express. The default is the numerical approximation of the derivative. Alternative values are occasionally desired quantities: \dQuote{minmax} (the discrete change moving from \code{min(x)} to \code{max(x)}), \dQuote{iqr} (the move from the 1st quartile to 3rd quartile of \code{x}), or \dQuote{sd} (the change from \code{mean(x) - sd(x)} to \code{mean(x) + sd(x)}), or a two-element numeric vector expressing values of the variable to calculate the prediction for (and difference the associated predictions).}
+
+\item{eps}{If \code{change == "dydx"} (the default), the value of the step \eqn{\epsilon} to use in calculation of the numerical derivative for numeric variables.}
 
 \item{fwrap}{A logical specifying how to name factor columns in the response.}
 
@@ -41,7 +43,7 @@ dydx(data, model, variable, ...)
 A data.frame, typically with one column unless the variable is a factor with more than two levels.
 }
 \description{
-Differentiate an Estimated Model with Respect to One Variable
+Differentiate an Estimated Model Function with Respect to One Variable, or calculate a discrete difference (\dQuote{first difference}) as appropriate.
 }
 \details{
 These functions provide a simple interface to the calculation of marginal effects for specific variables used in a model, and are the workhorse functions called internally by \code{\link{marginal_effects}}.
@@ -60,8 +62,23 @@ For logical variables, the same approach as factors is used, but always moving f
 \examples{
 require("datasets")
 x <- lm(mpg ~ cyl * hp + wt, data = head(mtcars))
+# marginal effect (numerical derivative)
 dydx(head(mtcars), x, "hp")
 
+# other discrete differences
+## change from min(mtcars$hp) to max(mtcars$hp)
+dydx(head(mtcars), x, "hp", change = "minmax")
+## change from 1st quartile to 3rd quartile
+dydx(head(mtcars), x, "hp", change = "iqr")
+## change from mean(mtcars$hp) +/- sd(mtcars$hp)
+dydx(head(mtcars), x, "hp", change = "sd")
+## change between arbitrary values of mtcars$hp
+dydx(head(mtcars), x, "hp", change = c(75,150))
+
+# factor variables
+mtcars[["cyl"]] <- factor(mtcars$cyl)
+x <- lm(mpg ~ cyl, data = head(mtcars))
+dydx(head(mtcars), x, "cyl")
 }
 \references{
 Miranda, Mario J. and Paul L. Fackler. 2002. \emph{Applied Computational Economics and Finance}. p. 103.

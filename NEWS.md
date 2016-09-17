@@ -1,5 +1,9 @@
 # CHANGES TO margins 0.3.0 #
 
+## margins 0.2.18
+
+* Added support in `dydx.default()` to allow the calculation of various discrete changes rather than only numerical derivatives.
+
 ## margins 0.2.17
 
 * Fixes to handling of factors and ordered variables converted within formulae. (#38)
