@@ -6,3 +6,4 @@ README.html
 /vignettes/*.pdf
 /vignettes/*.sty
 /vignettes/*.tex
+/vignettes/figure/

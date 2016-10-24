@@ -2,6 +2,11 @@
 %\VignetteIndexEntry{Technical Implementation Details}
 \documentclass{article}
 
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{amsmath}
+\usepackage{verbatim}
+
 \title{Interpreting Regression Results using Marginal Effects with R's \textbf{margins}}
 \author{Thomas J. Leeper}
 
@@ -10,6 +15,12 @@
 \maketitle
 
 {\abstract Applied data analysts regularly need to make use of regression analysis to understand descriptive, predictive, and causal patterns in data. While many applications of ordinary least squares yield estimated regression coefficients that are readily interpretable as the predicted change in $y$ due to a unit change in $x$, models that involve multiplicative interactions or other complex terms are subjective to less clarity of interpretation. Generalized linear models that involve transformations of this linear predictor into binary, ordinal, count or other discrete outcomes lack such ready interpretation. As such, there has been much debate in the literature about how best to interpret these more complex models (e.g., what quantities of interest to extract? what types of graphical presentations to use?). This article proposes that marginal effects, specifically average marginal effects, provide a unified and intuitive way of describing relationships estimated with regression. To begin, I briefly discuss the challenges of interpreting complex models and review existing views on how to interpret such models, before describing average marginal effects and the somewhat challenging computational task of extracting this quantity of interest from regression results. I conclude with implications for statistical practice and for the design of statistical software.}
+
+<<opts, echo = FALSE, results = "hide">>=
+library("knitr")
+opts_knit$set(progress = TRUE, verbose = TRUE)
+opts_chunk$set(echo = FALSE, results = "hide", dev = "cairo_pdf", fig.height=7, fig.width=11, out.width='\\textwidth')
+@
 
 The quantity of interest typically reported by statistical software estimation commands for regression models is the regression coefficient, along with standard errors thereof, and various goodness-of-fit and summary statistics. This default output makes sense for additive linear models (i.e., ordinary least squares regression) because an estimated coefficient is readily and directly interpretable as the expected change in $y$ given a unit change in $x$, holding all other terms constant. When models specify other kinds of terms (e.g., multiple higher powers of a given variable, log transformations, or interactions between variables), the coefficients on those variables do not and cannot clearly communicate the influence of a given righthand-side variable on the outcome because the influence of a given variable is captured by multiple estimated coefficients. Looking at a single estimated coefficient and treating it as a marginal effect leads to numerous problematic interpreations \citep{BramborClarkGolder}.
 
@@ -45,34 +56,198 @@ The outline of this text is as follows: section \ref{sec:stats} describes the st
 
 This section describes the basic computational features of \textbf{margins}. Specifically, it describes the procedures for calculating marginal effects from the information stored in a model object (e.g., an R object of class \texttt{"lm"}) and the procedures for estimating the variances of those marginal effects.
 
+\subsection{Symbolic Derivatives}\label{sec:symbolic}
 
-While it is possible to manually differentiate almost any equation using a set of rules, this approach is not particularly easy to implement computationally. Essentially it would require scripting the approach used by a student in an introductory calculus course: in effect deriving a regression formula by hand (i.e., symbolically) using a set of predefined rules (e.g., that built in to R's symbolic derivation table). While feasible, this approach lacks generality because it requires a symbolic derivatives table (or set of rules) that can encompass any model that can be expressed. R's modelling language --- the ``formula'' class --- in fact is sufficiently general (mostly because of support for \texttt{I()} expressions that allow on-the-fly variable transformations) as to make this approach impossible.
+If we were to calculate marginal effects by hand, we might rightly choose to rely on manual or ``symbolical'' differentiate (i.e., using a set of known derivation rules, derive the partial derivative of a regression equation with respect to its constituent variables). The advantage of this approach is that, with the exception of any human error, produces numerically perfect calculations of the marginal effects. Yet this approach is not particularly easy to implement computationally. It may seem straightforward, but even in relatively simple regression specifications, the formulae for marginal effects quickly become complicated.
 
-% At table, a ala Golder, of symbolic derivatives of formulae
+\begin{table}
+\caption{Marginal Effect Formulae for a Few Simple Regression Equations}\label{tab:formulae}
+\begin{center}
+\begin{tabular}{lp{0.7in}l} \toprule
+Regression Equation & ME with respect to & ME Formula \\ \midrule
+\rule{0pt}{4ex}\multirow{2}{*}{
+\begin{aligned}
+\hat{Y} = \beta_0 + \beta_1 X_1 + \beta_2 X_2 + \beta_3 X_1 X_2
+\end{aligned}
+} & $X_1$ & $\frac{\partial Y}{\partial X_1} = \beta_1 + \beta_3 X_2$ \\ \cline{2-3}
+\rule{0pt}{4ex} & $X_2$ & $\frac{\partial Y}{\partial X_2} = \beta_2 + \beta_3 X_1$ \\ \midrule
+\rule{0pt}{4ex}\multirow{2}{*}{
+\begin{aligned}
+\hat{Y} = \beta_0 + \beta_1 X_1 + \beta_2 X^2 + \beta_3 X_2
+\end{aligned}
+} & $X_1$ & $\frac{\partial Y}{\partial X_1} = \beta_1 + 2\beta_2 X_1$ \\ \cline{2-3}
+\rule{0pt}{4ex} & $X_2$ & $\frac{\partial Y}{\partial X_2} = \beta_3$ \\ \midrule
+\rule{0pt}{4ex}\multirow{3}{*}{
+\begin{aligned}
+\hat{Y} = &\hspace{1ex} \beta_0 + \beta_1 X_1 + \beta_2 X_2 + \beta_3 X_3 + \\
+    &\hspace{1ex} \beta_4 X_1 X_2 + \beta_5 X_2 X_3 + \beta_6 X_1 X_3 + \\
+    &\hspace{1ex} \beta_7 X_1 X_2 X_3 
+\end{aligned}
+} & $X_1$ &
+\begin{aligned} \frac{\partial Y}{\partial X_1} = & \beta_1 + \beta_4 X_2 + \\ & \beta_6 X_3  + \beta_7 X_2 X_3 \end{aligned} \\ \cline{2-3}
+\rule{0pt}{4ex} & $X_2$ & 
+\begin{aligned} \frac{\partial Y}{\partial X_2} = & \beta_2 + \beta_4 X_1 + \\ & \beta_5 X_3 + \beta_7 X_1 X_3 \end{aligned} \\ \cline{2-3}
+\rule{0pt}{4ex} & $X_3$ & \begin{aligned} \frac{\partial Y}{\partial X_3} = & \beta_3 + \beta_5 X_2 + \\ & \beta_6 X_1 + \beta_7 X_1 X_2 \end{aligned} \\
+\bottomrule
+\end{tabular}
+\end{center}
+\end{table}
 
+Consider, for example, the three regression equations shown in the first column of Table \ref{tab:formulae}.  The first includes a simple two-way multiplicative interaction term, the second includes a power term, and the third includes a three-way interaction and its constituent two-way interactions. The formula for the marginal effect with respect to each variable in each equation is shown in the third column. While the equations vary in their complexity, the key intuition to draw is that calculating a marginal effect from an equation of any complexity requires three steps:
 
-What then can be done? As noted in Section \ref{sec:stats}, the estimated marginal effect of $x_1$ is simply the derivative of the estimated regression equation with respect to $x_1$. Stata's \texttt{margins} command achieves this through numeric derivatives (i.e., numeric approximations of this derivation). \textbf{margins} follows this approach.
+\begin{enumerate}
+\item Identify which coefficients are attached to terms that include the variable of interest, $x$
+\item Using a set of derivative rules, specify the partial derivative of the equation with respect to $x$
+\item Implement the partial derivative equation computationally
+\end{enumerate}
 
-What is a numerical approximation? Rather than defining a partial derivative as an exact formula, a numerical approximation approximates the slope of the response function from a model by taking small steps, $h$ in $x$, calculating the $\hat{y}$ at each point, and then applying a simple difference method to define the slope at point  $x$:
+As should be clear from the formulae in the third column, the first step is fairly easy (though potentially error-prone), the second requires only knowledge of fairly basic derivation, and the third requires simply expressing an additive formula as code. For example, the three marginal effects for the final equation are simply:
+
+\begin{verbatim}
+library("stats")
+m <- lm(y ~ x1 * x2 * x3)
+cf <- coef(m)[-1] # drop beta_0
+me_x1 <- cf[1] + cf[4]*x2 + cf[6]*x3 + cf[7]*x2*x3
+me_x2 <- cf[2] + cf[4]*x1 + cf[5]*x3 + cf[7]*x1*x3
+me_x3 <- cf[3] + cf[5]*x2 + cf[6]*x1 + cf[7]*x1*x2
+\end{verbatim}
+
+\noindent The code necessary to perform these calculations is simple, but the second step (defining the partial derivatives according to a set of derivation rules) is actually extremely complicated, at least in order to handle any general class of model formulae. In computational terms, this is especially true when considering the fairly limited information contained in the formula expression used to specify the model (\texttt{y \textasciitilde x1 * x2 * x3}). If we were able to fully expand that notation and introduce placeholders for coefficients, then R's \texttt{deriv()} function could return accurate specifications of the marginal effects:
+
+<<deriv>>=
+deriv(y ~ b1*x1 + b2*x2 + b3*x3 + b4*x1*x2 + 
+          b5*x2*x3 + b6*x1*x3 + b7*x1*x2*x3, 
+      c("x1", "x2", "x3"))
+@
+
+Yet the concise expression of a complex model through R's succinct modelling language --- the ``formula'' class, derived from GENSTAT \citep{WilkinsonRogers1973} --- highlights that it is quite easy to express a model for which the mapping of righthand-side variables to coefficients is completely intransparent. Sources of useful generality, such as the expression of ``factors'' (categorical variables via \texttt{factor()}) and on-the-fly variable transformations through \texttt{I()} statements, impede symbolic derivation. These useful features make it possible to define a model for which no symbolic derivative rule is available:
+
+\begin{verbatim}
+> deriv(y ~ b1*x1 + b2*I(x1^2) + b3*x2, c("x1", "x2"))
+Error in deriv.formula(y ~ b1 * x1 + b2 * I(x1^2) + b3 * x2, c("x1", "x2")) : 
+  Function 'I' is not in the derivatives table
+\end{verbatim}
+
+and for which any reasonable workaround would produce an inaccurate set of partial derivatives:
+
+<<deriv2>>=
+deriv(y ~ b1*x1 + b2*x1squared + b3*x2, c("x1", "x2"))
+@
+
+By breaking the relationship between $x_1$ and its squared term, $x_1^2$, the derivative rules lead us to a plainly inaccurate result.
+
+\subsection{Numerical Derivatives}\label{sec:numerical}
+
+What then can be done? A standard answer --- and the answer chosen by Stata --- is to rely on numerical derivatives (i.e., numeric approximations of the partial derivatives). The R \textbf{margins} package follows this approach.
+
+What is a numerical approximation? Rather than defining a partial derivative as an exact formula, a numerical derivative approximates the slope of the response function from a model by taking small steps, $h$ in $x$, calculating the $\hat{y}$ at each point, and then applying a simple difference method to define the slope at point $x$:
 
 \begin{equation}
-\dfrac{f(x + h) - f(x)}{h}
+f'(x) = \lim\limits_{h \rightarrow 0} \dfrac{f(x + h) - f(x)}{h}
 \end{equation}
 
-While seemingly crude, as $h \lim 0$, the result converges on the true partial derivative.
+While seemingly crude, as $h \lim 0$, the result converges on the true partial derivative. Figure \ref{fig:numderiv1} displays a few numerical derivatives of $f(x) = x^2$ at the point $x = 1$ for various large values of $h$. As should be clear, as $h$ decreases, the approximations approach the true answer of 2. Inferring the partial derivative across the full domain of $x$ requires repeating this approximation process at every substantively meaningful value of $x$.
 
-% Delta method variances
+<<numderiv1, fig.cap = "Approximation of Derivative via One-Sided Numerical Approach">>=
+curve(x^2, from = -5, to = 4, lwd = 2, las = 1, 
+     xlim = c(-1, 4), ylim = c(0,10), 
+     xaxt = "n", yaxs = "i", yaxs = "i",
+     ylab = "", bty = "l")
+axis(1, c(0, 1, 1.25, 1.5, 2, 3))
+text(-0.25, 1, expression(f(x) == x^2))
+mtext(expression(f(x)), 2, 2, las = 1)
 
-As in Stata, the \textbf{margins} package approximates the variances of marginal effects using the delta method, which is a linear approximation of the derivative of a set of nested functions.
+# vertical lines
+segments(1,0, 1,1, lty = 2)
+segments(1.25,0, 1.25,1.5625, lty = 2)
+segments(1.5,0, 1.5,2.25, lty = 2)
+segments(2,0, 2,4, lty = 2)
+segments(3,0, 3,9, lty = 2)
+
+# tangents
+segments(0,-1, 5,9, col = "blue", lwd = 2)
+segments(1,1, 1.25, 1.5625, col = "red", lwd = 2)
+segments(1,1, 1.5, 2.25, col = "red", lwd = 2)
+segments(1,1, 2, 4, col = "red", lwd = 2)
+segments(1,1, 3, 9, col = "red", lwd = 2)
+
+# text
+text(3.1, 9, expression(paste(frac(paste(Delta, y), paste(Delta, x)) == frac(f(3) - f(1), 2), " = 4")), pos = 4 )
+text(3.1, 4, expression(paste(frac(paste(Delta, y), paste(Delta, x)) == frac(f(2) - f(1), 1), " = 3")), pos = 4 )
+text(3.1, 2.5, expression(paste(frac(paste(Delta, y), paste(Delta, x)) == frac(f(1.5) - f(1), 0.5), " = 2.5")), pos = 4 )
+text(3.1, 1.5, expression(paste(frac(paste(Delta, y), paste(Delta, x)) == frac(f(1.25) - f(1), 0.25), " = 2.25")), pos = 4 )
+text(3.1, 0.5, "...", pos = 4)
+@
+
+
+At large values of $h$ and even fairly small ones, this ``one-sided'' derivative can be quite inaccurate. A ``two-sided'' or ``symmetric difference'' approach uses points above and below $x$:
+
+\begin{equation}
+f'(x) = \lim\limits_{h \rightarrow 0} \dfrac{f(x+h) - f(x-h)}{2h}
+\end{equation}
+
+This approach, which is shown in Figure \ref{fig:numderiv2}, will tend to be more accurate. As it so happens, for the function $f(x) = x^2$, this approach calculates $f'(x)$ accurately even for very large values of $h$.
+
+<<numderiv2, fig.cap = "Approximation of Derivative via Two-Sided Numerical Approach">>=
+curve(x^2, from = -5, to = 4, lwd = 2, las = 1, 
+     xlim = c(-1, 4), ylim = c(0,10), 
+     xaxt = "n", yaxs = "i", yaxs = "i",
+     ylab = "", bty = "l")
+abline(h = 0, col = "gray")
+axis(1, c(0, 0.5, 1, 1.5, 2, 3))
+text(-0.25, 1, expression(f(x) == x^2))
+mtext(expression(f(x)), 2, 2, las = 1)
+
+# vertical lines
+segments(1,0, 1,1, lty = 2)
+segments(1.5,0, 1.5,2.25, lty = 2)
+segments(2,0, 2,4, lty = 2)
+segments(3,0, 3,9, lty = 2)
+
+# tangents
+segments(0,-1, 5,9, col = "blue", lwd = 2)
+segments(0.5,0.25, 1.5,2.25, col = "red", lwd = 2)
+segments(0,0, 2,4, col = "red", lwd = 2)
+segments(-1,1, 3,9, col = "red", lwd = 2)
+
+# text
+text(3.1, 9, expression(paste(frac(paste(Delta, y), paste(Delta, x)) == frac(f(3) - f(-1), 4), " = 2")), pos = 4 )
+text(3.1, 4, expression(paste(frac(paste(Delta, y), paste(Delta, x)) == frac(f(2) - f(0), 2), " = 2")), pos = 4 )
+text(3.1, 2.5, expression(paste(frac(paste(Delta, y), paste(Delta, x)) == frac(f(1.5) - f(0.5), 1), " = 2")), pos = 4 )
+text(3.1, 0.5, "...", pos = 4)
+@
+
+
+% add a bit more about the actually computational details
+
+
+% talk about lm versus glm
+
+
+\subsection{Final Notes on Computation}\label{sec:notes}
+
+A few points are worth noting about how this is handled in the R \texttt{margins} command.
+
+\begin{itemize}
+\item A relatively large value of $h$ is used by default: $sqrt(1x10^-7)$. Alternative values can be specified manually.
+\item Much numerical differentiation in R is conducted using the \texttt{numDeriv} package. This approach is not used here because \texttt{numDeriv} is not vectorized and is thus quite slow.
+\item \texttt{margins} detect the variable class of variables entered into a regression, distinguishing numeric variables from factor and logical. For the latter two variable classes, discrete differences rather than derivatives are reported. For factors (and ``ordered'') variables, changes are expressed moving from the base category to a particular category (e.g., from male to female). For logical variables, discrete changes are expressed moving from \texttt{FALSE} to \texttt{TRUE}.
+\item Discrete changes can be requested for numeric variables, by specifying the \texttt{change} argument to the workhorse \texttt{dydx()} function, which allows for expression of changes from observed minimum to maximum, the interquartile range, mean +/- a standard deviation, or any arbitrary step.
+\end{itemize}
+
+
+\subsection{Variance Approximation with the Delta Method}
+
+As in Stata, \textbf{margins} approximates the variances of marginal effects using the delta method, which is a linear approximation of the derivative of a set of nested functions.
 
 
 
-\section{Comparison with Stata \texttt{margins} and Clarify}\label{sec:clarify}
+%\section{Comparison with Stata \texttt{margins} and Clarify}\label{sec:clarify}
 
-\subsection{Stata's \texttt{margins} module}
+%\subsection{Stata's \texttt{margins} module}
 
 
-\subsection{Zelig/Clarify}
+%\subsection{Zelig/Clarify}
 
 
 \section{Conclusion}
