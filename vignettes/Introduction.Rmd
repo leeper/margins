@@ -283,7 +283,7 @@ cplot(x1, x = "wt", dx = "drat", what = "effect",
 
 Another use of these types of plots can be to interpret power terms, to see the average marginal effect of a variable across values of itself. Consider the following, for example:
 
-```{r, echo=FALSE, fig.height=4, fig.width=8}
+```{r, fig.height=4, fig.width=8}
 x1b <- lm(mpg ~ am * wt + am * I(wt^2), data = mtcars)
 cplot(x1b, x = "wt", dx = "wt", what = "effect", 
       data = mtcars[mtcars[["am"]] == 0,], 
@@ -326,6 +326,44 @@ persp(x2, "hp", "wt", theta = c(45, 135, 225, 315), what = "effect")
 ```
 
 An alternative way of plotting these results is to take "slices" of the three-dimensional surface and present them in a two-dimensional graph, similar to what we did above with the indicator-by-continuous approach. That strategy would be especially appropriate for a categorical-by-continuous interaction where the categories of the first variable did not necessarily have a logical ordering sufficient to draw a three-dimensional surface.
+
+
+### ggplot2 examples
+
+It should be noted that `cplot()` returns a fairly tidy data frmae, making it possible to use ggplot2 as an alternative plotting package to display the kinds of relationships of typical interest. For example, returning to our earlier example:
+
+```{r}
+x1 <- lm(mpg ~ drat * wt * am, data = mtcars)
+cdat <- cplot(x1, "wt", draw = FALSE)[[1]]
+head(cdat)
+```
+
+From this structure, it is very easy to draw a predicted values plot
+
+```{r, fig.height=4, fig.width=8}
+library("ggplot2")
+ggplot(cdat, aes(x = xvals)) + 
+  geom_line(aes(y = yvals)) +
+  geom_line(aes(y = upper), linetype = 2) +
+  geom_line(aes(y = lower), linetype = 2) +
+  geom_hline(yintercept = 0) +
+  ggtitle("Predicted Fuel Economy (mpg) by Weight") +
+  xlab("Weight (1000 lbs)") + ylab("Predicted Value")
+```
+
+And the same thing is possible with a marginal effect calculation:
+
+```{r, fig.height=4, fig.width=8}
+cdat <- cplot(x1, "wt", "drat", what = "effect", draw = FALSE)[[1]]
+ggplot(cdat, aes(x = xvals)) + 
+  geom_line(aes(y = yvals)) +
+  geom_line(aes(y = upper), linetype = 2) +
+  geom_line(aes(y = lower), linetype = 2) +
+  geom_hline(yintercept = 0) +
+  ggtitle("AME of Axle Ratio on Fuel Economy (mpg) by Weight") +
+  xlab("Weight (1000 lbs)") + ylab("AME of Axle Ratio")
+```
+
 
 ### Interactions in Logit
 
@@ -385,7 +423,6 @@ persp(g2, theta = c(45, 135, 225, 315), what = "effect")
 ```
 
 Our inferences about the impact of a variable on the outcome in a GLM therefore depend quite heavily on how the interaction is modelled. It also worth pointing out that the surface of the AMEs on the log-odds (linear) scale are actually flat (as in an OLS model), so the the curved shape of the plot immediately above reflects only the conversion of the effects from the linear scale to the probability scale (and the distributions of the covariates), whereas the much more unusual surface from earlier reflects that conversion and the interaction between the two variables (and the distributions thereof). If we were to plot the interaction model on the scale of the log-odds, it would look much more like the plot from the OLS models (this is left as an exercise to the reader).
-
 
 ---
 

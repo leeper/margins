@@ -150,24 +150,14 @@ function(object,
 
     # setup `outdat` data
     if (what == "prediction") {
-        # tmpdat <- build_datalist(dat, at = setNames(list(xvals), xvar))
-        # outdat <- do.call("rbind", lapply(tmpdat, function(thisdat) {
-            # s <- prediction(model = object, data = thisdat, type = type)
-            # return(c(fitted = mean(s[["fitted"]], na.rm = TRUE),
-                     # se = mean(s[["se.fitted"]], na.rm = TRUE)))
-        # }))
-        # outdat <- cbind(xvals, outdat)
-        # colnames(outdat) <- c(xvar, "fitted", "se.fitted")
-        # outdat <- as.data.frame(outdat)
-        
         tmpdat <- structure(lapply(colMeans(dat[, names(dat) != xvar, drop = FALSE], na.rm = TRUE), rep, length(xvals)),
                             class = "data.frame", row.names = seq_len(length(xvals)))
         tmpdat[[xvar]] <- xvals
         outdat <- prediction(model = object, data = tmpdat, type = type, level = level)
         out <- list(structure(list(xvals = xvals,
                                    yvals = outdat[["fitted"]],
-                                   upper = outdat[["fitted"]] + (fac[1] * outdat[["se.fitted"]]),
-                                   lower = outdat[["fitted"]] + (fac[2] * outdat[["se.fitted"]])),
+                                   upper = outdat[["fitted"]] + (fac[2] * outdat[["se.fitted"]]),
+                                   lower = outdat[["fitted"]] + (fac[1] * outdat[["se.fitted"]])),
                               class = "data.frame", row.names = seq_along(outdat[["fitted"]])))
     } else if (what == "effect") {
     

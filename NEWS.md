@@ -4,6 +4,7 @@
 
 * Plotting functions `cplot()`, `persp()`, and `image()` gain a `vcov` argumetn to pass to `build_margins(). (#43)
 * `cplot()` now allows for the display of multiple conditional relationships by setting `draw = "add"`. (#32)
+* The package Introduction vignette has improved examples, including ggplot2 examples using `cplot()` data. (#31)
 
 ## margins 0.2.18
 
