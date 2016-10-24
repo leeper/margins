@@ -10,41 +10,41 @@
 cplot(object, ...)
 
 \method{cplot}{lm}(object, x = attributes(terms(object))[["term.labels"]][1],
-  dx = x, what = c("prediction", "effect"), type = c("response", "link"),
-  data = object[["model"]], at, n = 25L, level = 0.95, draw = TRUE,
-  xlab = x, ylab = if (match.arg(what) == "prediction")
-  paste0("Predicted value") else paste0("Marginal effect of ", dx), xlim, ylim,
-  lwd = 2, col = "black", lty = 1, se.type = c("lines", "shade"),
-  se.col = "black", se.fill = grDevices::gray(0.5, 0.5), se.lwd = lwd,
-  se.lty = if (match.arg(se.type) == "lines") 2 else 0, factor.pch = 19,
-  factor.col = se.col, factor.fill = factor.col, factor.cex = 1,
-  xaxs = "i", yaxs = xaxs, las = 1, rug = TRUE, rug.col = "black",
-  rug.size = -0.02, ...)
+  dx = x, what = c("prediction", "effect"), data = object[["model"]],
+  type = c("response", "link"), vcov = stats::vcov(object), at, n = 25L,
+  level = 0.95, draw = TRUE, xlab = x, ylab = if (match.arg(what) ==
+  "prediction") paste0("Predicted value") else paste0("Marginal effect of ",
+  dx), xlim, ylim, lwd = 2, col = "black", lty = 1, se.type = c("lines",
+  "shade"), se.col = "black", se.fill = grDevices::gray(0.5, 0.5),
+  se.lwd = lwd, se.lty = if (match.arg(se.type) == "lines") 2 else 0,
+  factor.pch = 19, factor.col = se.col, factor.fill = factor.col,
+  factor.cex = 1, xaxs = "i", yaxs = xaxs, las = 1, rug = TRUE,
+  rug.col = "black", rug.size = -0.02, ...)
 
 \method{cplot}{glm}(object, x = attributes(terms(object))[["term.labels"]][1],
-  dx = x, what = c("prediction", "effect"), type = c("response", "link"),
-  data = object[["model"]], at, n = 25L, level = 0.95, draw = TRUE,
-  xlab = x, ylab = if (match.arg(what) == "prediction")
-  paste0("Predicted value") else paste0("Marginal effect of ", dx), xlim, ylim,
-  lwd = 2, col = "black", lty = 1, se.type = c("lines", "shade"),
-  se.col = "black", se.fill = grDevices::gray(0.5, 0.5), se.lwd = lwd,
-  se.lty = if (match.arg(se.type) == "lines") 2 else 0, factor.pch = 19,
-  factor.col = se.col, factor.fill = factor.col, factor.cex = 1,
-  xaxs = "i", yaxs = xaxs, las = 1, rug = TRUE, rug.col = "black",
-  rug.size = -0.02, ...)
+  dx = x, what = c("prediction", "effect"), data = object[["model"]],
+  type = c("response", "link"), vcov = stats::vcov(object), at, n = 25L,
+  level = 0.95, draw = TRUE, xlab = x, ylab = if (match.arg(what) ==
+  "prediction") paste0("Predicted value") else paste0("Marginal effect of ",
+  dx), xlim, ylim, lwd = 2, col = "black", lty = 1, se.type = c("lines",
+  "shade"), se.col = "black", se.fill = grDevices::gray(0.5, 0.5),
+  se.lwd = lwd, se.lty = if (match.arg(se.type) == "lines") 2 else 0,
+  factor.pch = 19, factor.col = se.col, factor.fill = factor.col,
+  factor.cex = 1, xaxs = "i", yaxs = xaxs, las = 1, rug = TRUE,
+  rug.col = "black", rug.size = -0.02, ...)
 
 \method{cplot}{loess}(object,
   x = attributes(terms(object))[["term.labels"]][1], dx = x,
-  what = c("prediction", "effect"), type = c("response", "link"),
-  data = object[["model"]], at, n = 25L, level = 0.95, draw = TRUE,
-  xlab = x, ylab = if (match.arg(what) == "prediction")
-  paste0("Predicted value") else paste0("Marginal effect of ", dx), xlim, ylim,
-  lwd = 2, col = "black", lty = 1, se.type = c("lines", "shade"),
-  se.col = "black", se.fill = grDevices::gray(0.5, 0.5), se.lwd = lwd,
-  se.lty = if (match.arg(se.type) == "lines") 2 else 0, factor.pch = 19,
-  factor.col = se.col, factor.fill = factor.col, factor.cex = 1,
-  xaxs = "i", yaxs = xaxs, las = 1, rug = TRUE, rug.col = "black",
-  rug.size = -0.02, ...)
+  what = c("prediction", "effect"), data = object[["model"]],
+  type = c("response", "link"), vcov = stats::vcov(object), at, n = 25L,
+  level = 0.95, draw = TRUE, xlab = x, ylab = if (match.arg(what) ==
+  "prediction") paste0("Predicted value") else paste0("Marginal effect of ",
+  dx), xlim, ylim, lwd = 2, col = "black", lty = 1, se.type = c("lines",
+  "shade"), se.col = "black", se.fill = grDevices::gray(0.5, 0.5),
+  se.lwd = lwd, se.lty = if (match.arg(se.type) == "lines") 2 else 0,
+  factor.pch = 19, factor.col = se.col, factor.fill = factor.col,
+  factor.cex = 1, xaxs = "i", yaxs = xaxs, las = 1, rug = TRUE,
+  rug.col = "black", rug.size = -0.02, ...)
 }
 \arguments{
 \item{object}{A model object.}
@@ -55,9 +55,11 @@ cplot(object, ...)
 
 \item{what}{A character string specifying whether to draw a \dQuote{prediction} (fitted values from the model, calculated using \code{\link[stats]{predict}}) or an \dQuote{effect} (average marginal effect of \code{dx} conditional on \code{x}, using \code{\link{margins}}).}
 
+\item{data}{A data frame to override the default value offered in \code{object[["model"]]}.}
+
 \item{type}{A character string specifying whether to calculate predictions on the response scale (default) or link (only relevant for non-linear models).}
 
-\item{data}{A data frame to override the default value offered in \code{object[["model"]]}.}
+\item{vcov}{A matrix containing the variance-covariance matrix for estimated model coefficients, or a function to perform the estimation with \code{model} as its only argument.}
 
 \item{at}{Currently ignored.}
 

@@ -6,6 +6,7 @@
 #' @param yvar A character string specifying the name of variable to use as the \samp{y} dimension in the plot. See \code{\link[graphics]{persp}} for details.
 #' @param what A character string specifying whether to draw \dQuote{prediction} (fitted values from the model, calculated using \code{\link[stats]{predict}}) or \dQuote{effect} (marginal effect of \code{x}, using \code{\link{margins}}).
 #' @param type A character string specifying whether to calculate predictions on the response scale (default) or link (only relevant for non-linear models).
+#' @param vcov A matrix containing the variance-covariance matrix for estimated model coefficients, or a function to perform the estimation with \code{model} as its only argument.
 #' @param nx An integer specifying the number of points across \code{x} at which to calculate the predicted value or marginal effect.
 #' @param ny An integer specifying the number of points across \code{y} at which to calculate the predicted value or marginal effect.
 #' @param nz An integer specifying, for \code{image}, the number of breakpoints to use when coloring the plot.
@@ -53,6 +54,7 @@ function(x,
          yvar = attributes(terms(x))[["term.labels"]][2], 
          what = c("prediction", "effect"), 
          type = c("response", "link"), 
+         vcov = stats::vcov(x),
          nx = 25L,
          ny = nx,
          theta = 45, 
@@ -66,7 +68,7 @@ function(x,
     
     what <- match.arg(what)
     type <- match.arg(type)
-    surface <- calculate_surface(x = x, xvar = xvar, yvar = yvar, nx = nx, ny = ny, type = type, what = what)
+    surface <- calculate_surface(x = x, xvar = xvar, yvar = yvar, nx = nx, ny = ny, type = type, vcov = vcov, what = what)
     outcome <- surface[["outcome"]]
     xvals <- surface[["xvals"]]
     yvals <- surface[["yvals"]]

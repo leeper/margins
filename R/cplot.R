@@ -5,8 +5,9 @@
 #' @param x A character string specifying the name of variable to use as the x-axis dimension in the plot.
 #' @param dx If \code{what = "effect"}, the variable whose conditional marginal effect should be displayed. By default it is \code{x} (so the plot displays the marginal effect of \code{x} across values of \code{x}); ignored otherwise.
 #' @param what A character string specifying whether to draw a \dQuote{prediction} (fitted values from the model, calculated using \code{\link[stats]{predict}}) or an \dQuote{effect} (average marginal effect of \code{dx} conditional on \code{x}, using \code{\link{margins}}).
-#' @param type A character string specifying whether to calculate predictions on the response scale (default) or link (only relevant for non-linear models).
 #' @param data A data frame to override the default value offered in \code{object[["model"]]}.
+#' @param type A character string specifying whether to calculate predictions on the response scale (default) or link (only relevant for non-linear models).
+#' @param vcov A matrix containing the variance-covariance matrix for estimated model coefficients, or a function to perform the estimation with \code{model} as its only argument.
 #' @param at Currently ignored.
 #' @param n An integer specifying the number of points across \code{x} at which to calculate the predicted value or marginal effect.
 #' @param level The confidence level required (used to draw uncertainty bounds).
@@ -84,8 +85,9 @@ function(object,
          x = attributes(terms(object))[["term.labels"]][1],
          dx = x, 
          what = c("prediction", "effect"), 
-         type = c("response", "link"), 
          data = object[["model"]],
+         type = c("response", "link"), 
+         vcov = stats::vcov(object),
          at,
          n = 25L,
          level = 0.95,
@@ -171,7 +173,7 @@ function(object,
     
         dxvar <- dx
         
-        suppressMessages(s <- summary(margins(model = object, data = data, at = setNames(list(xvals), xvar), type = type)))
+        suppressMessages(s <- summary(margins(model = object, data = data, at = setNames(list(xvals), xvar), type = type, vcov = vcov)))
         outdat <- do.call("rbind.data.frame", lapply(s, function(thismargin) {
             c(effect = as.numeric(thismargin[dx, "dy/dx"]), 
               se.effect = as.numeric(thismargin[dx, "Std.Err."]))

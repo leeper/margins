@@ -1,5 +1,9 @@
 # CHANGES TO margins 0.3.0 #
 
+## margins 0.2.19
+
+* Plotting functions `cplot()`, `persp()`, and `image()` gain a `vcov` argumetn to pass to `build_margins(). (#43)
+
 ## margins 0.2.18
 
 * Added support in `dydx.default()` to allow the calculation of various discrete changes rather than only numerical derivatives.

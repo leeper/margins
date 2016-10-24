@@ -3,7 +3,7 @@
 #' @param model A model object.
 #' @param data A data.frame over which to calculate marginal effects.
 #' @param type A character string indicating the type of marginal effects to estimate. Mostly relevant for non-linear models, where the reasonable options are \dQuote{response} (the default) or \dQuote{link} (i.e., on the scale of the linear predictor in a GLM).
-#' @param vcov A matrix containing the variance-covariance matrix for estimated model coefficients, a function to perform the estimation with \code{model} as its only argument
+#' @param vcov A matrix containing the variance-covariance matrix for estimated model coefficients, or a function to perform the estimation with \code{model} as its only argument.
 #' @param vce A character string indicating the type of estimation procedure to use for estimating variances. The default (\dQuote{delta}) uses the delta method. Alternatives are \dQuote{bootstrap}, which uses bootstrap estimation, or \dQuote{simulation}, which averages across simulations drawn from the joint sampling distribution of model coefficients. The latter two are extremely time intensive.
 #' @param iterations If \code{vce = "bootstrap"}, the number of bootstrap iterations. If \code{vce = "simulation"}, the number of simulated effects to draw. Ignored otherwise.
 #' @param unit_ses If \code{vce = "delta"}, a logical specifying whether to calculate and return unit-specific marginal effect variances. This calculation is time consuming and the information is often not needed, so this is set to \code{FALSE} by default.

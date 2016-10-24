@@ -19,6 +19,7 @@ function(x,
          yvar = attributes(terms(x))[["term.labels"]][2], 
          what = c("prediction", "effect"), 
          type = c("response", "link"), 
+         vcov = stats::vcov(x),
          nx = 25L,
          ny = nx,
          nz = 20,
@@ -38,7 +39,7 @@ function(x,
          ...) {
     what <- match.arg(what)
     type <- match.arg(type)
-    surface <- calculate_surface(x = x, xvar = xvar, yvar = yvar, nx = nx, ny = ny, type = type, what = what)
+    surface <- calculate_surface(x = x, xvar = xvar, yvar = yvar, nx = nx, ny = ny, type = type, vcov = vcov, what = what)
     outcome <- surface[["outcome"]]
     xvals <- surface[["xvals"]]
     yvals <- surface[["yvals"]]
@@ -64,7 +65,7 @@ image.glm <- image.lm
 image.loess <- image.lm
 
 
-calculate_surface <- function(x, xvar, yvar, nx, ny, type, what) {
+calculate_surface <- function(x, xvar, yvar, nx, ny, type, vcov = stats::vcov(x), what) {
     
     # internal function to calculate surface for `persp()` and `image()`
     

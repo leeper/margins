@@ -15,7 +15,7 @@ build_margins(model, data, type = c("response", "link", "terms"),
 
 \item{type}{A character string indicating the type of marginal effects to estimate. Mostly relevant for non-linear models, where the reasonable options are \dQuote{response} (the default) or \dQuote{link} (i.e., on the scale of the linear predictor in a GLM).}
 
-\item{vcov}{A matrix containing the variance-covariance matrix for estimated model coefficients, a function to perform the estimation with \code{model} as its only argument}
+\item{vcov}{A matrix containing the variance-covariance matrix for estimated model coefficients, or a function to perform the estimation with \code{model} as its only argument.}
 
 \item{vce}{A character string indicating the type of estimation procedure to use for estimating variances. The default (\dQuote{delta}) uses the delta method. Alternatives are \dQuote{bootstrap}, which uses bootstrap estimation, or \dQuote{simulation}, which averages across simulations drawn from the joint sampling distribution of model coefficients. The latter two are extremely time intensive.}
 
