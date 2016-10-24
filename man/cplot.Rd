@@ -19,7 +19,7 @@ cplot(object, ...)
   se.lwd = lwd, se.lty = if (match.arg(se.type) == "lines") 2 else 0,
   factor.pch = 19, factor.col = se.col, factor.fill = factor.col,
   factor.cex = 1, xaxs = "i", yaxs = xaxs, las = 1, rug = TRUE,
-  rug.col = "black", rug.size = -0.02, ...)
+  rug.col = col, rug.size = -0.02, ...)
 
 \method{cplot}{glm}(object, x = attributes(terms(object))[["term.labels"]][1],
   dx = x, what = c("prediction", "effect"), data = object[["model"]],
@@ -31,7 +31,7 @@ cplot(object, ...)
   se.lwd = lwd, se.lty = if (match.arg(se.type) == "lines") 2 else 0,
   factor.pch = 19, factor.col = se.col, factor.fill = factor.col,
   factor.cex = 1, xaxs = "i", yaxs = xaxs, las = 1, rug = TRUE,
-  rug.col = "black", rug.size = -0.02, ...)
+  rug.col = col, rug.size = -0.02, ...)
 
 \method{cplot}{loess}(object,
   x = attributes(terms(object))[["term.labels"]][1], dx = x,
@@ -44,7 +44,7 @@ cplot(object, ...)
   se.lwd = lwd, se.lty = if (match.arg(se.type) == "lines") 2 else 0,
   factor.pch = 19, factor.col = se.col, factor.fill = factor.col,
   factor.cex = 1, xaxs = "i", yaxs = xaxs, las = 1, rug = TRUE,
-  rug.col = "black", rug.size = -0.02, ...)
+  rug.col = col, rug.size = -0.02, ...)
 }
 \arguments{
 \item{object}{A model object.}
@@ -67,7 +67,7 @@ cplot(object, ...)
 
 \item{level}{The confidence level required (used to draw uncertainty bounds).}
 
-\item{draw}{A logical (default \code{TRUE}), specifying whether to draw the plot. If \code{FALSE}, the data used in drawing are returned as a list of data.frames. This might be useful if you want to plot using an alternative plotting package (e.g., ggplot2).}
+\item{draw}{A logical (default \code{TRUE}), specifying whether to draw the plot. If \code{FALSE}, the data used in drawing are returned as a list of data.frames. This might be useful if you want to plot using an alternative plotting package (e.g., ggplot2). Also, if set to value \dQuote{add}, then the resulting data is added to the existing plot.}
 
 \item{xlab}{A character string specifying the value of \code{xlab} in \code{\link[graphics]{plot}}.}
 

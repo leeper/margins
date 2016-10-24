@@ -78,7 +78,7 @@ function(x,
         persp(xvals, yvals, outcome, theta = itheta, phi = iphi, 
               shade = 0.75, xlab = xlab, ylab = ylab, zlab = zlab, ticktype = ticktype, ...)
     }
-    p <- par(mai = rep(0.2, 4))
+    p <- par(mai = rep(0.5, 4))
     on.exit(par(p))
     if ((length(theta) == 1) && (length(phi) == 1)) {
         out <- list(perspfun(itheta = theta, iphi = phi, ...))

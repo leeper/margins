@@ -3,6 +3,7 @@
 ## margins 0.2.19
 
 * Plotting functions `cplot()`, `persp()`, and `image()` gain a `vcov` argumetn to pass to `build_margins(). (#43)
+* `cplot()` now allows for the display of multiple conditional relationships by setting `draw = "add"`. (#32)
 
 ## margins 0.2.18
 
