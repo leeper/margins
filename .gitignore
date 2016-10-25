@@ -6,4 +6,6 @@ README.html
 /vignettes/*.pdf
 /vignettes/*.sty
 /vignettes/*.tex
+/vignettes/*.out
 /vignettes/figure/
+/vignettes/*.bib.bak

@@ -7,6 +7,7 @@
 \usepackage{multirow}
 \usepackage{amsmath}
 \usepackage{verbatim}
+\usepackage{natbib}
 
 \title{Interpreting Regression Results using Average Marginal Effects with R's \textbf{margins}}
 \author{Thomas J. Leeper}
@@ -32,17 +33,81 @@ Regression is a workhorse procedure in modern statistics. In disciplines like Ec
 
 This ease of interpretation of simple regression models, however, belies a potential for immense analytic and interpretative complexity. The generality of the regression framework means that it is easily generalized to examine more complex relationships than those that are linear and additive. Regression models can allow specification of non-linear relationships between regressor and outcome, multiplicative interactions between multiple regressors, and transformations via the generalized linear model (GLM).\footnote{Further complicates arise from other expansions of the regression approach, such as interdependent or hierarchically organized observations, instrumental variables methods, and so on.} 
 
-With this flexibility to specify potentially complex multivariate relationships comes the risk of misinterpretation. Coefficient estimates in models that are non-linear or involve interactions lose their direct interpretation as unconditional marginal effects. Coefficient estimates in generalized linear models are typically not directly interpretable at all. 
+With this flexibility to specify potentially complex multivariate relationships comes the risk of misinterpretation \citep{BramborClarkGolder2005, BerryGolderMilton2012} and, indeed, frequent miscalculation of quantities of interest \citep{AiNorton2003, NortonWangAi2004}. Coefficient estimates in models that are non-linear or involve interactions lose their direct interpretation as unconditional marginal effects. Coefficient estimates in generalized linear models are typically not directly interpretable at all. 
 
-For these reasons, and in the interest of making intuitive tabular and visual displays of regression results, there is a growing interest in the display of substantively meaningful quantities of interest that can be drawn from regression estimates. This article reviews the literature on substantive interpretation of regression estimates and argues that researchers are often interested in knowing the \textit{marginal effect} of a regressor on an outcome. Toward that end, the article describes the definition of a marginal effect, proposes \textit{average marginal effects} as a particularly useful quantity of interest, and describes the computational issues arising in the calculation of that quantity with reference to a new package for R, called \textbf{margins}.
+For these reasons, and in the interest of making intuitive tabular and visual displays of regression results, there is a growing interest in the display of substantively meaningful quantities of interest that can be drawn from regression estimates \citep{KingTomzWittenberg2000}. This article reviews the literature on substantive interpretation of regression estimates and argues that researchers are often interested in knowing the \textit{marginal effect} of a regressor on an outcome. 
 
-The outline of this text is as follows: section \ref{sec:stats} describes the statistical background of regression estimation and the distinctions between estimated coefficients and estimated marginal effects of righthand-side variables, Section \ref{sec:quantities} describes the various quantities of interest that might be useful for interpreting regression results, Section \ref{sec:details} describes the computational implementation of \textbf{margins} used to obtain those quantities of interest, and Section \ref{sec:clarify} compares the results of the package to those produced by Stata's \texttt{margins} command and Zelig/Clarify.
+In response to these two factors --- (1) the disconnect between coefficients and substantive influence, and (2) the challenge of conceptualizing and calculating more meaningful quantities of interest --- this article discusses proposes \textit{average marginal effects} as a particularly useful quantity of interest, discusses a computational approach to calculate marginal effects, and offers the \textbf{margins} package for R as a general application of this approach.
+
+The outline of this text is as follows: section \ref{sec:stats} describes the statistical background of regression estimation and the distinctions between estimated coefficients and estimated marginal effects of righthand-side variables, Section \ref{sec:details} describes the computational implementation of \textbf{margins} used to obtain those quantities of interest, and Section \ref{sec:clarify} compares the results of the package to those produced by Stata's \texttt{margins} command \citep{Stata11, Williams2012}, and Zelig/Clarify.
 
 \section{Statistical Background}\label{sec:stats}
 
-The quantity of interest typically reported by statistical software estimation commands for regression models is the regression coefficient (along with standard errors thereof, and various goodness-of-fit and summary statistics). This default output makes sense for additive linear models (i.e., ordinary least squares regression) because an estimated coefficient is readily and directly interpretable as the expected change in $y$ given a unit change in $x$, holding all other terms constant. When models specify other kinds of terms (e.g., multiple higher powers of a given variable, log transformations, or interactions between variables), the coefficients on those variables do not and cannot clearly communicate the influence of a given righthand-side variable on the outcome because the influence of a given variable is captured by multiple estimated coefficients. Looking at a single estimated coefficient and treating it as a marginal effect leads to numerous problematic interpretations \citep{BramborClarkGolder}.
+The quantity of interest typically reported by statistical software estimation commands for regression models is the regression coefficient (along with standard errors thereof, and various goodness-of-fit and summary statistics). Consider, for example, a trivial regression of country population size as a function of GDP per capita, life expectancy, and the interaction of the two. (As should be obvious, this model is not intended to carry any causal interpretation.)
 
-Furthermore, when models involve a non-linear transformation (e.g., generalized linear models such as logit or probit), the coefficients are typically not directly interpretable at all (even when no power terms, interactions, or other complex terms are included). This is because the coefficients express the influence of each separate variable onto the latent, linear scale of the outcome, not the discrete (or probability) scale of the observed outcome. For example, in a logistic regression, the coefficients express the marginal effect of each included variable in terms of the change in log-odds that the outcome equals 1 given a unit change in the independent variable. In order to express the more intuitive change in the predicted probability that the outcome equals 1 requires conditioning on all other included variables (i.e., selecting a set of values for all righthand-side variables) and running that set of values through the link function to convert log-odds to probabilities, thus making the marginal effect (in probability terms) of one variable a function of all other variables included in the model. As such, for both OLS and GLMs, the coefficients estimated for a regression model can often provide unintuitive insight into the statistical relationships between variables and, worse, can frequently fail to communicate those relationships at all (as in GLMs, where the size of coefficients can be completely uninformative about the size of the ``effect'' of a given righthand-side variable).
+<<model1, results = "asis">>=
+library("gapminder")
+suppressPackageStartupMessages(library("stargazer"))
+gapminder[["pop"]] <- gapminder[["pop"]]/1e6
+gapminder[["loggdp"]] <- log(gapminder[["gdpPercap"]])
+m1 <- lm(pop ~ loggdp + lifeExp, data = gapminder)
+m2 <- lm(pop ~ loggdp * lifeExp, data = gapminder)
+stargazer(m1, m2, dep.var.labels = "Population Size",
+          title = "Example OLS Regression Output", 
+          label = "tab:model1")
+@
+
+This default output makes sense for additive linear models (i.e., ordinary least squares regression) because an estimated coefficient is readily and directly interpretable as the expected change in $y$ given a unit change in $x$, holding all other terms constant (see, for example, the coefficient estimates for model 1). When models specify other kinds of terms (e.g., multiple higher powers of a given variable, log transformations, or interactions between variables), the coefficients on those variables do not and cannot clearly communicate the influence of a given righthand-side variable on the outcome because the influence of a given variable is captured by multiple estimated coefficients (see model 2). Looking at a single estimated coefficient and treating it as a marginal effect leads to numerous problematic interpretations \citep{BramborClarkGolder2005}.
+
+<<persp, fig.cap="Expected Population (millions) by GDP/Capita and Life Expectancy", fig.lab="fig:persp">>=
+library("margins")
+layout(matrix(1:2, nrow = 1))
+persp(m1, zlab = "", zlim = c(-180, 180), main = "Additive Only (Model 1)")
+persp(m2, zlab = "", zlim = c(-180, 180), main = "Interaction Model (Model 2)")
+@
+
+Visualization of the fitted values from the model makes clear that the two specifications are actually producing fairly similar substantive estimates. Figure \ref{fig:persp} shows the fitted response surface from model 1 (left) and model 2 (right). With the exception of the fitted values at the intersection of very low levels of life expectancy and very high levels of GDP per capita (where data are sparse), the two specifications yield nearly identical substantive interpretations. Higher GDP per capita is associated with lower national population, and higher levels of life expectancy are associated with higher national population. The ambiguous substantive meaning of the results in Table \ref{tab:model1} is due to the fact that the coefficients are not intepretable as \textit{marginal effects}.
+
+But what is a marginal effect exactly? And why is it a useful quantity of interest? Figure \ref{fig:cplot} shows the calculation of the marginal effect of GDP per capita on population size, based upon model 1 in Table \ref{tab:model1}. Because the model is specified without interactions, the slope of the predicted relationship between $x$ and $y$ is straight linear, so the marginal effect of $x$ is estimated as the slope of this fitted value line, using the usual $\dfrac{\Delta Y}{\Delta X}$ calculation. The visibly apparent marginal effect of -26.4 is clearly consistent with the coefficient estimate reported in Table \ref{tab:model1}, model 1.
+
+<<cplot1, results = "show", fig.cap = "Marginal Effect of GDP per Capita on Population Size,\\n as shown by Expected Value Plot", fig.lab="fig:cplot">>=
+local({
+  c1 <- suppressWarnings(cplot(m1, "loggdp", n = 50, 
+          xlab = "GDP Per Capita (Logged)",
+          se.type = "shade",
+          xlim = c(7,10), ylim = c(-30,80))[[1]])
+  w <- c(which.min((c1[["xvals"]]-8)^2),
+         which.min((c1[["xvals"]]-9)^2))
+  # dashed
+  segments(0, c1[w[2],"yvals"], 9, c1[w[2],"yvals"], lty = 2)
+  segments(0, c1[w[1],"yvals"], 8, c1[w[1],"yvals"], lty = 2)
+  segments(8, -30, 8, c1[w[1],"yvals"], lty = 2)
+  segments(9, -30, 9, c1[w[2],"yvals"], lty = 2)
+  
+  # red
+  segments(8, c1[w[1],"yvals"], 9, c1[w[2],"yvals"], 
+           col = "red", lwd = 3)
+  segments(8, c1[w[2],"yvals"], 9, c1[w[2],"yvals"], 
+           col = "red", lwd = 3)
+  segments(8, c1[w[2],"yvals"], 8, c1[w[1],"yvals"], 
+           col = "red", lwd = 3)
+  text(8, 20, expression(Delta(y) == -26.4), pos = 2, 
+       cex = 2, col = "red")
+  text(8.5, 0, expression(Delta(x) == 1), cex = 2, col = "red")
+  text(9, 40, expression(ME(x) == -26.4), cex = 2, col = "red")
+})
+@
+
+
+<<margins1, echo = TRUE, results = "show">>=
+cbind(summary(margins(m1))[[1]][,2:4],
+      summary(margins(m2))[[1]][,2:4])
+@
+
+
+\subsection{Generalized Linear Models}
+
+Furthermore, when models involve a non-linear transformation (e.g., generalized linear models such as logit or probit), the coefficients are typically not directly interpretable at all (even when no power terms, interactions, or other complex terms are included). This is because the coefficients express the influence of each separate variable onto the latent, linear scale of the outcome, not the discrete (or probability) scale of the observed outcome \citep{Long1997}. For example, in a logistic regression, the coefficients express the marginal effect of each included variable in terms of the change in log-odds that the outcome equals 1 given a unit change in the independent variable. In order to express the more intuitive change in the predicted probability that the outcome equals 1 requires conditioning on all other included variables (i.e., selecting a set of values for all righthand-side variables) and running that set of values through the link function to convert log-odds to probabilities, thus making the marginal effect (in probability terms) of one variable a function of all other variables included in the model. As such, for both OLS and GLMs, the coefficients estimated for a regression model can often provide unintuitive insight into the statistical relationships between variables and, worse, can frequently fail to communicate those relationships at all (as in GLMs, where the size of coefficients can be completely uninformative about the size of the ``effect'' of a given righthand-side variable).
 
 
 
@@ -51,11 +116,9 @@ Among these, fitted (predicted) values communicate the shape and position of the
 
 To calculate marginal effects requires the application of partial derivatives. A marginal effect is, in essence, the slope of multi-dimensional surface with respect to one dimension of that surface. In simple cases, calculation of a marginal effect simply requires application of familiar derivation rules to a regression equation. For generalized linear models involving a link transformation, it further requires the chain rule. This derivation typically requires manual labor (i.e., defining particular partial derivatives and then calculating them anew, by hand, for each estimated model). Thus while the marginal effect is a useful quantity for communicating the substantive influence of a righthand-side variable, it is difficult or at least unintuitive to formulate mentally. This complexity also means that it can be computationally challenging to define and calculate marginal effects for any general set of model specifications. While one can easily write code to calculate the marginal effect of $x1$ for the common regression equation $y = \alpha + \beta_1 x_1 + \beta_2 x_2 + \beta_3 x_1 x_2$ as $\dfrac{\partial y}{x_1} = \beta_1 + \beta_3 x_2$, writing generic code that can calculate $\dfrac{\partial y}{x_1}$ for any arbitrary model specification is far more complicated.
 
-In response to these two factors --- (1) the disconnect between coefficients and substantive influence, and (2) the challenge of conceptualizing and calculating more meaningful quantities of interest --- this article discusses the computational approach of numerical differentiation, an approximation of the partial derivatives of a regression equation and offers the \textbf{margins} package for R as a general application of this approach. The package takes its name and general approach from the \texttt{margins} module introduced in Stata 11 [CITATION], which is a closed-source tool for calculating such effects. The package is also inspired by Clarify (and the R implementation thereof as part of Zelig; [CITATIONS]), which has similar ambitions to convert regression results into meaningful quantities of interest but takes a simulation-based approach different from the one used in \textbf{margins}. Section \ref{sec:clarify} compares the two packages in greater detail.
 
 
 
-\section{Quantities of Interest}\label{sec:quantities}
 
 % coefficient estimates
 % fitted values
@@ -67,9 +130,10 @@ In response to these two factors --- (1) the disconnect between coefficients and
 % AMEs versus MEMs versus MERs
 
 
-\section{Computation Details}\label{sec:details}
 
-This section describes the basic computational features of \textbf{margins}. Specifically, it describes the procedures for calculating marginal effects from the information stored in a model object (e.g., an R object of class \texttt{"lm"}) and the procedures for estimating the variances of those marginal effects.
+\section{Computational Details}\label{sec:details}
+
+This section describes the basic computational features of \textbf{margins}. Specifically, it describes the procedures for calculating marginal effects from the information stored in a model object (e.g., an R object of class \texttt{"lm"} or \texttt{"glm"}) and the procedures for estimating the variances of those marginal effects.
 
 \subsection{Symbolic Derivatives}\label{sec:symbolic}
 
@@ -116,7 +180,7 @@ Consider, for example, the three regression equations shown in the first column 
 \item Implement the partial derivative equation computationally
 \end{enumerate}
 
-As should be clear from the formulae in the third column, the first step is fairly easy (though potentially error-prone), the second requires only knowledge of fairly basic derivation, and the third requires simply expressing an additive formula as code. For example, the three marginal effects for the final equation are simply:
+As should be clear from the formulae in the third column, the first step is fairly easy (though potentially error-prone), the second requires only knowledge of fairly basic derivation, and the third requires simply expressing an additive formula as code. For example, the three marginal effects for Equation (3) in Table \ref{tab:formulae} are simply:
 
 \begin{verbatim}
 library("stats")
@@ -127,20 +191,24 @@ me_x2 <- cf[2] + cf[4]*x1 + cf[5]*x3 + cf[7]*x1*x3
 me_x3 <- cf[3] + cf[5]*x2 + cf[6]*x1 + cf[7]*x1*x2
 \end{verbatim}
 
-\noindent The code necessary to perform these calculations is simple, but the second step (defining the partial derivatives according to a set of derivation rules) is actually extremely complicated, at least in order to handle any general class of model formulae. In computational terms, this is especially true when considering the fairly limited information contained in the formula expression used to specify the model (\texttt{y \textasciitilde x1 * x2 * x3}). If we were able to fully expand that notation and introduce placeholders for coefficients, then R's \texttt{deriv()} function could return accurate specifications of the marginal effects:
+\noindent The code necessary to perform these calculations is simple, but it is sensitive to human error. And if the model is modified, the positions of coefficients may change, breaking code. Furthermore, the second analytic step (defining the partial derivatives according to a set of derivation rules) is actually extremely complicated, at least in order to handle any general class of model formulae. In computational terms, this is especially true when considering the fairly limited information contained in the formula expression used to specify the model (\texttt{y \textasciitilde x1 * x2 * x3}).
 
-<<deriv>>=
+If we were able to fully expand that notation and introduce placeholders for coefficients, then R's symbolic derivative function (\texttt{deriv()}) could return accurate specifications of the three marginal effects as \textit{expressions} shown in the \texttt{.grad[, "x1"]}, \texttt{.grad[, "x1"]}, etc.:
+
+<<deriv, echo = TRUE, results = "show">>=
 deriv(y ~ b1*x1 + b2*x2 + b3*x3 + b4*x1*x2 + 
           b5*x2*x3 + b6*x1*x3 + b7*x1*x2*x3, 
       c("x1", "x2", "x3"))
 @
 
-Yet the concise expression of a complex model through R's succinct modelling language --- the ``formula'' class, derived from GENSTAT \citep{WilkinsonRogers1973} --- highlights that it is quite easy to express a model for which the mapping of righthand-side variables to coefficients is completely intransparent. Sources of useful generality, such as the expression of ``factors'' (categorical variables via \texttt{factor()}) and on-the-fly variable transformations through \texttt{I()} statements, impede symbolic derivation. These useful features make it possible to define a model for which no symbolic derivative rule is available, such as Equation (2) in Table \ref{tab:formulae}:
+But, this is prone to the same limitations as the manual calculation of marginal effects, shown above, wherein human error and iterative changes to the model easily produce incorrectly results.
+
+A further challenge arises due to the terse syntax needed to express a complex model in R's modelling language --- the ``formula'' class, derived from GENSTAT \citep{WilkinsonRogers1973}. It is quite easy to express a model for which the mapping of righthand-side variables to coefficients is completely intransparent, such as \texttt{y ~ 0 - (x1 + x2) * (x3 + x4)}. Additional sources of useful generality in the language, such as the expression of ``factors'' (categorical variables via \texttt{factor()}) and on-the-fly variable transformations through \texttt{I()} statements, impede symbolic derivation. These useful features mean it is possible to define a model for which no symbolic derivative rule is available, such as Equation (2) in Table \ref{tab:formulae}:
 
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
 \begin{alltt}
-> deriv(y ~ b1*x1 + b2*I(x1^2) + b3*x2, c("x1", "x2"))
+deriv(y ~ b1*x1 + b2*I(x1^2) + b3*x2, c("x1", "x2"))
 \end{alltt}
 \begin{verbatim}
 Error in deriv.formula(y ~ b1 * x1 + b2 * I(x1^2) + b3 * x2, c("x1", "x2")) : 
@@ -161,13 +229,13 @@ deriv(y ~ b1*x1 + b2*x1squared + b3*x2, c("x1", "x2"))
 
 What then can be done? A standard answer --- and the answer chosen by Stata --- is to rely on numerical derivatives (i.e., numeric approximations of the partial derivatives). The R \textbf{margins} package follows this approach.
 
-What is a numerical approximation? Rather than defining a partial derivative as an exact formula, a numerical derivative approximates the slope of the response function from a model by taking small steps, $h$ in $x$, calculating the $\hat{y}$ at each point, and then applying a simple difference method to define the slope at point $x$:
+What is a numerical approximation? Rather than defining a partial derivative as an exact formula using symbolic derivation rules, a numerical derivative approximates the slope of the response function from a model by taking small steps, $h$ in $x$, calculating the $\hat{y}$ at each point, and then applying a simple difference method to define the slope at point $x$:
 
 \begin{equation}
 f'(x) = \lim\limits_{h \rightarrow 0} \dfrac{f(x + h) - f(x)}{h}
 \end{equation}
 
-While seemingly crude, as $h \lim 0$, the result converges on the true partial derivative. Figure \ref{fig:numderiv1} displays a few numerical derivatives of $f(x) = x^2$ at the point $x = 1$ for various large values of $h$. As should be clear, as $h$ decreases, the approximations approach the true answer of 2. Inferring the partial derivative across the full domain of $x$ requires repeating this approximation process at every substantively meaningful value of $x$.
+While seemingly crude, as $h \lim 0$, the result converges on the true partial derivative and every value of $x$ and requires no knowledge of formula for the partial derivative(s). To provide some intuition, Figure \ref{fig:numderiv1} displays a few numerical derivatives of $f(x) = x^2$ at the point $x = 1$ for various large values of $h$ (2.0, 1.0, 0.5, 0.25). As should be clear, as $h$ decreases, the approximations approach the true slope of the derivative, $f'(x) = 2*x$, which is 2. Inferring the partial derivative across the full domain of $x$ requires repeating this approximation process at every substantively meaningful value of $x$.
 
 <<numderiv1, fig.cap = "Approximation of Derivative via One-Sided Numerical Approach">>=
 curve(x^2, from = -5, to = 4, lwd = 2, las = 1, 
@@ -239,20 +307,31 @@ text(3.1, 0.5, "...", pos = 4)
 @
 
 
-% add a bit more about the actually computational details
+Computationally, this is two-sided numerical approximation is achieved via R's \texttt{predict()} method, which provides (for a given model result) the fitted value $\hat{Y}$ for every observation in a data frame.\footnote{\textbf{margins} provides a type-consistent wrapper for this, called \texttt{prediction()} that always returns a data frame (rather than a vector or list of fitted values).} At a low level, \textbf{margins} provides a function, \texttt{dydx()}, which implements the procedure. Taking a model object, \texttt{model}, and data frame, \texttt{data}, as input, the function calculates a value of $h$ that accounts for floating point errors (\texttt{setstep()}), generates two data frames \texttt{d0} (representing $f(x-h)$) and \texttt{d1} (representing $f(x+h)$), calls \texttt{predict()} on \texttt{d0} and \texttt{d1}, and calculates the numerical derivative from the resulting fitted $\hat{Y}$ values:
 
+\begin{verbatim}
+d0 <- d1 <- data
+...
+d0[[variable]] <- d0[[variable]] - setstep(d0[[variable]])
+d1[[variable]] <- d1[[variable]] + setstep(d1[[variable]])
+...
+P0 <- prediction(model = model, data = d0, type = type)[["fitted"]]
+P1 <- prediction(model = model, data = d1, type = type)[["fitted"]]
+...
+out <- (P1 - P0) / (d1[[variable]] - d0[[variable]])
+\end{verbatim}
 
-% talk about lm versus glm
+\noindent The \texttt{type} argument accommodates different quantities of interest in non-linear models, such as generalized linear models. For a logistic regression model, for example, we may want to interpret marginal effects (or ``partial effects'') on the scale of the observed outcome, so that we can understand the marginal effects as changes in the predicted probability of the outcome. By default, \textbf{margins} sets \texttt{type = "response"}. This can, however, be modified. For GLMs, this could be set to \texttt{type = "link"} in order to calculate true marginal effects on the scale of the linear predictor.
 
-
-\subsection{Final Notes on Computation}\label{sec:notes}
-
-A few points are worth noting about how this is handled in the R \texttt{margins} command.
+A few final points are worth noting:
 
 \begin{itemize}
 \item A relatively large value of $h$ is used by default: $sqrt(1x10^-7)$. Alternative values can be specified manually.
-\item Much numerical differentiation in R is conducted using the \texttt{numDeriv} package. This approach is not used here because \texttt{numDeriv} is not vectorized and is thus quite slow.
-\item \texttt{margins} detect the variable class of variables entered into a regression, distinguishing numeric variables from factor and logical. For the latter two variable classes, discrete differences rather than derivatives are reported. For factors (and ``ordered'') variables, changes are expressed moving from the base category to a particular category (e.g., from male to female). For logical variables, discrete changes are expressed moving from \texttt{FALSE} to \texttt{TRUE}.
+
+\item Much numerical differentiation in R is conducted using the \textbf{numDeriv} package. This approach is not used here because \textbf{numDeriv} is not vectorized and is thus quite slow. The issue arises because \textbf{numDeriv} calculates $f(x-h)$ and $f(x+h)$ via for-loop, iterating over observations in a data set. \textbf{margins} provides a significant performance enhancement by using the vectorized procedures shown above.
+
+\item \textbf{margins} detects the \textit{class} of variables entered into a regression, distinguishing numeric variables from factor, ordered, and logical. For the non-numeric classes, discrete differences rather than partial derivatives are reported as the partial derivative of a discrete variable is undefined. For factors (and ``ordered'') variables, changes are expressed moving from the base category to a particular category (e.g., from male to female, high school to university education, etc.). For logical variables, discrete changes are expressed moving from \texttt{FALSE} to \texttt{TRUE}. The treatment of ordered variables (in essence treating them as factors) differs from R's default behavior.
+
 \item Discrete changes can be requested for numeric variables, by specifying the \texttt{change} argument to the workhorse \texttt{dydx()} function, which allows for expression of changes from observed minimum to maximum, the interquartile range, mean +/- a standard deviation, or any arbitrary step.
 \end{itemize}
 
@@ -264,8 +343,8 @@ Calculating the variances of marginal effects is --- like the calculation of mar
 The first step is to acknowledge that the marginal effects are nested functions of $X$. Consider, for example, Equation 1 in Table \ref{tab:formulae}, which provides two marginal effects:\footnote{It would, of course, be possible to specify marginal effects with respect to other $X$ variables but because they are not included in the regression equation, the marginal effects of all other variables are, by definition, zero.}
 
 \begin{align}
-ME(X_1) = \dfrac{\partial Y}{\partial X_1} = f'(X) = g(f(X)) \\
-ME(X_2) = \dfrac{\partial Y}{\partial X_2} = f'(X) = g(f(X))
+ME(X_1) = \dfrac{\partial Y}{\partial X_1} = f_1'(X) = g_1(f(X)) \\
+ME(X_2) = \dfrac{\partial Y}{\partial X_2} = f_2'(X) = g_2(f(X))
 \end{align}
 
 \noindent To calculate the variances of these marginal effects, \textbf{margins} relies on the delta method to provide an approximation (following the lead of Stata). The delta method provides that the variance-covariance matrix of the marginal effect of each variable on $Y$ is given by:
@@ -278,11 +357,13 @@ Var(ME) = J \times Var(\beta) \times J'
 
 \begin{center}\doublespacing
 J = \begin{bmatrix}
+	\frac{\partial g_1}{\partial \beta_0} & 
 	\frac{\partial g_1}{\partial \beta_1} & 
 	\frac{\partial g_1}{\partial \beta_2} & 
 	\dots &
 	\frac{\partial g_1}{\partial \beta_K} \\ 
 
+	\frac{\partial g_2}{\partial \beta_0} & 
 	\frac{\partial g_2}{\partial \beta_1} & 
 	\frac{\partial g_2}{\partial \beta_2} & 
 	\dots &
@@ -290,6 +371,7 @@ J = \begin{bmatrix}
 
 	\dots \\ 
 
+	\frac{\partial g_M}{\partial \beta_0} & 
 	\frac{\partial g_M}{\partial \beta_1} & 
 	\frac{\partial g_M}{\partial \beta_2} & 
 	\dots &
@@ -297,12 +379,12 @@ J = \begin{bmatrix}
 \end{bmatrix}
 \end{center}
 
-Intuition surrounding the Jacobian can be a little bit challenging because the entries are partial derivatives of the marginal effects with respect to the $\beta$'s, not the $X$'s. Thus it involves the somewhat unintuitive exercise of treating the coefficients ($\beta$'s) as variables and the original data variables ($X$'s) as constants. Continuing the running example, the Jacobian for the two marginal effects of Equation (1) in Table \ref{tab:formulae} would be a 2-x-3 matrix:
+Intuition surrounding the Jacobian can be challenging because the entries are partial derivatives of the marginal effects with respect to the $\beta$'s, not the $X$'s. Thus it involves the somewhat unintuitive exercise of treating the coefficients ($\beta$'s) as variables and the original data variables ($X$'s) as constants. Continuing the running example, the Jacobian for the two marginal effects of Equation (1) in Table \ref{tab:formulae} would be a 2-x-4 matrix, where the first column (expressing the partial derivative of each marginal effect with respect to the intercept) is always zero:
 
 \begin{center}\doublespacing
 J = \begin{bmatrix}
-	1 & 0 & X_2 \\
-	0 & 1 & X_1 \\
+	0 & 1 & 0 & X_2 \\
+	0 & 0 & 1 & X_1 \\
 \end{bmatrix}
 \end{center}
 
@@ -310,17 +392,19 @@ J = \begin{bmatrix}
 
 \begin{equation*}
  \begin{bmatrix}
-	1 & 0 & X_2 \\
-	0 & 1 & X_1 \\
+	0 & 1 & 0 & X_2 \\
+	0 & 0 & 1 & X_1 \\
  \end{bmatrix}
  \times
  \begin{bmatrix}
- 	Var(\beta_1) & Cov(\beta_1, \beta_2) & Cov(\beta_1, \beta_3) \\
- 	Cov(\beta_1, \beta_2) & Var(\beta_2) & Cov(\beta_2, \beta_3) \\
- 	Cov(\beta_1, \beta_3) & Cov(\beta_2, \beta_3) & Var(\beta_1) \\
+ 	Var(\beta_0) & Cov(\beta_0, \beta_1) & Cov(\beta_0, \beta_2) & Cov(\beta_0, \beta_3) \\
+ 	Cov(\beta_0, \beta_1) & Var(\beta_1) & Cov(\beta_1, \beta_2) & Cov(\beta_1, \beta_3) \\
+ 	Cov(\beta_0, \beta_2) & Cov(\beta_1, \beta_2) & Var(\beta_2) & Cov(\beta_2, \beta_3) \\
+ 	Cov(\beta_0, \beta_3) & Cov(\beta_1, \beta_3) & Cov(\beta_2, \beta_3) & Var(\beta_1) \\
  \end{bmatrix}
  \times 
  \begin{bmatrix}
+ 	0 & 0 \\
  	1 & 0 \\
  	0 & 1 \\
  	X_2 & X_1 \\
@@ -358,7 +442,7 @@ Cov(ME(X_1), ME(X_2)) = &\hspace{1ex} Cov(\beta_1, \beta_2) + X_2 Cov(\beta_2, \
 \end{align*}
 
 
-To achieve this computationally, \textbf{margins} uses a numerical approximation of the Jacobian. The computational details necessary to express this for any regression model are similar to those for approximating the marginal effects themselves. This is achieved by specifying a function, $g(\beta)$, that takes coefficient estimates as its input and holds data constant at observed values.\footnote{Thus, the distinction is between marginal effects as a function of data, $g(X)$, versus as a function of coefficient estimates, $g(\beta)$.} The same numerical differentiation methods as above are then applied to this function, to approximate the Jacobian.\footnote{As a computational note, \textbf{margins} uses the standard variance-covariance matrix returned by any modelling function as the value of $Var(\hat{\beta})$ but also alternative values to be specified.}
+To achieve this computationally, \textbf{margins} uses a numerical approximation of the Jacobian. The computational details necessary to express this for any regression model are similar to those for approximating the marginal effects themselves. This is achieved by creating a ``function factory'' that accepts data and a model object as input and returns a function that holds data constant at observed values, but modifies the estimated coefficients according some new input, applying \texttt{predict()} to the original data and modified coefficients.\footnote{This re-expresses $g(x, \beta)$ as a function only of coefficients: $g(\beta)$, holding $x$ constant.} The same numerical differentiation methods as above are then applied to this function, to approximate the Jacobian.\footnote{As a computational note, \textbf{margins} uses the standard variance-covariance matrix returned by any modelling function as the value of $Var(\hat{\beta})$ but also alternative values to be specified via \texttt{vcov} argument to \texttt{margins()}.}
 
 
 %\section{Comparison with Stata \texttt{margins} and Clarify}\label{sec:clarify}
@@ -376,5 +460,11 @@ Average marginal effects offer an intuitive technique for interpreting regressio
 At present, \textbf{margins} estimates quantities of interest for a wide array of model formulae used in least squares regression and many common generalized linear models. Stata's \texttt{margins} and Zelig/Clarify produce quantities of interest for a wider array of model types. Extension of \textbf{margins} to other model types is planned for the future. The creation of the core \texttt{margins} function as an S3 generic means that the package is easily extensible to other model types (e.g., those introduced in other user-created packages). Development of \textbf{margins} is handled on GitHub, allowing for easy contribution of bug fixes, enhancements, and additional model-specific methods. By publishing \textbf{margins} as free and open-source software (FOSS), it should be straightforward for users of other languages (Python, julia, etc.) to implement similar functionality. Indeed, the port of closed source statistical software to open source represents an underappreciated by critical step in making FOSS data analysis more accessible to those used to working with closed source products.
 
 For applied data analysis, the most important feature of \textbf{margins} is its intuitive use and the near-direct translation of Stata code into R. For those used to Stata's \texttt{margins} command, R's \textbf{margins} package should be a painless transition. For R users not accustomed to calculating marginal effects, \textbf{margins} should also offer a straightforward and tidy way of calculating predicted values and marginal effects, and displaying the results thereof.
+
+
+\singlespacing
+\bibliography{references}
+\clearpage
+
 
 \end{document}
