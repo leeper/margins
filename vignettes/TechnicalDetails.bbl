@@ -1,0 +1,47 @@
+\begin{thebibliography}{1}
+
+\bibitem{AiNorton2003}
+Chunrong Ai and Edward~C. Norton.
+\newblock Interaction terms in logit and probit models.
+\newblock 80:123--129, 2003.
+
+\bibitem{BerryGolderMilton2012}
+William~D. Berry, Matt Golder, and Daniel Milton.
+\newblock Improving tests of theories positing interaction.
+\newblock {\em The Journal of Politics}, 74(03):653--671, March 2012.
+
+\bibitem{BramborClarkGolder2005}
+Thomas Brambor, William~Roberts Clark, and Matt Golder.
+\newblock Understanding interaction models: Improving empirical analyses.
+\newblock {\em Political Analysis}, 14(1):63--82, May 2005.
+
+\bibitem{KingTomzWittenberg2000}
+Gary King, Michael Tomz, and Jason Wittenberg.
+\newblock Making the most of statistical analyses: Improving interpretation and
+  presentation.
+\newblock {\em American Journal of Political Science}, 44(2):347--361, April
+  2000.
+
+\bibitem{Long1997}
+J.~Scott Long.
+\newblock {\em Regression Models for Categorical and Limited Dependent
+  Variables}.
+\newblock Sage Publications, Inc, 1997.
+
+\bibitem{NortonWangAi2004}
+Edward~C. Norton, Hua Wang, and Chunrong Ai.
+\newblock Computing interaction effects and standard errors in logit and probit
+  models.
+\newblock 4(2):154--167, 2004.
+
+\bibitem{Stata11}
+StataCorp.
+\newblock Stata statistical software: Release 11, 2009.
+
+\bibitem{Williams2012}
+Richard Williams.
+\newblock Using the margins command to estimate and interpret adjusted
+  predictions and marginal effects.
+\newblock 12:308--331, 2012.
+
+\end{thebibliography}

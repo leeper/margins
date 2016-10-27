@@ -16,7 +16,7 @@
 
 \maketitle
 
-{\abstract Applied data analysts regularly need to make use of regression analysis to understand descriptive, predictive, and causal patterns in data. While many applications of ordinary least squares yield estimated regression coefficients that are readily interpretable as the predicted change in $y$ due to a unit change in $x$, models that involve multiplicative interactions or other complex terms are subjective to less clarity of interpretation. Generalized linear models that involve transformations of this linear predictor into binary, ordinal, count or other discrete outcomes lack such ready interpretation. As such, there has been much debate in the literature about how best to interpret these more complex models (e.g., what quantities of interest to extract? what types of graphical presentations to use?). This article proposes that marginal effects, specifically average marginal effects, provide a unified and intuitive way of describing relationships estimated with regression. To begin, I briefly discuss the challenges of interpreting complex models and review existing views on how to interpret such models, before describing average marginal effects and the somewhat challenging computational task of extracting this quantity of interest from regression results. I conclude with implications for statistical practice and for the design of statistical software.}
+{\abstract Applied data analysts regularly need to make use of regression analysis to understand descriptive, predictive, and causal patterns in data. While many applications of ordinary least squares yield estimated regression coefficients that are readily interpretable as the predicted change in $y$ due to a unit change in $x$, models that involve multiplicative interactions or other complex terms are subject to less clarity of interpretation. Generalized linear models that involve transformations of this linear predictor into binary, ordinal, count or other discrete outcomes lack such ready interpretation. As such, there has been much debate in the literature about how best to interpret these more complex models (e.g., what quantities of interest to extract? what types of graphical presentations to use?). This article proposes that marginal effects, specifically average marginal effects, provide a unified and intuitive way of describing relationships estimated with regression. To begin, I briefly discuss the challenges of interpreting complex models and review existing views on how to interpret such models, before describing average marginal effects and the somewhat challenging computational task of extracting this quantity of interest from regression results. I conclude with implications for statistical practice and for the design of statistical software.}
 
 
 \clearpage
@@ -29,15 +29,11 @@ opts_chunk$set(echo = FALSE, results = "hide", dev = "cairo_pdf", fig.height=7, 
 @
 
 
-Regression is a workhorse procedure in modern statistics. In disciplines like Economics and Political Science, hardly any quantitative research manages to escape the use of regression modelling to describe patterns in multivariate data, to assess causal relationships, and to formulate predictions. Ordinary least squares (OLS) regression offers a particularly attractive procedure because the procedure specifies a multivariate relationship as a linear additive relationship between many regressors (i.e., predictors, covariates, or righthand-side variables) and a single outcome variable. The coefficient estimates from an OLS procedure are typically easily interpretable as the expected increase in the outcome due to a unit change in the corresponding regressor.
+Regression is a workhorse procedure in modern statistics. In disciplines like economics and political science, hardly any quantitative research manages to escape the use of regression modelling to describe patterns in multivariate data, to assess causal relationships, and to formulate predictions. Ordinary least squares (OLS) regression offers a particularly attractive procedure because of its limited and familiar assumptions and the ease with which it expresses a multivariate relationship as a linear additive relationship between many regressors (i.e., predictors, covariates, or righthand-side variables) and a single outcome variable. The coefficient estimates from an OLS procedure are typically easily interpretable as the expected increase in the outcome due to a unit change in the corresponding regressor.
 
-This ease of interpretation of simple regression models, however, belies a potential for immense analytic and interpretative complexity. The generality of the regression framework means that it is easily generalized to examine more complex relationships than those that are linear and additive. Regression models can allow specification of non-linear relationships between regressor and outcome, multiplicative interactions between multiple regressors, and transformations via the generalized linear model (GLM).\footnote{Further complicates arise from other expansions of the regression approach, such as interdependent or hierarchically organized observations, instrumental variables methods, and so on.} 
+This ease of interpretation of simple regression models, however, belies a potential for immense analytic and interpretative complexity. The generality of the regression framework means that it is easily generalized to examine more complex relationships, including the specification of non-linear relationships between regressor and outcome, multiplicative interactions between multiple regressors, and transformations via the generalized linear model (GLM) framework.\footnote{Further complexities arise from other expansions of the regression approach, such as interdependent or hierarchically organized observations, instrumental variables methods, and so on.} With this flexibility to specify potentially complex multivariate relationships comes the risk of misinterpretation \citep{BramborClarkGolder2005, BerryGolderMilton2012} and, indeed, frequent miscalculation of quantities of interest \citep{AiNorton2003, NortonWangAi2004}. Coefficient estimates in models that are non-linear or involve interactions lose their direct interpretation as unconditional marginal effects, meaning that interpretation of tabular or graphical presentations requires first understanding the details of the specified model to avoid interpretation errors. Coefficient estimates in GLMs are often not directly interpretable at all. 
 
-With this flexibility to specify potentially complex multivariate relationships comes the risk of misinterpretation \citep{BramborClarkGolder2005, BerryGolderMilton2012} and, indeed, frequent miscalculation of quantities of interest \citep{AiNorton2003, NortonWangAi2004}. Coefficient estimates in models that are non-linear or involve interactions lose their direct interpretation as unconditional marginal effects. Coefficient estimates in generalized linear models are typically not directly interpretable at all. 
-
-For these reasons, and in the interest of making intuitive tabular and visual displays of regression results, there is a growing interest in the display of substantively meaningful quantities of interest that can be drawn from regression estimates \citep{KingTomzWittenberg2000}. This article reviews the literature on substantive interpretation of regression estimates and argues that researchers are often interested in knowing the \textit{marginal effect} of a regressor on an outcome. 
-
-In response to these two factors --- (1) the disconnect between coefficients and substantive influence, and (2) the challenge of conceptualizing and calculating more meaningful quantities of interest --- this article discusses proposes \textit{average marginal effects} as a particularly useful quantity of interest, discusses a computational approach to calculate marginal effects, and offers the \textbf{margins} package for R as a general application of this approach.
+For these reasons, and in the interest of making intuitive tabular and visual displays of regression results, there is a growing interest in the display of substantively meaningful quantities of interest that can be drawn from regression estimates \citep{KingTomzWittenberg2000}. This article reviews the literature on substantive interpretation of regression estimates and argues that researchers are often interested in knowing the \textit{marginal effect} of a regressor on an outcome. I propose \textit{average marginal effects} as a particularly useful quantity of interest, discuss a computational approach to calculate marginal effects, and offer the \textbf{margins} package for R as a general implementation.
 
 The outline of this text is as follows: section \ref{sec:stats} describes the statistical background of regression estimation and the distinctions between estimated coefficients and estimated marginal effects of righthand-side variables, Section \ref{sec:details} describes the computational implementation of \textbf{margins} used to obtain those quantities of interest, and Section \ref{sec:clarify} compares the results of the package to those produced by Stata's \texttt{margins} command \citep{Stata11, Williams2012}, and Zelig/Clarify.
 
@@ -57,7 +53,9 @@ stargazer(m1, m2, dep.var.labels = "Population Size",
           label = "tab:model1")
 @
 
-This default output makes sense for additive linear models (i.e., ordinary least squares regression) because an estimated coefficient is readily and directly interpretable as the expected change in $y$ given a unit change in $x$, holding all other terms constant (see, for example, the coefficient estimates for model 1). When models specify other kinds of terms (e.g., multiple higher powers of a given variable, log transformations, or interactions between variables), the coefficients on those variables do not and cannot clearly communicate the influence of a given righthand-side variable on the outcome because the influence of a given variable is captured by multiple estimated coefficients (see model 2). Looking at a single estimated coefficient and treating it as a marginal effect leads to numerous problematic interpretations \citep{BramborClarkGolder2005}.
+\noindent This default output makes sense for additive linear models (i.e., ordinary least squares regression) because an estimated coefficient is readily and directly interpretable as the expected change in $y$ given a unit change in $x$, holding all other terms constant (see, for example, the coefficient estimates for model 1). A unit change in life expectancy is associated with a population that is 2,586 larger. This \textit{marginal effect} of life expectancy is constant across observations in the dataset, constant across observed values of other variables, and constant across levels of itself. The ``effect'' is thus \textit{unconditional}.
+
+When model specifications include other kinds of terms (e.g., multiple higher powers of a given variable, log transformations, or interactions between variables), the coefficients on those variables do not and cannot clearly communicate the association between a given righthand-side variable and the outcome because that relationship is parameterized through multiple coefficients. In model 2, for example, the relationship between life expectancy and population is parameterized to account for heterogeneity due to GDP per capita (and vice versa, the relationship between GDP per capita and population is parameterized to be heterogeneous across levels of life expectancy). The estimated coefficient for life expectancy (4.412) only carries the meaning of an unconditional marginal effect when logged GDP per capita (and thus the value of \texttt{loggdp:lifeExp}) is zero, which is never. Looking at a single estimated coefficient and treating it as an unconditional marginal effect leads to numerous problematic interpretations \citep{BramborClarkGolder2005}.
 
 <<persp, fig.cap="Expected Population (millions) by GDP/Capita and Life Expectancy", fig.lab="fig:persp">>=
 library("margins")
@@ -68,7 +66,7 @@ persp(m2, zlab = "", zlim = c(-180, 180), main = "Interaction Model (Model 2)")
 
 Visualization of the fitted values from the model makes clear that the two specifications are actually producing fairly similar substantive estimates. Figure \ref{fig:persp} shows the fitted response surface from model 1 (left) and model 2 (right). With the exception of the fitted values at the intersection of very low levels of life expectancy and very high levels of GDP per capita (where data are sparse), the two specifications yield nearly identical substantive interpretations. Higher GDP per capita is associated with lower national population, and higher levels of life expectancy are associated with higher national population. The ambiguous substantive meaning of the results in Table \ref{tab:model1} is due to the fact that the coefficients are not intepretable as \textit{marginal effects}.
 
-But what is a marginal effect exactly? And why is it a useful quantity of interest? Figure \ref{fig:cplot} shows the calculation of the marginal effect of GDP per capita on population size, based upon model 1 in Table \ref{tab:model1}. Because the model is specified without interactions, the slope of the predicted relationship between $x$ and $y$ is straight linear, so the marginal effect of $x$ is estimated as the slope of this fitted value line, using the usual $\dfrac{\Delta Y}{\Delta X}$ calculation. The visibly apparent marginal effect of -26.4 is clearly consistent with the coefficient estimate reported in Table \ref{tab:model1}, model 1.
+But what is a marginal effect exactly? And why is it a useful quantity of interest? Figure \ref{fig:cplot} shows the calculation of the marginal effect of GDP per capita on population size, based upon model 1 in Table \ref{tab:model1}. Because the model is specified without interactions, the slope of the predicted relationship between $x$ and $y$ is straight linear, so the marginal effect of $x$ is estimated as the slope of this fitted value line, using the usual $\frac{\Delta Y}{\Delta X}$ calculation and can be calculated irrespective of the value of life expectancy. The visibly apparent marginal effect of -26.4 is clearly consistent with the coefficient estimate reported in Table \ref{tab:model1}, model 1.
 
 <<cplot1, results = "show", fig.cap = "Marginal Effect of GDP per Capita on Population Size,\\n as shown by Expected Value Plot", fig.lab="fig:cplot">>=
 local({
@@ -99,10 +97,10 @@ local({
 @
 
 
-<<margins1, echo = TRUE, results = "show">>=
-cbind(summary(margins(m1))[[1]][,2:4],
-      summary(margins(m2))[[1]][,2:4])
-@
+%<<margins1, echo = TRUE, results = "show">>=
+%cbind(summary(margins(m1))[[1]][,2:4],
+%      summary(margins(m2))[[1]][,2:4])
+%@
 
 
 \subsection{Generalized Linear Models}
@@ -111,12 +109,7 @@ Furthermore, when models involve a non-linear transformation (e.g., generalized 
 
 
 
-
-Among these, fitted (predicted) values communicate the shape and position of the fitted regression surface (or line in a simple bivariate regression) across the possibly multidimensional covariate space. Predicted values communicate what outcome value would be expected given the patterns observed between covariates and the outcome, enabling both descriptive and predictive inferences. Of more causal relevance is the \textit{marginal effect} of a given variable --- that is, the slope of the regression surface with respect to a given covariate. The marginal effect communicates the rate at which $y$ changes at a given point in covariate space, with respect to one covariate dimension and holding all covariate values constant. This quantity is particularly useful because it is intuitive --- it is simply a slope --- and because it can be calculated from essentially any set of regression estimates.
-
-To calculate marginal effects requires the application of partial derivatives. A marginal effect is, in essence, the slope of multi-dimensional surface with respect to one dimension of that surface. In simple cases, calculation of a marginal effect simply requires application of familiar derivation rules to a regression equation. For generalized linear models involving a link transformation, it further requires the chain rule. This derivation typically requires manual labor (i.e., defining particular partial derivatives and then calculating them anew, by hand, for each estimated model). Thus while the marginal effect is a useful quantity for communicating the substantive influence of a righthand-side variable, it is difficult or at least unintuitive to formulate mentally. This complexity also means that it can be computationally challenging to define and calculate marginal effects for any general set of model specifications. While one can easily write code to calculate the marginal effect of $x1$ for the common regression equation $y = \alpha + \beta_1 x_1 + \beta_2 x_2 + \beta_3 x_1 x_2$ as $\dfrac{\partial y}{x_1} = \beta_1 + \beta_3 x_2$, writing generic code that can calculate $\dfrac{\partial y}{x_1}$ for any arbitrary model specification is far more complicated.
-
-
+\subsection{Quantities of Interest}
 
 
 
@@ -127,13 +120,27 @@ To calculate marginal effects requires the application of partial derivatives. A
 
 % use 3d plot in OLS to show relationship between fitted values and marginal effects w/ interaction
 
+
+Among these, fitted (predicted) values communicate the shape and position of the fitted regression surface (or line in a simple bivariate regression) across the possibly multidimensional covariate space. Predicted values communicate what outcome value would be expected given the patterns observed between covariates and the outcome, enabling both descriptive and predictive inferences. Of more causal relevance is the \textit{marginal effect} of a given variable --- that is, the slope of the regression surface with respect to a given covariate. The marginal effect communicates the rate at which $y$ changes at a given point in covariate space, with respect to one covariate dimension and holding all covariate values constant. This quantity is particularly useful because it is intuitive --- it is simply a slope --- and because it can be calculated from essentially any set of regression estimates.
+
+To calculate marginal effects requires the application of partial derivatives. A marginal effect is, in essence, the slope of multi-dimensional surface with respect to one dimension of that surface. In simple cases, calculation of a marginal effect simply requires application of familiar derivation rules to a regression equation. For generalized linear models involving a link transformation, it further requires the chain rule. This derivation typically requires manual labor (i.e., defining particular partial derivatives and then calculating them anew, by hand, for each estimated model). Thus while the marginal effect is a useful quantity for communicating the substantive influence of a righthand-side variable, it is difficult or at least unintuitive to formulate mentally. This complexity also means that it can be computationally challenging to define and calculate marginal effects for any general set of model specifications. While one can easily write code to calculate the marginal effect of $x1$ for the common regression equation $y = \alpha + \beta_1 x_1 + \beta_2 x_2 + \beta_3 x_1 x_2$ as $\dfrac{\partial y}{x_1} = \beta_1 + \beta_3 x_2$, writing generic code that can calculate $\dfrac{\partial y}{x_1}$ for any arbitrary model specification is far more complicated.
+
+
+\subsection{Which Marginal Effects are of Interest?}
+
 % AMEs versus MEMs versus MERs
 
 
 
+
+\subsection{Response to Earlier Critiques}
+
+Finally, it is worth noting that \citet{KingTomzWittenberg2000} make a strong case against marginal effects calculations premised largely on two points: (1) the computational challenge of calculating marginal effects, and (2) the common (at that time) omission of statements of uncertainty in the presentation of derivative-based quantities of interest (see, for example, displays in \citealt{Long1997}). While the latter is challenging, the next section discusses various computational approaches to derivation including an approximation that is fully general. The subsequent section then discusses the delta method approach to approximating variances of marginal effects, something \citet{KingTomzWittenberg2000} discuss but dismiss. While \textbf{margins} adopts a delta method approach, the simulation method described by these authors is also implemented as an alternative, alongside bootstrapping.
+
+
 \section{Computational Details}\label{sec:details}
 
-This section describes the basic computational features of \textbf{margins}. Specifically, it describes the procedures for calculating marginal effects from the information stored in a model object (e.g., an R object of class \texttt{"lm"} or \texttt{"glm"}) and the procedures for estimating the variances of those marginal effects.
+This section describes the basic computational features of \textbf{margins}, which offers a fully general approach to estimating marginal effects from an arbitrary modelling result. Specifically, it describes the procedures for calculating marginal effects from the information stored in a model object (e.g., an R object of class \texttt{"lm"} or \texttt{"glm"}) and the procedures for estimating the variances of those marginal effects.
 
 \subsection{Symbolic Derivatives}\label{sec:symbolic}
 
@@ -227,7 +234,7 @@ deriv(y ~ b1*x1 + b2*x1squared + b3*x2, c("x1", "x2"))
 
 \subsection{Numerical Derivatives}\label{sec:numerical}
 
-What then can be done? A standard answer --- and the answer chosen by Stata --- is to rely on numerical derivatives (i.e., numeric approximations of the partial derivatives). The R \textbf{margins} package follows this approach.
+What then can be done? A standard answer --- and the answer chosen by Stata's \texttt{margins} command \citep{Stata11} --- is to rely on numerical derivatives (i.e., numeric approximations of the partial derivatives). The R \textbf{margins} package follows this approach.
 
 What is a numerical approximation? Rather than defining a partial derivative as an exact formula using symbolic derivation rules, a numerical derivative approximates the slope of the response function from a model by taking small steps, $h$ in $x$, calculating the $\hat{y}$ at each point, and then applying a simple difference method to define the slope at point $x$:
 
@@ -307,7 +314,9 @@ text(3.1, 0.5, "...", pos = 4)
 @
 
 
-Computationally, this is two-sided numerical approximation is achieved via R's \texttt{predict()} method, which provides (for a given model result) the fitted value $\hat{Y}$ for every observation in a data frame.\footnote{\textbf{margins} provides a type-consistent wrapper for this, called \texttt{prediction()} that always returns a data frame (rather than a vector or list of fitted values).} At a low level, \textbf{margins} provides a function, \texttt{dydx()}, which implements the procedure. Taking a model object, \texttt{model}, and data frame, \texttt{data}, as input, the function calculates a value of $h$ that accounts for floating point errors (\texttt{setstep()}), generates two data frames \texttt{d0} (representing $f(x-h)$) and \texttt{d1} (representing $f(x+h)$), calls \texttt{predict()} on \texttt{d0} and \texttt{d1}, and calculates the numerical derivative from the resulting fitted $\hat{Y}$ values:
+Computationally, this two-sided numerical approximation is achieved via R's \texttt{predict()} method, which provides (for a given model result) the fitted value $\hat{Y}$ for every observation in a data frame.\footnote{\textbf{margins} provides a type-consistent wrapper for this, called \texttt{prediction()} that always returns a data frame (rather than a vector or list of fitted values).} In essence, \texttt{predict()} represents the equation $\hat{Y} = f(X)$ as the function of a model object (containing coefficient estimates) and a data frame (defaulting the original data used in estimation, such that \texttt{fitted(model)} and \texttt{predict(model)} are equivalent). This means that \textbf{margins} can produce marginal effects estimates for any model object class that offers a \texttt{predict()} method.
+
+At a low level, \textbf{margins} provides a function, \texttt{dydx()}, which implements the numerical derivative procedure. Taking a model object, \texttt{model}, and data frame, \texttt{data}, as input, the function calculates a value of $h$ that accounts for floating point errors (the internal function \texttt{setstep()},\footnote{A relatively large value of $h$ is used by default: $sqrt(1x10^-7)$. Alternative values can be specified manually.} shown below), generates two data frames \texttt{d0} (representing $f(x-h)$) and \texttt{d1} (representing $f(x+h)$), calls \texttt{predict()} on \texttt{d0} and \texttt{d1}, and calculates the numerical derivative from the resulting fitted $\hat{Y}$ values according to a two-sided numerical approximation:
 
 \begin{verbatim}
 d0 <- d1 <- data
@@ -321,19 +330,29 @@ P1 <- prediction(model = model, data = d1, type = type)[["fitted"]]
 out <- (P1 - P0) / (d1[[variable]] - d0[[variable]])
 \end{verbatim}
 
-\noindent The \texttt{type} argument accommodates different quantities of interest in non-linear models, such as generalized linear models. For a logistic regression model, for example, we may want to interpret marginal effects (or ``partial effects'') on the scale of the observed outcome, so that we can understand the marginal effects as changes in the predicted probability of the outcome. By default, \textbf{margins} sets \texttt{type = "response"}. This can, however, be modified. For GLMs, this could be set to \texttt{type = "link"} in order to calculate true marginal effects on the scale of the linear predictor.
+\noindent The result is a vector of marginal effects estimates --- the marginal effect at every observed combination of $X$ in the data. This low-level function is wrapped within a function \texttt{margins()}, which is an S3 generic with methods for various common modelling procedures. \texttt{margins()} calculations marginal effects of \textit{all} variables used in a model, along with their variances, and accommodates the estimation of those effects across arbitrary values of $X$ variables (emulating Stata's \texttt{margins, at()} notation). Calling \texttt{dydx()} or \texttt{marginal\_effects()} provides a means to calculate marginal effects without specifying new data or calculating variances, which can be time-consuming. The output of \texttt{margins()} is a ``data.frame'' with an additional ``margins'' class, that contains the original input data, the fitted values from the model, and the marginal effects estimates for each observation:
 
-A few final points are worth noting:
+<<print, echo=TRUE, results = "show">>=
+str(mar2 <- margins(m2)[[1]])
+@
 
-\begin{itemize}
-\item A relatively large value of $h$ is used by default: $sqrt(1x10^-7)$. Alternative values can be specified manually.
+\noindent Attributes contain some additional information about the procedure. By default the AMEs are printed and a \texttt{summary()} method provides a more complete output that is useful for interactive sessions:
 
-\item Much numerical differentiation in R is conducted using the \textbf{numDeriv} package. This approach is not used here because \textbf{numDeriv} is not vectorized and is thus quite slow. The issue arises because \textbf{numDeriv} calculates $f(x-h)$ and $f(x+h)$ via for-loop, iterating over observations in a data set. \textbf{margins} provides a significant performance enhancement by using the vectorized procedures shown above.
+<<summary, echo=TRUE, results = "show">>=
+mar2
+summary(mar2)
+@
 
-\item \textbf{margins} detects the \textit{class} of variables entered into a regression, distinguishing numeric variables from factor, ordered, and logical. For the non-numeric classes, discrete differences rather than partial derivatives are reported as the partial derivative of a discrete variable is undefined. For factors (and ``ordered'') variables, changes are expressed moving from the base category to a particular category (e.g., from male to female, high school to university education, etc.). For logical variables, discrete changes are expressed moving from \texttt{FALSE} to \texttt{TRUE}. The treatment of ordered variables (in essence treating them as factors) differs from R's default behavior.
+\noindent For users of Stata's \texttt{margins} command, this output should look very familiar.
 
-\item Discrete changes can be requested for numeric variables, by specifying the \texttt{change} argument to the workhorse \texttt{dydx()} function, which allows for expression of changes from observed minimum to maximum, the interquartile range, mean +/- a standard deviation, or any arbitrary step.
-\end{itemize}
+A few final points about the computational details of \textbf{margins} are worth noting. First, much numerical differentiation in R is conducted using the \textbf{numDeriv} package. This approach is not used here because \textbf{numDeriv} is not vectorized and is thus quite slow. The issue arises because \textbf{numDeriv} calculates $f(x-h)$ and $f(x+h)$ via for-loop, iterating over observations in a data set. \textbf{margins} provides a significant performance enhancement by using the vectorized procedures shown above.
+
+Second, \textbf{margins} detects the \textit{class} of variables entered into a regression, distinguishing numeric variables from factor, ordered, and logical. For the non-numeric classes, discrete differences rather than partial derivatives are reported as the partial derivative of a discrete variable is undefined. For factors (and ``ordered'') variables, changes are expressed moving from the base category to a particular category (e.g., from male to female, high school to university education, etc.). For logical variables, discrete changes are expressed moving from \texttt{FALSE} to \texttt{TRUE}. The treatment of ordered variables (in essence treating them as factors) differs from R's default behavior.
+
+Third, the \texttt{type} argument accommodates different quantities of interest in non-linear models, such as generalized linear models. For a logistic regression model, for example, we may want to interpret marginal effects (sometimes ``partial effects'') on the scale of the observed outcome, so that we can understand the marginal effects as changes in the predicted probability of the outcome. By default, \textbf{margins} sets \texttt{type = "response"}. This can, however, be modified. For GLMs, this could be set to \texttt{type = "link"} in order to calculate true marginal effects on the scale of the linear predictor.
+
+And, finally, instead of the default \textit{instantaneous} marginal effects, discrete changes can be requested for numeric $X$ variables, by specifying the \texttt{change} argument to the workhorse \texttt{dydx()} function, which allows for expression of changes from observed minimum to maximum, the interquartile range, mean +/- a standard deviation, or any arbitrary step.
+
 
 
 \subsection{Variance Approximation with the Delta Method}
@@ -463,6 +482,7 @@ For applied data analysis, the most important feature of \textbf{margins} is its
 
 
 \singlespacing
+\bibliographystyle{plain}
 \bibliography{references}
 \clearpage
 
