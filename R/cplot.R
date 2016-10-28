@@ -1,6 +1,6 @@
 #' @rdname cplot
 #' @title Conditional predicted value and average marginal effect plots for models
-#' @description Draw one or more conditioanl effects plots reflecting predictions or marginal effects from a model, conditional on a covariate. Currently methods exist for \dQuote{lm} and \dQuote{glm} models.
+#' @description Draw one or more conditioanl effects plots reflecting predictions or marginal effects from a model, conditional on a covariate. Currently methods exist for \dQuote{lm}, \dQuote{glm}, \dQuote{loess} class models.
 #' @param object A model object.
 #' @param x A character string specifying the name of variable to use as the x-axis dimension in the plot.
 #' @param dx If \code{what = "effect"}, the variable whose conditional marginal effect should be displayed. By default it is \code{x} (so the plot displays the marginal effect of \code{x} across values of \code{x}); ignored otherwise.
@@ -35,6 +35,7 @@
 #' @param rug.col A character string specifying \code{col} to \code{\link[graphics]{rug}}.
 #' @param rug.size A numeric value specifying \code{ticksize} to \code{\link[graphics]{rug}}.
 #' @param \dots Additional arguments passed to \code{\link[graphics]{plot}}. 
+#' @details This is somewhat similar to to the output produced by the \code{marginalModelPlot()} function in the \textbf{\href{https://cran.r-project.org/package=MTurkR}{car}} package.
 #' @return A tidy data.frame containing the data used to draw the plot.
 #' @examples
 #' \dontrun{

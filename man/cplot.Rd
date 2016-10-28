@@ -119,7 +119,10 @@ cplot(object, ...)
 A tidy data.frame containing the data used to draw the plot.
 }
 \description{
-Draw one or more conditioanl effects plots reflecting predictions or marginal effects from a model, conditional on a covariate. Currently methods exist for \dQuote{lm} and \dQuote{glm} models.
+Draw one or more conditioanl effects plots reflecting predictions or marginal effects from a model, conditional on a covariate. Currently methods exist for \dQuote{lm}, \dQuote{glm}, \dQuote{loess} class models.
+}
+\details{
+This is somewhat similar to to the output produced by the \code{marginalModelPlot()} function in the \textbf{\href{https://cran.r-project.org/package=MTurkR}{car}} package.
 }
 \examples{
 \dontrun{
