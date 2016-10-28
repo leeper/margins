@@ -111,31 +111,44 @@ Furthermore, when models involve a non-linear transformation (e.g., generalized 
 
 \subsection{Quantities of Interest}
 
+Several quantities of interest may be derived from any regression model result. The first and most obvious, are the coefficient estimates themselves (as have already been discussed). Others include fitted or predicted values of the outcome generated from the model estimates, first-differences or discrete changes, marginal effects or partial effects.
 
+Among these, fitted (predicted) values communicate the shape and position of the fitted regression surface (or line in a simple bivariate regression) across the possibly multidimensional covariate space. In essence, if we express the regression estimates as a function of $X$, $\hat{y} = \hat{f}(X)$, we can evaluate this function at any levels of the covariates. Predicted values communicate what outcome value would be expected given the patterns observed between covariates and the outcome. We might be interested in at least three different quantities that can be calculated from the regression fit:
 
-% coefficient estimates
-% fitted values
-% average fitted values
-% fitted values at particular cases
+\begin{enumerate}
+\item Fitted values at representative, or particular, values of $X$
+\item Fitted values at the mean of $X$
+\item ``Average'' fitted values
+\end{enumerate}
+
+The first of these is simply the evaluation of the fitted value function $\hat{f}(X = x)$, for some particular value $x$ or combination of covariate values. This might be used, for example, to describe what population we would expect to see for a country with a particular combination of life expectancy and GDP values. It would simply report to us the value of the population along the surface shown in Figure \ref{fig:persp}.
+
+The second, fitted values at the mean of $X$, is a summary measure that chooses the values of covariates based upon properties of the distribution of $X$ rather than based on some theoretical reason. Unfortunately, such a quantity is not particularly useful to know because the multidimensional mean of $X$ may not be an observed (or even observable) value.
+
+The third measure, average fitted values, calculates the value $\hat{y}$ for every case in the data and averages the resulting fitted values. The interpretation of this quantity is as the average (or typical) outcome we would expect to observe were our model an accurate representation of the data-generating process for the outcome.
 
 % use 3d plot in OLS to show relationship between fitted values and marginal effects w/ interaction
 
+From these predicted values, one could generate a second class of quantities of interest: discrete changes or ``first differences.'' As their name implies, this quantity expresses the \textit{change} in the predicted outcome that occurs with a given change in the value of covariate(s). Common shifts might include the change in a value of a categorical variable (e.g., from ``male'' to ``female'') or a theoretical meaningful change in a numeric variable (e.g., from its minimum to maximum values).
 
-Among these, fitted (predicted) values communicate the shape and position of the fitted regression surface (or line in a simple bivariate regression) across the possibly multidimensional covariate space. Predicted values communicate what outcome value would be expected given the patterns observed between covariates and the outcome, enabling both descriptive and predictive inferences. Of more causal relevance is the \textit{marginal effect} of a given variable --- that is, the slope of the regression surface with respect to a given covariate. The marginal effect communicates the rate at which $y$ changes at a given point in covariate space, with respect to one covariate dimension and holding all covariate values constant. This quantity is particularly useful because it is intuitive --- it is simply a slope --- and because it can be calculated from essentially any set of regression estimates.
+Finally, we may be interested in the \textit{marginal effect} of a given variable: that is, the slope of the regression surface with respect to a given covariate. The marginal effect communicates the rate at which $y$ changes at a given point in covariate space, with respect to one covariate dimension and holding all covariate values constant. This quantity is particularly useful because it is intuitive --- it is simply a slope --- and because it can be calculated from essentially any set of regression estimates.
 
-To calculate marginal effects requires the application of partial derivatives. A marginal effect is, in essence, the slope of multi-dimensional surface with respect to one dimension of that surface. In simple cases, calculation of a marginal effect simply requires application of familiar derivation rules to a regression equation. For generalized linear models involving a link transformation, it further requires the chain rule. This derivation typically requires manual labor (i.e., defining particular partial derivatives and then calculating them anew, by hand, for each estimated model). Thus while the marginal effect is a useful quantity for communicating the substantive influence of a righthand-side variable, it is difficult or at least unintuitive to formulate mentally. This complexity also means that it can be computationally challenging to define and calculate marginal effects for any general set of model specifications. While one can easily write code to calculate the marginal effect of $x1$ for the common regression equation $y = \alpha + \beta_1 x_1 + \beta_2 x_2 + \beta_3 x_1 x_2$ as $\dfrac{\partial y}{x_1} = \beta_1 + \beta_3 x_2$, writing generic code that can calculate $\dfrac{\partial y}{x_1}$ for any arbitrary model specification is far more complicated.
+To calculate marginal effects requires the application of partial derivatives. A marginal effect is, in essence, the slope of multi-dimensional surface with respect to one dimension of that surface.\footnote{In practice, when categorical covariates are used in a model, the ``marginal effect'' label is applied to quantities calculated as discrete changes.} Marginal effects are a particularly useful quantity of interest because, in the case of OLS, they translate the coefficients estimated from any model parameterization back into the quantity that is expressed by coefficients in any unconditional model: namely the marginal contribution of $x$ to the outcome. As with fitted values, we may be interested in one of three different quantities of interest derived from marginal effects:
 
+\begin{itemize}
+\item Marginal effects at representative values (MERs)
+\item Marginal effects at means (MEMs)
+\item Average marginal effects (AMEs)
+\end{itemize}
 
-\subsection{Which Marginal Effects are of Interest?}
+These quantities are analogous to the three fitted values quantities discussed earlier. MERs calculate the marginal effect of each variable at a particular combination of $X$ values that is theoretically interesting. MEMs calculate the marginal effects of each variable at the means of the covariates. AMEs calculate marginal effects at every observed value of $X$ and average across the resulting effect estimates.
 
-% AMEs versus MEMs versus MERs
-
-
+AMEs are particularly useful because --- unlike MEMs --- produce a single quantity summary that reflects the full distribution of $X$ rather than an arbitrary prediction. Together with MERs, AMEs have the potential to convey a considerable amount of information about the influence of each covariate on the outcome. Because AMEs average across the variability in the fitted outcomes, they can also capture variability better than MEMs. While MERs provide a means to understand and communicate model estimates at theoretically important combinations of covariate values, AMEs provide a natural summary measure that respects both the distribution of the original data and does not rely on summarizing a substantively unobserved or unobservable $X$ value (as in MEMs).
 
 
 \subsection{Response to Earlier Critiques}
 
-Finally, it is worth noting that \citet{KingTomzWittenberg2000} make a strong case against marginal effects calculations premised largely on two points: (1) the computational challenge of calculating marginal effects, and (2) the common (at that time) omission of statements of uncertainty in the presentation of derivative-based quantities of interest (see, for example, displays in \citealt{Long1997}). While the latter is challenging, the next section discusses various computational approaches to derivation including an approximation that is fully general. The subsequent section then discusses the delta method approach to approximating variances of marginal effects, something \citet{KingTomzWittenberg2000} discuss but dismiss. While \textbf{margins} adopts a delta method approach, the simulation method described by these authors is also implemented as an alternative, alongside bootstrapping.
+It is worth noting that \citet{KingTomzWittenberg2000} make a strong case against marginal effects calculations premised largely on two points: (1) the computational challenge of calculating marginal effects, and (2) the common (at that time) omission of statements of uncertainty in the presentation of derivative-based quantities of interest (see, for example, displays in \citealt{Long1997}). While the former is challenging, the next section discusses various computational approaches to derivation including an approximation that is fully general. \textbf{margins} provides a first-of-its-kind implementation of this approach in the R language. This technical innovation makes this concern less problematic than it once was. With respect to the latter critique, the subsequent section then discusses the delta method approach to approximating variances of marginal effects, something \citet{KingTomzWittenberg2000} discuss but dismiss. While \textbf{margins} adopts a delta method approach, the simulation method described by these authors is also implemented as an alternative, alongside a third alternative (bootstrapping). 
 
 
 \section{Computational Details}\label{sec:details}
@@ -353,6 +366,31 @@ Third, the \texttt{type} argument accommodates different quantities of interest 
 
 And, finally, instead of the default \textit{instantaneous} marginal effects, discrete changes can be requested for numeric $X$ variables, by specifying the \texttt{change} argument to the workhorse \texttt{dydx()} function, which allows for expression of changes from observed minimum to maximum, the interquartile range, mean +/- a standard deviation, or any arbitrary step.
 
+\subsection{Comparison with Stata}
+
+As an aside, Stata relies on symbolic derivatives for calculating marginal effects for OLS models (and numerical derivatives in all other cases). This is made possibly by the fact that Stata offers a much less expressive modelling language that broadly allows only two variable times: continuous (denoted by a \texttt{c.} prefix) and factor (denoted by a \texttt{i.} prefix), enables simple interactions either explicitly (as \texttt{x1#x2}, akin to R's \texttt{~ x1:x2}) or implicitly (as \texttt{x1##x2}, akin to R's \texttt{~ x1*x2}), and disallows formula-based transformations (R's \texttt{I()} notation). Thus the calculation of marginal effects is simplified by significantly constraining the number of possible models that can be specified and thus the necessary sophistication of a symbolic derivation procedure.
+
+A downside of this is, however, obvious when one considers a variable that is transformed for some specific modelling purpose but for which substantive interpretations are desired on the original scale. For example, one may log transform a covariate but desire to know the marginal effect of that variable (rather than the marginal effect of its logged form). Stata provides no easy means to achieve this; it only allows the pre-calculation of a new variable, breaking the program's ability to recognize a relationship between a variable and its transformed form. \textbf{margins}, by contrast, makes this simple. Consider, for example, the two regression models show in Table \ref{tab:model3}, which are identical except that model (1) is calculated from a pre-transformed value of GDP per capita and model (2) is calculated from a transformation expressed via \texttt{I()} notation in a regression formula.\footnote{The models are: (1) \texttt{(pop \textasciitilde loggdp} and (2) \texttt{pop \textasciitilde I(log(gdpPercap))} .}
+
+<<log1, results = "asis">>=
+m3a <- lm(pop ~ loggdp, data = gapminder)
+m3b <- lm(pop ~ I(log(gdpPercap)), data = gapminder)
+stargazer(m3a, m3b, dep.var.labels = "Population Size",
+          title = "Example of Log Transformation", 
+          label = "tab:model3")
+@
+
+What effect does GDP per capita have on the outcome? Calculating marginal effects reveals the answer. Because we have specified the transformation using \texttt{I()} notation in model (2), \textbf{margins} can quickly identify the contribution of the original variable:
+
+<<log2, echo = TRUE, results = "show">>=
+summary(margins(m3b)[[1]])
+@
+
+\noindent And this result will differ from that for model (2) except in the resulting z-statistic and p-value which --- as should be the case --- are identical in the two marginal effect calculations:
+
+<<log3, echo = TRUE, results = "show">>=
+summary(margins(m3a)[[1]])
+@
 
 
 \subsection{Variance Approximation with the Delta Method}
@@ -470,6 +508,8 @@ To achieve this computationally, \textbf{margins} uses a numerical approximation
 
 
 %\subsection{Zelig/Clarify}
+
+%\section{Applications}
 
 
 \section{Conclusion}
