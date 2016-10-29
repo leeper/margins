@@ -223,7 +223,7 @@ deriv(y ~ b1*x1 + b2*x2 + b3*x3 + b4*x1*x2 +
 
 But, this is prone to the same limitations as the manual calculation of marginal effects, shown above, wherein human error and iterative changes to the model easily produce incorrectly results.
 
-A further challenge arises due to the terse syntax needed to express a complex model in R's modelling language --- the ``formula'' class, derived from GENSTAT \citep{WilkinsonRogers1973}. It is quite easy to express a model for which the mapping of righthand-side variables to coefficients is completely intransparent, such as \texttt{y ~ 0 - (x1 + x2) * (x3 + x4)}. Additional sources of useful generality in the language, such as the expression of ``factors'' (categorical variables via \texttt{factor()}) and on-the-fly variable transformations through \texttt{I()} statements, impede symbolic derivation. These useful features mean it is possible to define a model for which no symbolic derivative rule is available, such as Equation (2) in Table \ref{tab:formulae}:
+A further challenge arises due to the terse syntax needed to express a complex model in R's modelling language --- the ``formula'' class, derived from GENSTAT \citep{WilkinsonRogers1973}. It is quite easy to express a model for which the mapping of righthand-side variables to coefficients is completely intransparent, such as \texttt{y ~ 0 - (x1 + x2) * (x3 + x4)}. Additional sources of useful generality in the language, such as the expression of ``factors'' (categorical variables via \texttt{factor()}) and on-the-fly variable transformations through \texttt{I()} statements, impede symbolic derivation. These useful features mean it is possible to express a model in formula markup for which no symbolic derivative rule is available, such as Equation (2) in Table \ref{tab:formulae}:
 
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
@@ -237,13 +237,13 @@ Error in deriv.formula(y ~ b1 * x1 + b2 * I(x1^2) + b3 * x2, c("x1", "x2")) :
 \end{kframe}
 \end{knitrout}
 
-\noindent and for which any reasonable workaround would produce an inaccurate set of symbolically arrived at partial derivatives. For example, we could define a new variable \texttt{x1squared} equal to $x_1^2$, but the symbolic differentiation rules are blind to the underlying relationship between $x_1$ and the new variable:
+\noindent and for which any reasonable workaround would produce an inaccurate set of symbolically arrived at partial derivatives.\footnote{The result of \texttt{deriv(y \textasciitilde b1*x1 + b2*x1\^{}2 + b3*x2, c("x1", "x2"))} is correct, but would require recognizing when \texttt{I()} is and is not meaningful in a formula and modifying it accordingly.} For example, we could define a new variable \texttt{x1squared} equal to $x_1^2$, but the symbolic differentiation rules are blind to the underlying relationship between $x_1$ and the new variable:
 
 <<deriv2, echo = TRUE, results = "show">>=
 deriv(y ~ b1*x1 + b2*x1squared + b3*x2, c("x1", "x2"))
 @
 
-\noindent The marginal effects arrived at symbolically ignores that the effect of $x_1$ depends on the value of itself because of the additional squared term. By breaking the relationship between $x_1$ and its squared term, $x_1^2$, the derivative rules lead us to a plainly inaccurate result (that the marginal effect of $x_1$ is simply $\beta_1$).
+\noindent The marginal effect arrived at symbolically ignores that the effect of $x_1$ depends on the value of itself because of the additional squared term. By breaking the relationship between $x_1$ and its squared term, $x_1^2$, the derivative rules lead us to a plainly inaccurate result (that the marginal effect of $x_1$ is simply $\beta_1$).
 
 \subsection{Numerical Derivatives}\label{sec:numerical}
 
@@ -366,85 +366,6 @@ Third, the \texttt{type} argument accommodates different quantities of interest 
 
 And, finally, instead of the default \textit{instantaneous} marginal effects, discrete changes can be requested for numeric $X$ variables, by specifying the \texttt{change} argument to the workhorse \texttt{dydx()} function, which allows for expression of changes from observed minimum to maximum, the interquartile range, mean +/- a standard deviation, or any arbitrary step.
 
-\subsection{Comparison with Other R Packages}
-
-Several existing R packages attempt to estimate quantities of interest, such as marginal effects, but all have limitations. For example, the \textbf{car} package noted above is constrained by its use of symbolic derivatives to the calculation of only particular combinations of effects that can be clearly expressed symbolically. This approach appears to also be used by the \textbf{effects} package, which provides various functions for describing fitted values and producing plots from those quantities. Much of the plotting functionality is provided by \textbf{margin}'s \texttt{cplot()} function. The package is somewhat intransparent in its approach and has an extensive list of explicit limitations about functionality.
-
-Other packages show some promise but seem to fail in common situations. For example, the \textbf{mfx} package \citep{Fernihough2014} provides several functions for calculating marginal effects from common GLMs (logit, probit, poisson, negative-binomial, beta) but does not properly account for the interdependence between terms included in multiplicative interactions. For example:
-
-\begin{verbatim}
-> library("mfx")
-> library("datasets")
-> mfx1 <- glm(vs ~ disp * drat, data = mtcars, family = binomial)
-> logitmfx(mfx1, mtcars)
-Call:
-logitmfx(formula = x, data = mtcars)
-
-Marginal Effects:
-                dF/dx   Std. Err.       z  P>|z|
-disp      -0.00061817  0.00721983 -0.0856 0.9318
-drat      -0.24921775  0.37514481 -0.6643 0.5065
-disp:drat -0.00158312  0.00233612 -0.6777 0.4980
-\end{verbatim}
-
-\noindent The \textbf{erer} package \citep{Sun2016} suffers the same error:
-
-\begin{verbatim}
-> library("erer")
-> maBina(x)
-> x <- glm(vs ~ disp * drat, data = mtcars, family = binomial, x = TRUE)
-> maBina(x)
-            effect error t.value p.value
-(Intercept)  2.060 1.571   1.311   0.200
-disp        -0.001 0.007  -0.086   0.932
-drat        -0.249 0.375  -0.664   0.512
-disp:drat   -0.002 0.002  -0.678   0.504
-\end{verbatim}
-
-\noindent The \textbf{DAMisc} package \citep{Armstrong2016} specifically offers a function, \texttt{intEff()} for handling interactions. It, unfortunately, returns an ambiguous value of the ``interaction effect'' for each observation in a dataset that does not appear to correspond to the marginal effect for either term in the model:
-
-\begin{verbatim}
-> library("DAMisc")
-> head(intEff(x, c("disp", "drat"), data = mtcars))
-                        int_eff        linear        phat  se_int_eff      zstat
-Mazda RX4         -0.0034080006 -3.151623e-03 0.502369027 0.018382454 -0.1853942
-Mazda RX4 Wag     -0.0034080006 -3.151623e-03 0.502369027 0.018382454 -0.1853942
-Datsun 710        -0.0079522078 -5.750136e-04 0.952093495 0.004907381 -1.6204588
-Hornet 4 Drive     0.0183101233 -2.482300e-03 0.269570094 0.021788290  0.8403653
-Hornet Sportabout  0.0007426565 -3.380259e-05 0.002688532 0.001359246  0.5463739
-Valiant           -0.0167213771 -1.333991e-03 0.879716441 0.008581226 -1.9486000
-\end{verbatim}
-
-\noindent Additionally, the \textbf{interplot} \citep{SoltHuKenkel2016} and \textbf{plotMElm} \citep{Gandrud2016} packages offer visualization functionality specifically for displaying results of models that include multiplicative interaction terms but do not provide general interfaces for calculating marginal effects from arbitrary models. The latter package only handles linear models. \textbf{interactionTest} \citep{EsareySumner2015} offers a useful \texttt{fdrInteraction()} for calculating a $t$-statistic that limits the false discovery rate for a marginal effect based on an interaction, but only works in the case of two-way interaction terms. Relatedly, \textbf{visreg} \citep{BrehenyBurchett2016} provides a \textbf{lattice}-based visualization function, \texttt{visreg()} to visualize predicted values from models in sometimes complex ways. \textbf{margins} attempts to emulate some of this in the \texttt{cplot()} function.
-
-\subsection{Comparison with Stata}
-
-As an aside, Stata relies on symbolic derivatives for calculating marginal effects for OLS models (and numerical derivatives in all other cases). This is made possibly by the fact that Stata offers a much less expressive modelling language that broadly allows only two variable times: continuous (denoted by a \texttt{c.} prefix) and factor (denoted by a \texttt{i.} prefix), enables simple interactions either explicitly (as \texttt{x1#x2}, akin to R's \texttt{~ x1:x2}) or implicitly (as \texttt{x1##x2}, akin to R's \texttt{~ x1*x2}), and disallows formula-based transformations (R's \texttt{I()} notation). Thus the calculation of marginal effects is simplified by significantly constraining the number of possible models that can be specified and thus the necessary sophistication of a symbolic derivation procedure.
-
-A downside of this is, however, obvious when one considers a variable that is transformed for some specific modelling purpose but for which substantive interpretations are desired on the original scale. For example, one may log transform a covariate but desire to know the marginal effect of that variable (rather than the marginal effect of its logged form). Stata provides no easy means to achieve this; it only allows the pre-calculation of a new variable, breaking the program's ability to recognize a relationship between a variable and its transformed form. \textbf{margins}, by contrast, makes this simple. Consider, for example, the two regression models show in Table \ref{tab:model3}, which are identical except that model (1) is calculated from a pre-transformed value of GDP per capita and model (2) is calculated from a transformation expressed via \texttt{I()} notation in a regression formula.\footnote{The models are: (1) \texttt{(pop \textasciitilde loggdp} and (2) \texttt{pop \textasciitilde I(log(gdpPercap))} .}
-
-<<log1, results = "asis">>=
-m3a <- lm(pop ~ loggdp, data = gapminder)
-m3b <- lm(pop ~ I(log(gdpPercap)), data = gapminder)
-stargazer(m3a, m3b, dep.var.labels = "Population Size",
-          title = "Example of Log Transformation", 
-          label = "tab:model3")
-@
-
-What effect does GDP per capita have on the outcome? Calculating marginal effects reveals the answer. Because we have specified the transformation using \texttt{I()} notation in model (2), \textbf{margins} can quickly identify the contribution of the original variable:
-
-<<log2, echo = TRUE, results = "show">>=
-summary(margins(m3b)[[1]])
-@
-
-\noindent And this result will differ from that for model (2) except in the resulting z-statistic and p-value which --- as should be the case --- are identical in the two marginal effect calculations:
-
-<<log3, echo = TRUE, results = "show">>=
-summary(margins(m3a)[[1]])
-@
-
-\noindent Despite some of the underlying limitations, Stata's \texttt{margins} command is incredibly user friendly and easy-to-use. Its output is also clean and intuitive. As a result, the behavior of \textbf{margins} try (as closely as possible) to mimic the behavior. It does not attempt, however, to provide: (1) an easy way of calculating MEMs (as Stata does with the \texttt{, atmeans} option), (2) calculating of predicted values (since R already provides this via \texttt{predict()}), or (3) cover the full class of model types that Stata currently supports.
-
 \subsection{Variance Approximation with the Delta Method}
 
 Calculating the variances of marginal effects is --- like the calculation of marginal effects themselves --- possible if one can easily express and compute a marginal effect \textit{symbolically}. But just as a general solution to the problem of marginal effect calculation quickly necessitated a numerical approximation, so too does the calculation of variances in that framework. 
@@ -554,12 +475,189 @@ Cov(ME(X_1), ME(X_2)) = &\hspace{1ex} Cov(\beta_1, \beta_2) + X_2 Cov(\beta_2, \
 To achieve this computationally, \textbf{margins} uses a numerical approximation of the Jacobian. The computational details necessary to express this for any regression model are similar to those for approximating the marginal effects themselves. This is achieved by creating a ``function factory'' that accepts data and a model object as input and returns a function that holds data constant at observed values, but modifies the estimated coefficients according some new input, applying \texttt{predict()} to the original data and modified coefficients.\footnote{This re-expresses $g(x, \beta)$ as a function only of coefficients: $g(\beta)$, holding $x$ constant.} The same numerical differentiation methods as above are then applied to this function, to approximate the Jacobian.\footnote{As a computational note, \textbf{margins} uses the standard variance-covariance matrix returned by any modelling function as the value of $Var(\hat{\beta})$ but also alternative values to be specified via \texttt{vcov} argument to \texttt{margins()}.}
 
 
-%\section{Comparison with Stata \texttt{margins} and Clarify}\label{sec:clarify}
+\section{Package Functionality}
 
-%\subsection{Stata's \texttt{margins} module}
+At its core, \textbf{margins} offers one function: an S3 generic \texttt{margins()} that takes a model object as input and returns a list of data frames of class \texttt{"margins"}, which contain the original data, fitted values, standard errors of fitted values, marginal effects for all variables included in the model formula, and variances of those marginal effects. The internals of this function are mostly exported from the package to allow users to calculate just the marginal effects without the other data (using \texttt{marginal\_effects()}, to calculate the marginal effect of just one variable (using \texttt{dydx()}), and to plot and summarize the model and marginal effects in various ways (using \texttt{cplot()}, and \texttt{plot()}, \texttt{persp()}, and \texttt{image()} methods). Table \ref{tab:functions} provides a full list of exported functions and a brief summary of their behavior.
+
+\begin{table}
+\begin{tabular}{llp{3in}} %\toprule
+\textbf{Type} & \textbf{Function} & \textbf{Behavior} \\ \midrule
+\multirow{4}{*}{Core} & \texttt{dydx()} & Calculate marginal effect of one, named variable \\ \cline{2-3}
+ & \texttt{marginal\_effects()} & Calculate marginal effects of all variables in a model \\ \cline{2-3}
+ & \texttt{margins()} & An S3 generic to calculate marginal effects for all variables and their variances \\ \cline{2-3}
+ & \texttt{prediction()} & An S3 generic that provides a type-safe wrapper around \texttt{predict()} in order to always return a data frame \\ 
+\midrule
+
+\multirow{4}{*}{Visualization} & \texttt{plot.margins()} & An analogue to Stata's \texttt{marginsplot} command that plots calculated marginal effects. \\ \cline{2-3}
+ & \texttt{cplot()} & An S3 generic that plots \textit{conditional} fitted values or marginal effects across a named covariate \\ \cline{2-3}
+ & \texttt{persp.lm()}, etc. & S3 methods for the \texttt{persp()} generic that provide three-dimensional representations akin to \texttt{cplot()} but for two covariates \\ \cline{2-3}
+ & \texttt{image.lm()}, etc. & S3 methods for the \texttt{image()} generic that produce flat representations of the \texttt{persp()} plots \\ 
+\midrule
+
+\multirow{4}{*}{Utilities} & \texttt{build\_margins()} & The workhorse function underlying \texttt{margins()} that assembles the response \texttt{"margins"} object for one data frame input. \\ \cline{2-3}
+ & \texttt{extract\_marginal\_effects()} & A utility to return a tidy data frame containing only marginal effects from a \texttt{"margins"} object. \\ \cline{2-3}
+ & \texttt{build\_datalist()} & A function that takes a data frame and list of replacement values as input and returns a list of data frames containing modified values \\ \cline{2-3}
+ & \texttt{find\_data()} & A function to extract or attempt to find the data for a model object. \\
+
+\bottomrule
+\end{tabular}
+\caption{Functions in the \textbf{margins} Package}\label{tab:functions}
+\end{table}
+
+At present, \texttt{margins()} methods exist for objects of class \texttt{"lm"}, \texttt{"glm"}, and \texttt{"loess"}. The \texttt{margins.default()} method may work for other object classes, but is untested. The use of the package is meant to be extremely straight forward and to be consistent across model classes. To use it, one needs only specify estimate a model using, for example, \texttt{glm()}, and then pass the resulting object to \texttt{margins()} to obtain the marginal effects estimates as \texttt{"margins"} object. For interactive use, the \texttt{summary.margins()} method will be useful:
+
+<<margins1, echo = TRUE, results = "show">>=
+library("datasets")
+m <- lm(mpg ~ wt + am + factor(cyl), data = mtcars)
+margins(m)
+summary(margins(m))
+@
+
+\noindent By default, \texttt{print.margins()} shows the AMEs for each variable. Factor variables are handled automatically by expressing their influence as discrete changes in the outcome moving from the base category to each other category. The \texttt{summary.margins()} output shows the AMEs, along with corresponding standard errors, $z$-statistics, $p$-values, and a 95\% confidence interval.\footnote{The confidence level can be changed by setting \texttt{level = beta}, such as \texttt{summary(margins(m), level = 0.67)} to obtain a 67\% CI.}
+
+To obtain average MERs (an AME with the value of one or more covariates replaced by a theoretically interesting value), users can specify the \texttt{at} option to \texttt{margins()}. In effect, this uses \texttt{build\_datalist()} to create a list of data frames to be used as input to \texttt{marginal\_effects()} and calculates the marginal effects of every variable separately for each dataset. This can be useful to understand, for example, what the marginal effect of a vehicle's weight is on its fuel efficiency, separately for manual and automatic vehicles, when the relationship between weight and fuel economy is possibly non-linear:
+
+<<margins2, echo = TRUE, results = "show">>=
+m <- lm(mpg ~ wt * am + I(wt^2) * am, data = mtcars)
+summary(margins(m, at = list(am = 0:1)))
+@
+
+The plotting functionality provided by \textbf{margins} can be particularly useful for understanding models and the contribution of each covariate to the outcome. Consider for example, a model involving a simple interaction between two covariates. To understand the effect of each, we can calculate AMEs:
+
+<<margins3a, echo = TRUE, results = "show">>=
+m <- lm(mpg ~ wt * I(wt^2) * hp * I(hp^2), data = mtcars)
+margins(m)
+@
+
+\noindent But we can also display the results visually to better understand the results. For example, \texttt{cplot()} will show the predicted value of the outcome across levels of covariates:
+
+<<margins3b, echo = TRUE, fig.show = "hold">>=
+cplot(m, "wt")
+cplot(m, "hp")
+@
+
+\noindent The \texttt{persp()} method will show the same but as a three-dimensional surface and the \texttt{image()} method will present that information as a two-dimensional ``heatmap''-style format:
+
+<<margins3c, echo = TRUE, fig.show = "hold">>=
+persp(m, "wt", "hp")
+image(m, "wt", "hp")
+@
+
+\noindent These plots all show fitted values, thereby indirectly communicating marginal effects. To show marginal effects themselves, one can use the \texttt{plot.margins()} method to simply show the average marginal effects visually:
+
+<<margins3d, echo = TRUE, results = "show">>=
+m <- lm(mpg ~ wt + am + factor(cyl), data = mtcars)
+plot(margins(m))
+@
+
+And the \texttt{cplot()}, \texttt{persp()}, and \texttt{image()} methods can be modified to request marginal effects rather than fitted values by setting the \texttt{what = "effect"} argument:
+
+<<margins3e, echo = TRUE>>=
+m <- lm(mpg ~ wt * I(wt^2) * hp * I(hp^2), data = mtcars)
+cplot(m, "wt", what = "effect")
+persp(m, what = "effect")
+image(m, what = "effect")
+@
 
 
-%\subsection{Zelig/Clarify}
+\subsection{Comparison with Other R Packages}
+
+Several existing R packages attempt to estimate quantities of interest, such as marginal effects, but all have limitations. For example, the \textbf{car} package noted above is constrained by its use of symbolic derivatives to the calculation of only particular combinations of effects that can be clearly expressed symbolically. This approach appears to also be used by the \textbf{effects} package, which provides various functions for describing fitted values and producing plots from those quantities. Much of the plotting functionality is provided by \textbf{margin}'s \texttt{cplot()} function. The package is somewhat intransparent in its approach and has an extensive list of explicit limitations about functionality.
+
+Other packages show some promise but seem to fail in common situations. For example, the \textbf{mfx} package \citep{Fernihough2014} provides several functions for calculating marginal effects from common GLMs (logit, probit, poisson, negative-binomial, beta) but does not properly account for the interdependence between terms included in multiplicative interactions. For example:
+
+\begin{verbatim}
+> library("mfx")
+> library("datasets")
+> mfx1 <- glm(vs ~ disp * drat, data = mtcars, family = binomial)
+> logitmfx(mfx1, mtcars)
+Call:
+logitmfx(formula = x, data = mtcars)
+
+Marginal Effects:
+                dF/dx   Std. Err.       z  P>|z|
+disp      -0.00061817  0.00721983 -0.0856 0.9318
+drat      -0.24921775  0.37514481 -0.6643 0.5065
+disp:drat -0.00158312  0.00233612 -0.6777 0.4980
+\end{verbatim}
+
+\noindent The \textbf{erer} package \citep{Sun2016} suffers the same error:
+
+\begin{verbatim}
+> library("erer")
+> maBina(x)
+> x <- glm(vs ~ disp * drat, data = mtcars, family = binomial, x = TRUE)
+> maBina(x)
+            effect error t.value p.value
+(Intercept)  2.060 1.571   1.311   0.200
+disp        -0.001 0.007  -0.086   0.932
+drat        -0.249 0.375  -0.664   0.512
+disp:drat   -0.002 0.002  -0.678   0.504
+\end{verbatim}
+
+\noindent The \textbf{DAMisc} package \citep{Armstrong2016} specifically offers a function, \texttt{intEff()} for handling interactions. It, unfortunately, returns an ambiguous value of the ``interaction effect'' for each observation in a dataset that does not appear to correspond to the marginal effect for either term in the model:
+
+\begin{verbatim}
+> library("DAMisc")
+> head(intEff(x, c("disp", "drat"), data = mtcars))
+                        int_eff        linear        phat  se_int_eff      zstat
+Mazda RX4         -0.0034080006 -3.151623e-03 0.502369027 0.018382454 -0.1853942
+Mazda RX4 Wag     -0.0034080006 -3.151623e-03 0.502369027 0.018382454 -0.1853942
+Datsun 710        -0.0079522078 -5.750136e-04 0.952093495 0.004907381 -1.6204588
+Hornet 4 Drive     0.0183101233 -2.482300e-03 0.269570094 0.021788290  0.8403653
+Hornet Sportabout  0.0007426565 -3.380259e-05 0.002688532 0.001359246  0.5463739
+Valiant           -0.0167213771 -1.333991e-03 0.879716441 0.008581226 -1.9486000
+\end{verbatim}
+
+\noindent Additionally, the \textbf{interplot} \citep{SoltHuKenkel2016} and \textbf{plotMElm} \citep{Gandrud2016} packages offer visualization functionality specifically for displaying results of models that include multiplicative interaction terms but do not provide general interfaces for calculating marginal effects from arbitrary models. The latter package only handles linear models. \textbf{interactionTest} \citep{EsareySumner2015} offers a useful \texttt{fdrInteraction()} for calculating a $t$-statistic that limits the false discovery rate for a marginal effect based on an interaction, but only works in the case of two-way interaction terms. Relatedly, \textbf{visreg} \citep{BrehenyBurchett2016} provides a \textbf{lattice}-based visualization function, \texttt{visreg()} to visualize predicted values from models in sometimes complex ways. \textbf{margins} attempts to emulate some of this in the \texttt{cplot()} function.
+
+\subsection{Comparison with Stata}
+
+As an aside, Stata relies on symbolic derivatives for calculating marginal effects for OLS models (and numerical derivatives in all other cases). This is made possibly by the fact that Stata offers a much less expressive modelling language that broadly allows only two variable times: continuous (denoted by a \texttt{c.} prefix) and factor (denoted by a \texttt{i.} prefix), enables simple interactions either explicitly (as \texttt{x1#x2}, akin to R's \texttt{~ x1:x2}) or implicitly (as \texttt{x1##x2}, akin to R's \texttt{~ x1*x2}), and disallows formula-based transformations (R's \texttt{I()} notation). Thus the calculation of marginal effects is simplified by significantly constraining the number of possible models that can be specified and thus the necessary sophistication of a symbolic derivation procedure.
+
+The result is a syntax that can quickly and easily be used to calculate marginal effects for essentially any regression model:
+
+\begin{verbatim}
+. quietly reg pop gdpPercap
+. margins, dydx(*)
+
+Average marginal effects                        Number of obs     =      1,704
+Model VCE    : OLS
+
+Expression   : Linear prediction, predict()
+dy/dx w.r.t. : gdpPercap
+
+------------------------------------------------------------------------------
+             |            Delta-method
+             |      dy/dx   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+   gdpPercap |  -275.6895   260.9549    -1.06   0.291    -787.5156    236.1366
+------------------------------------------------------------------------------
+\end{verbatim}
+
+A downside of Stata's limited expressiveness becomes obvious when one considers a variable that is transformed for some specific modelling purpose but for which substantive interpretations are desired on the original scale. For example, one may log transform a covariate but desire to know the marginal effect of that variable (rather than the marginal effect of its logged form). Stata provides no easy means to achieve this; it only allows the pre-calculation of a new variable, breaking the program's ability to recognize a relationship between a variable and its transformed form. \textbf{margins}, by contrast, makes this simple. Consider, for example, the two regression models show in Table \ref{tab:model3}, which are identical except that model (1) is calculated from a pre-transformed value of GDP per capita and model (2) is calculated from a transformation expressed via \texttt{I()} notation in a regression formula.\footnote{The models are: (1) \texttt{(pop \textasciitilde loggdp} and (2) \texttt{pop \textasciitilde I(log(gdpPercap))} .}
+
+<<log1, results = "asis">>=
+m3a <- lm(pop ~ loggdp, data = gapminder)
+m3b <- lm(pop ~ I(log(gdpPercap)), data = gapminder)
+stargazer(m3a, m3b, dep.var.labels = "Population Size",
+          title = "Example of Log Transformation", 
+          label = "tab:model3")
+@
+
+What effect does GDP per capita have on the outcome? Calculating marginal effects reveals the answer. Because we have specified the transformation using \texttt{I()} notation in model (2), \textbf{margins} can quickly identify the contribution of the original variable:
+
+<<log2, echo = TRUE, results = "show">>=
+summary(margins(m3b)[[1]])
+@
+
+\noindent And this result will differ from that for model (2) except in the resulting z-statistic and p-value which --- as should be the case --- are identical in the two marginal effect calculations:
+
+<<log3, echo = TRUE, results = "show">>=
+summary(margins(m3a)[[1]])
+@
+
+\noindent Despite some of the underlying limitations, Stata's \texttt{margins} command is incredibly user friendly and easy-to-use. Its output is also clean and intuitive. As a result, the behavior of \textbf{margins} try (as closely as possible) to mimic the behavior. It does not attempt, however, to provide: (1) an easy way of calculating MEMs (as Stata does with the \texttt{, atmeans} option), (2) calculating of predicted values (since R already provides this via \texttt{predict()}), or (3) cover the full class of model types that Stata currently supports. One other key advantage of the R implementation is that because it relies on a fully functional programming paradigm, marginal effects can easily be calculated for multiple objects, whereas Stata's approach can only calculate effects for the \textit{previous} modelling command using stored results.
 
 %\section{Applications}
 
