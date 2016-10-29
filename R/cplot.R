@@ -128,7 +128,7 @@ function(object,
          ...) {
     
     xvar <- x
-    yvar <- as.character(attributes(terms(m))[["variables"]][[2]])
+    yvar <- as.character(attributes(terms(object))[["variables"]][[2]])
     
     # handle factors
     classes <- attributes(terms(object))[["dataClasses"]][-1]

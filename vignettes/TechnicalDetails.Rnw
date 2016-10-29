@@ -35,7 +35,7 @@ This ease of interpretation of simple regression models, however, belies a poten
 
 For these reasons, and in the interest of making intuitive tabular and visual displays of regression results, there is a growing interest in the display of substantively meaningful quantities of interest that can be drawn from regression estimates \citep{KingTomzWittenberg2000}. This article reviews the literature on substantive interpretation of regression estimates and argues that researchers are often interested in knowing the \textit{marginal effect} of a regressor on an outcome. I propose \textit{average marginal effects} as a particularly useful quantity of interest, discuss a computational approach to calculate marginal effects, and offer the \textbf{margins} package for R as a general implementation.
 
-The outline of this text is as follows: section \ref{sec:stats} describes the statistical background of regression estimation and the distinctions between estimated coefficients and estimated marginal effects of righthand-side variables, Section \ref{sec:details} describes the computational implementation of \textbf{margins} used to obtain those quantities of interest, and Section \ref{sec:clarify} compares the results of the package to those produced by Stata's \texttt{margins} command \citep{Stata11, Williams2012}, and Zelig/Clarify.
+The outline of this text is as follows: section \ref{sec:stats} describes the statistical background of regression estimation and the distinctions between estimated coefficients and estimated marginal effects of righthand-side variables, Section \ref{sec:details} describes the computational implementation of \textbf{margins} used to obtain those quantities of interest, and Section \ref{sec:behavior} compares the results of the package to those produced by Stata's \texttt{margins} command \citep{Stata11, Williams2012}, various R packages, and Zelig/Clarify.
 
 \section{Statistical Background}\label{sec:stats}
 
@@ -73,7 +73,7 @@ local({
   c1 <- suppressWarnings(cplot(m1, "loggdp", n = 50, 
           xlab = "GDP Per Capita (Logged)",
           se.type = "shade",
-          xlim = c(7,10), ylim = c(-30,80))[[1]])
+          xlim = c(7,10), ylim = c(-30,80)))
   w <- c(which.min((c1[["xvals"]]-8)^2),
          which.min((c1[["xvals"]]-9)^2))
   # dashed
@@ -475,7 +475,7 @@ Cov(ME(X_1), ME(X_2)) = &\hspace{1ex} Cov(\beta_1, \beta_2) + X_2 Cov(\beta_2, \
 To achieve this computationally, \textbf{margins} uses a numerical approximation of the Jacobian. The computational details necessary to express this for any regression model are similar to those for approximating the marginal effects themselves. This is achieved by creating a ``function factory'' that accepts data and a model object as input and returns a function that holds data constant at observed values, but modifies the estimated coefficients according some new input, applying \texttt{predict()} to the original data and modified coefficients.\footnote{This re-expresses $g(x, \beta)$ as a function only of coefficients: $g(\beta)$, holding $x$ constant.} The same numerical differentiation methods as above are then applied to this function, to approximate the Jacobian.\footnote{As a computational note, \textbf{margins} uses the standard variance-covariance matrix returned by any modelling function as the value of $Var(\hat{\beta})$ but also alternative values to be specified via \texttt{vcov} argument to \texttt{margins()}.}
 
 
-\section{Package Functionality}
+\section{Package Functionality}\label{ref:behavior}
 
 At its core, \textbf{margins} offers one function: an S3 generic \texttt{margins()} that takes a model object as input and returns a list of data frames of class \texttt{"margins"}, which contain the original data, fitted values, standard errors of fitted values, marginal effects for all variables included in the model formula, and variances of those marginal effects. The internals of this function are mostly exported from the package to allow users to calculate just the marginal effects without the other data (using \texttt{marginal\_effects()}, to calculate the marginal effect of just one variable (using \texttt{dydx()}), and to plot and summarize the model and marginal effects in various ways (using \texttt{cplot()}, and \texttt{plot()}, \texttt{persp()}, and \texttt{image()} methods). Table \ref{tab:functions} provides a full list of exported functions and a brief summary of their behavior.
 

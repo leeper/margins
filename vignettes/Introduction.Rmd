@@ -334,7 +334,7 @@ It should be noted that `cplot()` returns a fairly tidy data frmae, making it po
 
 ```{r}
 x1 <- lm(mpg ~ drat * wt * am, data = mtcars)
-cdat <- cplot(x1, "wt", draw = FALSE)[[1]]
+cdat <- cplot(x1, "wt", draw = FALSE)
 head(cdat)
 ```
 
@@ -354,7 +354,7 @@ ggplot(cdat, aes(x = xvals)) +
 And the same thing is possible with a marginal effect calculation:
 
 ```{r, fig.height=4, fig.width=8}
-cdat <- cplot(x1, "wt", "drat", what = "effect", draw = FALSE)[[1]]
+cdat <- cplot(x1, "wt", "drat", what = "effect", draw = FALSE)
 ggplot(cdat, aes(x = xvals)) + 
   geom_line(aes(y = yvals)) +
   geom_line(aes(y = upper), linetype = 2) +
