@@ -14,24 +14,26 @@ cplot(object, ...)
   type = c("response", "link"), vcov = stats::vcov(object), at, n = 25L,
   level = 0.95, draw = TRUE, xlab = x, ylab = if (match.arg(what) ==
   "prediction") paste0("Predicted value") else paste0("Marginal effect of ",
-  dx), xlim, ylim, lwd = 2, col = "black", lty = 1, se.type = c("lines",
-  "shade"), se.col = "black", se.fill = grDevices::gray(0.5, 0.5),
-  se.lwd = lwd, se.lty = if (match.arg(se.type) == "lines") 2 else 0,
+  dx), xlim, ylim, lwd = 1, col = "black", lty = 1, se.type = c("shade",
+  "lines"), se.col = "black", se.fill = grDevices::gray(0.5, 0.5),
+  se.lwd = lwd, se.lty = if (match.arg(se.type) == "lines") 1 else 0,
   factor.pch = 19, factor.col = se.col, factor.fill = factor.col,
-  factor.cex = 1, xaxs = "i", yaxs = xaxs, las = 1, rug = TRUE,
-  rug.col = col, rug.size = -0.02, ...)
+  factor.cex = 1, xaxs = "i", yaxs = xaxs, las = 1, scatter = FALSE,
+  scatter.pch = 19, scatter.col = se.col, scatter.bg = scatter.col,
+  scatter.cex = 0.5, rug = TRUE, rug.col = col, rug.size = -0.02, ...)
 
 \method{cplot}{glm}(object, x = attributes(terms(object))[["term.labels"]][1],
   dx = x, what = c("prediction", "effect"), data = object[["model"]],
   type = c("response", "link"), vcov = stats::vcov(object), at, n = 25L,
   level = 0.95, draw = TRUE, xlab = x, ylab = if (match.arg(what) ==
   "prediction") paste0("Predicted value") else paste0("Marginal effect of ",
-  dx), xlim, ylim, lwd = 2, col = "black", lty = 1, se.type = c("lines",
-  "shade"), se.col = "black", se.fill = grDevices::gray(0.5, 0.5),
-  se.lwd = lwd, se.lty = if (match.arg(se.type) == "lines") 2 else 0,
+  dx), xlim, ylim, lwd = 1, col = "black", lty = 1, se.type = c("shade",
+  "lines"), se.col = "black", se.fill = grDevices::gray(0.5, 0.5),
+  se.lwd = lwd, se.lty = if (match.arg(se.type) == "lines") 1 else 0,
   factor.pch = 19, factor.col = se.col, factor.fill = factor.col,
-  factor.cex = 1, xaxs = "i", yaxs = xaxs, las = 1, rug = TRUE,
-  rug.col = col, rug.size = -0.02, ...)
+  factor.cex = 1, xaxs = "i", yaxs = xaxs, las = 1, scatter = FALSE,
+  scatter.pch = 19, scatter.col = se.col, scatter.bg = scatter.col,
+  scatter.cex = 0.5, rug = TRUE, rug.col = col, rug.size = -0.02, ...)
 
 \method{cplot}{loess}(object,
   x = attributes(terms(object))[["term.labels"]][1], dx = x,
@@ -39,12 +41,13 @@ cplot(object, ...)
   type = c("response", "link"), vcov = stats::vcov(object), at, n = 25L,
   level = 0.95, draw = TRUE, xlab = x, ylab = if (match.arg(what) ==
   "prediction") paste0("Predicted value") else paste0("Marginal effect of ",
-  dx), xlim, ylim, lwd = 2, col = "black", lty = 1, se.type = c("lines",
-  "shade"), se.col = "black", se.fill = grDevices::gray(0.5, 0.5),
-  se.lwd = lwd, se.lty = if (match.arg(se.type) == "lines") 2 else 0,
+  dx), xlim, ylim, lwd = 1, col = "black", lty = 1, se.type = c("shade",
+  "lines"), se.col = "black", se.fill = grDevices::gray(0.5, 0.5),
+  se.lwd = lwd, se.lty = if (match.arg(se.type) == "lines") 1 else 0,
   factor.pch = 19, factor.col = se.col, factor.fill = factor.col,
-  factor.cex = 1, xaxs = "i", yaxs = xaxs, las = 1, rug = TRUE,
-  rug.col = col, rug.size = -0.02, ...)
+  factor.cex = 1, xaxs = "i", yaxs = xaxs, las = 1, scatter = FALSE,
+  scatter.pch = 19, scatter.col = se.col, scatter.bg = scatter.col,
+  scatter.cex = 0.5, rug = TRUE, rug.col = col, rug.size = -0.02, ...)
 }
 \arguments{
 \item{object}{A model object.}
@@ -107,6 +110,16 @@ cplot(object, ...)
 
 \item{las}{An integer string specifying \code{las}. See \code{\link[graphics]{par}}.}
 
+\item{scatter}{A logical indicating whether to plot the observed data in \code{data} as a scatterplot.}
+
+\item{scatter.pch}{If \code{scatter = TRUE}, an integer specifying a shape to use for plotting the data. See \code{\link[graphics]{points}}.}
+
+\item{scatter.col}{If \code{scatter = TRUE}, a character string specifying a color to use for plotting the data. See \code{\link[graphics]{points}}.}
+
+\item{scatter.bg}{If \code{scatter = TRUE}, a character string specifying a color to use for plotting the data. See \code{\link[graphics]{points}}.}
+
+\item{scatter.cex}{If \code{scatter = TRUE}, an integer specifying the size of the points. See \code{\link[graphics]{points}}.}
+
 \item{rug}{A logical specifying whether to include an x-axis \dQuote{rug} (see \code{\link[graphics]{rug}}).}
 
 \item{rug.col}{A character string specifying \code{col} to \code{\link[graphics]{rug}}.}
@@ -122,7 +135,7 @@ A tidy data.frame containing the data used to draw the plot.
 Draw one or more conditioanl effects plots reflecting predictions or marginal effects from a model, conditional on a covariate. Currently methods exist for \dQuote{lm}, \dQuote{glm}, \dQuote{loess} class models.
 }
 \details{
-This is somewhat similar to to the output produced by the \code{marginalModelPlot()} function in the \textbf{\href{https://cran.r-project.org/package=MTurkR}{car}} package.
+This is somewhat similar to to the output produced by the \code{marginalModelPlot()} function in the \bold{\href{https://cran.r-project.org/package=MTurkR}{car}} package.
 }
 \examples{
 \dontrun{

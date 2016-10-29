@@ -31,11 +31,16 @@
 #' @param xaxs A character string specifying \code{xaxs}. See \code{\link[graphics]{par}}.
 #' @param yaxs A character string specifying \code{xaxs}. See \code{\link[graphics]{par}}.
 #' @param las An integer string specifying \code{las}. See \code{\link[graphics]{par}}.
+#' @param scatter A logical indicating whether to plot the observed data in \code{data} as a scatterplot.
+#' @param scatter.pch If \code{scatter = TRUE}, an integer specifying a shape to use for plotting the data. See \code{\link[graphics]{points}}.
+#' @param scatter.col If \code{scatter = TRUE}, a character string specifying a color to use for plotting the data. See \code{\link[graphics]{points}}.
+#' @param scatter.bg If \code{scatter = TRUE}, a character string specifying a color to use for plotting the data. See \code{\link[graphics]{points}}.
+#' @param scatter.cex If \code{scatter = TRUE}, an integer specifying the size of the points. See \code{\link[graphics]{points}}.
 #' @param rug A logical specifying whether to include an x-axis \dQuote{rug} (see \code{\link[graphics]{rug}}).
 #' @param rug.col A character string specifying \code{col} to \code{\link[graphics]{rug}}.
 #' @param rug.size A numeric value specifying \code{ticksize} to \code{\link[graphics]{rug}}.
 #' @param \dots Additional arguments passed to \code{\link[graphics]{plot}}. 
-#' @details This is somewhat similar to to the output produced by the \code{marginalModelPlot()} function in the \textbf{\href{https://cran.r-project.org/package=MTurkR}{car}} package.
+#' @details This is somewhat similar to to the output produced by the \code{marginalModelPlot()} function in the \bold{\href{https://cran.r-project.org/package=MTurkR}{car}} package.
 #' @return A tidy data.frame containing the data used to draw the plot.
 #' @examples
 #' \dontrun{
@@ -97,14 +102,14 @@ function(object,
          ylab = if (match.arg(what) == "prediction") paste0("Predicted value") else paste0("Marginal effect of ", dx),
          xlim,
          ylim,
-         lwd = 2,
+         lwd = 1,
          col = "black",
          lty = 1,
-         se.type = c("lines", "shade"),
+         se.type = c("shade", "lines"),
          se.col = "black",
          se.fill = grDevices::gray(.5,.5),
          se.lwd = lwd,
-         se.lty = if(match.arg(se.type) == "lines") 2 else 0,
+         se.lty = if(match.arg(se.type) == "lines") 1 else 0,
          factor.pch = 19,
          factor.col = se.col,
          factor.fill = factor.col,
@@ -112,12 +117,18 @@ function(object,
          xaxs = "i",
          yaxs = xaxs,
          las = 1,
+         scatter = FALSE,
+         scatter.pch = 19,
+         scatter.col = se.col,
+         scatter.bg = scatter.col,
+         scatter.cex = 0.5,
          rug = TRUE,
          rug.col = col,
          rug.size = -0.02,
          ...) {
     
     xvar <- x
+    yvar <- as.character(attributes(terms(m))[["variables"]][[2]])
     
     # handle factors
     classes <- attributes(terms(object))[["dataClasses"]][-1]
@@ -155,11 +166,11 @@ function(object,
                             class = "data.frame", row.names = seq_len(length(xvals)))
         tmpdat[[xvar]] <- xvals
         outdat <- prediction(model = object, data = tmpdat, type = type, level = level)
-        out <- list(structure(list(xvals = xvals,
-                                   yvals = outdat[["fitted"]],
-                                   upper = outdat[["fitted"]] + (fac[2] * outdat[["se.fitted"]]),
-                                   lower = outdat[["fitted"]] + (fac[1] * outdat[["se.fitted"]])),
-                              class = "data.frame", row.names = seq_along(outdat[["fitted"]])))
+        out <- structure(list(xvals = xvals,
+                              yvals = outdat[["fitted"]],
+                              upper = outdat[["fitted"]] + (fac[2] * outdat[["se.fitted"]]),
+                              lower = outdat[["fitted"]] + (fac[1] * outdat[["se.fitted"]])),
+                         class = "data.frame", row.names = seq_along(outdat[["fitted"]]))
     } else if (what == "effect") {
     
         dxvar <- dx
@@ -169,17 +180,16 @@ function(object,
             c(effect = as.numeric(thismargin[dx, "dy/dx"]), 
               se.effect = as.numeric(thismargin[dx, "Std.Err."]))
         }))
-        out <- list(structure(list(xvals = xvals,
-                                   yvals = outdat[[1]],
-                                   upper = outdat[[1]] + (fac[2] * outdat[[2]]),
-                                   lower = outdat[[1]] + (fac[1] * outdat[[2]])),
-                              class = "data.frame", row.names = seq_len(nrow(outdat))))
+        out <- structure(list(xvals = xvals,
+                              yvals = outdat[[1]],
+                              upper = outdat[[1]] + (fac[2] * outdat[[2]]),
+                              lower = outdat[[1]] + (fac[1] * outdat[[2]])),
+                         class = "data.frame", row.names = seq_len(nrow(outdat)))
     }
     
     # optionally draw the plot; if FALSE, just the data are returned
     if (isTRUE(draw)) {
 
-        # setup plot
         if (missing(xlim)) {
             if (isTRUE(x_is_factor)) {
                 xlim <- c(0.75, length(xvals) + 0.25)
@@ -187,20 +197,23 @@ function(object,
                 xlim <- range(dat[[x]], na.rm = TRUE)
             }
         }
+        
         if (missing(ylim)) {
-            tmp <- unlist(lapply(out, function(one) {
-                range(c(one[["upper"]], one[["lower"]]), na.rm = TRUE)
-            }))
-            rng <- diff(range(tmp, na.rm = TRUE))
+            tmp <- range(c(out[["upper"]], out[["lower"]]), na.rm = TRUE)
+            rng <- diff(tmp)
             ylim <- c(min(tmp, na.rm = TRUE) - (0.05 * rng), max(tmp, na.rm = TRUE) + (0.05 * rng))
             rm(tmp)
             rm(rng)
         }
+        
         if (isTRUE(x_is_factor)) {
             plot(NA, xlab = xlab, ylab = ylab, xaxt = "n", xaxs = xaxs, yaxs = yaxs, las = las, xlim = xlim, ylim = ylim, ...)
             axis(1, at = seq_along(xvals), labels = xvals)
         } else {
             plot(NA, xlab = xlab, ylab = ylab, xaxs = xaxs, yaxs = yaxs, las = las, xlim = xlim, ylim = ylim, ...)
+            if (isTRUE(scatter)) {
+                points(data[, xvar], data[, yvar], pch = scatter.pch, col = scatter.col, bg = scatter.col)
+            }
         }
         
     }
@@ -235,12 +248,10 @@ function(object,
         }
         
         # draw
-        lapply(out, function(linelist) {
-            draw_one(xvals = linelist[["xvals"]], 
-                     yvals = linelist[["yvals"]], 
-                     upper = linelist[["upper"]], 
-                     lower = linelist[["lower"]])
-        })
+        draw_one(xvals = out[["xvals"]], 
+                 yvals = out[["yvals"]], 
+                 upper = out[["upper"]], 
+                 lower = out[["lower"]])
         
         if (isTRUE(rug)) {
             rug(dat[[x]], ticksize = rug.size, col = rug.col)
