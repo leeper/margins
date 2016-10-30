@@ -165,28 +165,28 @@ If we were to calculate marginal effects by hand, we might rightly choose to rel
 \begin{tabular}{llp{0.7in}l} \toprule
 & Regression Equation & ME with respect to & ME Formula \\ \midrule
 \rule{0pt}{4ex} (1) & \multirow{2}{*}{
-\begin{aligned}
+$\begin{aligned}
 \hat{Y} = &\hspace{1ex} \beta_0 + \beta_1 X_1 + \\ &\hspace{1ex} \beta_2 X_2 + \beta_3 X_1 X_2
-\end{aligned}
-} & $X_1$ & \begin{aligned}\frac{\partial Y}{\partial X_1} = \beta_1 + \beta_3 X_2\end{aligned} \\ \cline{3-4}
-\rule{0pt}{4ex} & & $X_2$ & \begin{aligned}\frac{\partial Y}{\partial X_2} = \beta_2 + \beta_3 X_1\end{aligned} \\ \midrule
+\end{aligned}$
+} & $X_1$ & $\begin{aligned}\frac{\partial Y}{\partial X_1} = \beta_1 + \beta_3 X_2\end{aligned}$ \\ \cline{3-4}
+\rule{0pt}{4ex} & & $X_2$ & $\begin{aligned}\frac{\partial Y}{\partial X_2} = \beta_2 + \beta_3 X_1\end{aligned}$ \\ \midrule
 \rule{0pt}{4ex} (2) & \multirow{2}{*}{
-\begin{aligned}
+$\begin{aligned}
 \hat{Y} = &\hspace{1ex} \beta_0 + \beta_1 X_1 + \\ &\hspace{1ex} \beta_2 X^2 + \beta_3 X_2
-\end{aligned}
-} & $X_1$ & \begin{aligned}\frac{\partial Y}{\partial X_1} = \beta_1 + 2\beta_2 X_1\end{aligned} \\ \cline{3-4}
-\rule{0pt}{4ex} & & $X_2$ & \begin{aligned}\frac{\partial Y}{\partial X_2} = \beta_3\end{aligned} \\ \midrule
+\end{aligned}$
+} & $X_1$ & $\begin{aligned}\frac{\partial Y}{\partial X_1} = \beta_1 + 2\beta_2 X_1\end{aligned}$ \\ \cline{3-4}
+\rule{0pt}{4ex} & & $X_2$ & $\begin{aligned}\frac{\partial Y}{\partial X_2} = \beta_3\end{aligned}$ \\ \midrule
 \rule{0pt}{4ex} (3) & \multirow{3}{*}{
-\begin{aligned}
+$\begin{aligned}
 \hat{Y} = &\hspace{1ex} \beta_0 + \beta_1 X_1 + \beta_2 X_2 + \\ &\hspace{1ex} \beta_3 X_3 + \beta_4 X_1 X_2 + \\
 &\hspace{1ex} \beta_5 X_2 X_3 + \beta_6 X_1 X_3 + \\
     &\hspace{1ex} \beta_7 X_1 X_2 X_3 
-\end{aligned}
+\end{aligned}$
 } & $X_1$ &
-\begin{aligned} \frac{\partial Y}{\partial X_1} = & \beta_1 + \beta_4 X_2 + \\ & \beta_6 X_3  + \beta_7 X_2 X_3 \end{aligned} \\ \cline{3-4}
+$\begin{aligned} \frac{\partial Y}{\partial X_1} = & \beta_1 + \beta_4 X_2 + \\ & \beta_6 X_3  + \beta_7 X_2 X_3 \end{aligned}$ \\ \cline{3-4}
 \rule{0pt}{4ex} & & $X_2$ & 
-\begin{aligned} \frac{\partial Y}{\partial X_2} = & \beta_2 + \beta_4 X_1 + \\ & \beta_5 X_3 + \beta_7 X_1 X_3 \end{aligned} \\ \cline{3-4}
-\rule{0pt}{4ex} & & $X_3$ & \begin{aligned} \frac{\partial Y}{\partial X_3} = & \beta_3 + \beta_5 X_2 + \\ & \beta_6 X_1 + \beta_7 X_1 X_2 \end{aligned} \\
+$\begin{aligned} \frac{\partial Y}{\partial X_2} = & \beta_2 + \beta_4 X_1 + \\ & \beta_5 X_3 + \beta_7 X_1 X_3 \end{aligned}$ \\ \cline{3-4}
+\rule{0pt}{4ex} & & $X_3$ & $\begin{aligned} \frac{\partial Y}{\partial X_3} = & \beta_3 + \beta_5 X_2 + \\ & \beta_6 X_1 + \beta_7 X_1 X_2 \end{aligned}$ \\
 \bottomrule
 \end{tabular}
 \end{center}
@@ -484,8 +484,7 @@ At its core, \textbf{margins} offers one function: an S3 generic \texttt{margins
 \textbf{Type} & \textbf{Function} & \textbf{Behavior} \\ \midrule
 \multirow{4}{*}{Core} & \texttt{dydx()} & Calculate marginal effect of one, named variable \\ \cline{2-3}
  & \texttt{marginal\_effects()} & Calculate marginal effects of all variables in a model \\ \cline{2-3}
- & \texttt{margins()} & An S3 generic to calculate marginal effects for all variables and their variances \\ \cline{2-3}
- & \texttt{prediction()} & An S3 generic that provides a type-safe wrapper around \texttt{predict()} in order to always return a data frame \\ 
+ & \texttt{margins()} & An S3 generic to calculate marginal effects for all variables and their variances \\
 \midrule
 
 \multirow{4}{*}{Visualization} & \texttt{plot.margins()} & An analogue to Stata's \texttt{marginsplot} command that plots calculated marginal effects. \\ \cline{2-3}
@@ -496,9 +495,7 @@ At its core, \textbf{margins} offers one function: an S3 generic \texttt{margins
 
 \multirow{4}{*}{Utilities} & \texttt{build\_margins()} & The workhorse function underlying \texttt{margins()} that assembles the response \texttt{"margins"} object for one data frame input. \\ \cline{2-3}
  & \texttt{extract\_marginal\_effects()} & A utility to return a tidy data frame containing only marginal effects from a \texttt{"margins"} object. \\ \cline{2-3}
- & \texttt{build\_datalist()} & A function that takes a data frame and list of replacement values as input and returns a list of data frames containing modified values \\ \cline{2-3}
- & \texttt{find\_data()} & A function to extract or attempt to find the data for a model object. \\
-
+ & \texttt{build\_datalist()} & A function that takes a data frame and list of replacement values as input and returns a list of data frames containing modified values \\ 
 \bottomrule
 \end{tabular}
 \caption{Functions in the \textbf{margins} Package}\label{tab:functions}
@@ -555,8 +552,8 @@ And the \texttt{cplot()}, \texttt{persp()}, and \texttt{image()} methods can be 
 <<margins3e, echo = TRUE>>=
 m <- lm(mpg ~ wt * I(wt^2) * hp * I(hp^2), data = mtcars)
 cplot(m, "wt", what = "effect")
-persp(m, what = "effect")
-image(m, what = "effect")
+persp(m, "wt", "hp", what = "effect", phi = 30)
+image(m, "wt", "hp", what = "effect")
 @
 
 
