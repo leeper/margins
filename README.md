@@ -64,6 +64,10 @@ summary(m)
 ```
 
 ```
+## [[1]]
+```
+
+```
 ## Average Marginal Effects
 ```
 
@@ -72,7 +76,6 @@ summary(m)
 ```
 
 ```
-## [[1]]
 ##     Factor   dy/dx Std.Err. z value Pr(>|z|)   2.50%  97.50%
 ## cyl    cyl  0.0381   0.5999  0.0636   0.9493 -1.1376  1.2139
 ## hp      hp -0.0463   0.0145 -3.1909   0.0014 -0.0748 -0.0179
@@ -207,7 +210,7 @@ The numerous package vignettes and help files contain extensive documentation an
 
 ## Requirements and Installation ##
 
-[![CRAN](http://www.r-pkg.org/badges/version/slopegraph)](http://cran.r-project.org/package=margins)
+[![CRAN](http://www.r-pkg.org/badges/version/margins)](https://cran.r-project.org/package=margins)
 [![Build Status](https://travis-ci.org/leeper/margins.svg?branch=master)](https://travis-ci.org/leeper/margins)
 [![Build status](https://ci.appveyor.com/api/projects/status/t6nxndmvvcw3gw7f/branch/master?svg=true)](https://ci.appveyor.com/project/leeper/margins/branch/master)
 [![codecov.io](http://codecov.io/github/leeper/margins/coverage.svg?branch=master)](http://codecov.io/github/leeper/margins?branch=master)

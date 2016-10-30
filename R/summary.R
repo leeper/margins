@@ -1,16 +1,6 @@
 #' @export
 summary.margins <- 
-function(object, digits = 4, level = 0.95, ...) {
-    if (is.null(attributes(object)[["at"]])) {
-        message("Average Marginal Effects")
-    } else {
-        atvals <- paste(names(attributes(object)[["at"]]), "=", attributes(object)[["at"]][1,], collapse = ", ")
-        message("Average Marginal Effects, with ", atvals)
-    }
-    if (!is.null(attributes(object)[["call"]])) {
-        message(deparse(attributes(object)[["call"]]), "\n")
-    }
-    fmt <- paste0("%0.", ifelse(digits > 7, 7, digits), "f")
+function(object, level = 0.95, ...) {
     mes <- extract_marginal_effects(object)
     variances <- attributes(mes)[["variances"]]
     tab <- structure(list(Factor = names(mes), 
@@ -20,11 +10,10 @@ function(object, digits = 4, level = 0.95, ...) {
                      class = "data.frame", row.names = names(mes))
     tab[["z value"]] <- tab[,"dy/dx"]/tab[,"Std.Err."]
     tab[["Pr(>|z|)"]] <- 2 * pnorm(abs(tab[,"z value"]), lower.tail = FALSE)
-    tab <- cbind(tab, confint(object = object, level = level))
-    for (i in 2:ncol(tab)) {
-        tab[[i]] <- sprintf(fmt, tab[[i]])
-    }
-    tab
+    structure(cbind(tab, confint(object = object, level = level)),
+              class = c("summary.margins", "data.frame"),
+              call = attributes(object)[["call"]],
+              at = attributes(object)[["at"]])
 }
 
 #' @export
