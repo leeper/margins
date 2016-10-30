@@ -3,6 +3,7 @@ sudo: false
 cache: packages
 r_packages:
 - knitr
+- rmarkdown
 - covr
 r_github_packages:
 - leeper/prediction
