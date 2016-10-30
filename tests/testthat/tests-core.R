@@ -23,14 +23,6 @@ test_that("Test accuracy for glm()", {
 })
 
 
-context("Test `prediction()` behavior")
-test_that("Test build_datalist()", {
-    expect_true(inherits(prediction(lm(mpg ~ cyl, data = mtcars), data = mtcars), "data.frame"), label = "prediction() works w data arg (LM)")
-    expect_true(inherits(prediction(glm(mpg ~ cyl, data = mtcars), data = mtcars), "data.frame"), label = "prediction() works w data arg (GLM)")
-    expect_true(inherits(prediction(lm(mpg ~ cyl, data = mtcars)), "data.frame"), label = "prediction() works w/o data arg (LM)")
-    expect_true(inherits(prediction(glm(mpg ~ cyl, data = mtcars)), "data.frame"), label = "prediction() works w/o data arg (GLM)")
-})
-
 context("Test `build_datalist()` behavior")
 test_that("Test build_datalist()", {
     expect_true(length(build_datalist(mtcars, at = list(cyl = c(4,6)))) == 2)

@@ -1,5 +1,5 @@
 #' @title \dQuote{margins} Object Builder
-#' @description This is the lower-level function called by \code{\link{margins}} that assembles a \dQuote{margins} object from calls to \code{\link{prediction}}, \code{\link{marginal_effects}}, and \code{get_effect_variances} (not exported).
+#' @description This is the lower-level function called by \code{\link{margins}} that assembles a \dQuote{margins} object from calls to \code{\link[prediction]{prediction}}, \code{\link{marginal_effects}}, and \code{get_effect_variances} (not exported).
 #' @param model A model object.
 #' @param data A data.frame over which to calculate marginal effects.
 #' @param type A character string indicating the type of marginal effects to estimate. Mostly relevant for non-linear models, where the reasonable options are \dQuote{response} (the default) or \dQuote{link} (i.e., on the scale of the linear predictor in a GLM).
@@ -11,7 +11,7 @@
 #' @param \dots Arguments passed through various internal functions to \code{\link{dydx}} methods.
 #' @details Generally, it is not necessary to call this function directly because \code{\link{margins}} provides a simpler interface. To just get marginal effects without building a \dQuote{margins} object, call \code{\link{marginal_effects}} instead, which handles the effect estimation of a model object without building a \dQuote{margins} object.
 #' 
-#' This is the package's core function that assembles a \dQuote{margins} object, through sequential calls to \code{\link{prediction}}, \code{\link{marginal_effects}}, and an internal function (\code{get_effect_variances()}) to calculate variances. See documentation pages for those functions for details on implementation and return values.
+#' This is the package's core function that assembles a \dQuote{margins} object, through sequential calls to \code{\link[prediction]{prediction}}, \code{\link{marginal_effects}}, and an internal function (\code{get_effect_variances()}) to calculate variances. See documentation pages for those functions for details on implementation and return values.
 #' 
 #' The choice of \code{vce} may be important. The default variance-covariance estimation procedure (\code{vce = "delta"}) uses the delta method to estimate marginal effect variances. This is the fastest method. When \code{vce = "simulation"}, coefficient estimates are repeatedly drawn from the asymptotic (multivariate normal) distribution of the model coefficients and each draw is used to estimate marginal effects, with the variance based upon the dispersion of those simulated effects. The number of interations used is given by \code{iterations}. For \code{vce = "bootstrap"}, the bootstrap is used to repeatedly subsample \code{data} and the variance of marginal effects is estimated from the variance of the bootstrap distribution. This method is markedly slower than the other two procedures. Again, \code{iterations} regulates the number of boostrap subsamples to draw.
 #'
@@ -21,6 +21,7 @@
 #' @import stats
 #' @importFrom compiler cmpfun
 #' @importFrom MASS mvrnorm
+#' @importFrom prediction prediction
 #' @export
 build_margins <- 
 function(model, 

@@ -2,7 +2,7 @@
 #' @title Marginal Effect of a Given Variable
 #' @description Differentiate an Estimated Model Function with Respect to One Variable, or calculate a discrete difference (\dQuote{first difference}) as appropriate.
 #' @param data The dataset on which to to calculate \eqn{\hat{y}}.
-#' @param model The model object to pass to \code{\link{prediction}}.
+#' @param model The model object to pass to \code{\link[prediction]{prediction}}.
 #' @param variable A character string specifying the variable to calculate the derivative or discrete change for.
 #' @param type The type of prediction. Default is \dQuote{response}.
 #' @param change For numeric variables, a character string specifying the type of change to express. The default is the numerical approximation of the derivative. Alternative values are occasionally desired quantities: \dQuote{minmax} (the discrete change moving from \code{min(x)} to \code{max(x)}), \dQuote{iqr} (the move from the 1st quartile to 3rd quartile of \code{x}), or \dQuote{sd} (the change from \code{mean(x) - sd(x)} to \code{mean(x) + sd(x)}), or a two-element numeric vector expressing values of the variable to calculate the prediction for (and difference the associated predictions).
@@ -52,6 +52,7 @@
 #' x <- lm(mpg ~ cyl, data = head(mtcars))
 #' dydx(head(mtcars), x, "cyl")
 #' @seealso \code{\link{marginal_effects}}, \code{\link{margins}}
+#' @importFrom prediction prediction
 #' @export
 dydx <- function(data, model, variable, ...) {
     UseMethod("dydx", data[[variable]])

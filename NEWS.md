@@ -1,5 +1,10 @@
 # CHANGES TO margins 0.3.0 #
 
+## margins 0.2.20
+
+* Factored the `prediction()` generic and methods into a separate package, **prediction**, to ease maintainence.
+* Added a `print.summary.margins()` method to separate construction of the summary data frame the printing thereof.
+
 ## margins 0.2.19
 
 * Plotting functions `cplot()`, `persp()`, and `image()` gain a `vcov` argumetn to pass to `build_margins(). (#43)

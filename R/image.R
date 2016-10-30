@@ -12,6 +12,7 @@
 #' @param contour.lwd For \code{image}, if \code{contour = TRUE} an integer specifying a line width for contour lines (see \code{\link[graphics]{par}}).
 #' @importFrom graphics image contour
 #' @importFrom grDevices gray
+#' @importFrom prediction prediction
 #' @export
 image.lm <-
 function(x, 

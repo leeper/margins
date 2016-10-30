@@ -1,4 +1,5 @@
 #' @rdname marginal_effects
+#' @importFrom prediction find_data
 #' @export
 marginal_effects.default <- 
 function(model, 

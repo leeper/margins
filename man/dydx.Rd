@@ -25,7 +25,7 @@ dydx(data, model, variable, ...)
 \arguments{
 \item{data}{The dataset on which to to calculate \eqn{\hat{y}}.}
 
-\item{model}{The model object to pass to \code{\link{prediction}}.}
+\item{model}{The model object to pass to \code{\link[prediction]{prediction}}.}
 
 \item{variable}{A character string specifying the variable to calculate the derivative or discrete change for.}
 

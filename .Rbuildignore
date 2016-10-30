@@ -3,6 +3,7 @@ appveyor.yml
 travis-tool.sh
 README.Rmd
 README.html
+CONTRIBUTING.md
 /inst/standarderrors.pdf
 /figure/*
 /cache/*
@@ -15,4 +16,7 @@ README.html
 /vignettes/*.pdf
 /vignettes/*.sty
 /vignettes/*.tex
+/vignettes/*.out
 ^data-raw$
+/cache/*
+/figures/*

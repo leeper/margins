@@ -79,6 +79,7 @@
 #' @seealso \code{\link{plot.margins}}, \code{\link{persp.lm}}
 #' @keywords graphics hplot
 #' @importFrom graphics par plot lines rug polygon segments points
+#' @importFrom prediction prediction
 #' @export
 cplot <- function(object, ...) {
     UseMethod("cplot")
