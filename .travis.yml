@@ -4,5 +4,7 @@ cache: packages
 r_packages:
 - knitr
 - covr
+r_github_packages:
+- leeper/prediction
 after_success:
 - Rscript -e 'library("covr");codecov()'
