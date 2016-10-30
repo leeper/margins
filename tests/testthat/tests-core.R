@@ -57,7 +57,17 @@ test_that("dydx() works", {
     expect_true(inherits(dydx(head(mtcars), x, "wt"), "data.frame"), label = "dydx dispatch works for numeric")
     expect_true(inherits(dydx(head(mtcars), x, "cyl"), "data.frame"), label = "dydx dispatch works for factor")
     expect_true(inherits(dydx(head(mtcars), x, "am"), "data.frame"), label = "dydx dispatch works for logical")
-    expect_true(inherits(marginal_effects(x), "data.frame"), label = "dydx dispatch works via marginal_effects()")
+    expect_true(inherits(marginal_effects(x), "data.frame"), label = "dydx dispatch works via marginal_effects()")    
+    rm(mtcars)
+})
+
+test_that("alternative dydx() args", {
+    x <- lm(mpg ~ wt, data = head(mtcars))
+    expect_true(inherits(dydx(head(mtcars), x, "wt", change = "minmax"), "data.frame"), label = "dydx w/ change = 'minimax'")
+    expect_true(inherits(dydx(head(mtcars), x, "wt", change = "iqr"), "data.frame"), label = "dydx w/ change = 'iqr'")
+    expect_true(inherits(dydx(head(mtcars), x, "wt", change = "sd"), "data.frame"), label = "dydx w/ change = 'sd'")
+    expect_true(inherits(dydx(head(mtcars), x, "wt", change = range(mtcars[["wt"]], na.rm = TRUE)), "data.frame"), label = "dydx w/ change = c(a,b)")
+    expect_error(dydx(head(mtcars), x, "wt", change = !L), label = "error in dydx w/ change = 1L")
     rm(mtcars)
 })
 

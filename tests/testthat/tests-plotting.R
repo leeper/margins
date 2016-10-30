@@ -20,6 +20,12 @@ test_that("cplot() method for 'lm' works", {
     expect_true(inherits(cplot(x, what = "effect"), "data.frame"))
 })
 
+#test_that("cplot() work for factor variable", {
+#    x <- lm(mpg ~ factor(cyl), data = mtcars)
+#    expect_true(inherits(cplot(x, what = "prediction"), "data.frame"))
+#    expect_true(inherits(cplot(x, what = "effect"), "data.frame"))
+#})
+
 test_that("plot() method for 'margins' works", {
     x <- lm(mpg ~ wt * hp, data = mtcars)
     expect_true(inherits(plot(margins(x)), "margins"))
