@@ -1,12 +1,14 @@
 README.html
 /inst/standarderrors.pdf
 /inst/doc/*.log
-/vignettes/*.log
 /vignettes/*.aux
+/vignettes/*.bbl
+/vignettes/*.blg
+/vignettes/*.dvi
+/vignettes/*.log
 /vignettes/*.pdf
+/vignettes/*.out
 /vignettes/*.sty
 /vignettes/*.tex
-/vignettes/*.out
-/vignettes/*.blg
 /vignettes/figure/
 /vignettes/*.bib.bak
