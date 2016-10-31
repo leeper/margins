@@ -2,6 +2,10 @@
 
 ## margins 0.2.20
 
+* Fixed a bug in `get_effect_variances(vce = "bootstrap")`, wherein the variance of the marginal effects was always zero.
+
+## margins 0.2.20
+
 * Factored the `prediction()` generic and methods into a separate package, **prediction**, to ease maintainence.
 * Added a `print.summary.margins()` method to separate construction of the summary data frame the printing thereof.
 * The "Technical Details" vignette now describes the package functionality and computational approach in near-complete detail.
