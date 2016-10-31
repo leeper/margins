@@ -1,9 +1,10 @@
-# CHANGES TO margins 0.3.0 #
+# CHANGES TO margins 0.3.0
 
 ## margins 0.2.20
 
 * Factored the `prediction()` generic and methods into a separate package, **prediction**, to ease maintainence.
 * Added a `print.summary.margins()` method to separate construction of the summary data frame the printing thereof.
+* The "Technical Details" vignette now describes the package functionality and computational approach in near-complete detail.
 
 ## margins 0.2.19
 
@@ -100,7 +101,7 @@
 * `cplot()` now draws confidence intervals for "effect" plots.
 * Fixed a bug in `get_marginal_effects()` wherein the `method` argument was ignored. This improves performance significantly when using `method = "simple"` (the default differentiation method).
 
-# CHANGES TO margins 0.2.0 #
+# CHANGES TO margins 0.2.0
 
 * Added `persp()` methods for "lm" and "glm" class objects to display 3-dimensional representations of predicted values and marginal effects.
 * Added `plot.margins()` method for mimicking Stata's `marginsplot` behavior.
@@ -114,6 +115,6 @@
 * The internal `build_datalist()` now checks for specification of illegal factor levels in `at` and errors when these are encountered.
 * Use the **webuse** package to handle examples.
 
-# CHANGES TO margins 0.1.0 #
+# CHANGES TO margins 0.1.0
 
 * Initial package released.
