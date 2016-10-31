@@ -13,6 +13,8 @@ Authors@R: c(person("Thomas J.", "Leeper",
                     role = c("ctb"),
                     email = "jeffrey.arnold@gmail.com")
              )
+URL: https://github.com/leeper/margins
+BugReports: https://github.com/leeper/margins/issues
 Imports:
     stats,
     prediction,
