@@ -2,7 +2,6 @@
 
 **margins** is an effort to port Stata's (closed source) [`margins`](http://www.stata.com/help.cgi?margins) command to R as an S3 generic method for calculating the marginal effects (or "partial effects") of covariates included in model objects (like those of classes "lm" and "glm"). The package implements several useful features including:
 
- - A type-safe wrapper around `predict()` called `prediction()` that always returns a tidy data frame.
  - A `plot()` method for the new "margins" class that ports Stata's `marginsplot` command. 
  - A `persp()` method for "lm", "glm", and "loess" objects to provide three-dimensional representations of response surfaces.
  - An `image()` method for the same that produces flat, two-dimensional heatmap-style representations of response surfaces.
