@@ -386,7 +386,7 @@ Var(ME) = J \times Var(\beta) \times J'
 \noindent where $Var(\beta)$ is the variance-covariance matrix of the regression coefficients, estimated by $Var(\hat{\beta})$ and the Jacobian matrix, $J$, is an $M$-x-$K$ matrix in which each row corresponds to a marginal effect and each column corresponds to a coefficient:
 
 \begin{center}\doublespacing
-J = \begin{bmatrix}
+J = $\begin{bmatrix}
 	\frac{\partial g_1}{\partial \beta_0} & 
 	\frac{\partial g_1}{\partial \beta_1} & 
 	\frac{\partial g_1}{\partial \beta_2} & 
@@ -406,16 +406,16 @@ J = \begin{bmatrix}
 	\frac{\partial g_M}{\partial \beta_2} & 
 	\dots &
 	\frac{\partial g_M}{\partial \beta_K} \\ 
-\end{bmatrix}
+\end{bmatrix}$
 \end{center}
 
 Intuition surrounding the Jacobian can be challenging because the entries are partial derivatives of the marginal effects with respect to the $\beta$'s, not the $X$'s. Thus it involves the somewhat unintuitive exercise of treating the coefficients ($\beta$'s) as variables and the original data variables ($X$'s) as constants. Continuing the running example, the Jacobian for the two marginal effects of Equation (1) in Table \ref{tab:formulae} would be a 2-x-4 matrix, where the first column (expressing the partial derivative of each marginal effect with respect to the intercept) is always zero:
 
 \begin{center}\doublespacing
-J = \begin{bmatrix}
+J = $\begin{bmatrix}
 	0 & 1 & 0 & X_2 \\
 	0 & 0 & 1 & X_1 \\
-\end{bmatrix}
+\end{bmatrix}$
 \end{center}
 
 \noindent such that $Var(ME)$ is:
@@ -456,10 +456,10 @@ J = \begin{bmatrix}
 %\end{center}
 
 \begin{center}\doublespacing
-\begin{bmatrix}
+$\begin{bmatrix}
 	Var(ME(X_1)) & Cov(ME(X_1), ME(X_2)) \\
 	Cov(ME(X_1), ME(X_2)) & Var(ME(X_2)) \\
-\end{bmatrix}
+\end{bmatrix}$
 \end{center}
 
 \noindent where
