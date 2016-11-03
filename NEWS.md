@@ -4,6 +4,7 @@
 
 * A warning is now issued when a model uses weights, indicating that they are ignored. (#4)
 * Various errors and warnings that occurred when applying `margins()` to a model with weights have been fixed.
+* `cplot()` now issues an error when attempting to display the effects of a factor (with > 2 levels).
 
 ## margins 0.2.20
 

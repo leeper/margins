@@ -3,7 +3,7 @@
 #' @description Draw one or more conditioanl effects plots reflecting predictions or marginal effects from a model, conditional on a covariate. Currently methods exist for \dQuote{lm}, \dQuote{glm}, \dQuote{loess} class models.
 #' @param object A model object.
 #' @param x A character string specifying the name of variable to use as the x-axis dimension in the plot.
-#' @param dx If \code{what = "effect"}, the variable whose conditional marginal effect should be displayed. By default it is \code{x} (so the plot displays the marginal effect of \code{x} across values of \code{x}); ignored otherwise.
+#' @param dx If \code{what = "effect"}, the variable whose conditional marginal effect should be displayed. By default it is \code{x} (so the plot displays the marginal effect of \code{x} across values of \code{x}); ignored otherwise. If \code{dx} is a factor with more than 2 levels, an error will be issued.
 #' @param what A character string specifying whether to draw a \dQuote{prediction} (fitted values from the model, calculated using \code{\link[stats]{predict}}) or an \dQuote{effect} (average marginal effect of \code{dx} conditional on \code{x}, using \code{\link{margins}}).
 #' @param data A data frame to override the default value offered in \code{object[["model"]]}.
 #' @param type A character string specifying whether to calculate predictions on the response scale (default) or link (only relevant for non-linear models).
@@ -138,6 +138,7 @@ function(object,
     fnames <- clean_terms(names(classes)[classes == "factor"])
     fnames2 <- names(classes)[classes == "factor"] # for checking stupid variable naming behavior by R
     x_is_factor <- (xvar %in% c(fnames, fnames2))
+    dx_is_factor <- (dx %in% c(fnames, fnames2))
     
     # subset data
     dat <- data[, c(nnames, fnames2), drop = FALSE]
@@ -163,7 +164,15 @@ function(object,
 
     # setup `outdat` data
     if (what == "prediction") {
-        tmpdat <- structure(lapply(colMeans(dat[, names(dat) != xvar, drop = FALSE], na.rm = TRUE), rep, length(xvals)),
+        mean_or_mode <- function(x) {
+            if (is.factor(x)) {
+                factor(names(sort(table(x), descending = TRUE))[1L], levels = levels(x))
+            } else {
+                mean(x, na.rm = TRUE)
+            }
+        }
+        tmpdat <- lapply(dat[, names(dat) != xvar, drop = FALSE], mean_or_mode)
+        tmpdat <- structure(lapply(tmpdat, rep, length(xvals)),
                             class = "data.frame", row.names = seq_len(length(xvals)))
         tmpdat[[xvar]] <- xvals
         outdat <- prediction(model = object, data = tmpdat, type = type, level = level)
@@ -173,11 +182,11 @@ function(object,
                               lower = outdat[["fitted"]] + (fac[1] * outdat[["se.fitted"]])),
                          class = "data.frame", row.names = seq_along(outdat[["fitted"]]))
     } else if (what == "effect") {
-    
-        dxvar <- dx
-        
-        suppressMessages(s <- summary(margins(model = object, data = data, at = setNames(list(xvals), xvar), type = type, vcov = vcov)))
-        outdat <- do.call("rbind.data.frame", lapply(s, function(thismargin) {
+        if (is.factor(dat[[dx]]) && nlevels(data[[dx]]) != 2L) {
+            stop("Displaying effect of a factor variable with > 2 levels is not currently supported!")
+        }
+        summ <- summary(margins(model = object, data = data, at = setNames(list(xvals), xvar), type = type, vcov = vcov))
+        outdat <- do.call("rbind.data.frame", lapply(summ, function(thismargin) {
             c(effect = as.numeric(thismargin[dx, "dy/dx"]), 
               se.effect = as.numeric(thismargin[dx, "Std.Err."]))
         }))
