@@ -15,6 +15,11 @@ function(model,
     
     # identify classes of terms in `model`
     classes <- attributes(terms(model))[["dataClasses"]][-1]
+    # drop specially named "(weights)" variables
+    if (!is.null(model[["weights"]])) {
+        classes <- classes[!names(classes) %in% "(weights)"]
+    }
+    # handle character variables as factors
     classes[classes == "character"] <- "factor"
     ## cleanup names of terms
     terms2 <- sapply(names(classes), function(x) all.vars(parse(text = x)))

@@ -14,6 +14,9 @@ function(model,
     model[["model"]] <- NULL
     attr(model[["terms"]], ".Environment") <- NULL
     
+    # warn about weights
+    warn_for_weights(model)
+    
     # calculate marginal effects
     out <- lapply(data_list, function(thisdata) {
         m <- build_margins(model = model, data = thisdata, ...)
@@ -54,6 +57,9 @@ margins.loess <- function(model,
     model[["model"]] <- NULL
     attr(model[["terms"]], ".Environment") <- NULL
     
+    # warn about weights
+    warn_for_weights(model)
+    
     # calculate marginal effects
     out <- lapply(data_list, function(thisdata) {
         m <- build_margins(model = model, data = thisdata, vcov = NULL, vce = "none", ...)
@@ -63,4 +69,12 @@ margins.loess <- function(model,
     
     # return value
     structure(out, class = "marginslist")
+}
+
+warn_for_weights <- function(model) {
+    wghts <- unname(model[["weights"]])
+    if (!isTRUE(all.equal(wghts, rep(wghts[1], length(wghts))))) {
+        warning("'weights' used in model estimation are currently ignored!")
+    }
+    NULL
 }

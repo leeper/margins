@@ -2,6 +2,11 @@
 
 ## margins 0.2.20
 
+* A warning is now issued when a model uses weights, indicating that they are ignored. (#4)
+* Various errors and warnings that occurred when applying `margins()` to a model with weights have been fixed.
+
+## margins 0.2.20
+
 * Fixed a bug in `get_effect_variances(vce = "bootstrap")`, wherein the variance of the marginal effects was always zero.
 
 ## margins 0.2.20
