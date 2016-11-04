@@ -33,8 +33,8 @@
 #' @export
 plot.margins <- 
 function(x, 
-         at = seq_along(extract_marginal_effects(x)),
-         which = colnames(extract_marginal_effects(x)), 
+         at = seq_along(marginal_effects(x)),
+         which = colnames(marginal_effects(x)), 
          labels = which,
          horizontal = FALSE,
          xlab = "",
@@ -50,7 +50,7 @@ function(x,
          zero.col = "gray",
          ...) {
     
-    MEs <- colMeans(extract_marginal_effects(x)[, which, drop = FALSE])
+    MEs <- colMeans(marginal_effects(x)[, which, drop = FALSE])
     quantiles <- qnorm(cbind((1-sort(level))/2, 1-(1-sort(level))/2))
     maxl <- max(abs(quantiles), na.rm = TRUE)
     variances <- attributes(x)[["variances"]][which]

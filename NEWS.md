@@ -1,5 +1,9 @@
 # CHANGES TO margins 0.3.0
 
+## margins 0.2.23
+
+* The `extract_marginal_effects()` function has been removed and replaced by `marginal_effects()` methods for objects of classes `"margins"` and `"marginslist"`.
+
 ## margins 0.2.20
 
 * A warning is now issued when a model uses weights, indicating that they are ignored. (#4)

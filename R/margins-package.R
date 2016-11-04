@@ -7,3 +7,6 @@
 #' @keywords package
 #' @seealso \code{\link{margins}}, \code{\link{marginal_effects}}, \code{\link[prediction]{prediction}}
 NULL
+
+#' @export
+prediction

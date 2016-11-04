@@ -1,7 +1,7 @@
 #' @export
 print.margins <- 
 function(x, digits = 4, ...) {
-    print(colMeans(extract_marginal_effects(x), na.rm = TRUE), digits = digits, ...)
+    print(colMeans(marginal_effects(x), na.rm = TRUE), digits = digits, ...)
     invisible(x)
 }
 

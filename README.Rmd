@@ -42,7 +42,7 @@ Some technical details of the package are worth briefly noting. The estimation o
 library("knitr")
 options(width = 100)
 opts_knit$set(upload.fun = imgur_upload, base.url = NULL)
-opts_chunk$set(fig.width=7, fig.height=4, cache=TRUE)
+opts_chunk$set(fig.width=7, fig.height=4)
 ```
 
 Replicating Stata's results is incredibly simple using just the `margins()` method to obtain average marginal effects:

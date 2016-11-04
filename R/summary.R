@@ -1,7 +1,7 @@
 #' @export
 summary.margins <- 
 function(object, level = 0.95, ...) {
-    mes <- extract_marginal_effects(object)
+    mes <- marginal_effects(object)
     variances <- attributes(mes)[["variances"]]
     tab <- structure(list(Factor = names(mes), 
                           "dy/dx" = colMeans(mes, na.rm = TRUE),

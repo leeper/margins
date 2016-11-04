@@ -4,8 +4,8 @@
 \alias{plot.margins}
 \title{Plot Marginal Effects Estimates}
 \usage{
-\method{plot}{margins}(x, at = seq_along(extract_marginal_effects(x)),
-  which = colnames(extract_marginal_effects(x)), labels = which,
+\method{plot}{margins}(x, at = seq_along(marginal_effects(x)),
+  which = colnames(marginal_effects(x)), labels = which,
   horizontal = FALSE, xlab = "", ylab = "Marginal Effect", level = 0.95,
   pch = 21, points.col = "black", points.bg = "black", las = 1,
   cex = 1, lwd = 2, zeroline = TRUE, zero.col = "gray", ...)

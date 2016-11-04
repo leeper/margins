@@ -15,6 +15,7 @@
 #'   \item \dQuote{loess}, see \code{\link[stats]{loess}}
 #' }
 #'
+#' Methods are also provided for the object classes \dQuote{margins} and \dQuote{marginslist} to return simplified data frames from complete \dQuote{margins} objects.
 #' @return An data.frame with dimensions equal to \code{data}, where each row is an observation and each column is the marginal effect of that variable for the data values provided by \code{data}.
 #' @examples
 #' require("datasets")
@@ -25,7 +26,13 @@
 #' x <- lm(mpg ~ factor(cyl) * factor(am), data = mtcars)
 #' marginal_effects(x)
 #' 
-#' @seealso \code{\link{dydx}}, \code{\link{margins}}, \code{\link{build_margins}}, \code{\link{extract_marginal_effects}}
+#' # get just marginal effects from "margins" object
+#' require('datasets')
+#' m <- margins(lm(mpg ~ hp, data = mtcars[1:10,]))
+#' marginal_effects(m)
+#' marginal_effects(m[[1]])
+#'
+#' @seealso \code{\link{dydx}}, \code{\link{margins}}, \code{\link{build_margins}}
 #' @keywords models
 #' @export
 marginal_effects <- function(model, data, ...) {

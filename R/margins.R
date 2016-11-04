@@ -20,7 +20,7 @@
 #'
 #' The \code{margins} method for objects of class \dQuote{lm} or \dQuote{glm} simply constructs a list of data.frames (using \code{\link{build_datalist}}) and calls \code{\link{build_margins}} on each. You can call \code{build_margins} directly, but it requires the explicit specification of a dataset over which to estimate the quantities of interest.
 #' 
-#' Alternatively, you can use \code{\link{marginal_effects}} to retrieve a data frame of marginal effects without constructing a \dQuote{margins} object. That can be efficient for plotting, etc., given the time-consuming nature of variance estimation. Use \code{\link{extract_marginal_effects}} to retrieve a data frame of marginal effects from a \dQuote{margins} object.
+#' Alternatively, you can use \code{\link{marginal_effects}} to retrieve a data frame of marginal effects without constructing a \dQuote{margins} object. That can be efficient for plotting, etc., given the time-consuming nature of variance estimation.
 #' 
 #' @return An object of class \dQuote{marginslist}, composed of one or more objects of class \dQuote{margins}.
 #' @author Thomas J. Leeper
