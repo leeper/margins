@@ -28,7 +28,7 @@ build_margins(model, data, type = c("response", "link", "terms"),
 \item{\dots}{Arguments passed through various internal functions to \code{\link{dydx}} methods.}
 }
 \value{
-A data.frame of class \dQuote{margins} containing the contents of \code{data}, fitted values for \code{model}, the standard errors of the fitted values, and any estimated marginal effects. This data.frame may have repeated column names (for the original variables and the margginal effects thereof). Marginal effects columns are distinguished by their class (\dQuote{marginaleffect}) and can be extracted using \code{\link{extract_marginal_effects}}. Attributes containing additional information, including the marginal effect variances and additional details.
+A data.frame of class \dQuote{margins} containing the contents of \code{data}, fitted values for \code{model}, the standard errors of the fitted values, and any estimated marginal effects. This data.frame may have repeated column names (for the original variables and the margginal effects thereof). Marginal effects columns are distinguished by their class (\dQuote{marginaleffect}) and can be extracted using \code{marginal_effects(margins(model))}. Attributes containing additional information, including the marginal effect variances and additional details.
 }
 \description{
 This is the lower-level function called by \code{\link{margins}} that assembles a \dQuote{margins} object from calls to \code{\link[prediction]{prediction}}, \code{\link{marginal_effects}}, and \code{get_effect_variances} (not exported).
