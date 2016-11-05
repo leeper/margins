@@ -21,6 +21,10 @@ test_that("Test accuracy for glm()", {
     manual <- coef(x)[["wt"]] * p * (1-p)
     expect_equal(as.numeric(manual), as.numeric(m1[["wt"]]), tolerance = tol, label = "marginal effect is correct for logit glm()")
 })
+test_that("Test accuracy for loess()", {
+    x <- loess(mpg ~ wt, data = mtcars)
+    expect_true(inherits(m <- margins(x)[[1]], "margins"), label = "margins works for loess()")
+})
 
 
 context("Test `build_datalist()` behavior")
@@ -80,6 +84,7 @@ test_that("print()/summary() for 'margins' object", {
     expect_true(inherits(print(m[[1]]), "margins"), label = "print() method for margins")
     expect_true(inherits(summary(m), "list"), label = "summary() method for marginslist")
     expect_true(inherits(summary(m[[1]]), "data.frame"), label = "summary() method for margins")
+    expect_true(inherits(print(summary(m[[1]])), "data.frame"), label = "print() method for summary.margins")
 })
 test_that("confint() for 'margins' object", {
     x <- lm(mpg ~ wt * hp, data = head(mtcars))
