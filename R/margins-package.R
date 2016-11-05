@@ -9,6 +9,6 @@
 NULL
 
 #' @export
-prediction <- prediction::prediction
+prediction::prediction
 #' @export
-find_data <- prediction::find_data
+prediction::find_data

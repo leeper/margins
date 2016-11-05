@@ -55,6 +55,14 @@
 #' ## marginal effect of 'Petal.Width' across 'Petal.Width'
 #' cplot(m, x = "Petal.Width", what = "effect", n = 10)
 #'
+#' # factor independent variables
+#' mtcars[["am"]] <- factor(mtcars[["am"]])
+#' m <- lm(mpg ~ am * wt, data = mtcars)
+#' ## predicted values for each factor level
+#' cplot(m, x = "am")
+#' ## marginal effect of each factor level across numeric variable
+#' cplot(m, x = "wt", dx = "am", what = "effect")
+#' 
 #' # marginal effect of 'Petal.Width' across 'Sepal.Width'
 #' ## without drawing the plot
 #' ## this might be useful for using, e.g., ggplot2 for plotting
@@ -182,7 +190,7 @@ function(object,
                               lower = outdat[["fitted"]] + (fac[1] * outdat[["se.fitted"]])),
                          class = "data.frame", row.names = seq_along(outdat[["fitted"]]))
     } else if (what == "effect") {
-        if (is.factor(dat[[dx]]) && nlevels(data[[dx]]) != 2L) {
+        if (is.factor(dat[[dx]]) && nlevels(data[[dx]]) > 2L) {
             stop("Displaying effect of a factor variable with > 2 levels is not currently supported!")
         }
         summ <- summary(margins(model = object, data = data, at = setNames(list(xvals), xvar), type = type, vcov = vcov))
@@ -264,7 +272,7 @@ function(object,
                  lower = out[["lower"]])
         
         if (isTRUE(rug)) {
-            rug(dat[[x]], ticksize = rug.size, col = rug.col)
+            rug(jitter(dat[[x]]), ticksize = rug.size, col = rug.col, quiet = TRUE)
         }
     }
     

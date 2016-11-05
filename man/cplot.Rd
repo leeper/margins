@@ -150,6 +150,14 @@ m <- lm(Sepal.Length ~ Sepal.Width * Petal.Width * I(Petal.Width ^ 2),
 ## marginal effect of 'Petal.Width' across 'Petal.Width'
 cplot(m, x = "Petal.Width", what = "effect", n = 10)
 
+# factor independent variables
+mtcars[["am"]] <- factor(mtcars[["am"]])
+m <- lm(mpg ~ am * wt, data = mtcars)
+## predicted values for each factor level
+cplot(m, x = "am")
+## marginal effect of each factor level across numeric variable
+cplot(m, x = "wt", dx = "am", what = "effect")
+
 # marginal effect of 'Petal.Width' across 'Sepal.Width'
 ## without drawing the plot
 ## this might be useful for using, e.g., ggplot2 for plotting
