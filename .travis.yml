@@ -1,6 +1,8 @@
 language: r
 sudo: false
 cache: packages
+r_github_packages:
+- leeper/prediction
 r_packages:
 - knitr
 - rmarkdown

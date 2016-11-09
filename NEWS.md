@@ -3,6 +3,7 @@
 ## margins 0.2.23
 
 * The `extract_marginal_effects()` function has been removed and replaced by `marginal_effects()` methods for objects of classes `"margins"` and `"marginslist"`.
+* Added a dependency on **prediction** v.0.1.3 and, implicitly, an enhances suggestion of **survey** v3.31-5 to resolve an underlying `prediction()` issue for models of class `"svyglm"`. (#47, h/t Carl Ganz)
 
 ## margins 0.2.20
 
