@@ -9,44 +9,51 @@
 \usage{
 cplot(object, ...)
 
-\method{cplot}{lm}(object, x = attributes(terms(object))[["term.labels"]][1],
-  dx = x, what = c("prediction", "effect"), data = object[["model"]],
-  type = c("response", "link"), vcov = stats::vcov(object), at, n = 25L,
-  level = 0.95, draw = TRUE, xlab = x, ylab = if (match.arg(what) ==
-  "prediction") paste0("Predicted value") else paste0("Marginal effect of ",
-  dx), xlim, ylim, lwd = 1, col = "black", lty = 1, se.type = c("shade",
-  "lines"), se.col = "black", se.fill = grDevices::gray(0.5, 0.5),
-  se.lwd = lwd, se.lty = if (match.arg(se.type) == "lines") 1 else 0,
-  factor.pch = 19, factor.col = se.col, factor.fill = factor.col,
-  factor.cex = 1, xaxs = "i", yaxs = xaxs, las = 1, scatter = FALSE,
-  scatter.pch = 19, scatter.col = se.col, scatter.bg = scatter.col,
+\method{cplot}{lm}(object, x = attributes(terms(object))[["term.labels"]][1L],
+  dx = x, what = c("prediction", "effect"),
+  data = prediction::find_data(object), type = c("response", "link"),
+  vcov = stats::vcov(object), at, n = 25L, xvals = seq_range(data[[x]], n
+  = n), level = 0.95, draw = TRUE, xlab = x, ylab = if (match.arg(what)
+  == "prediction") paste0("Predicted value") else paste0("Marginal effect of ",
+  dx), xlim = NULL, ylim = NULL, lwd = 1L, col = "black", lty = 1L,
+  se.type = c("shade", "lines"), se.col = "black",
+  se.fill = grDevices::gray(0.5, 0.5), se.lwd = lwd, se.lty = if
+  (match.arg(se.type) == "lines") 1L else 0L, factor.pch = 19L,
+  factor.col = se.col, factor.fill = factor.col, factor.cex = 1L,
+  xaxs = "i", yaxs = xaxs, las = 1L, scatter = FALSE,
+  scatter.pch = 19L, scatter.col = se.col, scatter.bg = scatter.col,
   scatter.cex = 0.5, rug = TRUE, rug.col = col, rug.size = -0.02, ...)
 
-\method{cplot}{glm}(object, x = attributes(terms(object))[["term.labels"]][1],
-  dx = x, what = c("prediction", "effect"), data = object[["model"]],
+\method{cplot}{glm}(object,
+  x = attributes(terms(object))[["term.labels"]][1L], dx = x,
+  what = c("prediction", "effect"), data = prediction::find_data(object),
   type = c("response", "link"), vcov = stats::vcov(object), at, n = 25L,
-  level = 0.95, draw = TRUE, xlab = x, ylab = if (match.arg(what) ==
-  "prediction") paste0("Predicted value") else paste0("Marginal effect of ",
-  dx), xlim, ylim, lwd = 1, col = "black", lty = 1, se.type = c("shade",
-  "lines"), se.col = "black", se.fill = grDevices::gray(0.5, 0.5),
-  se.lwd = lwd, se.lty = if (match.arg(se.type) == "lines") 1 else 0,
-  factor.pch = 19, factor.col = se.col, factor.fill = factor.col,
-  factor.cex = 1, xaxs = "i", yaxs = xaxs, las = 1, scatter = FALSE,
-  scatter.pch = 19, scatter.col = se.col, scatter.bg = scatter.col,
+  xvals = seq_range(data[[x]], n = n), level = 0.95, draw = TRUE,
+  xlab = x, ylab = if (match.arg(what) == "prediction")
+  paste0("Predicted value") else paste0("Marginal effect of ", dx),
+  xlim = NULL, ylim = NULL, lwd = 1L, col = "black", lty = 1L,
+  se.type = c("shade", "lines"), se.col = "black",
+  se.fill = grDevices::gray(0.5, 0.5), se.lwd = lwd, se.lty = if
+  (match.arg(se.type) == "lines") 1L else 0L, factor.pch = 19L,
+  factor.col = se.col, factor.fill = factor.col, factor.cex = 1L,
+  xaxs = "i", yaxs = xaxs, las = 1L, scatter = FALSE,
+  scatter.pch = 19L, scatter.col = se.col, scatter.bg = scatter.col,
   scatter.cex = 0.5, rug = TRUE, rug.col = col, rug.size = -0.02, ...)
 
 \method{cplot}{loess}(object,
-  x = attributes(terms(object))[["term.labels"]][1], dx = x,
-  what = c("prediction", "effect"), data = object[["model"]],
+  x = attributes(terms(object))[["term.labels"]][1L], dx = x,
+  what = c("prediction", "effect"), data = prediction::find_data(object),
   type = c("response", "link"), vcov = stats::vcov(object), at, n = 25L,
-  level = 0.95, draw = TRUE, xlab = x, ylab = if (match.arg(what) ==
-  "prediction") paste0("Predicted value") else paste0("Marginal effect of ",
-  dx), xlim, ylim, lwd = 1, col = "black", lty = 1, se.type = c("shade",
-  "lines"), se.col = "black", se.fill = grDevices::gray(0.5, 0.5),
-  se.lwd = lwd, se.lty = if (match.arg(se.type) == "lines") 1 else 0,
-  factor.pch = 19, factor.col = se.col, factor.fill = factor.col,
-  factor.cex = 1, xaxs = "i", yaxs = xaxs, las = 1, scatter = FALSE,
-  scatter.pch = 19, scatter.col = se.col, scatter.bg = scatter.col,
+  xvals = seq_range(data[[x]], n = n), level = 0.95, draw = TRUE,
+  xlab = x, ylab = if (match.arg(what) == "prediction")
+  paste0("Predicted value") else paste0("Marginal effect of ", dx),
+  xlim = NULL, ylim = NULL, lwd = 1L, col = "black", lty = 1L,
+  se.type = c("shade", "lines"), se.col = "black",
+  se.fill = grDevices::gray(0.5, 0.5), se.lwd = lwd, se.lty = if
+  (match.arg(se.type) == "lines") 1L else 0L, factor.pch = 19L,
+  factor.col = se.col, factor.fill = factor.col, factor.cex = 1L,
+  xaxs = "i", yaxs = xaxs, las = 1L, scatter = FALSE,
+  scatter.pch = 19L, scatter.col = se.col, scatter.bg = scatter.col,
   scatter.cex = 0.5, rug = TRUE, rug.col = col, rug.size = -0.02, ...)
 }
 \arguments{
@@ -67,6 +74,8 @@ cplot(object, ...)
 \item{at}{Currently ignored.}
 
 \item{n}{An integer specifying the number of points across \code{x} at which to calculate the predicted value or marginal effect.}
+
+\item{xvals}{A numeric vector of values at which to calculate predictions or marginal effects. By default, it is calculated from the data using \code{\link{seq_range}}.}
 
 \item{level}{The confidence level required (used to draw uncertainty bounds).}
 

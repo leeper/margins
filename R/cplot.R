@@ -10,6 +10,7 @@
 #' @param vcov A matrix containing the variance-covariance matrix for estimated model coefficients, or a function to perform the estimation with \code{model} as its only argument.
 #' @param at Currently ignored.
 #' @param n An integer specifying the number of points across \code{x} at which to calculate the predicted value or marginal effect.
+#' @param xvals A numeric vector of values at which to calculate predictions or marginal effects. By default, it is calculated from the data using \code{\link{seq_range}}.
 #' @param level The confidence level required (used to draw uncertainty bounds).
 #' @param draw A logical (default \code{TRUE}), specifying whether to draw the plot. If \code{FALSE}, the data used in drawing are returned as a list of data.frames. This might be useful if you want to plot using an alternative plotting package (e.g., ggplot2). Also, if set to value \dQuote{add}, then the resulting data is added to the existing plot.
 #' @param xlab A character string specifying the value of \code{xlab} in \code{\link[graphics]{plot}}. 
@@ -87,7 +88,7 @@
 #' @seealso \code{\link{plot.margins}}, \code{\link{persp.lm}}
 #' @keywords graphics hplot
 #' @importFrom graphics par plot lines rug polygon segments points
-#' @importFrom prediction prediction
+#' @importFrom prediction prediction find_data
 #' @export
 cplot <- function(object, ...) {
     UseMethod("cplot")
@@ -97,37 +98,38 @@ cplot <- function(object, ...) {
 #' @export
 cplot.lm <- 
 function(object, 
-         x = attributes(terms(object))[["term.labels"]][1],
+         x = attributes(terms(object))[["term.labels"]][1L],
          dx = x, 
          what = c("prediction", "effect"), 
-         data = object[["model"]],
+         data = prediction::find_data(object),
          type = c("response", "link"), 
          vcov = stats::vcov(object),
          at,
          n = 25L,
+         xvals = seq_range(data[[x]], n = n),
          level = 0.95,
          draw = TRUE,
          xlab = x, 
          ylab = if (match.arg(what) == "prediction") paste0("Predicted value") else paste0("Marginal effect of ", dx),
-         xlim,
-         ylim,
-         lwd = 1,
+         xlim = NULL,
+         ylim = NULL,
+         lwd = 1L,
          col = "black",
-         lty = 1,
+         lty = 1L,
          se.type = c("shade", "lines"),
          se.col = "black",
          se.fill = grDevices::gray(.5,.5),
          se.lwd = lwd,
-         se.lty = if(match.arg(se.type) == "lines") 1 else 0,
-         factor.pch = 19,
+         se.lty = if(match.arg(se.type) == "lines") 1L else 0L,
+         factor.pch = 19L,
          factor.col = se.col,
          factor.fill = factor.col,
-         factor.cex = 1,
+         factor.cex = 1L,
          xaxs = "i",
          yaxs = xaxs,
-         las = 1,
+         las = 1L,
          scatter = FALSE,
-         scatter.pch = 19,
+         scatter.pch = 19L,
          scatter.col = se.col,
          scatter.bg = scatter.col,
          scatter.cex = 0.5,
@@ -160,9 +162,7 @@ function(object,
             xvals <- as.character(unique(dat[[clean_terms(xvar)]]))
         }
     } else {
-        xvals <- seq(min(dat[[xvar]], na.rm = TRUE), 
-                     max(dat[[xvar]], na.rm = TRUE), 
-                     length.out = n)
+        xvals <- xvals
     } 
     
     what <- match.arg(what)
@@ -207,72 +207,24 @@ function(object,
     
     # optionally draw the plot; if FALSE, just the data are returned
     if (isTRUE(draw)) {
-
-        if (missing(xlim)) {
-            if (isTRUE(x_is_factor)) {
-                xlim <- c(0.75, length(xvals) + 0.25)
-            } else {
-                xlim <- range(dat[[x]], na.rm = TRUE)
-            }
-        }
-        
-        if (missing(ylim)) {
-            tmp <- range(c(out[["upper"]], out[["lower"]]), na.rm = TRUE)
-            rng <- diff(tmp)
-            ylim <- c(min(tmp, na.rm = TRUE) - (0.05 * rng), max(tmp, na.rm = TRUE) + (0.05 * rng))
-            rm(tmp)
-            rm(rng)
-        }
-        
-        if (isTRUE(x_is_factor)) {
-            plot(NA, xlab = xlab, ylab = ylab, xaxt = "n", xaxs = xaxs, yaxs = yaxs, las = las, xlim = xlim, ylim = ylim, ...)
-            axis(1, at = seq_along(xvals), labels = xvals)
-        } else {
-            plot(NA, xlab = xlab, ylab = ylab, xaxs = xaxs, yaxs = yaxs, las = las, xlim = xlim, ylim = ylim, ...)
-            if (isTRUE(scatter)) {
-                points(data[, xvar], data[, yvar], pch = scatter.pch, col = scatter.col, bg = scatter.col)
-            }
-        }
-        
+        setup_cplot(plotdat = out, data = data, xvals = xvals, xvar = xvar, yvar = yvar,
+                    xlim = xlim, ylim = ylim, x_is_factor = x_is_factor,
+                    xlab = xlab, ylab = ylab, xaxs = xaxs, yaxs = yaxs, las = las,
+                    scatter = scatter, scatter.pch = scatter.pch, scatter.col = scatter.col, ...)
     }
-    
     if (isTRUE(draw) || draw == "add") {
-        
-        se.type <- match.arg(se.type)
-    
-        # function to draw one set of lines
-        draw_one <- function(xvals, yvals, upper, lower) {
-            if (isTRUE(x_is_factor)) {
-                xvals <- seq_along(xvals)
-                # uncertainty
-                for (i in seq_along(xvals)) {
-                    segments(xvals[i], upper[i], xvals[i], lower[i], col = col, lty = lty, lwd = lwd)
-                }
-                
-                # prediction/effect line
-                points(xvals, yvals, pch = factor.pch, bg = factor.fill, col = factor.col, cex = factor.cex)
-            } else {
-                # uncertainty
-                if (se.type == "lines") {
-                    lines(xvals, upper, type = "l", lwd = se.lwd, col = se.col, lty = se.lty)
-                    lines(xvals, lower, type = "l", lwd = se.lwd, col = se.col, lty = se.lty)
-                } else {
-                    polygon(c(xvals, rev(xvals)), c(upper, rev(lower)), col = se.fill, border = se.col, lty = se.lty)
-                }
-                
-                # prediction/effect line
-                lines(xvals, yvals, type = "l", lwd = lwd, col = col, lty = lty)
-            }
-        }
-        
-        # draw
         draw_one(xvals = out[["xvals"]], 
                  yvals = out[["yvals"]], 
                  upper = out[["upper"]], 
-                 lower = out[["lower"]])
-        
+                 lower = out[["lower"]],
+                 x_is_factor = x_is_factor,
+                 col = col, lty = lty, lwd = lwd,
+                 se.type = match.arg(se.type),
+                 factor.pch = factor.pch, factor.fill = factor.fill, 
+                 factor.col = factor.col, factor.cex = factor.cex,
+                 se.lwd = se.lwd, se.fill = se.fill, se.col = se.col, se.lty = se.lty)
         if (isTRUE(rug)) {
-            rug(jitter(dat[[x]]), ticksize = rug.size, col = rug.col, quiet = TRUE)
+            draw_rug(data[[x]], rug.size = rug.size, rug.col = rug.col)
         }
     }
     
