@@ -1,3 +1,22 @@
+# function to check whether 
+check_factors <- function(object, data, xvar, dx) {
+    # check factors
+    classes <- attributes(terms(object))[["dataClasses"]][-1]
+    classes <- classes[names(classes) != "(weights)"]
+    classes[classes == "character"] <- "factor"
+    nnames <- clean_terms(names(classes)[classes != "factor"])
+    fnames <- clean_terms(names(classes)[classes == "factor"])
+    fnames2 <- names(classes)[classes == "factor"] # for checking stupid variable naming behavior by R
+    
+    # subset data
+    data <- data[, c(nnames, fnames2), drop = FALSE]
+    names(data)[names(data) %in% fnames2] <- fnames
+    
+    list(x_is_factor = (xvar %in% c(fnames, fnames2)),
+         dx_is_factor = (dx %in% c(fnames, fnames2)),
+         data = data)
+}
+
 # PLOTTING UTILITY FUNCTIONS FOR cplot()
 
 # function to setup plot
@@ -52,6 +71,7 @@ function(xvals, yvals, upper, lower,
          lty,
          lwd,
          se.type,
+         factor.lty = 0L,
          factor.pch, 
          factor.fill, 
          factor.col, 
@@ -63,21 +83,28 @@ function(xvals, yvals, upper, lower,
     if (isTRUE(x_is_factor)) {
         xvals <- seq_along(xvals)
         # uncertainty
-        for (i in seq_along(xvals)) {
-            segments(xvals[i], upper[i], xvals[i], lower[i], col = col, lty = lty, lwd = lwd)
+        if (!missing(upper) && !missing(lower)) {
+            for (i in seq_along(xvals)) {
+                segments(xvals[i], upper[i], xvals[i], lower[i], col = col, lty = lty, lwd = lwd)
+            }
         }
-        
         # prediction/effect line
         points(xvals, yvals, pch = factor.pch, bg = factor.fill, col = factor.col, cex = factor.cex)
+        if (factor.lty != 0L) {
+            lines(xvals, yvals, col = factor.col, lty = lty)
+        }
     } else {
         # uncertainty
-        if (se.type == "lines") {
-            lines(xvals, upper, type = "l", lwd = se.lwd, col = se.col, lty = se.lty)
-            lines(xvals, lower, type = "l", lwd = se.lwd, col = se.col, lty = se.lty)
-        } else {
-            polygon(c(xvals, rev(xvals)), c(upper, rev(lower)), col = se.fill, border = se.col, lty = se.lty)
+        if (!missing(upper) && !missing(lower)) {
+            if (se.type == "lines") {
+                lines(xvals, upper, type = "l", lwd = se.lwd, col = se.col, lty = se.lty)
+                lines(xvals, lower, type = "l", lwd = se.lwd, col = se.col, lty = se.lty)
+            } else if (se.type == "shade") {
+                polygon(c(xvals, rev(xvals)), c(upper, rev(lower)), col = se.fill, border = se.col, lty = se.lty)
+            } else {
+                # do nothing
+            }
         }
-        
         # prediction/effect line
         lines(xvals, yvals, type = "l", lwd = lwd, col = col, lty = lty)
     }

@@ -5,6 +5,7 @@
 \alias{cplot.glm}
 \alias{cplot.lm}
 \alias{cplot.loess}
+\alias{cplot.polr}
 \title{Conditional predicted value and average marginal effect plots for models}
 \usage{
 cplot(object, ...)
@@ -16,11 +17,11 @@ cplot(object, ...)
   = n), level = 0.95, draw = TRUE, xlab = x, ylab = if (match.arg(what)
   == "prediction") paste0("Predicted value") else paste0("Marginal effect of ",
   dx), xlim = NULL, ylim = NULL, lwd = 1L, col = "black", lty = 1L,
-  se.type = c("shade", "lines"), se.col = "black",
+  se.type = c("shade", "lines", "none"), se.col = "black",
   se.fill = grDevices::gray(0.5, 0.5), se.lwd = lwd, se.lty = if
-  (match.arg(se.type) == "lines") 1L else 0L, factor.pch = 19L,
-  factor.col = se.col, factor.fill = factor.col, factor.cex = 1L,
-  xaxs = "i", yaxs = xaxs, las = 1L, scatter = FALSE,
+  (match.arg(se.type) == "lines") 1L else 0L, factor.lty = 0L,
+  factor.pch = 19L, factor.col = se.col, factor.fill = factor.col,
+  factor.cex = 1L, xaxs = "i", yaxs = xaxs, las = 1L, scatter = FALSE,
   scatter.pch = 19L, scatter.col = se.col, scatter.bg = scatter.col,
   scatter.cex = 0.5, rug = TRUE, rug.col = col, rug.size = -0.02, ...)
 
@@ -32,11 +33,11 @@ cplot(object, ...)
   xlab = x, ylab = if (match.arg(what) == "prediction")
   paste0("Predicted value") else paste0("Marginal effect of ", dx),
   xlim = NULL, ylim = NULL, lwd = 1L, col = "black", lty = 1L,
-  se.type = c("shade", "lines"), se.col = "black",
+  se.type = c("shade", "lines", "none"), se.col = "black",
   se.fill = grDevices::gray(0.5, 0.5), se.lwd = lwd, se.lty = if
-  (match.arg(se.type) == "lines") 1L else 0L, factor.pch = 19L,
-  factor.col = se.col, factor.fill = factor.col, factor.cex = 1L,
-  xaxs = "i", yaxs = xaxs, las = 1L, scatter = FALSE,
+  (match.arg(se.type) == "lines") 1L else 0L, factor.lty = 0L,
+  factor.pch = 19L, factor.col = se.col, factor.fill = factor.col,
+  factor.cex = 1L, xaxs = "i", yaxs = xaxs, las = 1L, scatter = FALSE,
   scatter.pch = 19L, scatter.col = se.col, scatter.bg = scatter.col,
   scatter.cex = 0.5, rug = TRUE, rug.col = col, rug.size = -0.02, ...)
 
@@ -48,13 +49,27 @@ cplot(object, ...)
   xlab = x, ylab = if (match.arg(what) == "prediction")
   paste0("Predicted value") else paste0("Marginal effect of ", dx),
   xlim = NULL, ylim = NULL, lwd = 1L, col = "black", lty = 1L,
-  se.type = c("shade", "lines"), se.col = "black",
+  se.type = c("shade", "lines", "none"), se.col = "black",
   se.fill = grDevices::gray(0.5, 0.5), se.lwd = lwd, se.lty = if
-  (match.arg(se.type) == "lines") 1L else 0L, factor.pch = 19L,
-  factor.col = se.col, factor.fill = factor.col, factor.cex = 1L,
-  xaxs = "i", yaxs = xaxs, las = 1L, scatter = FALSE,
+  (match.arg(se.type) == "lines") 1L else 0L, factor.lty = 0L,
+  factor.pch = 19L, factor.col = se.col, factor.fill = factor.col,
+  factor.cex = 1L, xaxs = "i", yaxs = xaxs, las = 1L, scatter = FALSE,
   scatter.pch = 19L, scatter.col = se.col, scatter.bg = scatter.col,
   scatter.cex = 0.5, rug = TRUE, rug.col = col, rug.size = -0.02, ...)
+
+\method{cplot}{polr}(object,
+  x = attributes(terms(object))[["term.labels"]][1L], dx = x,
+  what = c("prediction", "effect"), data = prediction::find_data(object),
+  type = c("response", "link"), vcov = stats::vcov(object), at, n = 25L,
+  xvals = seq_range(data[[x]], n = n), level = 0.95, draw = TRUE,
+  xlab = x, ylab = if (match.arg(what) == "prediction")
+  paste0("Predicted value") else paste0("Marginal effect of ", dx),
+  xlim = NULL, ylim = c(0L, 1L), lwd = 1L, col = "black", lty = 1L,
+  factor.lty = 1L, factor.pch = 19L, factor.col = col,
+  factor.fill = factor.col, factor.cex = 1L, xaxs = "i", yaxs = xaxs,
+  las = 1L, scatter = FALSE, scatter.pch = 19L,
+  scatter.col = factor.col, scatter.bg = scatter.col, scatter.cex = 0.5,
+  rug = TRUE, rug.col = col, rug.size = -0.02, ...)
 }
 \arguments{
 \item{object}{A model object.}
@@ -73,9 +88,9 @@ cplot(object, ...)
 
 \item{at}{Currently ignored.}
 
-\item{n}{An integer specifying the number of points across \code{x} at which to calculate the predicted value or marginal effect.}
+\item{n}{An integer specifying the number of points across \code{x} at which to calculate the predicted value or marginal effect, when \code{x} is numeric. Ignored otherwise.}
 
-\item{xvals}{A numeric vector of values at which to calculate predictions or marginal effects. By default, it is calculated from the data using \code{\link{seq_range}}.}
+\item{xvals}{A numeric vector of values at which to calculate predictions or marginal effects, if \code{x} is numeric. By default, it is calculated from the data using \code{\link{seq_range}}. If \code{x} is a factor, this is ignored, as is \code{n}.}
 
 \item{level}{The confidence level required (used to draw uncertainty bounds).}
 
@@ -104,6 +119,8 @@ cplot(object, ...)
 \item{se.lwd}{If \code{se.type = "lines"}, the width of the confidence interval lines. See \code{\link[graphics]{lines}}.}
 
 \item{se.lty}{If \code{se.type = "lines"}, an integer specifying the \dQuote{line type} of the confidence interval lines; if \code{se.type = "shade"}, the line type of the shaded polygon border. See \code{\link[graphics]{par}}.}
+
+\item{factor.lty}{If \code{x} is a factor variable in the model, this is used to set the line type of an optional line connecting predictions across factor levels. If \code{factor.lty = 0L} (the default), no line is drawn.. See \code{\link[graphics]{par}}.}
 
 \item{factor.pch}{If \code{x} is a factor variable in the model, the shape to use when drawing points. See \code{\link[graphics]{points}}.}
 

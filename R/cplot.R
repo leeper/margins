@@ -9,8 +9,8 @@
 #' @param type A character string specifying whether to calculate predictions on the response scale (default) or link (only relevant for non-linear models).
 #' @param vcov A matrix containing the variance-covariance matrix for estimated model coefficients, or a function to perform the estimation with \code{model} as its only argument.
 #' @param at Currently ignored.
-#' @param n An integer specifying the number of points across \code{x} at which to calculate the predicted value or marginal effect.
-#' @param xvals A numeric vector of values at which to calculate predictions or marginal effects. By default, it is calculated from the data using \code{\link{seq_range}}.
+#' @param n An integer specifying the number of points across \code{x} at which to calculate the predicted value or marginal effect, when \code{x} is numeric. Ignored otherwise.
+#' @param xvals A numeric vector of values at which to calculate predictions or marginal effects, if \code{x} is numeric. By default, it is calculated from the data using \code{\link{seq_range}}. If \code{x} is a factor, this is ignored, as is \code{n}.
 #' @param level The confidence level required (used to draw uncertainty bounds).
 #' @param draw A logical (default \code{TRUE}), specifying whether to draw the plot. If \code{FALSE}, the data used in drawing are returned as a list of data.frames. This might be useful if you want to plot using an alternative plotting package (e.g., ggplot2). Also, if set to value \dQuote{add}, then the resulting data is added to the existing plot.
 #' @param xlab A character string specifying the value of \code{xlab} in \code{\link[graphics]{plot}}. 
@@ -25,6 +25,7 @@
 #' @param se.fill If \code{se.type = "shade"}, the color of the shaded region. Ignored otherwise.
 #' @param se.lwd If \code{se.type = "lines"}, the width of the confidence interval lines. See \code{\link[graphics]{lines}}.
 #' @param se.lty If \code{se.type = "lines"}, an integer specifying the \dQuote{line type} of the confidence interval lines; if \code{se.type = "shade"}, the line type of the shaded polygon border. See \code{\link[graphics]{par}}.
+#' @param factor.lty If \code{x} is a factor variable in the model, this is used to set the line type of an optional line connecting predictions across factor levels. If \code{factor.lty = 0L} (the default), no line is drawn.. See \code{\link[graphics]{par}}. 
 #' @param factor.pch If \code{x} is a factor variable in the model, the shape to use when drawing points. See \code{\link[graphics]{points}}.
 #' @param factor.col If \code{x} is a factor variable in the model, the color to use for the border of the points. See \code{\link[graphics]{points}}.
 #' @param factor.fill If \code{x} is a factor variable in the model, the color to use for the fill of the points. See \code{\link[graphics]{points}}.
@@ -116,11 +117,12 @@ function(object,
          lwd = 1L,
          col = "black",
          lty = 1L,
-         se.type = c("shade", "lines"),
+         se.type = c("shade", "lines", "none"),
          se.col = "black",
          se.fill = grDevices::gray(.5,.5),
          se.lwd = lwd,
          se.lty = if(match.arg(se.type) == "lines") 1L else 0L,
+         factor.lty = 0L,
          factor.pch = 19L,
          factor.col = se.col,
          factor.fill = factor.col,
@@ -141,18 +143,11 @@ function(object,
     xvar <- x
     yvar <- as.character(attributes(terms(object))[["variables"]][[2]])
     
-    # handle factors
-    classes <- attributes(terms(object))[["dataClasses"]][-1]
-    classes[classes == "character"] <- "factor"
-    nnames <- clean_terms(names(classes)[classes != "factor"])
-    fnames <- clean_terms(names(classes)[classes == "factor"])
-    fnames2 <- names(classes)[classes == "factor"] # for checking stupid variable naming behavior by R
-    x_is_factor <- (xvar %in% c(fnames, fnames2))
-    dx_is_factor <- (dx %in% c(fnames, fnames2))
-    
-    # subset data
-    dat <- data[, c(nnames, fnames2), drop = FALSE]
-    names(dat)[names(dat) %in% fnames2] <- fnames
+    # handle factors and subset data
+    f <- check_factors(object, data, xvar = xvar, dx = dx)
+    x_is_factor <- f[["x_is_factor"]]
+    dx_is_factor <- f[["dx_is_factor"]]
+    dat <- f[["data"]]
     
     # setup x (based on whether factor)
     if (isTRUE(x_is_factor)) {
@@ -220,7 +215,7 @@ function(object,
                  x_is_factor = x_is_factor,
                  col = col, lty = lty, lwd = lwd,
                  se.type = match.arg(se.type),
-                 factor.pch = factor.pch, factor.fill = factor.fill, 
+                 factor.lty = factor.lty, factor.pch = factor.pch, factor.fill = factor.fill, 
                  factor.col = factor.col, factor.cex = factor.cex,
                  se.lwd = se.lwd, se.fill = se.fill, se.col = se.col, se.lty = se.lty)
         if (isTRUE(rug)) {
@@ -239,3 +234,137 @@ cplot.glm <- cplot.lm
 #' @rdname cplot
 #' @export
 cplot.loess <- cplot.lm
+
+#' @rdname cplot
+#' @export
+cplot.polr <-
+function(object, 
+         x = attributes(terms(object))[["term.labels"]][1L],
+         dx = x, 
+         what = c("prediction", "effect"), 
+         data = prediction::find_data(object),
+         type = c("response", "link"), 
+         vcov = stats::vcov(object),
+         at,
+         n = 25L,
+         xvals = seq_range(data[[x]], n = n),
+         level = 0.95,
+         draw = TRUE,
+         xlab = x, 
+         ylab = if (match.arg(what) == "prediction") paste0("Predicted value") else paste0("Marginal effect of ", dx),
+         xlim = NULL,
+         ylim = c(0L,1L),
+         lwd = 1L,
+         col = "black",
+         lty = 1L,
+         factor.lty = 1L,
+         factor.pch = 19L,
+         factor.col = col,
+         factor.fill = factor.col,
+         factor.cex = 1L,
+         xaxs = "i",
+         yaxs = xaxs,
+         las = 1L,
+         scatter = FALSE,
+         scatter.pch = 19L,
+         scatter.col = factor.col,
+         scatter.bg = scatter.col,
+         scatter.cex = 0.5,
+         rug = TRUE,
+         rug.col = col,
+         rug.size = -0.02,
+         ...) {
+    
+    xvar <- x
+    yvar <- as.character(attributes(terms(object))[["variables"]][[2]])
+    
+    # handle factors and subset data
+    f <- check_factors(object = object, data = data, xvar = xvar, dx = dx)
+    x_is_factor <- f[["x_is_factor"]]
+    dx_is_factor <- f[["dx_is_factor"]]
+    dat <- f[["data"]]
+    
+    # setup x (based on whether factor)
+    if (isTRUE(x_is_factor)) {
+        if (is.factor(dat[["xvar"]])) {
+            xvals <- as.character(levels(dat[[clean_terms(xvar)]]))
+        } else {
+            xvals <- as.character(unique(dat[[clean_terms(xvar)]]))
+        }
+    } else {
+        xvals <- xvals
+    } 
+    
+    what <- match.arg(what)
+    type <- match.arg(type)
+    a <- (1 - level)/2
+    fac <- qnorm(c(a, 1 - a))
+
+    # setup `outdat` data
+    if (what == "prediction") {
+        mean_or_mode <- function(x) {
+            if (is.factor(x)) {
+                factor(names(sort(table(x), descending = TRUE))[1L], levels = levels(x))
+            } else {
+                mean(x, na.rm = TRUE)
+            }
+        }
+        tmpdat <- lapply(dat[, names(dat) != xvar, drop = FALSE], mean_or_mode)
+        tmpdat <- structure(lapply(tmpdat, rep, length(xvals)),
+                            class = "data.frame", row.names = seq_len(length(xvals)))
+        tmpdat[[xvar]] <- xvals
+        outdat <- prediction(model = object, data = tmpdat, level = level)
+        out <- list()
+        for (i in seq_len(length(outdat))[-c(1L:2L)]) {
+            out[[i-2L]] <- structure(list(xvals = xvals,
+                                          yvals = outdat[[i]],
+                                          level = names(outdat)[i]),
+                                  class = "data.frame", 
+                                  row.names = seq_along(outdat[["fitted"]]))
+        }
+    } else if (what == "effect") {
+        stop("Displaying marginal effects is not currently supported for 'polr' models!")
+    }
+    
+    # optionally draw the plot; if FALSE, just the data are returned
+    if (isTRUE(draw)) {
+        setup_cplot(plotdat = out, data = data, xvals = xvals, xvar = xvar, yvar = yvar,
+                    xlim = xlim, ylim = ylim, x_is_factor = x_is_factor,
+                    xlab = xlab, ylab = ylab, xaxs = xaxs, yaxs = yaxs, las = las,
+                    scatter = scatter, scatter.pch = scatter.pch, scatter.col = scatter.col, ...)
+    }
+    if (isTRUE(draw) || draw == "add") {
+        if (length(lty) != length(out)) {
+            lty <- rep(lty, length(out))
+        }
+        if (length(lwd) != length(out)) {
+            lwd <- rep(lwd, length(out))
+        }
+        if (length(col) != length(out)) {
+            col <- rep(col, length(out))
+        }
+        if (length(factor.col) != length(out)) {
+            factor.col <- rep(factor.col, length(out))
+        }
+        if (length(factor.fill) != length(out)) {
+            factor.fill <- rep(factor.fill, length(out))
+        }
+        for (i in seq_along(out)) {
+            draw_one(xvals = out[[i]][["xvals"]], 
+                     yvals = out[[i]][["yvals"]], 
+                     x_is_factor = x_is_factor,
+                     col = col[i], lty = lty[i], lwd = lwd,
+                     se.type = "none",
+                     factor.lty = factor.lty, factor.pch = factor.pch, 
+                     factor.fill = factor.fill[i], 
+                     factor.col = factor.col[i], factor.cex = factor.cex)
+        }
+        if (isTRUE(rug) && is.numeric(data[[x]])) {
+            draw_rug(data[[x]], rug.size = rug.size, rug.col = rug.col)
+        }
+    }
+    
+    # return data used in plot
+    invisible(do.call("rbind", out))
+}
+
