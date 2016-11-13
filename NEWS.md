@@ -2,6 +2,11 @@
 
 ## margins 0.2.24
 
+* `cplot.polr()` now allows the display of "stacked" (cumulative) predicted probabilities. (#49)
+* A tentative `cplot.multinom()` method has been added.
+
+## margins 0.2.24
+
 * The internal code of `cplot.lm()` has been refactored so that the actual plotting code now relies in non-exported utility functions, which can be used in other methods. This should make it easier to maintain existing methods and add new ones. (#49)
 * A new `cplot()` method for objects of class `"polr"` has been added (#49).
 

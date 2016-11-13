@@ -5,6 +5,7 @@
 \alias{cplot.glm}
 \alias{cplot.lm}
 \alias{cplot.loess}
+\alias{cplot.multinom}
 \alias{cplot.polr}
 \title{Conditional predicted value and average marginal effect plots for models}
 \usage{
@@ -59,12 +60,26 @@ cplot(object, ...)
 
 \method{cplot}{polr}(object,
   x = attributes(terms(object))[["term.labels"]][1L], dx = x,
-  what = c("prediction", "effect"), data = prediction::find_data(object),
-  type = c("response", "link"), vcov = stats::vcov(object), at, n = 25L,
-  xvals = seq_range(data[[x]], n = n), level = 0.95, draw = TRUE,
-  xlab = x, ylab = if (match.arg(what) == "prediction")
-  paste0("Predicted value") else paste0("Marginal effect of ", dx),
-  xlim = NULL, ylim = c(0L, 1L), lwd = 1L, col = "black", lty = 1L,
+  what = c("prediction", "stackedprediction", "effect"),
+  data = prediction::find_data(object), type = c("response", "link"),
+  vcov = stats::vcov(object), at, n = 25L, xvals = seq_range(data[[x]], n
+  = n), level = 0.95, draw = TRUE, xlab = x, ylab = if (match.arg(what)
+  == "effect") paste0("Marginal effect of ", dx) else paste0("Predicted value"),
+  xlim = NULL, ylim = c(0, 1.04), lwd = 1L, col = "black", lty = 1L,
+  factor.lty = 1L, factor.pch = 19L, factor.col = col,
+  factor.fill = factor.col, factor.cex = 1L, xaxs = "i", yaxs = xaxs,
+  las = 1L, scatter = FALSE, scatter.pch = 19L,
+  scatter.col = factor.col, scatter.bg = scatter.col, scatter.cex = 0.5,
+  rug = TRUE, rug.col = col, rug.size = -0.02, ...)
+
+\method{cplot}{multinom}(object,
+  x = attributes(terms(object))[["term.labels"]][1L], dx = x,
+  what = c("prediction", "stackedprediction", "effect"),
+  data = prediction::find_data(object), type = c("response", "link"),
+  vcov = stats::vcov(object), at, n = 25L, xvals = seq_range(data[[x]], n
+  = n), level = 0.95, draw = TRUE, xlab = x, ylab = if (match.arg(what)
+  == "effect") paste0("Marginal effect of ", dx) else paste0("Predicted value"),
+  xlim = NULL, ylim = c(0, 1.04), lwd = 1L, col = "black", lty = 1L,
   factor.lty = 1L, factor.pch = 19L, factor.col = col,
   factor.fill = factor.col, factor.cex = 1L, xaxs = "i", yaxs = xaxs,
   las = 1L, scatter = FALSE, scatter.pch = 19L,
@@ -203,6 +218,21 @@ cplot(m, x = "wt") # prediction
 # effects on linear predictor and outcome
 cplot(m, x = "drat", dx = "wt", what = "effect", type = "link")
 cplot(m, x = "drat", dx = "wt", what = "effect", type = "response")
+
+# ordinal outcome
+if (require("MASS")) {
+  house.plr <- polr(Sat ~ Infl + Type + Cont, weights = Freq, 
+                    data = housing)
+  # predicted probabilities
+  cplot(house.plr)
+  # cumulative predicted probabilities
+  cplot(house.plr, what = "stacked")
+  # ggplot2 example
+  if (require("ggplot2")) {
+    ggplot(cplot(house.plr), aes(x = xvals, y = yvals, group = level)) + 
+      geom_line(aes(color = level))
+  }
+}
 
 }
 }

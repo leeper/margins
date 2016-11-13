@@ -85,6 +85,21 @@
 #' cplot(m, x = "drat", dx = "wt", what = "effect", type = "link")
 #' cplot(m, x = "drat", dx = "wt", what = "effect", type = "response")
 #' 
+#' # ordinal outcome
+#' if (require("MASS")) {
+#'   house.plr <- polr(Sat ~ Infl + Type + Cont, weights = Freq, 
+#'                     data = housing)
+#'   # predicted probabilities
+#'   cplot(house.plr)
+#'   # cumulative predicted probabilities
+#'   cplot(house.plr, what = "stacked")
+#'   # ggplot2 example
+#'   if (require("ggplot2")) {
+#'     ggplot(cplot(house.plr), aes(x = xvals, y = yvals, group = level)) + 
+#'       geom_line(aes(color = level))
+#'   }
+#' }
+#' 
 #' }
 #' @seealso \code{\link{plot.margins}}, \code{\link{persp.lm}}
 #' @keywords graphics hplot
@@ -241,7 +256,7 @@ cplot.polr <-
 function(object, 
          x = attributes(terms(object))[["term.labels"]][1L],
          dx = x, 
-         what = c("prediction", "effect"), 
+         what = c("prediction", "stackedprediction", "effect"), 
          data = prediction::find_data(object),
          type = c("response", "link"), 
          vcov = stats::vcov(object),
@@ -251,9 +266,9 @@ function(object,
          level = 0.95,
          draw = TRUE,
          xlab = x, 
-         ylab = if (match.arg(what) == "prediction") paste0("Predicted value") else paste0("Marginal effect of ", dx),
+         ylab = if (match.arg(what) == "effect") paste0("Marginal effect of ", dx) else paste0("Predicted value"),
          xlim = NULL,
-         ylim = c(0L,1L),
+         ylim = c(0,1.04),
          lwd = 1L,
          col = "black",
          lty = 1L,
@@ -301,7 +316,7 @@ function(object,
     fac <- qnorm(c(a, 1 - a))
 
     # setup `outdat` data
-    if (what == "prediction") {
+    if (what %in% c("prediction", "stackedprediction")) {
         mean_or_mode <- function(x) {
             if (is.factor(x)) {
                 factor(names(sort(table(x), descending = TRUE))[1L], levels = levels(x))
@@ -316,6 +331,9 @@ function(object,
         outdat <- prediction(model = object, data = tmpdat, level = level)
         out <- list()
         for (i in seq_len(length(outdat))[-c(1L:2L)]) {
+            if (what == "stackedprediction" && i != 3) {
+                outdat[[i]] <- outdat[[i]] + outdat[[i-1L]]
+            }
             out[[i-2L]] <- structure(list(xvals = xvals,
                                           yvals = outdat[[i]],
                                           level = names(outdat)[i]),
@@ -368,3 +386,6 @@ function(object,
     invisible(do.call("rbind", out))
 }
 
+#' @rdname cplot
+#' @export
+cplot.multinom <- cplot.polr

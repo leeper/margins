@@ -12,7 +12,11 @@ check_factors <- function(object, data, xvar, dx) {
     data <- data[, c(nnames, fnames2), drop = FALSE]
     names(data)[names(data) %in% fnames2] <- fnames
     
-    list(x_is_factor = (xvar %in% c(fnames, fnames2)),
+    list(classes = classes,
+         nnames = nnames,
+         fnnames = fnames,
+         fnnames2 = fnames2, 
+         x_is_factor = (xvar %in% c(fnames, fnames2)),
          dx_is_factor = (dx %in% c(fnames, fnames2)),
          data = data)
 }
