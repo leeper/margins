@@ -1,8 +1,10 @@
 # CHANGES TO margins 0.3.0
 
-## margins 0.2.24
+## margins 0.2.25
 
 * `cplot.polr()` now allows the display of "stacked" (cumulative) predicted probabilities. (#49)
+* Added an example of `cplot(draw = "add")` to display predicted probabilities across a third factor variable. (#46)
+* Moved the `build_datalist()` function to the **prediction** package.
 * A tentative `cplot.multinom()` method has been added.
 
 ## margins 0.2.24

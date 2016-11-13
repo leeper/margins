@@ -85,6 +85,15 @@
 #' cplot(m, x = "drat", dx = "wt", what = "effect", type = "link")
 #' cplot(m, x = "drat", dx = "wt", what = "effect", type = "response")
 #' 
+#' # plot conditional predictions across a third factor
+#' local({
+#'   iris$long <- rbinom(nrow(iris), 1, 0.6)
+#'   x <- glm(long ~ Sepal.Width*Species, data = iris)
+#'   cplot(x, x = "Sepal.Width", data = iris[iris$Species == "setosa", ], ylim = c(0,1), col = "red", se.fill = rgb(1,0,0,.5), xlim = c(2,4.5))
+#'   cplot(x, x = "Sepal.Width", data = iris[iris$Species == "versicolor", ], draw = "add", col = "blue", se.fill = rgb(0,1,0,.5))
+#'   cplot(x, x = "Sepal.Width", data = iris[iris$Species == "virginica", ], draw = "add", col = "green", se.fill = rgb(0,0,1,.5))
+#' })
+#' 
 #' # ordinal outcome
 #' if (require("MASS")) {
 #'   house.plr <- polr(Sat ~ Infl + Type + Cont, weights = Freq, 
