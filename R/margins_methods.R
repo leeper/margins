@@ -1,5 +1,5 @@
 #' @rdname margins
-#' @importFrom prediction find_data
+#' @importFrom prediction find_data build_datalist
 #' @export
 margins.default <- 
 function(model, 
