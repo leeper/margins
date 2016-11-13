@@ -493,8 +493,7 @@ At its core, \textbf{margins} offers one function: an S3 generic \texttt{margins
  & \texttt{image.lm()}, etc. & S3 methods for the \texttt{image()} generic that produce flat representations of the \texttt{persp()} plots \\ 
 \midrule
 
-\multirow{2}{*}{Utilities} & \texttt{build\_margins()} & The workhorse function underlying \texttt{margins()} that assembles the response \texttt{"margins"} object for one data frame input. \\ \cline{2-3}
-& \texttt{build\_datalist()} & A function that takes a data frame and list of replacement values as input and returns a list of data frames containing modified values \\ 
+\multirow{1}{*}{Utilities} & \texttt{build\_margins()} & The workhorse function underlying \texttt{margins()} that assembles the response \texttt{"margins"} object for one data frame input. \\
 \bottomrule
 \end{tabular}
 \caption{Functions in the \textbf{margins} Package}\label{tab:functions}
