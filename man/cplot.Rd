@@ -14,10 +14,11 @@ cplot(object, ...)
 \method{cplot}{lm}(object, x = attributes(terms(object))[["term.labels"]][1L],
   dx = x, what = c("prediction", "effect"),
   data = prediction::find_data(object), type = c("response", "link"),
-  vcov = stats::vcov(object), at, n = 25L, xvals = seq_range(data[[x]], n
-  = n), level = 0.95, draw = TRUE, xlab = x, ylab = if (match.arg(what)
-  == "prediction") paste0("Predicted value") else paste0("Marginal effect of ",
-  dx), xlim = NULL, ylim = NULL, lwd = 1L, col = "black", lty = 1L,
+  vcov = stats::vcov(object), at, n = 25L,
+  xvals = prediction::seq_range(data[[x]], n = n), level = 0.95,
+  draw = TRUE, xlab = x, ylab = if (match.arg(what) == "prediction")
+  paste0("Predicted value") else paste0("Marginal effect of ", dx),
+  xlim = NULL, ylim = NULL, lwd = 1L, col = "black", lty = 1L,
   se.type = c("shade", "lines", "none"), se.col = "black",
   se.fill = grDevices::gray(0.5, 0.5), se.lwd = lwd, se.lty = if
   (match.arg(se.type) == "lines") 1L else 0L, factor.lty = 0L,
@@ -30,8 +31,8 @@ cplot(object, ...)
   x = attributes(terms(object))[["term.labels"]][1L], dx = x,
   what = c("prediction", "effect"), data = prediction::find_data(object),
   type = c("response", "link"), vcov = stats::vcov(object), at, n = 25L,
-  xvals = seq_range(data[[x]], n = n), level = 0.95, draw = TRUE,
-  xlab = x, ylab = if (match.arg(what) == "prediction")
+  xvals = prediction::seq_range(data[[x]], n = n), level = 0.95,
+  draw = TRUE, xlab = x, ylab = if (match.arg(what) == "prediction")
   paste0("Predicted value") else paste0("Marginal effect of ", dx),
   xlim = NULL, ylim = NULL, lwd = 1L, col = "black", lty = 1L,
   se.type = c("shade", "lines", "none"), se.col = "black",
@@ -46,8 +47,8 @@ cplot(object, ...)
   x = attributes(terms(object))[["term.labels"]][1L], dx = x,
   what = c("prediction", "effect"), data = prediction::find_data(object),
   type = c("response", "link"), vcov = stats::vcov(object), at, n = 25L,
-  xvals = seq_range(data[[x]], n = n), level = 0.95, draw = TRUE,
-  xlab = x, ylab = if (match.arg(what) == "prediction")
+  xvals = prediction::seq_range(data[[x]], n = n), level = 0.95,
+  draw = TRUE, xlab = x, ylab = if (match.arg(what) == "prediction")
   paste0("Predicted value") else paste0("Marginal effect of ", dx),
   xlim = NULL, ylim = NULL, lwd = 1L, col = "black", lty = 1L,
   se.type = c("shade", "lines", "none"), se.col = "black",

@@ -4,7 +4,7 @@
 
 * `cplot.polr()` now allows the display of "stacked" (cumulative) predicted probabilities. (#49)
 * Added an example of `cplot(draw = "add")` to display predicted probabilities across a third factor variable. (#46)
-* Moved the `build_datalist()` function to the **prediction** package.
+* Moved the `build_datalist()` and `seq_range()` functions to the **prediction** package.
 * A tentative `cplot.multinom()` method has been added.
 
 ## margins 0.2.24

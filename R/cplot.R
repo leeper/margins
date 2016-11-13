@@ -113,7 +113,7 @@
 #' @seealso \code{\link{plot.margins}}, \code{\link{persp.lm}}
 #' @keywords graphics hplot
 #' @importFrom graphics par plot lines rug polygon segments points
-#' @importFrom prediction prediction find_data
+#' @importFrom prediction prediction find_data seq_range
 #' @export
 cplot <- function(object, ...) {
     UseMethod("cplot")
@@ -131,7 +131,7 @@ function(object,
          vcov = stats::vcov(object),
          at,
          n = 25L,
-         xvals = seq_range(data[[x]], n = n),
+         xvals = prediction::seq_range(data[[x]], n = n),
          level = 0.95,
          draw = TRUE,
          xlab = x, 
