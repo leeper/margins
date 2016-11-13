@@ -226,6 +226,7 @@ if (!require("ghit")) {
     install.packages("ghit")
     library("ghit")
 }
+install_github("leeper/prediction")
 install_github("leeper/margins")
 
 # building vignettes takes a moment, so for a quicker install set:
