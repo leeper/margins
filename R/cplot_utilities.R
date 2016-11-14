@@ -31,6 +31,7 @@ function(plotdat, data,
          yvar, 
          xlim, ylim, 
          x_is_factor,
+         y_is_factor = FALSE,
          xlab,
          ylab,
          xaxs,
@@ -44,7 +45,7 @@ function(plotdat, data,
         if (isTRUE(x_is_factor)) {
             xlim <- c(0.75, length(xvals) + 0.25)
         } else {
-            xlim <- xlim
+            xlim <- range(data[[xvar]], na.rm = TRUE)
         }
     }
     
@@ -57,10 +58,24 @@ function(plotdat, data,
     }
     
     if (isTRUE(x_is_factor)) {
-        plot(NA, xlab = xlab, ylab = ylab, xaxt = "n", xaxs = xaxs, yaxs = yaxs, las = las, xlim = xlim, ylim = ylim, ...)
-        axis(1, at = seq_along(xvals), labels = xvals)
+        if (isTRUE(y_is_factor)) {
+            plot(NA, xlab = xlab, ylab = ylab, xaxt = "n", yaxt = "n", 
+                 xaxs = xaxs, yaxs = yaxs, las = las, xlim = xlim, ylim = ylim, ...)
+            axis(2, at = seq_len(nlevels(plotdat[["yvals"]])), labels = levels(plotdat[["yvals"]]), las = las)
+        } else {
+            plot(NA, xlab = xlab, ylab = ylab, xaxt = "n", 
+                 xaxs = xaxs, yaxs = yaxs, las = las, xlim = xlim, ylim = ylim, ...)
+        }
+        axis(1, at = seq_along(xvals), labels = xvals, las = las)
     } else {
-        plot(NA, xlab = xlab, ylab = ylab, xaxs = xaxs, yaxs = yaxs, las = las, xlim = xlim, ylim = ylim, ...)
+        if (isTRUE(y_is_factor)) {
+            plot(NA, xlab = xlab, ylab = ylab, yaxt = "n",
+                 xaxs = xaxs, yaxs = yaxs, las = las, xlim = xlim, ylim = ylim, ...)
+            axis(2, at = seq_len(nlevels(plotdat[["yvals"]])), labels = levels(plotdat[["yvals"]]), las = las)
+        } else {
+            plot(NA, xlab = xlab, ylab = ylab, 
+                 xaxs = xaxs, yaxs = yaxs, las = las, xlim = xlim, ylim = ylim, ...)
+        }
         if (isTRUE(scatter)) {
             points(data[, xvar], data[, yvar], pch = scatter.pch, col = scatter.col, bg = scatter.col)
         }
@@ -71,6 +86,7 @@ function(plotdat, data,
 draw_one <- 
 function(xvals, yvals, upper, lower, 
          x_is_factor,
+         y_is_factor = FALSE,
          col,
          lty,
          lwd,
@@ -94,7 +110,10 @@ function(xvals, yvals, upper, lower,
         }
         # prediction/effect line
         points(xvals, yvals, pch = factor.pch, bg = factor.fill, col = factor.col, cex = factor.cex)
-        if (factor.lty != 0L) {
+        if (isTRUE(y_is_factor)) {
+            factor.lty <- 0L
+        }
+        if ((factor.lty != 0L)) {
             lines(xvals, yvals, col = factor.col, lty = lty)
         }
     } else {
@@ -110,7 +129,14 @@ function(xvals, yvals, upper, lower,
             }
         }
         # prediction/effect line
-        lines(xvals, yvals, type = "l", lwd = lwd, col = col, lty = lty)
+        if (isTRUE(y_is_factor)) {
+            w <- which(diff(as.integer(yvals)) != 0)
+            f <- stepfun(x = c(xvals[w], max(xvals, na.rm = TRUE)), 
+                         y = c(yvals[1L], yvals[w+1L], yvals[length(yvals)]))
+            plot(f, pch = factor.pch, col = factor.col, do.points = FALSE, col.vert = "white", add = TRUE)
+        } else {
+            lines(xvals, yvals, type = "l", lwd = lwd, col = col, lty = lty)
+        }
     }
 }
 

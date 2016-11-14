@@ -4,7 +4,7 @@
 #' @param object A model object.
 #' @param x A character string specifying the name of variable to use as the x-axis dimension in the plot.
 #' @param dx If \code{what = "effect"}, the variable whose conditional marginal effect should be displayed. By default it is \code{x} (so the plot displays the marginal effect of \code{x} across values of \code{x}); ignored otherwise. If \code{dx} is a factor with more than 2 levels, an error will be issued.
-#' @param what A character string specifying whether to draw a \dQuote{prediction} (fitted values from the model, calculated using \code{\link[stats]{predict}}) or an \dQuote{effect} (average marginal effect of \code{dx} conditional on \code{x}, using \code{\link{margins}}).
+#' @param what A character string specifying whether to draw a \dQuote{prediction} (fitted values from the model, calculated using \code{\link[stats]{predict}}) or an \dQuote{effect} (average marginal effect of \code{dx} conditional on \code{x}, using \code{\link{margins}}). Methods for classes other than \dQuote{lm} or \dQuote{glm} may provided additional options (e.g., \code{cplot.polr()} provides \dQuote{stackedprediction} and \dQuote{class} alternatives).
 #' @param data A data frame to override the default value offered in \code{object[["model"]]}.
 #' @param type A character string specifying whether to calculate predictions on the response scale (default) or link (only relevant for non-linear models).
 #' @param vcov A matrix containing the variance-covariance matrix for estimated model coefficients, or a function to perform the estimation with \code{model} as its only argument.
@@ -96,17 +96,23 @@
 #' 
 #' # ordinal outcome
 #' if (require("MASS")) {
+#'   # x is a factor variable
 #'   house.plr <- polr(Sat ~ Infl + Type + Cont, weights = Freq, 
 #'                     data = housing)
-#'   # predicted probabilities
+#'   ## predicted probabilities
 #'   cplot(house.plr)
-#'   # cumulative predicted probabilities
+#'   ## cumulative predicted probabilities
 #'   cplot(house.plr, what = "stacked")
-#'   # ggplot2 example
+#'   ## ggplot2 example
 #'   if (require("ggplot2")) {
 #'     ggplot(cplot(house.plr), aes(x = xvals, y = yvals, group = level)) + 
 #'       geom_line(aes(color = level))
 #'   }
+#'
+#'   # x is continuous
+#'   cyl.plr <- polr(factor(cyl) ~ wt, data = mtcars)
+#'   cplot(cyl.plr, col = c("red", "purple", "blue"), what = "stacked")
+#'   cplot(cyl.plr, what = "class")
 #' }
 #' 
 #' }
@@ -242,7 +248,7 @@ function(object,
                  factor.lty = factor.lty, factor.pch = factor.pch, factor.fill = factor.fill, 
                  factor.col = factor.col, factor.cex = factor.cex,
                  se.lwd = se.lwd, se.fill = se.fill, se.col = se.col, se.lty = se.lty)
-        if (isTRUE(rug)) {
+        if (isTRUE(rug) && is.numeric(data[[x]])) {
             draw_rug(data[[x]], rug.size = rug.size, rug.col = rug.col)
         }
     }
@@ -250,151 +256,3 @@ function(object,
     # return data used in plot
     invisible(out)
 }
-
-#' @rdname cplot
-#' @export
-cplot.glm <- cplot.lm
-
-#' @rdname cplot
-#' @export
-cplot.loess <- cplot.lm
-
-#' @rdname cplot
-#' @export
-cplot.polr <-
-function(object, 
-         x = attributes(terms(object))[["term.labels"]][1L],
-         dx = x, 
-         what = c("prediction", "stackedprediction", "effect"), 
-         data = prediction::find_data(object),
-         type = c("response", "link"), 
-         vcov = stats::vcov(object),
-         at,
-         n = 25L,
-         xvals = seq_range(data[[x]], n = n),
-         level = 0.95,
-         draw = TRUE,
-         xlab = x, 
-         ylab = if (match.arg(what) == "effect") paste0("Marginal effect of ", dx) else paste0("Predicted value"),
-         xlim = NULL,
-         ylim = c(0,1.04),
-         lwd = 1L,
-         col = "black",
-         lty = 1L,
-         factor.lty = 1L,
-         factor.pch = 19L,
-         factor.col = col,
-         factor.fill = factor.col,
-         factor.cex = 1L,
-         xaxs = "i",
-         yaxs = xaxs,
-         las = 1L,
-         scatter = FALSE,
-         scatter.pch = 19L,
-         scatter.col = factor.col,
-         scatter.bg = scatter.col,
-         scatter.cex = 0.5,
-         rug = TRUE,
-         rug.col = col,
-         rug.size = -0.02,
-         ...) {
-    
-    xvar <- x
-    yvar <- as.character(attributes(terms(object))[["variables"]][[2]])
-    
-    # handle factors and subset data
-    f <- check_factors(object = object, data = data, xvar = xvar, dx = dx)
-    x_is_factor <- f[["x_is_factor"]]
-    dx_is_factor <- f[["dx_is_factor"]]
-    dat <- f[["data"]]
-    
-    # setup x (based on whether factor)
-    if (isTRUE(x_is_factor)) {
-        if (is.factor(dat[["xvar"]])) {
-            xvals <- as.character(levels(dat[[clean_terms(xvar)]]))
-        } else {
-            xvals <- as.character(unique(dat[[clean_terms(xvar)]]))
-        }
-    } else {
-        xvals <- xvals
-    } 
-    
-    what <- match.arg(what)
-    type <- match.arg(type)
-    a <- (1 - level)/2
-    fac <- qnorm(c(a, 1 - a))
-
-    # setup `outdat` data
-    if (what %in% c("prediction", "stackedprediction")) {
-        mean_or_mode <- function(x) {
-            if (is.factor(x)) {
-                factor(names(sort(table(x), descending = TRUE))[1L], levels = levels(x))
-            } else {
-                mean(x, na.rm = TRUE)
-            }
-        }
-        tmpdat <- lapply(dat[, names(dat) != xvar, drop = FALSE], mean_or_mode)
-        tmpdat <- structure(lapply(tmpdat, rep, length(xvals)),
-                            class = "data.frame", row.names = seq_len(length(xvals)))
-        tmpdat[[xvar]] <- xvals
-        outdat <- prediction(model = object, data = tmpdat, level = level)
-        out <- list()
-        for (i in seq_len(length(outdat))[-c(1L:2L)]) {
-            if (what == "stackedprediction" && i != 3) {
-                outdat[[i]] <- outdat[[i]] + outdat[[i-1L]]
-            }
-            out[[i-2L]] <- structure(list(xvals = xvals,
-                                          yvals = outdat[[i]],
-                                          level = names(outdat)[i]),
-                                  class = "data.frame", 
-                                  row.names = seq_along(outdat[["fitted"]]))
-        }
-    } else if (what == "effect") {
-        stop("Displaying marginal effects is not currently supported for 'polr' models!")
-    }
-    
-    # optionally draw the plot; if FALSE, just the data are returned
-    if (isTRUE(draw)) {
-        setup_cplot(plotdat = out, data = data, xvals = xvals, xvar = xvar, yvar = yvar,
-                    xlim = xlim, ylim = ylim, x_is_factor = x_is_factor,
-                    xlab = xlab, ylab = ylab, xaxs = xaxs, yaxs = yaxs, las = las,
-                    scatter = scatter, scatter.pch = scatter.pch, scatter.col = scatter.col, ...)
-    }
-    if (isTRUE(draw) || draw == "add") {
-        if (length(lty) != length(out)) {
-            lty <- rep(lty, length(out))
-        }
-        if (length(lwd) != length(out)) {
-            lwd <- rep(lwd, length(out))
-        }
-        if (length(col) != length(out)) {
-            col <- rep(col, length(out))
-        }
-        if (length(factor.col) != length(out)) {
-            factor.col <- rep(factor.col, length(out))
-        }
-        if (length(factor.fill) != length(out)) {
-            factor.fill <- rep(factor.fill, length(out))
-        }
-        for (i in seq_along(out)) {
-            draw_one(xvals = out[[i]][["xvals"]], 
-                     yvals = out[[i]][["yvals"]], 
-                     x_is_factor = x_is_factor,
-                     col = col[i], lty = lty[i], lwd = lwd,
-                     se.type = "none",
-                     factor.lty = factor.lty, factor.pch = factor.pch, 
-                     factor.fill = factor.fill[i], 
-                     factor.col = factor.col[i], factor.cex = factor.cex)
-        }
-        if (isTRUE(rug) && is.numeric(data[[x]])) {
-            draw_rug(data[[x]], rug.size = rug.size, rug.col = rug.col)
-        }
-    }
-    
-    # return data used in plot
-    invisible(do.call("rbind", out))
-}
-
-#' @rdname cplot
-#' @export
-cplot.multinom <- cplot.polr
