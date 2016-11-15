@@ -10,7 +10,7 @@ function(object, parm, level = 0.95, ...) {
     } else if (is.numeric(parm)) {
         parm[!grep("^_", parm)] <- paste0("_", parm[!grep("^_", parm)])
     }
-    cf <- colMeans(mes)[parm]
+    cf <- colMeans(mes, na.rm = TRUE)[parm]
     a <- (1 - level)/2
     a <- c(a, 1 - a)
     fac <- qnorm(a)
