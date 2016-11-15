@@ -50,7 +50,7 @@ function(x,
          zero.col = "gray",
          ...) {
     
-    MEs <- colMeans(marginal_effects(x)[, which, drop = FALSE])
+    MEs <- colMeans(marginal_effects(x)[, which, drop = FALSE], na.rm = TRUE)
     quantiles <- qnorm(cbind((1-sort(level))/2, 1-(1-sort(level))/2))
     maxl <- max(abs(quantiles), na.rm = TRUE)
     variances <- attributes(x)[["variances"]][which]
