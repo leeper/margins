@@ -1,3 +1,4 @@
+/ignore/*
 README.html
 /inst/standarderrors.pdf
 /inst/doc/*.log
