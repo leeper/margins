@@ -35,7 +35,7 @@ function(model,
          ...) {
     
     # variables in the model
-    allvars <- all.vars(model[["terms"]])[-1]
+    allvars <- all.vars(terms(model))[-1]
     
     # march.arg() for arguments
     type <- match.arg(type)

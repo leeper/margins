@@ -1,5 +1,9 @@
 # CHANGES TO margins 0.3.0
 
+## margins 0.2.26
+
+* Added support for `"merMod"` models from **lme4**.
+
 ## margins 0.2.25
 
 * `cplot.polr()` now allows the display of "stacked" (cumulative) predicted probabilities. (#49)

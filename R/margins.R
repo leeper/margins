@@ -16,6 +16,7 @@
 #'   \item \dQuote{lm}, see \code{\link[stats]{lm}}
 #'   \item \dQuote{glm}, see \code{\link[stats]{glm}}, \code{\link[MASS]{glm.nb}}
 #'   \item \dQuote{loess}, see \code{\link[stats]{loess}}
+#'   \item \dQuote{merMod}, see \code{\link[lme4]{lmer}}
 #' }
 #'
 #' The \code{margins} method for objects of class \dQuote{lm} or \dQuote{glm} simply constructs a list of data.frames (using \code{\link{build_datalist}}) and calls \code{\link{build_margins}} on each. You can call \code{build_margins} directly, but it requires the explicit specification of a dataset over which to estimate the quantities of interest.
