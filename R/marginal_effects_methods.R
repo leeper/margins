@@ -106,7 +106,7 @@ function(model,
     ## exact number depends on number of factor levels
     out2 <- list()
     for (i in seq_along(fnames)) {
-        out2[[i]] <- dydx.factor(data = data, model = model, fnames[i], type = type, fwrap = (fnames != fnames2)[i], ...)
+        out2[[i]] <- dydx.factor(data = data, model = model, fnames[i], type = type, fwrap = FALSE, ...)
     }
     
     out <- c(out1, out2)
