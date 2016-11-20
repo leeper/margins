@@ -35,7 +35,7 @@ function(model,
          ...) {
     
     # variables in the model
-    allvars <- all.vars(model[["terms"]])[-1]
+    allvars <- all.vars(terms(model))[-1]
     
     # march.arg() for arguments
     type <- match.arg(type)
@@ -76,8 +76,7 @@ function(model,
               class = c("margins", "data.frame"), 
               variances = if (is.null(variances)) variances else setNames(variances, names(mes)),
               type = type,
-              call = model[["call"]],
-              df.residual = model[["df.residual"]],
+              call = if ("call" %in% names(model)) model[["call"]] else NULL,
               vce = vce, 
               iterations = iterations)
 }
