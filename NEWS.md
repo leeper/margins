@@ -2,7 +2,7 @@
 
 ## margins 0.2.26
 
-* Added support for `"merMod"` models from **lme4**.
+* Added support for `"merMod"` models from **lme4**, though no variance estimation is currently supported.
 
 ## margins 0.2.25
 

@@ -54,4 +54,3 @@ margins <-
 function(model, ...) {
     UseMethod("margins")
 }
-
