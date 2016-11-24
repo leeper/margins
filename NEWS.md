@@ -3,6 +3,7 @@
 ## margins 0.2.26
 
 * Added support for `"merMod"` models from **lme4**, though no variance estimation is currently supported.
+* Imported `prediction::mean_or_mode()` for use in `cplot()` methods.
 
 ## margins 0.2.25
 

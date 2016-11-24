@@ -122,7 +122,7 @@
 #' @seealso \code{\link{plot.margins}}, \code{\link{persp.lm}}
 #' @keywords graphics hplot
 #' @importFrom graphics par plot lines rug polygon segments points
-#' @importFrom prediction prediction find_data seq_range
+#' @importFrom prediction prediction find_data seq_range mean_or_mode
 #' @export
 cplot <- function(object, ...) {
     UseMethod("cplot")
@@ -200,13 +200,6 @@ function(object,
 
     # setup `outdat` data
     if (what == "prediction") {
-        mean_or_mode <- function(x) {
-            if (is.factor(x)) {
-                factor(names(sort(table(x), descending = TRUE))[1L], levels = levels(x))
-            } else {
-                mean(x, na.rm = TRUE)
-            }
-        }
         tmpdat <- lapply(dat[, names(dat) != xvar, drop = FALSE], mean_or_mode)
         tmpdat <- structure(lapply(tmpdat, rep, length(xvals)),
                             class = "data.frame", row.names = seq_len(length(xvals)))
