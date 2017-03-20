@@ -5,7 +5,7 @@
 \title{Plot Marginal Effects Estimates}
 \usage{
 \method{plot}{margins}(x, at = seq_along(marginal_effects(x)),
-  which = colnames(marginal_effects(x)), labels = which,
+  which = colnames(marginal_effects(x)), labels = gsub("^dydx_", "", which),
   horizontal = FALSE, xlab = "", ylab = "Marginal Effect", level = 0.95,
   pch = 21, points.col = "black", points.bg = "black", las = 1,
   cex = 1, lwd = 2, zeroline = TRUE, zero.col = "gray", ...)
@@ -68,4 +68,3 @@ plot(mar)
 }
 \keyword{graphics}
 \keyword{hplot}
-

@@ -50,7 +50,7 @@ summary(m)
 With the exception of differences in rounding, the above results match identically what Stata's `margins` command produces. Using the `plot()` method also yields an aesthetically similar result to Stata's `marginsplot`:
 
 ```{r marginsplot}
-plot(m[[1]])
+plot(m)
 ```
 
 ## Using Optional Arguments in `margins`

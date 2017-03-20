@@ -1,13 +1,15 @@
-# margins #
+# margins
 
-**margins** is an effort to port Stata's (closed source) [`margins`](http://www.stata.com/help.cgi?margins) command to R as an S3 generic method for calculating the marginal effects (or "partial effects") of covariates included in model objects (like those of classes "lm" and "glm"). The package implements several useful features including:
+**margins** is an effort to port the marginal effect estimation functionality of Stata's (closed source) [`margins`](http://www.stata.com/help.cgi?margins) command to R. This is done through a single function, `margins()`, which is an S3 generic method for calculating the marginal effects (or "partial effects") of covariates included in model objects (like those of classes "lm" and "glm").
+
+Underlying functions `marginal_effects()` and `dydx()` provide low-level interfaces to the numerical differentiation, and the package implements several useful additional features for summarizing model objects, including:
 
  - A `plot()` method for the new "margins" class that ports Stata's `marginsplot` command. 
  - A `persp()` method for "lm", "glm", and "loess" objects to provide three-dimensional representations of response surfaces.
  - An `image()` method for the same that produces flat, two-dimensional heatmap-style representations of response surfaces.
  - A plotting function `cplot()` to provide the commonly needed visual summaries of predictions or marginal effects conditional on a second variable.
 
-## Motivation ##
+## Motivation
 
 With the introduction of Stata's `margins` command, it has become incredibly simple to estimate average marginal effects (i.e., "average partial effects") and marginal effects at representative cases. Indeed, in just a few lines of Stata code, regression results for almost any kind model can be transformed into meaningful quantities of interest and related plots:
 
@@ -36,7 +38,7 @@ Given the challenges of interpreting the contribution of a given regressor in an
 
 Some technical details of the package are worth briefly noting. The estimation of marginal effects relies on numerical approximations of derivatives produced using `predict()` (actually, a wrapper around `predict()` called `prediction()` that is type-safe). Variance estimation, by default is provided using the delta method a numerical approximation of [the Jacobian matrix](https://en.wikipedia.org/wiki/Jacobian_matrix_and_determinant). While symbolic differentiation of some models (e.g., basic linear models) is possible using `D()` and `deriv()`, R's modelling language (the "formula" class) is sufficiently general to enable the construction of model formulae that contain terms that fall outside of R's symbolic differentiation rule table (e.g., `y ~ factor(x)` or `y ~ I(FUN(x))` for any arbitrary `FUN()`). By relying on numeric differentiation, `margins()` supports *any* model that can be expressed in R formula syntax. Even Stata's `margins` command is limited in its ability to handle variable transformations (e.g., including `x` and `log(x)` as predictors) and quadratic terms (e.g., `x^3`); these scenarios are easily expressed in an R formula and easily handled, correctly, by `margins()`.
 
-## Simple code examples ##
+## Simple code examples
 
 ```{r opts, echo = FALSE}
 library("knitr")
@@ -120,7 +122,7 @@ image(x, xvar = "cyl", yvar = "hp", main = "Predicted Fuel Efficiency,\nby Cylin
 
 The numerous package vignettes and help files contain extensive documentation and examples of all package functionality.
 
-## Requirements and Installation ##
+## Requirements and Installation
 
 [![CRAN](http://www.r-pkg.org/badges/version/margins)](https://cran.r-project.org/package=margins)
 [![Build Status](https://travis-ci.org/leeper/margins.svg?branch=master)](https://travis-ci.org/leeper/margins)

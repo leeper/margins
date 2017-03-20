@@ -346,7 +346,7 @@ out <- (P1 - P0) / (d1[[variable]] - d0[[variable]])
 \noindent The result is a vector of marginal effects estimates --- the marginal effect at every observed combination of $X$ in the data. This low-level function is wrapped within a function \texttt{margins()}, which is an S3 generic with methods for various common modelling procedures. \texttt{margins()} calculations marginal effects of \textit{all} variables used in a model, along with their variances, and accommodates the estimation of those effects across arbitrary values of $X$ variables (emulating Stata's \texttt{margins, at()} notation). Calling \texttt{dydx()} or \texttt{marginal\_effects()} provides a means to calculate marginal effects without specifying new data or calculating variances, which can be time-consuming. The output of \texttt{margins()} is a ``data.frame'' with an additional ``margins'' class, that contains the original input data, the fitted values from the model, and the marginal effects estimates for each observation:
 
 <<print, echo=TRUE, results = "show">>=
-str(mar2 <- margins(m2)[[1]])
+str(mar2 <- margins(m2))
 @
 
 \noindent Attributes contain some additional information about the procedure. By default the AMEs are printed and a \texttt{summary()} method provides a more complete output that is useful for interactive sessions:
@@ -643,13 +643,13 @@ stargazer(m3a, m3b, dep.var.labels = "Population Size",
 What effect does GDP per capita have on the outcome? Calculating marginal effects reveals the answer. Because we have specified the transformation using \texttt{I()} notation in model (2), \textbf{margins} can quickly identify the contribution of the original variable:
 
 <<log2, echo = TRUE, results = "show">>=
-summary(margins(m3b)[[1]])
+summary(margins(m3b))
 @
 
 \noindent And this result will differ from that for model (2) except in the resulting z-statistic and p-value which --- as should be the case --- are identical in the two marginal effect calculations:
 
 <<log3, echo = TRUE, results = "show">>=
-summary(margins(m3a)[[1]])
+summary(margins(m3a))
 @
 
 \noindent Despite some of the underlying limitations, Stata's \texttt{margins} command is incredibly user friendly and easy-to-use. Its output is also clean and intuitive. As a result, the behavior of \textbf{margins} try (as closely as possible) to mimic the behavior. It does not attempt, however, to provide: (1) an easy way of calculating MEMs (as Stata does with the \texttt{, atmeans} option), (2) calculating of predicted values (since R already provides this via \texttt{predict()}), or (3) cover the full class of model types that Stata currently supports. One other key advantage of the R implementation is that because it relies on a fully functional programming paradigm, marginal effects can easily be calculated for multiple objects, whereas Stata's approach can only calculate effects for the \textit{previous} modelling command using stored results.

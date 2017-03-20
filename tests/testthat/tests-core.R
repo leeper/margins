@@ -42,7 +42,7 @@ test_that("Test build_datalist()", {
 context("Test `at` behavior")
 test_that("`at` behavior works", {
     x <- lm(mpg ~ cyl * hp + wt, data = head(mtcars))
-    expect_true(inherits(margins(x, at = list(cyl = c(4,6))), "marginslist"), label = "factor works")
+    expect_true(inherits(margins(x, at = list(cyl = c(4,6))), "margins"), label = "factor works")
     #expect_error(margins(x, at = list(cyl = 2)), label = "factor error")
     expect_warning(margins(x, at = list(wt = 6)), label = "extrapolation warning")
 })
@@ -80,9 +80,7 @@ context("print(), summary(), and confint() methods")
 test_that("print()/summary() for 'margins' object", {
     x <- lm(mpg ~ wt * hp, data = head(mtcars))
     m <- margins(x)
-    expect_true(inherits(print(m), "marginslist"), label = "print() method for marginslist")
     expect_true(inherits(print(m[[1]]), "margins"), label = "print() method for margins")
-    expect_true(inherits(summary(m), "list"), label = "summary() method for marginslist")
     expect_true(inherits(summary(m[[1]]), "data.frame"), label = "summary() method for margins")
     expect_true(inherits(print(summary(m[[1]])), "data.frame"), label = "print() method for summary.margins")
 })

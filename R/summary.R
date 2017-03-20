@@ -1,8 +1,18 @@
 #' @export
 summary.margins <- 
-function(object, level = 0.95, ...) {
+function(object, at = object[[".at"]], level = 0.95, ...) {
+    if (is.na(object[[".at"]][1])) {
+        summarize_one(object, level = level, ...)
+    } else {
+        tmp <- split(object, object[[".at"]])
+        lapply(tmp, summarize_one, level = level, ...)
+    }
+}
+
+summarize_one <- function(object, level = 0.95, ...) {
     mes <- marginal_effects(object)
-    variances <- attributes(mes)[["variances"]]
+    names(mes) <- gsub("^dydx_", "", names(mes))
+    variances <- unlist(object[1L, grepl("Var_dydx_", names(object), fixed = TRUE), drop = TRUE])
     tab <- structure(list(Factor = names(mes), 
                           "dy/dx" = colMeans(mes, na.rm = TRUE),
                           "Std.Err." = if (is.null(variances)) rep(NA_real_, ncol(mes)) else sqrt(variances)
@@ -14,10 +24,4 @@ function(object, level = 0.95, ...) {
               class = c("summary.margins", "data.frame"),
               call = attributes(object)[["call"]],
               at = attributes(object)[["at"]])
-}
-
-#' @export
-summary.marginslist <- 
-function(object, row.names = FALSE, ...) {
-    lapply(object, summary, ...)
 }

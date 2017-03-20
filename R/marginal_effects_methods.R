@@ -50,17 +50,14 @@ function(model,
 #' @rdname marginal_effects
 #' @export
 marginal_effects.margins <- function(model, data, ...) {
-    w <- which(sapply(model, inherits, what = "marginaleffect"))
+    if (!missing(data)) {
+        stop("Argument 'data' is ignored for objects of class 'margins'")
+    }
+    w <- grepl("^dydx", names(model))
     out <- model[, w, drop = FALSE]
     attributes(out) <- attributes(model)[names(attributes(model)) != "names"]
     names(out) <- names(model)[w]
     out
-}
-
-#' @rdname marginal_effects
-#' @export
-marginal_effects.marginslist <- function(model, data, ...) {
-    lapply(model, marginal_effects, ...)
 }
 
 

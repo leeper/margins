@@ -27,4 +27,3 @@ alexseev
 Xenophobic Vote Share in 2003 Russian Duma Elections
 }
 \keyword{datasets}
-

@@ -2,6 +2,7 @@
 
 ## margins 0.3.0
 
+* Significantly modified the data structure returned by `margins()`. It now returns a data frame with an added `.at` column, specifying the values at which the data are fixed.
 * `build_margins()` no longer returns the original data twice (bug introduced by change in behavior of `prediction()`). (#57)
 
 ## margins 0.2.26

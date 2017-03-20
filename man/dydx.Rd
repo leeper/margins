@@ -4,8 +4,8 @@
 \alias{dydx}
 \alias{dydx.default}
 \alias{dydx.factor}
-\alias{dydx.logical}
 \alias{dydx.ordered}
+\alias{dydx.logical}
 \title{Marginal Effect of a Given Variable}
 \usage{
 dydx(data, model, variable, ...)
@@ -29,6 +29,8 @@ dydx(data, model, variable, ...)
 
 \item{variable}{A character string specifying the variable to calculate the derivative or discrete change for.}
 
+\item{\dots}{Ignored.}
+
 \item{type}{The type of prediction. Default is \dQuote{response}.}
 
 \item{change}{For numeric variables, a character string specifying the type of change to express. The default is the numerical approximation of the derivative. Alternative values are occasionally desired quantities: \dQuote{minmax} (the discrete change moving from \code{min(x)} to \code{max(x)}), \dQuote{iqr} (the move from the 1st quartile to 3rd quartile of \code{x}), or \dQuote{sd} (the change from \code{mean(x) - sd(x)} to \code{mean(x) + sd(x)}), or a two-element numeric vector expressing values of the variable to calculate the prediction for (and difference the associated predictions).}
@@ -36,11 +38,9 @@ dydx(data, model, variable, ...)
 \item{eps}{If \code{change == "dydx"} (the default), the value of the step \eqn{\epsilon} to use in calculation of the numerical derivative for numeric variables.}
 
 \item{fwrap}{A logical specifying how to name factor columns in the response.}
-
-\item{\dots}{Ignored.}
 }
 \value{
-A data.frame, typically with one column unless the variable is a factor with more than two levels.
+A data frame, typically with one column unless the variable is a factor with more than two levels. The names of the marginal effect columns begin with \dQuote{dydx_} to distinguish them from the substantive variables of the same names.
 }
 \description{
 Differentiate an Estimated Model Function with Respect to One Variable, or calculate a discrete difference (\dQuote{first difference}) as appropriate.
@@ -90,4 +90,3 @@ Miranda, Mario J. and Paul L. Fackler. 2002. \emph{Applied Computational Economi
 \seealso{
 \code{\link{marginal_effects}}, \code{\link{margins}}
 }
-

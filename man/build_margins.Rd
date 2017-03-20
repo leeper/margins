@@ -44,4 +44,3 @@ The choice of \code{vce} may be important. The default variance-covariance estim
 \code{\link{margins}}, \code{\link{marginal_effects}}
 }
 \keyword{models}
-

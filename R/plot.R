@@ -35,7 +35,7 @@ plot.margins <-
 function(x, 
          at = seq_along(marginal_effects(x)),
          which = colnames(marginal_effects(x)), 
-         labels = which,
+         labels = gsub("^dydx_", "", which),
          horizontal = FALSE,
          xlab = "",
          ylab = "Marginal Effect",
@@ -50,10 +50,10 @@ function(x,
          zero.col = "gray",
          ...) {
     
-    MEs <- colMeans(marginal_effects(x)[, which, drop = FALSE], na.rm = TRUE)
+    MEs <- colMeans(marginal_effects(x)[, paste0("dydx_", gsub("^dydx_", "", which)), drop = FALSE], na.rm = TRUE)
     quantiles <- qnorm(cbind((1-sort(level))/2, 1-(1-sort(level))/2))
     maxl <- max(abs(quantiles), na.rm = TRUE)
-    variances <- attributes(x)[["variances"]][which]
+    variances <- unlist(x[1L, grepl("Var_dydx_", names(x), fixed = TRUE), drop = TRUE][paste0("Var_dydx_", gsub("^dydx_", "", which))])
     lb <- MEs - (maxl * sqrt(variances))
     ub <- MEs + (maxl * sqrt(variances))
     r <- max(ub) - min(lb)

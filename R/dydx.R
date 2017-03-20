@@ -23,7 +23,7 @@
 #' 
 #' For logical variables, the same approach as factors is used, but always moving from \code{FALSE} to \code{TRUE}.
 #' 
-#' @return A data.frame, typically with one column unless the variable is a factor with more than two levels.
+#' @return A data frame, typically with one column unless the variable is a factor with more than two levels. The names of the marginal effect columns begin with \dQuote{dydx_} to distinguish them from the substantive variables of the same names.
 #' @references
 #'   Miranda, Mario J. and Paul L. Fackler. 2002. \emph{Applied Computational Economics and Finance}. p. 103.
 #' 
@@ -125,7 +125,7 @@ function(data,
     }
     # return data.frame with column of derivatives
     class(out) <- c("marginaleffect", "numeric")
-    return(structure(setNames(list(out), variable), 
+    return(structure(setNames(list(out), paste0("dydx_",variable)), 
                      class = c("data.frame"), 
                      row.names = seq_len(nrow(data))))
 }
@@ -148,7 +148,7 @@ dydx.factor <- function(data, model, variable, type = c("response", "link"), fwr
     }
     out <- structure(rep(list(list()), length(levs)), 
                      class = "data.frame", 
-                     names = outcolnames, 
+                     names = paste0("dydx_",outcolnames), 
                      row.names = seq_len(nrow(data)))
     
     # setup base data and prediction
@@ -180,7 +180,7 @@ dydx.logical <- function(data, model, variable, type = c("response", "link"), ..
     # setup response object
     out <- structure(list(list()), 
                      class = "data.frame", 
-                     names = variable, 
+                     names = paste0("dydx_",variable), 
                      row.names = seq_len(nrow(data)))
     
     # setup base data and prediction

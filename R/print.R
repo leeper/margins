@@ -1,15 +1,18 @@
 #' @export
 print.margins <- 
 function(x, digits = 4, ...) {
-    print(colMeans(marginal_effects(x), na.rm = TRUE), digits = digits, ...)
-    invisible(x)
-}
-
-#' @export
-print.marginslist <- function(x, ...) {
-    for (i in seq_len(length(x))) {
-        print(x[[i]], ...)
-        message("\n")
+    if (is.na(x[[".at"]][1])) {
+        vals <- colMeans(marginal_effects(x), na.rm = TRUE)
+        names(vals) <- gsub("^dydx_", "", names(vals))
+        print(vals, digits = digits, ...)
+    } else {
+        tmp <- split(x, x[[".at"]])
+        lapply(tmp, function(one) {
+            vals <- colMeans(marginal_effects(one), na.rm = TRUE)
+            names(vals) <- gsub("^dydx", "", names(vals))
+            cat(one[[".at"]][1], ":\n", sep = "")
+            print(vals, digits = digits, ...)
+        })
     }
     invisible(x)
 }

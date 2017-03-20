@@ -9,6 +9,9 @@ function(model,
     
     # setup data
     data_list <- build_datalist(data, at = at)
+    if (is.null(names(data_list))) {
+        names(data_list) <- NA_character_
+    }
     
     # reduce memory profile
     model[["model"]] <- NULL
@@ -18,14 +21,14 @@ function(model,
     warn_for_weights(model)
     
     # calculate marginal effects
-    out <- lapply(data_list, function(thisdata) {
-        m <- build_margins(model = model, data = thisdata, ...)
-        attr(m, "at") <- attributes(thisdata)[["at"]]
-        m
-    })
+    out <- list()
+    for (i in seq_along(data_list)) {
+        out[[i]] <- build_margins(model = model, data = data_list[[i]], ...)
+        out[[i]][[".at"]] <- names(data_list)[i]
+    }
     
     # return value
-    structure(out, class = "marginslist")
+    structure(do.call("rbind", out), class = c("margins", "data.frame"))
 }
 
 #' @rdname margins
@@ -68,7 +71,7 @@ margins.loess <- function(model,
     })
     
     # return value
-    structure(out, class = "marginslist")
+    structure(do.call("rbind", out), class = c("margins", "data.frame"))
 }
 
 # @rdname margins
@@ -89,7 +92,7 @@ margins.merMod <- function(model,
     })
     
     # return value
-    structure(out, class = "marginslist")
+    structure(do.call("rbind", out), class = c("margins", "data.frame"))
 }
 
 warn_for_weights <- function(model) {
