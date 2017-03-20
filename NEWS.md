@@ -1,5 +1,9 @@
 # CHANGES TO margins 0.3.0
 
+## margins 0.3.0
+
+* `build_margins()` no longer returns the original data twice (bug introduced by change in behavior of `prediction()`). (#57)
+
 ## margins 0.2.26
 
 * Added support for `"merMod"` models from **lme4**, though no variance estimation is currently supported.

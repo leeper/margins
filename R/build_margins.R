@@ -51,6 +51,7 @@ function(model,
     variances <- get_effect_variances(data = data, model = model, allvars = names(mes), 
                                       type = type, vcov = vcov, vce = vce, 
                                       iterations = iterations, eps = eps, ...)
+    variances <- setNames(lapply(variances, rep, nrow(data)), paste0("Var_", names(mes)))
     
     # get unit-specific effect variances (take derivative of `.build_grad_fun()` for every row separately)
     if ((vce == "delta") && (isTRUE(unit_ses))) {
@@ -69,12 +70,11 @@ function(model,
     
     # setup output structure
     structure(if ((vce == "delta") && (isTRUE(unit_ses))) {
-                  cbind(data, pred, mes, vmat)
+                  cbind(pred, mes, variances, vmat)
               } else { 
-                  cbind(data, pred, mes)
+                  cbind(pred, mes, variances)
               }, 
               class = c("margins", "data.frame"), 
-              variances = if (is.null(variances)) variances else setNames(variances, names(mes)),
               type = type,
               call = if ("call" %in% names(model)) model[["call"]] else NULL,
               vce = vce, 
