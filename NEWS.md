@@ -2,7 +2,10 @@
 
 ## margins 0.3.0
 
-* Significantly modified the data structure returned by `margins()`. It now returns a data frame with an added `.at` column, specifying the values at which the data are fixed.
+* Significantly modified the data structure returned by `margins()`. It now returns a data frame with an added `.at` column, specifying the values at which the data are fixed. (#58)
+* Renamed marginal effects, variacne, and standard error columns returned by `margins()`. Marginal effects columns are prefixed by `dydx_`. Variances of the *average* marginal effect are stored (repeatedly, across observations) in new `Var_dydx_` columns. Unit-specific standard errors, if requested, are stored as `SE_dydx_` columns. (#58)
+* `print.margins()` now presents effect estimates as a condensed data frame. (#58)
+* `summary.margins()` now returns a single data frame of marginal effect estimates. Row-order can be controlled by the `order` attribute, which cascades into the behavior of the `print.summary.margins()` method. (#58)
 * `build_margins()` no longer returns the original data twice (bug introduced by change in behavior of `prediction()`). (#57)
 
 ## margins 0.2.26

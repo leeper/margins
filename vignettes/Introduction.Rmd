@@ -117,11 +117,10 @@ x <- lm(mpg ~ cyl + wt + hp * am, data = mtcars)
 margins(x, at = list(am = 0:1))
 ```
 
-Because of the `hp * am` interaction in the regression, the marginal effect of horsepower differs between the two sets of results. We can also specify more than one variable to `at`, creating a potentially long list of marginal effects results. For example, we can produce marginal effects at both levels of `am` and the values from the five-number summary (minimum, Q1, median, Q3, and maximum) of observed values of `hp`. This produces 2 * 5 = 10 sets of marginal effects estimates. We'll see the first three below:
+Because of the `hp * am` interaction in the regression, the marginal effect of horsepower differs between the two sets of results. We can also specify more than one variable to `at`, creating a potentially long list of marginal effects results. For example, we can produce marginal effects at both levels of `am` and the values from the five-number summary (minimum, Q1, median, Q3, and maximum) of observed values of `hp`. This produces 2 * 5 = 10 sets of marginal effects estimates:
 
 ```{r, results = "hold"}
-m <- margins(x, at = list(am = 0:1, hp = fivenum(mtcars$hp)))
-m[1:3] # first three summaries
+margins(x, at = list(am = 0:1, hp = fivenum(mtcars$hp)))
 ```
 
 Because this is a linear model, the marginal effects of `cyl` and `wt` do not vary across levels of `am` or `hp`. The minimum and Q1 value of `hp` are also the same, so the marginal effects of `am` are the same in the first two results tables. As you can see, however, the marginal effect of `hp` differs when `am == 0` versus `am == 1` (first and second results tables) and the marginal effect of `am` differs across levels of `hp` (e.g., between the first and third tables). As should be clear, the `at` argument is incredibly useful for getting a better grasp of the marginal effects of different covariates.
@@ -137,8 +136,7 @@ Looking only at the regression results table, it is actually quite difficult to 
 
 ```{r, results = "hold"}
 wt_tmp <- fivenum(mtcars$wt)
-m <- margins(x, at = list(wt = wt_tmp))
-suppressMessages(t(sapply(m, summary))[,-1])
+margins(x, at = list(wt = wt_tmp))
 ```
 
 The marginal effects in the first column of results reveal that the average marginal effect of `wt` is large and negative except when `wt` is very large, in which case it has an effect not distinguishable from zero. We can easily plot these results using the `cplot()` function to see the effect visually in terms of either predicted fuel economy or the marginal effect of `wt`:

@@ -214,16 +214,14 @@ function(object,
         if (is.factor(dat[[dx]]) && nlevels(data[[dx]]) > 2L) {
             stop("Displaying effect of a factor variable with > 2 levels is not currently supported!")
         }
-        summ <- summary(margins(model = object, data = data, at = setNames(list(xvals), xvar), type = type, vcov = vcov))
-        outdat <- do.call("rbind.data.frame", lapply(summ, function(thismargin) {
-            c(effect = as.numeric(thismargin[dx, "dy/dx"]), 
-              se.effect = as.numeric(thismargin[dx, "Std.Err."]))
-        }))
+        marg <- margins(model = object, data = data, at = setNames(list(xvals), xvar), type = type, vcov = vcov)
+        summ <- summary(marg)[,c("Factor", "dy/dx", "Std.Err.")]
+        summ <- summ[summ[["Factor"]] == dx, ]
         out <- structure(list(xvals = xvals,
-                              yvals = outdat[[1]],
-                              upper = outdat[[1]] + (fac[2] * outdat[[2]]),
-                              lower = outdat[[1]] + (fac[1] * outdat[[2]])),
-                         class = "data.frame", row.names = seq_len(nrow(outdat)))
+                              yvals = summ[["dy/dx"]],
+                              upper = summ[["dy/dx"]] + (fac[2] * summ[["Std.Err."]]),
+                              lower = summ[["dy/dx"]] + (fac[1] * summ[["Std.Err."]])),
+                         class = "data.frame", row.names = seq_len(nrow(summ)))
     }
     
     # optionally draw the plot; if FALSE, just the data are returned

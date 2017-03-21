@@ -15,7 +15,9 @@
 #' 
 #' The choice of \code{vce} may be important. The default variance-covariance estimation procedure (\code{vce = "delta"}) uses the delta method to estimate marginal effect variances. This is the fastest method. When \code{vce = "simulation"}, coefficient estimates are repeatedly drawn from the asymptotic (multivariate normal) distribution of the model coefficients and each draw is used to estimate marginal effects, with the variance based upon the dispersion of those simulated effects. The number of interations used is given by \code{iterations}. For \code{vce = "bootstrap"}, the bootstrap is used to repeatedly subsample \code{data} and the variance of marginal effects is estimated from the variance of the bootstrap distribution. This method is markedly slower than the other two procedures. Again, \code{iterations} regulates the number of bootstrap subsamples to draw.
 #'
-#' @return A data.frame of class \dQuote{margins} containing the contents of \code{data}, fitted values for \code{model}, the standard errors of the fitted values, and any estimated marginal effects. This data.frame may have repeated column names (for the original variables and the margginal effects thereof). Marginal effects columns are distinguished by their class (\dQuote{marginaleffect}) and can be extracted using \code{marginal_effects(margins(model))}. Attributes containing additional information, including the marginal effect variances and additional details.
+#' @return A data frame of class \dQuote{margins} containing the contents of \code{data}, fitted values for \code{model}, the standard errors of the fitted values, and any estimated marginal effects. Columns containing marginal effects are distinguished by their name (prefixed by \code{dydx_}) and class (\dQuote{marginaleffect}). These columns can be extracted from a \dQuote{margins} object using, for example, \code{marginal_effects(margins(model))}. Columns prefixed by \code{Var_} specify the variances of the \emph{average} marginal effects, whereas (optional) columns prefixed by \code{SE_} contain observation-specific standard errors.
+#' 
+#' Attributes containing additional information, including the marginal effect variances and additional details.
 #' @seealso \code{\link{margins}}, \code{\link{marginal_effects}}
 #' @keywords models
 #' @import stats
@@ -48,17 +50,19 @@ function(model,
     mes <- marginal_effects(model = model, data = data, type = type, eps = eps, ...)
     
     # variance estimation technique
-    variances <- get_effect_variances(data = data, model = model, allvars = names(mes), 
-                                      type = type, vcov = vcov, vce = vce, 
-                                      iterations = iterations, eps = eps, ...)
-    variances <- setNames(lapply(variances, rep, nrow(data)), paste0("Var_", names(mes)))
+    if (vce != "none") {
+        variances <- get_effect_variances(data = data, model = model, allvars = names(mes), 
+                                          type = type, vcov = vcov, vce = vce, 
+                                          iterations = iterations, eps = eps, ...)
+        variances <- setNames(lapply(variances, rep, nrow(data)), paste0("Var_", names(mes)))
+    }
     
     # get unit-specific effect variances (take derivative of `.build_grad_fun()` for every row separately)
     if ((vce == "delta") && (isTRUE(unit_ses))) {
         vmat <- do.call("rbind", lapply(seq_len(nrow(data)), function(datarow) {
             delta_once(data = data[datarow,], model = model, type = type, vcov = vcov, eps = eps, ...)
         }))
-        colnames(vmat) <- paste0("se.", names(mes))
+        colnames(vmat) <- paste0("SE_", names(mes))
         vmat <- as.data.frame(vmat)
         vmat[] <- lapply(vmat, function(x) {
             structure(sqrt(x), class = c("se.marginaleffect", "numeric"))
@@ -71,12 +75,15 @@ function(model,
     # setup output structure
     structure(if ((vce == "delta") && (isTRUE(unit_ses))) {
                   cbind(pred, mes, variances, vmat)
+              } else if (vce == "none") { 
+                  cbind(pred, mes)
               } else { 
                   cbind(pred, mes, variances)
               }, 
               class = c("margins", "data.frame"), 
               type = type,
               call = if ("call" %in% names(model)) model[["call"]] else NULL,
+              at = if (!is.null(attributes(data)[["at"]])) attributes(data)[["at"]] else NULL,
               vce = vce, 
-              iterations = iterations)
+              iterations = if (vce == "bootstrap") iterations else NULL)
 }

@@ -24,11 +24,12 @@ function(model,
     out <- list()
     for (i in seq_along(data_list)) {
         out[[i]] <- build_margins(model = model, data = data_list[[i]], ...)
-        out[[i]][[".at"]] <- names(data_list)[i]
+        out[[i]][[".at"]] <- rep(list(unlist(attr(out[[i]], "at"))), nrow(out[[i]]))
+        attr(out[[i]], "at") <- NULL
     }
     
     # return value
-    structure(do.call("rbind", out), class = c("margins", "data.frame"))
+    structure(do.call("rbind", out), class = c("margins", "data.frame"), at = at)
 }
 
 #' @rdname margins
@@ -64,11 +65,12 @@ margins.loess <- function(model,
     warn_for_weights(model)
     
     # calculate marginal effects
-    out <- lapply(data_list, function(thisdata) {
-        m <- build_margins(model = model, data = thisdata, vcov = NULL, vce = "none", ...)
-        attr(m, "at") <- attributes(thisdata)[["at"]]
-        m
-    })
+    out <- list()
+    for (i in seq_along(data_list)) {
+        out[[i]] <- build_margins(model = model, data = data_list[[i]], vcov = NULL, vce = "none", ...)
+        out[[i]][[".at"]] <- rep(list(unlist(attr(out[[i]], "at"))), nrow(out[[i]]))
+        attr(out[[i]], "at") <- NULL
+    }
     
     # return value
     structure(do.call("rbind", out), class = c("margins", "data.frame"))
