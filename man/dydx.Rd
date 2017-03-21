@@ -51,7 +51,7 @@ These functions provide a simple interface to the calculation of marginal effect
 \code{dydx} is an S3 generic with classes implemented for specific variable types. S3 method dispatch, somewhat atypically, is based upon the class of \code{data[[variable]]}.
 
 For numeric (and integer) variables, the method calculates an instantaneous marginal effect using a simple \dQuote{central difference} numerical differentiation:
-\deqn{\frac{f(x + \frac{1}{2}h) - f(x - \frac{1}{2}h}){dh}}{(f(x + 0.5h) - f(x - 0.5h))/(2h)}, where (\eqn{h = \max(|x|, 1) \sqrt{\epsilon}}{h = max(|x|, 1)sqrt(epsilon)} and the value of \eqn{\epsilon}{epsilon} is given by argument \code{eps}. This procedure is subject to change in the future.
+\deqn{\frac{f(x + \frac{1}{2}h) - f(x - \frac{1}{2}h)}{dh}}{(f(x + 0.5h) - f(x - 0.5h))/(2h)}, where (\eqn{h = \max(|x|, 1) \sqrt{\epsilon}}{h = max(|x|, 1)sqrt(epsilon)} and the value of \eqn{\epsilon}{epsilon} is given by argument \code{eps}. This procedure is subject to change in the future.
 
 For factor variables (or character variables, which are implicitly coerced to factors by modelling functions), discrete first-differences in predicted outcomes are reported instead (i.e., change in predicted outcome when factor is set to a given level minus the predicted outcome when the factor is set to its baseline level). These are sometimes called \dQuote{partial effects}. If you want to use numerical differentiation for factor variables (which you probably do not want to do), enter them into the original modelling function as numeric values rather than factors.
 

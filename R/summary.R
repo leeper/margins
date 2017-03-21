@@ -29,7 +29,7 @@ function(object, level = 0.95, order = "Factor", ...) {
 }
 
 summarize_one <- function(object, level = 0.95, ...) {
-    mes <- marginal_effects(object)
+    mes <- marginal_effects(object, with_at = FALSE)
     names(mes) <- gsub("^dydx_", "", names(mes))
     variances <- unlist(object[1L, grepl("Var_dydx_", names(object), fixed = TRUE), drop = TRUE])
     tab <- structure(list(Factor = names(mes), 

@@ -7,6 +7,9 @@
 * `print.margins()` now presents effect estimates as a condensed data frame. (#58)
 * `summary.margins()` now returns a single data frame of marginal effect estimates. Row-order can be controlled by the `order` attribute, which cascades into the behavior of the `print.summary.margins()` method. (#58)
 * `build_margins()` no longer returns the original data twice (bug introduced by change in behavior of `prediction()`). (#57)
+* `plot.margins()` now displays marginal effects across each level of `at`.
+* Removed all methods for objects of class `"marginslist"`. (#58)
+* Renamed the `at` argument in `plot.margins()` to `pos`, to avoid ambiguity.
 
 ## margins 0.2.26
 

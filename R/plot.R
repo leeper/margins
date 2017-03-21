@@ -1,7 +1,7 @@
 #' @title Plot Marginal Effects Estimates
 #' @description Implementation of Stata's \samp{marginsplot} as an S3 generic function
 #' @param x An object of class \dQuote{margins}, as returned by \code{\link{margins}}.
-#' @param at A numeric vector specifying the x-positions of the estimates (or y-positions, if \code{horizontal = TRUE}).
+#' @param pos A numeric vector specifying the x-positions of the estimates (or y-positions, if \code{horizontal = TRUE}).
 #' @param which A character vector specifying which marginal effect estimate to plot. Default is all.
 #' @param labels A character vector specifying the axis labels to use for the marginal effect estimates. Default is the variable names from \code{x}.
 #' @param horizontal A logical indicating whether to plot the estimates along the x-axis with vertical confidence intervals (the default), or along the y-axis with horizontal confidence intervals.
@@ -33,12 +33,12 @@
 #' @export
 plot.margins <- 
 function(x, 
-         at = seq_along(marginal_effects(x)),
-         which = colnames(marginal_effects(x)), 
+         pos = seq_along(marginal_effects(x, with_at = FALSE)),
+         which = colnames(marginal_effects(x, with_at = FALSE)), 
          labels = gsub("^dydx_", "", which),
          horizontal = FALSE,
          xlab = "",
-         ylab = "Marginal Effect",
+         ylab = "Average Marginal Effect",
          level = 0.95,
          pch = 21, 
          points.col = "black",
@@ -50,51 +50,59 @@ function(x,
          zero.col = "gray",
          ...) {
     
-    MEs <- colMeans(marginal_effects(x)[, paste0("dydx_", gsub("^dydx_", "", which)), drop = FALSE], na.rm = TRUE)
-    quantiles <- qnorm(cbind((1-sort(level))/2, 1-(1-sort(level))/2))
-    maxl <- max(abs(quantiles), na.rm = TRUE)
-    variances <- unlist(x[1L, grepl("Var_dydx_", names(x), fixed = TRUE), drop = TRUE][paste0("Var_dydx_", gsub("^dydx_", "", which))])
-    lb <- MEs - (maxl * sqrt(variances))
-    ub <- MEs + (maxl * sqrt(variances))
-    r <- max(ub) - min(lb)
+    pars <- list(...)
+
+    summ <- summary(x, level = level, order = "Factor")
+    MEs <- summ[, "dy/dx", drop = TRUE]
+    lower <- summ[, ncol(summ) - 1L]
+    upper <- summ[, ncol(summ)]
+    r <- max(upper) - min(lower)
+    
+    at_levels <- unique(summ[, ".at", drop = TRUE])
+    n_at_levels <- length(at_levels)
+    if (n_at_levels > 1) {
+        pos2 <- rep(pos, each = n_at_levels)
+        pos2 <- pos2 + seq(from = -0.2, to = 0.2, length.out = n_at_levels)
+    } else {
+        pos2 <- pos
+    }
+    
     if (isTRUE(horizontal)) {
-        plot(NA, xlim = c(min(lb)-0.04*r, max(ub)+0.04*r),
-                 ylim = c(min(at)-(0.04*min(at)), max(at) + (0.04*max(at))), 
+        xlim <- if ("xlim" %in% names(pars)) xlim else c(min(lower)-0.04*r, max(upper)+0.04*r)
+        ylim <- if ("ylim" %in% names(pars)) xlim else c(min(pos2)-(0.04*min(pos2)), max(pos2) + (0.04*max(pos2)))
+    } else {
+        xlim <- if ("xlim" %in% names(pars)) xlim else c(min(pos2)-(0.04*min(pos2)), max(pos2) + (0.04*max(pos2)))
+        ylim <- if ("ylim" %in% names(pars)) xlim else c(min(lower)-0.04*r, max(upper)+0.04*r)
+    }
+    
+    if (isTRUE(horizontal)) {
+        plot(NA, xlim = xlim,
+                 ylim = ylim, 
                  yaxt = 'n', xlab = ylab, ylab = xlab, las = las, ...)
-        if (zeroline) {
+        if (isTRUE(zeroline)) {
             abline(v = 0, col = zero.col)
         }
-        points(MEs, at, col = points.col, bg = points.bg, pch = pch)
-        axis(2, at = at, labels = as.character(labels), las = las)
-        mapply(function(z, lwd) {
-            segments(MEs + (quantiles[z,1] * sqrt(variances)), at, 
-                     MEs + (quantiles[z,2] * sqrt(variances)), at, 
+        points(MEs, pos2, col = points.col, bg = points.bg, pch = pch)
+        axis(2, at = pos, labels = as.character(labels), las = las)
+        mapply(function(pos, upper, lower, lwd) {
+            segments(upper, pos, 
+                     lower, pos, 
                      col = points.col, lwd = lwd)
-        }, seq_len(nrow(quantiles)), seq(max(lwd), 0.25, length.out = nrow(quantiles)))
+        }, pos2, upper, lower, seq(max(lwd), 0.25, length.out = length(MEs)))
     } else {
-        plot(NA, xlim = c(min(at)-(0.04*min(at)), max(at) + (0.04*max(at))), 
-                 ylim = c(min(lb)-0.04*r, max(ub)+0.04*r), 
+        plot(NA, xlim = xlim, 
+                 ylim = ylim, 
                  xaxt = 'n', xlab = xlab, ylab = ylab, las = las, ...)
-        if (zeroline) {
+        if (isTRUE(zeroline)) {
             abline(h = 0, col = zero.col)
         }
-        points(at, MEs, col = points.col, bg = points.bg, pch = pch)
-        axis(1, at = at, labels = as.character(labels), las = las)
-        mapply(function(z, lwd) {
-            segments(at, MEs + (quantiles[z,1] * sqrt(variances)), 
-                     at, MEs + (quantiles[z,2] * sqrt(variances)), 
+        points(pos2, MEs, col = points.col, bg = points.bg, pch = pch)
+        axis(1, at = pos, labels = as.character(labels), las = las)
+        mapply(function(pos, upper, lower, lwd) {
+            segments(pos, upper, 
+                     pos, lower, 
                      col = points.col, lwd = lwd)
-        }, seq_len(nrow(quantiles)), seq(max(lwd), 0.25, length.out = nrow(quantiles)))
+        }, pos2, upper, lower, seq(max(lwd), 0.25, length.out = length(MEs)))
     }
     invisible(x)
-}
-
-#' @export
-plot.marginslist <- function(x, ...) {
-    if (length(x) == 1) {
-        plot(x[[1]], ...)
-    } else {
-        warning("'x' is a marginslist of multiple 'margins' objects. Only first is printed.")
-        plot(x[[1]], ...)
-    }
 }

@@ -4,16 +4,17 @@
 \alias{plot.margins}
 \title{Plot Marginal Effects Estimates}
 \usage{
-\method{plot}{margins}(x, at = seq_along(marginal_effects(x)),
-  which = colnames(marginal_effects(x)), labels = gsub("^dydx_", "", which),
-  horizontal = FALSE, xlab = "", ylab = "Marginal Effect", level = 0.95,
-  pch = 21, points.col = "black", points.bg = "black", las = 1,
-  cex = 1, lwd = 2, zeroline = TRUE, zero.col = "gray", ...)
+\method{plot}{margins}(x, pos = seq_along(marginal_effects(x, with_at =
+  FALSE)), which = colnames(marginal_effects(x, with_at = FALSE)),
+  labels = gsub("^dydx_", "", which), horizontal = FALSE, xlab = "",
+  ylab = "Average Marginal Effect", level = 0.95, pch = 21,
+  points.col = "black", points.bg = "black", las = 1, cex = 1,
+  lwd = 2, zeroline = TRUE, zero.col = "gray", ...)
 }
 \arguments{
 \item{x}{An object of class \dQuote{margins}, as returned by \code{\link{margins}}.}
 
-\item{at}{A numeric vector specifying the x-positions of the estimates (or y-positions, if \code{horizontal = TRUE}).}
+\item{pos}{A numeric vector specifying the x-positions of the estimates (or y-positions, if \code{horizontal = TRUE}).}
 
 \item{which}{A character vector specifying which marginal effect estimate to plot. Default is all.}
 

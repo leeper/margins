@@ -1,7 +1,7 @@
 #' @export
 confint.margins <- 
 function(object, parm, level = 0.95, ...) {
-    mes <- marginal_effects(object)
+    mes <- marginal_effects(object, with_at = FALSE)
     names(mes) <- gsub("^dydx_", "", names(mes))
     pnames <- colnames(mes)
     if (missing(parm)) {

@@ -2,7 +2,7 @@
 print.margins <- 
 function(x, digits = 4, order = NULL, ...) {
     if (is.null(x[[".at"]][[1L]])) {
-        x <- marginal_effects(x)
+        x <- marginal_effects(x, with_at = FALSE)
         names(x) <- gsub("^dydx_", "", names(x))
         print(aggregate(. ~ 1, data = x, FUN = mean, na.rm = TRUE), digits = digits, row.names = FALSE, ...)
     } else {
