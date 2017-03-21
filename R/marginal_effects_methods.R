@@ -49,15 +49,11 @@ function(model,
 
 #' @rdname marginal_effects
 #' @export
-marginal_effects.margins <- function(model, data, with_at = TRUE, ...) {
+marginal_effects.margins <- function(model, data, ...) {
     if (!missing(data)) {
         stop("Argument 'data' is ignored for objects of class 'margins'")
     }
-    if (isTRUE(with_at)) {
-        w <- grepl("^dydx", names(model)) | names(model) == ".at"
-    } else {
-        w <- grepl("^dydx", names(model))
-    }
+    w <- grepl("^dydx", names(model))
     out <- model[, w, drop = FALSE]
     attributes(out) <- attributes(model)[names(attributes(model)) != "names"]
     names(out) <- names(model)[w]

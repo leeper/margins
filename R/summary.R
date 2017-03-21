@@ -1,45 +1,45 @@
 #' @export
 summary.margins <- 
-function(object, level = 0.95, order = "Factor", ...) {
-    if (is.null(attributes(object)[["at"]])) {
+function(object, level = 0.95, by_factor = TRUE, ...) {
+    at_names <- attributes(object)[["at"]]
+    if (is.null(at_names)) {
         out <- summarize_one(object, level = level, ...)
-        out[[".at"]] <- NA_character_
-        out <- out[order(out[["Factor"]]),]
+        out <- out[order(out[["factor"]]), ]
     } else {
-        object[[".at"]] <- unlist(lapply(object[[".at"]], collapse_at_vals, order = if (order == "Factor") NULL else order))
-        at_split <- split(object, object[[".at"]])
+        at_split <- split(object, object[at_names])
         out <- list()
         for (i in seq_along(at_split)) {
             out[[i]] <- summarize_one(at_split[[i]], level = level, ...)
-            out[[i]][[".at"]] <- names(at_split)[i]
+            out[[i]] <- cbind(out[[i]], at_split[[i]][1L, at_names, drop = FALSE])
         }
         out <- do.call("rbind", out)
-        if (order[1L] == "Factor") {
-            out <- out[order(out[["Factor"]], out[[".at"]]),]
+        if (isTRUE(by_factor)) {
+            out <- out[do.call('order', unname(out[c("factor", at_names)])), ]
         } else {
-            out <- out[order(out[[".at"]], out[["Factor"]]),]
+            out <- out[do.call('order', unname(out[c(at_names, "factor")])), ]
         }
     }
-    structure(out[ , c("Factor", ".at", names(out)[!names(out) %in% c("Factor", ".at")])], 
+    structure(out[, c("factor", at_names, names(out)[!names(out) %in% c("factor", at_names)]), drop = FALSE], 
+              class = c("summary.margins", "data.frame"),
+              row.names = seq_len(nrow(out)),
               type = attributes(object)[["type"]],
               call = attributes(object)[["call"]],
               vce = attributes(object)[["vce"]],
               iterations = attributes(object)[["iterations"]],
+              level = level,
               at = attributes(object)[["at"]])
 }
 
 summarize_one <- function(object, level = 0.95, ...) {
-    mes <- marginal_effects(object, with_at = FALSE)
+    mes <- marginal_effects(object)
     names(mes) <- gsub("^dydx_", "", names(mes))
     variances <- unlist(object[1L, grepl("Var_dydx_", names(object), fixed = TRUE), drop = TRUE])
-    tab <- structure(list(Factor = names(mes), 
-                          "dy/dx" = colMeans(mes, na.rm = TRUE),
-                          "Std.Err." = if (is.null(variances)) rep(NA_real_, ncol(mes)) else sqrt(variances)
+    tab <- structure(list("factor" = names(mes), 
+                          "AME" = colMeans(mes, na.rm = TRUE),
+                          "SE" = if (is.null(variances)) rep(NA_real_, ncol(mes)) else sqrt(variances)
                           ),
                      class = "data.frame", row.names = names(mes))
-    tab[["z value"]] <- tab[,"dy/dx"]/tab[,"Std.Err."]
-    tab[["Pr(>|z|)"]] <- 2 * pnorm(abs(tab[,"z value"]), lower.tail = FALSE)
-    structure(cbind(tab, confint(object = object, level = level)),
-              class = c("summary.margins", "data.frame"),
-              call = attributes(object)[["call"]])
+    tab[["z"]] <- tab[,"AME"]/tab[,"SE"]
+    tab[["p"]] <- 2 * pnorm(abs(tab[,"z"]), lower.tail = FALSE)
+    cbind(tab, confint(object = object, level = level))
 }

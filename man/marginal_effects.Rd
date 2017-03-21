@@ -15,7 +15,7 @@ marginal_effects(model, data, ...)
 \method{marginal_effects}{default}(model, data = find_data(model,
   parent.frame()), type = c("response", "link"), eps = 1e-07, ...)
 
-\method{marginal_effects}{margins}(model, data, with_at = TRUE, ...)
+\method{marginal_effects}{margins}(model, data, ...)
 
 \method{marginal_effects}{lm}(model, data = find_data(model, parent.frame()),
   type = c("response", "link"), eps = 1e-07, ...)
@@ -73,6 +73,6 @@ marginal_effects(m)
 
 }
 \seealso{
-\code{\link{dydx}}, \code{\link{margins}}, \code{\link{build_margins}}
+\code{\link{dydx}}, \code{\link{margins}}
 }
 \keyword{models}

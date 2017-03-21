@@ -2,14 +2,15 @@
 
 ## margins 0.3.0
 
-* Significantly modified the data structure returned by `margins()`. It now returns a data frame with an added `.at` column, specifying the values at which the data are fixed. (#58)
-* Renamed marginal effects, variacne, and standard error columns returned by `margins()`. Marginal effects columns are prefixed by `dydx_`. Variances of the *average* marginal effect are stored (repeatedly, across observations) in new `Var_dydx_` columns. Unit-specific standard errors, if requested, are stored as `SE_dydx_` columns. (#58)
+* Significantly modified the data structure returned by `margins()`. It now returns a data frame with an added `at` attribute, specifying the names of the variables that have been fixed. (#58)
+* Renamed marginal effects, variance, and standard error columns returned by `margins()`. Marginal effects columns are prefixed by `dydx_`. Variances of the *average* marginal effect are stored (repeatedly, across observations) in new `Var_dydx_` columns. Unit-specific standard errors, if requested, are stored as `SE_dydx_` columns. (#58)
+* `summary.margins()` now returns a single data frame of marginal effect estimates. Column names have also changed to avoid use of special characters (thus making it easier to use column names in plotting with, for example, ggplot2). Row-order can be controlled by the `by_factor` attribute, which cascades into the behavior of the `print.summary.margins()` method. (#58)
 * `print.margins()` now presents effect estimates as a condensed data frame. (#58)
-* `summary.margins()` now returns a single data frame of marginal effect estimates. Row-order can be controlled by the `order` attribute, which cascades into the behavior of the `print.summary.margins()` method. (#58)
-* `build_margins()` no longer returns the original data twice (bug introduced by change in behavior of `prediction()`). (#57)
+* `build_margins()` is no longer exported. Arguments used to control its behavior have been exposed in `margins()`.
+* `build_margins()` and thus `margins()` no longer returns the original data twice (bug introduced by change in behavior of `prediction()`). (#57)
 * `plot.margins()` now displays marginal effects across each level of `at`.
-* Removed all methods for objects of class `"marginslist"`. (#58)
-* Renamed the `at` argument in `plot.margins()` to `pos`, to avoid ambiguity.
+* All methods for objects of class `"marginslist"` have been removed. (#58)
+* The `at` argument in `plot.margins()` has been renamed to `pos`, to avoid ambiguity with `at` as used elsewhere in the package.
 
 ## margins 0.2.26
 

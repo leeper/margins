@@ -19,6 +19,6 @@ function(object, parm, level = 0.95, ...) {
     variances <- unlist(object[1L, grepl("Var_dydx_", names(object), fixed = TRUE), drop = TRUE])
     ses <- if (is.null(variances)) rep(NA_real_, length(cf)) else sqrt(variances)
     ci[] <- cf + ses %o% fac
-    colnames(ci) <- sprintf("%0.2f%%", 100 * a)
+    colnames(ci) <- c("lower", "upper")
     ci
 }

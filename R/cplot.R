@@ -215,12 +215,12 @@ function(object,
             stop("Displaying effect of a factor variable with > 2 levels is not currently supported!")
         }
         marg <- margins(model = object, data = data, at = setNames(list(xvals), xvar), type = type, vcov = vcov)
-        summ <- summary(marg)[,c("Factor", "dy/dx", "Std.Err.")]
-        summ <- summ[summ[["Factor"]] == dx, ]
+        summ <- summary(marg)[,c("factor", "AME", "SE")]
+        summ <- summ[summ[["factor"]] == dx, ]
         out <- structure(list(xvals = xvals,
-                              yvals = summ[["dy/dx"]],
-                              upper = summ[["dy/dx"]] + (fac[2] * summ[["Std.Err."]]),
-                              lower = summ[["dy/dx"]] + (fac[1] * summ[["Std.Err."]])),
+                              yvals = summ[["AME"]],
+                              upper = summ[["AME"]] + (fac[2] * summ[["SE"]]),
+                              lower = summ[["AME"]] + (fac[1] * summ[["SE"]])),
                          class = "data.frame", row.names = seq_len(nrow(summ)))
     }
     

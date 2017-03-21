@@ -13,27 +13,45 @@
 margins(model, ...)
 
 \method{margins}{default}(model, data = find_data(model, parent.frame()),
-  at = NULL, ...)
+  at = NULL, type = c("response", "link", "terms"),
+  vcov = stats::vcov(model), vce = c("delta", "simulation", "bootstrap",
+  "none"), iterations = 50L, unit_ses = FALSE, eps = 1e-07, ...)
 
 \method{margins}{lm}(model, data = find_data(model, parent.frame()),
-  at = NULL, ...)
+  at = NULL, type = c("response", "link", "terms"),
+  vcov = stats::vcov(model), vce = c("delta", "simulation", "bootstrap",
+  "none"), iterations = 50L, unit_ses = FALSE, eps = 1e-07, ...)
 
 \method{margins}{glm}(model, data = find_data(model, parent.frame()),
-  at = NULL, ...)
+  at = NULL, type = c("response", "link", "terms"),
+  vcov = stats::vcov(model), vce = c("delta", "simulation", "bootstrap",
+  "none"), iterations = 50L, unit_ses = FALSE, eps = 1e-07, ...)
 
-\method{margins}{loess}(model, data, at = NULL, ...)
+\method{margins}{loess}(model, data, at = NULL, eps = 1e-07, ...)
 }
 \arguments{
 \item{model}{A model object of class \dQuote{lm}.}
 
-\item{\dots}{Arguments passed to methods, and in turn to \code{\link{build_margins}}.}
+\item{\dots}{Arguments passed through various internal functions to \code{\link{dydx}} methods.}
 
 \item{data}{A data frame containing the data at which to evaluate the marginal effects, as in \code{\link[stats]{predict}}. This is optional, but may be required when the underlying modelling function sets \code{model = FALSE}.}
 
 \item{at}{A list of one or more named vectors, specifically values at which to calculate the marginal effects. These are used to modify the value of \code{data} (see \code{\link[prediction]{build_datalist}} for details on use).}
+
+\item{type}{A character string indicating the type of marginal effects to estimate. Mostly relevant for non-linear models, where the reasonable options are \dQuote{response} (the default) or \dQuote{link} (i.e., on the scale of the linear predictor in a GLM).}
+
+\item{vcov}{A matrix containing the variance-covariance matrix for estimated model coefficients, or a function to perform the estimation with \code{model} as its only argument.}
+
+\item{vce}{A character string indicating the type of estimation procedure to use for estimating variances. The default (\dQuote{delta}) uses the delta method. Alternatives are \dQuote{bootstrap}, which uses bootstrap estimation, or \dQuote{simulation}, which averages across simulations drawn from the joint sampling distribution of model coefficients. The latter two are extremely time intensive.}
+
+\item{iterations}{If \code{vce = "bootstrap"}, the number of bootstrap iterations. If \code{vce = "simulation"}, the number of simulated effects to draw. Ignored otherwise.}
+
+\item{unit_ses}{If \code{vce = "delta"}, a logical specifying whether to calculate and return unit-specific marginal effect variances. This calculation is time consuming and the information is often not needed, so this is set to \code{FALSE} by default.}
+
+\item{eps}{A numeric value specifying the \dQuote{step} to use when calculating numerical derivatives.}
 }
 \value{
-A data frame of class \dQuote{margins}, composed of one or more row-stacked sets of marginal effects estimates. If \code{at = NULL} (the default), then the data frame will have a number of rows equal to \code{nrow(data)}. Otherwise, the number of rows will be a multiple thereof based upon the intersection of values specified in \code{at}. A special list column, \code{.at}, will contain information on the combination of values from \code{at} reflected in each row observation. The \code{summary.margins()} method provides for pretty printing of the results.
+A data frame of class \dQuote{margins} containing the contents of \code{data}, fitted values for \code{model}, the standard errors of the fitted values, and any estimated marginal effects. If \code{at = NULL} (the default), then the data frame will have a number of rows equal to \code{nrow(data)}. Otherwise, the number of rows will be a multiple thereof based upon the intersection of values specified in \code{at}. Columns containing marginal effects are distinguished by their name (prefixed by \code{dydx_}). These columns can be extracted from a \dQuote{margins} object using, for example, \code{marginal_effects(margins(model))}. Columns prefixed by \code{Var_} specify the variances of the \emph{average} marginal effects, whereas (optional) columns prefixed by \code{SE_} contain observation-specific standard errors. A special list column, \code{.at}, will contain information on the combination of values from \code{at} reflected in each row observation. The \code{summary.margins()} method provides for pretty printing of the results.
 }
 \description{
 This package is an R port of Stata's \samp{margins} command, implemented as an S3 generic \code{margins()} for model objects, like those of class \dQuote{lm} and \dQuote{glm}. \code{margins()} is an S3 generic function for building a \dQuote{margins} object from a model object. Methods are currently implemented for \dQuote{lm} (and, implicitly, \dQuote{glm}) class objects and support is expanding. See Details, below.
@@ -55,9 +73,9 @@ Methods are currently implemented for the following object classes:
   \item \dQuote{merMod}, see \code{\link[lme4]{lmer}}
 }
 
-The \code{margins} method for objects of class \dQuote{lm} or \dQuote{glm} simply constructs a list of data frames (using \code{\link{build_datalist}}) and calls \code{\link{build_margins}} on each. You can call \code{build_margins} directly, but it requires the explicit specification of a dataset over which to estimate the quantities of interest.
+The \code{margins} method for objects of class \dQuote{lm} or \dQuote{glm} simply constructs a list of data frames (using \code{\link{build_datalist}}), calculates marginal effects for each data frame (via \code{\link{marginal_effects}} and, in turn, \code{\link[prediction]{prediction}}), and row-binds the results together. Alternatively, you can use \code{\link{marginal_effects}} to retrieve a data frame of marginal effects without constructing a \dQuote{margins} object. That can be efficient for plotting, etc., given the time-consuming nature of variance estimation.
 
-Alternatively, you can use \code{\link{marginal_effects}} to retrieve a data frame of marginal effects without constructing a \dQuote{margins} object. That can be efficient for plotting, etc., given the time-consuming nature of variance estimation.
+The choice of \code{vce} may be important. The default variance-covariance estimation procedure (\code{vce = "delta"}) uses the delta method to estimate marginal effect variances. This is the fastest method. When \code{vce = "simulation"}, coefficient estimates are repeatedly drawn from the asymptotic (multivariate normal) distribution of the model coefficients and each draw is used to estimate marginal effects, with the variance based upon the dispersion of those simulated effects. The number of interations used is given by \code{iterations}. For \code{vce = "bootstrap"}, the bootstrap is used to repeatedly subsample \code{data} and the variance of marginal effects is estimated from the variance of the bootstrap distribution. This method is markedly slower than the other two procedures. Again, \code{iterations} regulates the number of bootstrap subsamples to draw.
 }
 \examples{
 # linear model
@@ -69,16 +87,16 @@ margins(x)
 ## modifying original data values
 margins(x, at = list(hp = 150))
 ## AMEs at various data values
-margins(x, at = list(hp = c(150, 300), cyl = c(4,6)))
+margins(x, at = list(hp = c(95, 150), cyl = c(4,6)))
 
 # use of 'data' argument to obtain AMEs for a subset of data
 margins(x, data = mtcars[mtcars[["cyl"]] == 4,])
 margins(x, data = mtcars[mtcars[["cyl"]] == 6,])
 
 # summary() method
-summary(margins(x, at = list(hp = c(150, 300))))
+summary(margins(x, at = list(hp = c(95, 150))))
 ## control row order of summary() output
-summary(margins(x, at = list(hp = c(150, 300))), order = "hp")
+summary(margins(x, at = list(hp = c(95, 150))), by_factor = FALSE)
 
 # generalized linear model
 x <- glm(am ~ hp, data = head(mtcars), family = binomial)
@@ -100,7 +118,7 @@ Greene, W.H. 2012. Econometric Analysis, 7th Ed. Boston: Pearson.
 Stata manual: \code{margins}. Retrieved 2014-12-15 from \url{http://www.stata.com/manuals13/rmargins.pdf}.
 }
 \seealso{
-\code{\link{marginal_effects}}, \code{\link{dydx}}, \code{\link{build_margins}}, \code{\link[prediction]{prediction}}
+\code{\link{marginal_effects}}, \code{\link{dydx}}, \code{\link[prediction]{prediction}}
 }
 \author{
 Thomas J. Leeper

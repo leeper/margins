@@ -52,14 +52,14 @@ function(x,
     
     pars <- list(...)
 
-    summ <- summary(x, level = level, order = "Factor")
-    MEs <- summ[, "dy/dx", drop = TRUE]
+    summ <- summary(x, level = level, by_factor = TRUE)
+    MEs <- summ[, "AME", drop = TRUE]
     lower <- summ[, ncol(summ) - 1L]
     upper <- summ[, ncol(summ)]
     r <- max(upper) - min(lower)
     
-    at_levels <- unique(summ[, ".at", drop = TRUE])
-    n_at_levels <- length(at_levels)
+    at_levels <- unique(summ[, attributes(x)[["at"]], drop = TRUE])
+    n_at_levels <- nrow(at_levels)
     if (n_at_levels > 1) {
         pos2 <- rep(pos, each = n_at_levels)
         pos2 <- pos2 + seq(from = -0.2, to = 0.2, length.out = n_at_levels)

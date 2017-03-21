@@ -33,7 +33,7 @@
 #' marginal_effects(m)
 #' marginal_effects(m)
 #'
-#' @seealso \code{\link{dydx}}, \code{\link{margins}}, \code{\link{build_margins}}
+#' @seealso \code{\link{dydx}}, \code{\link{margins}}
 #' @keywords models
 #' @export
 marginal_effects <- function(model, data, ...) {
