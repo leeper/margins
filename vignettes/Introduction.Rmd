@@ -254,14 +254,10 @@ The `at` argument accepts multiple named combinations of variables, so we can sp
 ```{r}
 wts <- seq(range(mtcars$wt)[1], range(mtcars$wt)[2], length.out = 10)
 m1 <- margins(x1, at = list(wt = wts, drat = range(mtcars$drat), am = 0:1))
-length(m1)
+length(unique(m1[[".at"]]))
 ```
 
-As you can see above, the result is a a relatively long list of `"margins"` objects. Looking at them directly might be difficult - though we could examine any one particular combination of covariates (the particular combination being reported in the output):
-
-```{r}
-summary(m1[[11]])
-```
+As you can see above, the result is a relatively long data frame (basically a stack of `"margins"` objects specific to each requested intersection of `at` values). We can examine the whole stack, but it's an extremely long output (one row for each estimate times the number of unique combinations of `at` values, so 120 rows in this instance). 
 
 An easier way to understand all of this is to use graphing. The `cplot()` function, in particular, is useful here. We can, for example, plot the marginal effect of axle ratio across levels of vehicle weight, separately for automatic vehicles (in red) and manual vehicles (in blue):
 
