@@ -5,11 +5,13 @@
 ^README\.html$
 ^CONTRIBUTING\.md$
 ^inst/standarderrors\.pdf$
+^figure/$
 ^figure/.+$
 ^cache/.+$
 ^ignore$
 ^inst/doc/.+\.log$
 ^inst/doc/.+\.Rmd$
+^vignettes/figure$
 ^vignettes/figure/.+$
 ^vignettes/.+\.aux$
 ^vignettes/.+\.bbl$
