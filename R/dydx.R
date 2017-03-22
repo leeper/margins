@@ -51,6 +51,7 @@
 #' mtcars[["cyl"]] <- factor(mtcars$cyl)
 #' x <- lm(mpg ~ cyl, data = head(mtcars))
 #' dydx(head(mtcars), x, "cyl")
+#' 
 #' @seealso \code{\link{marginal_effects}}, \code{\link{margins}}
 #' @importFrom prediction prediction
 #' @export

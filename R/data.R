@@ -1,7 +1,7 @@
 #' @title Example Data
 #' @description Xenophobic Vote Share in 2003 Russian Duma Elections
 #'
-#' @format data frame with 72 observations and 11 variables.
+#' @format Data frame with 72 observations and 11 variables.
 #' \describe{
 #'  \item{region}{Region}
 #'  \item{xenovote}{ldpr all vote 03}

@@ -5,7 +5,7 @@
 #' @description This package is an R port of Stata's \samp{margins} command, implemented as an S3 generic \code{margins()} for model objects, like those of class \dQuote{lm} and \dQuote{glm}. \code{margins()} is an S3 generic function for building a \dQuote{margins} object from a model object. Methods are currently implemented for \dQuote{lm} (and, implicitly, \dQuote{glm}) class objects and support is expanding. See Details, below.
 #' 
 #' The package also provides a low-level function, \code{\link{marginal_effects}}, to estimate those quantities and return a data frame of unit-specific effects and another, \code{\link{dydx}}, to provide variable-specific derivatives from models. Some of the underlying architecture for the package is provided by the low-level function \code{\link[prediction]{prediction}}, which provides a consistent data frame interface to \code{\link[stats]{predict}} for a large number of model types.
-#' @param model A model object of class \dQuote{lm}.
+#' @param model A model object. See Details for supported model classes.
 #' @param data A data frame containing the data at which to evaluate the marginal effects, as in \code{\link[stats]{predict}}. This is optional, but may be required when the underlying modelling function sets \code{model = FALSE}.
 #' @param at A list of one or more named vectors, specifically values at which to calculate the marginal effects. These are used to modify the value of \code{data} (see \code{\link[prediction]{build_datalist}} for details on use).
 #' @param type A character string indicating the type of marginal effects to estimate. Mostly relevant for non-linear models, where the reasonable options are \dQuote{response} (the default) or \dQuote{link} (i.e., on the scale of the linear predictor in a GLM).
@@ -26,7 +26,6 @@
 #'   \item \dQuote{lm}, see \code{\link[stats]{lm}}
 #'   \item \dQuote{glm}, see \code{\link[stats]{glm}}, \code{\link[MASS]{glm.nb}}
 #'   \item \dQuote{loess}, see \code{\link[stats]{loess}}
-#'   \item \dQuote{merMod}, see \code{\link[lme4]{lmer}}
 #' }
 #'
 #' The \code{margins} method for objects of class \dQuote{lm} or \dQuote{glm} simply constructs a list of data frames (using \code{\link{build_datalist}}), calculates marginal effects for each data frame (via \code{\link{marginal_effects}} and, in turn, \code{\link[prediction]{prediction}}), and row-binds the results together. Alternatively, you can use \code{\link{marginal_effects}} to retrieve a data frame of marginal effects without constructing a \dQuote{margins} object. That can be efficient for plotting, etc., given the time-consuming nature of variance estimation.
@@ -40,10 +39,15 @@
 #' 
 #' Stata manual: \code{margins}. Retrieved 2014-12-15 from \url{http://www.stata.com/manuals13/rmargins.pdf}.
 #' @examples
-#' # linear model
+#' # basic example using linear model
 #' require("datasets")
 #' x <- lm(mpg ~ cyl * hp + wt, data = head(mtcars))
 #' margins(x)
+#' 
+#' # obtain unit-specific standard errors
+#' \dontrun{
+#'   margins(x, unit_ses = TRUE)
+#' }
 #'
 #' # use of 'at' argument
 #' ## modifying original data values
@@ -55,15 +59,22 @@
 #' margins(x, data = mtcars[mtcars[["cyl"]] == 4,])
 #' margins(x, data = mtcars[mtcars[["cyl"]] == 6,])
 #' 
+#' # return discrete differences for continuous terms
+#' ## passes 'change' through '...' to dydx()
+#' margins(x, change = "sd")
+#' 
 #' # summary() method
 #' summary(margins(x, at = list(hp = c(95, 150))))
 #' ## control row order of summary() output
 #' summary(margins(x, at = list(hp = c(95, 150))), by_factor = FALSE)
 #' 
-#' # generalized linear model
-#' x <- glm(am ~ hp, data = head(mtcars), family = binomial)
-#' margins(x, type = "response")
-#' margins(x, type = "link")
+#' # alternative 'vce' estimation
+#' \dontrun{
+#'   # bootstrap
+#'   margins(x, vce = "bootstrap", iterations = 100L)
+#'   # simulation (ala Clarify/Zelig)
+#'   margins(x, vce = "simulation", iterations = 100L)
+#' }
 #' 
 #' # specifying a custom `vcov` argument
 #' if (require("sandwich")) {
@@ -73,6 +84,11 @@
 #'   summary(margins(x2, vcov = vcovHC(x2)))
 #' }
 #'
+#' # generalized linear model
+#' x <- glm(am ~ hp, data = head(mtcars), family = binomial)
+#' margins(x, type = "response")
+#' margins(x, type = "link")
+#' 
 #' @seealso \code{\link{marginal_effects}}, \code{\link{dydx}}, \code{\link[prediction]{prediction}}
 #' @keywords models package
 #' @import stats

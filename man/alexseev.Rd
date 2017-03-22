@@ -4,7 +4,7 @@
 \name{alexseev}
 \alias{alexseev}
 \title{Example Data}
-\format{data frame with 72 observations and 11 variables.
+\format{Data frame with 72 observations and 11 variables.
 \describe{
  \item{region}{Region}
  \item{xenovote}{ldpr all vote 03}

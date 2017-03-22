@@ -174,13 +174,15 @@ cplot(object, ...)
 \item{rug.size}{A numeric value specifying \code{ticksize} to \code{\link[graphics]{rug}}.}
 }
 \value{
-A tidy data.frame containing the data used to draw the plot.
+A tidy data frame containing the data used to draw the plot. Use \code{draw = FALSE} to simply generate the data structure for use elsewhere.
 }
 \description{
 Draw one or more conditioanl effects plots reflecting predictions or marginal effects from a model, conditional on a covariate. Currently methods exist for \dQuote{lm}, \dQuote{glm}, \dQuote{loess} class models.
 }
 \details{
-This is somewhat similar to to the output produced by the \code{marginalModelPlot()} function in the \bold{\href{https://cran.r-project.org/package=MTurkR}{car}} package.
+Note that when \code{what = "prediction"}, the plots show predictions holding values of the data at their mean or mode, whereas when \code{what = "effect"} average marginal effects (i.e., at observed values) are shown.
+
+The overall aesthetic is somewhat similar to to the output produced by the \code{marginalModelPlot()} function in the \bold{\href{https://cran.r-project.org/package=car}{car}} package.
 }
 \examples{
 \dontrun{
@@ -262,4 +264,3 @@ if (require("MASS")) {
 \code{\link{plot.margins}}, \code{\link{persp.lm}}
 }
 \keyword{graphics}
-\keyword{hplot}

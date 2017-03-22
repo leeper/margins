@@ -42,8 +42,11 @@
 #' @param rug.col A character string specifying \code{col} to \code{\link[graphics]{rug}}.
 #' @param rug.size A numeric value specifying \code{ticksize} to \code{\link[graphics]{rug}}.
 #' @param \dots Additional arguments passed to \code{\link[graphics]{plot}}. 
-#' @details This is somewhat similar to to the output produced by the \code{marginalModelPlot()} function in the \bold{\href{https://cran.r-project.org/package=MTurkR}{car}} package.
-#' @return A tidy data.frame containing the data used to draw the plot.
+#' @details Note that when \code{what = "prediction"}, the plots show predictions holding values of the data at their mean or mode, whereas when \code{what = "effect"} average marginal effects (i.e., at observed values) are shown.
+#' 
+#' The overall aesthetic is somewhat similar to to the output produced by the \code{marginalModelPlot()} function in the \bold{\href{https://cran.r-project.org/package=car}{car}} package.
+#' 
+#' @return A tidy data frame containing the data used to draw the plot. Use \code{draw = FALSE} to simply generate the data structure for use elsewhere.
 #' @examples
 #' \dontrun{
 #' require('datasets')
@@ -120,7 +123,7 @@
 #' 
 #' }
 #' @seealso \code{\link{plot.margins}}, \code{\link{persp.lm}}
-#' @keywords graphics hplot
+#' @keywords graphics
 #' @importFrom graphics par plot lines rug polygon segments points
 #' @importFrom prediction prediction find_data seq_range mean_or_mode
 #' @export
@@ -215,13 +218,8 @@ function(object,
             stop("Displaying effect of a factor variable with > 2 levels is not currently supported!")
         }
         marg <- margins(model = object, data = data, at = setNames(list(xvals), xvar), type = type, vcov = vcov)
-        summ <- summary(marg)[,c("factor", "AME", "SE")]
-        summ <- summ[summ[["factor"]] == dx, ]
-        out <- structure(list(xvals = xvals,
-                              yvals = summ[["AME"]],
-                              upper = summ[["AME"]] + (fac[2] * summ[["SE"]]),
-                              lower = summ[["AME"]] + (fac[1] * summ[["SE"]])),
-                         class = "data.frame", row.names = seq_len(nrow(summ)))
+        out <- summary(marg)[ , c(x, "AME", "upper", "lower", "factor"), drop = FALSE]
+        out <- setNames(out[out[["factor"]] == dx, , drop = FALSE], c("xvals", "yvals", "upper", "lower", "factor"))
     }
     
     # optionally draw the plot; if FALSE, just the data are returned

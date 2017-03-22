@@ -1,16 +1,16 @@
-# CHANGES TO margins 0.3.0
-
 ## margins 0.3.0
 
-* Significantly modified the data structure returned by `margins()`. It now returns a data frame with an added `at` attribute, specifying the names of the variables that have been fixed. (#58)
+* Significantly modified the data structure returned by `margins()`. It now returns a data frame with an added `at` attribute, specifying the names of the variables that have been fixed by `build_datalist()`. (#58)
 * Renamed marginal effects, variance, and standard error columns returned by `margins()`. Marginal effects columns are prefixed by `dydx_`. Variances of the *average* marginal effect are stored (repeatedly, across observations) in new `Var_dydx_` columns. Unit-specific standard errors, if requested, are stored as `SE_dydx_` columns. (#58)
-* `summary.margins()` now returns a single data frame of marginal effect estimates. Column names have also changed to avoid use of special characters (thus making it easier to use column names in plotting with, for example, ggplot2). Row-order can be controlled by the `by_factor` attribute, which cascades into the behavior of the `print.summary.margins()` method. (#58)
-* `print.margins()` now presents effect estimates as a condensed data frame. (#58)
-* `build_margins()` is no longer exported. Arguments used to control its behavior have been exposed in `margins()`.
-* `build_margins()` and thus `margins()` no longer returns the original data twice (bug introduced by change in behavior of `prediction()`). (#57)
-* `plot.margins()` now displays marginal effects across each level of `at`.
+* `summary.margins()` now returns a single data frame of marginal effect estimates. Column names have also changed to avoid use of special characters (thus making it easier to use column names in plotting with, for example, ggplot2). Row-order can be controlled by the `by_factor` attribute, which by default sorts the data frame by the factor/term. If set to `by_factor = FALSE`, the data frame is sorted by the `at` variables. This behavior cascades into the `print.summary.margins()` method. (#58)
+* `print.margins()` now presents (but does not return) effect estimates as a condensed data frame with some auxiliary information. Its behavior when using `at` is improved and tidied. (#58)
+* `build_margins()` is no longer exported. Arguments used to control its behavior have been exposed in `margins()` methods.
+* `plot.margins()` now displays marginal effects across each level of `at`. (#58)
+* `build_margins()` and thus `margins()` no longer returns the original data twice (a bug introduced by change in behavior of `prediction()`). (#57)
 * All methods for objects of class `"marginslist"` have been removed. (#58)
 * The `at` argument in `plot.margins()` has been renamed to `pos`, to avoid ambiguity with `at` as used elsewhere in the package.
+* `persp()` and `image()` methods gain a `dx` argument (akin to that in `cplot()`) to allow visualization of marginal effects of a variable across levels of two other variables. The default behavior remains unchanged.
+* Cleaned up documentation and add some examples.
 
 ## margins 0.2.26
 
@@ -145,7 +145,7 @@
 * `cplot()` now draws confidence intervals for "effect" plots.
 * Fixed a bug in `get_marginal_effects()` wherein the `method` argument was ignored. This improves performance significantly when using `method = "simple"` (the default differentiation method).
 
-# CHANGES TO margins 0.2.0
+# margins 0.2.0
 
 * Added `persp()` methods for "lm" and "glm" class objects to display 3-dimensional representations of predicted values and marginal effects.
 * Added `plot.margins()` method for mimicking Stata's `marginsplot` behavior.
@@ -159,6 +159,6 @@
 * The internal `build_datalist()` now checks for specification of illegal factor levels in `at` and errors when these are encountered.
 * Use the **webuse** package to handle examples.
 
-# CHANGES TO margins 0.1.0
+# margins 0.1.0
 
 * Initial package released.

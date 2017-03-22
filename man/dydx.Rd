@@ -79,6 +79,7 @@ dydx(head(mtcars), x, "hp", change = c(75,150))
 mtcars[["cyl"]] <- factor(mtcars$cyl)
 x <- lm(mpg ~ cyl, data = head(mtcars))
 dydx(head(mtcars), x, "cyl")
+
 }
 \references{
 Miranda, Mario J. and Paul L. Fackler. 2002. \emph{Applied Computational Economics and Finance}. p. 103.

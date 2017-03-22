@@ -1,7 +1,7 @@
 get_effect_variances <- 
 function(data, 
          model = model, 
-         which = all.vars(model[["terms"]])[-1], # which mes do we need variances of
+         which = all.vars(model[["terms"]])[-1], # which mes do we need variances of; ignored
          type = c("response", "link", "terms"),
          vcov = stats::vcov(model),
          vce = c("delta", "simulation", "bootstrap", "none"),

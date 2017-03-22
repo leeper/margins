@@ -30,7 +30,7 @@ margins(model, ...)
 \method{margins}{loess}(model, data, at = NULL, eps = 1e-07, ...)
 }
 \arguments{
-\item{model}{A model object of class \dQuote{lm}.}
+\item{model}{A model object. See Details for supported model classes.}
 
 \item{\dots}{Arguments passed through various internal functions to \code{\link{dydx}} methods.}
 
@@ -70,7 +70,6 @@ Methods are currently implemented for the following object classes:
   \item \dQuote{lm}, see \code{\link[stats]{lm}}
   \item \dQuote{glm}, see \code{\link[stats]{glm}}, \code{\link[MASS]{glm.nb}}
   \item \dQuote{loess}, see \code{\link[stats]{loess}}
-  \item \dQuote{merMod}, see \code{\link[lme4]{lmer}}
 }
 
 The \code{margins} method for objects of class \dQuote{lm} or \dQuote{glm} simply constructs a list of data frames (using \code{\link{build_datalist}}), calculates marginal effects for each data frame (via \code{\link{marginal_effects}} and, in turn, \code{\link[prediction]{prediction}}), and row-binds the results together. Alternatively, you can use \code{\link{marginal_effects}} to retrieve a data frame of marginal effects without constructing a \dQuote{margins} object. That can be efficient for plotting, etc., given the time-consuming nature of variance estimation.
@@ -78,10 +77,15 @@ The \code{margins} method for objects of class \dQuote{lm} or \dQuote{glm} simpl
 The choice of \code{vce} may be important. The default variance-covariance estimation procedure (\code{vce = "delta"}) uses the delta method to estimate marginal effect variances. This is the fastest method. When \code{vce = "simulation"}, coefficient estimates are repeatedly drawn from the asymptotic (multivariate normal) distribution of the model coefficients and each draw is used to estimate marginal effects, with the variance based upon the dispersion of those simulated effects. The number of interations used is given by \code{iterations}. For \code{vce = "bootstrap"}, the bootstrap is used to repeatedly subsample \code{data} and the variance of marginal effects is estimated from the variance of the bootstrap distribution. This method is markedly slower than the other two procedures. Again, \code{iterations} regulates the number of bootstrap subsamples to draw.
 }
 \examples{
-# linear model
+# basic example using linear model
 require("datasets")
 x <- lm(mpg ~ cyl * hp + wt, data = head(mtcars))
 margins(x)
+
+# obtain unit-specific standard errors
+\dontrun{
+  margins(x, unit_ses = TRUE)
+}
 
 # use of 'at' argument
 ## modifying original data values
@@ -93,15 +97,22 @@ margins(x, at = list(hp = c(95, 150), cyl = c(4,6)))
 margins(x, data = mtcars[mtcars[["cyl"]] == 4,])
 margins(x, data = mtcars[mtcars[["cyl"]] == 6,])
 
+# return discrete differences for continuous terms
+## passes 'change' through '...' to dydx()
+margins(x, change = "sd")
+
 # summary() method
 summary(margins(x, at = list(hp = c(95, 150))))
 ## control row order of summary() output
 summary(margins(x, at = list(hp = c(95, 150))), by_factor = FALSE)
 
-# generalized linear model
-x <- glm(am ~ hp, data = head(mtcars), family = binomial)
-margins(x, type = "response")
-margins(x, type = "link")
+# alternative 'vce' estimation
+\dontrun{
+  # bootstrap
+  margins(x, vce = "bootstrap", iterations = 100L)
+  # simulation (ala Clarify/Zelig)
+  margins(x, vce = "simulation", iterations = 100L)
+}
 
 # specifying a custom `vcov` argument
 if (require("sandwich")) {
@@ -110,6 +121,11 @@ if (require("sandwich")) {
   ## heteroskedasticity-consistent covariance matrix
   summary(margins(x2, vcov = vcovHC(x2)))
 }
+
+# generalized linear model
+x <- glm(am ~ hp, data = head(mtcars), family = binomial)
+margins(x, type = "response")
+margins(x, type = "link")
 
 }
 \references{

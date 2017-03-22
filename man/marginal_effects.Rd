@@ -38,7 +38,7 @@ marginal_effects(model, data, ...)
 \item{eps}{A numeric value specifying the \dQuote{step} to use when calculating numerical derivatives. By default this is the smallest floating point value that can be represented on the present architecture.}
 }
 \value{
-An data frame with dimensions equal to \code{data}, where each row is an observation and each column is the marginal effect of that variable for the data values provided by \code{data}.
+An data frame with number of rows equal to \code{nrow(data)}, where each row is an observation and each column is the marginal effect of a variable used in the model formula.
 }
 \description{
 Extract marginal effects from a model object, conditional on data, using \code{\link{dydx}}.
@@ -51,10 +51,9 @@ Methods are currently implemented for the following object classes:
   \item \dQuote{lm}, see \code{\link[stats]{lm}}
   \item \dQuote{glm}, see \code{\link[stats]{glm}}, \code{\link[MASS]{glm.nb}}
   \item \dQuote{loess}, see \code{\link[stats]{loess}}
-  \item \dQuote{merMod}, see \code{\link[lme4]{lmer}}
 }
 
-Methods are also provided for the object classes \dQuote{margins} and \dQuote{marginslist} to return simplified data frames from complete \dQuote{margins} objects.
+A methods is also provided for the object classes \dQuote{margins} to return a simplified data frame from complete \dQuote{margins} objects.
 }
 \examples{
 require("datasets")
