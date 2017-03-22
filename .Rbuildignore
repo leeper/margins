@@ -7,6 +7,7 @@
 ^inst/standarderrors\.pdf$
 ^figure/.+$
 ^cache/.+$
+^ignore$
 ^inst/doc/.+\.log$
 ^inst/doc/.+\.Rmd$
 ^vignettes/figure/.+$
