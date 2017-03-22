@@ -18,6 +18,7 @@ image.lm <-
 function(x, 
          xvar = attributes(terms(x))[["term.labels"]][1],
          yvar = attributes(terms(x))[["term.labels"]][2], 
+         dx = xvar,
          what = c("prediction", "effect"), 
          type = c("response", "link"), 
          vcov = stats::vcov(x),
@@ -40,7 +41,7 @@ function(x,
          ...) {
     what <- match.arg(what)
     type <- match.arg(type)
-    surface <- calculate_surface(x = x, xvar = xvar, yvar = yvar, nx = nx, ny = ny, type = type, vcov = vcov, what = what)
+    surface <- calculate_surface(x = x, xvar = xvar, yvar = yvar, dx = dx, nx = nx, ny = ny, type = type, vcov = vcov, what = what)
     outcome <- surface[["outcome"]]
     xvals <- surface[["xvals"]]
     yvals <- surface[["yvals"]]

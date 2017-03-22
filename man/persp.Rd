@@ -10,54 +10,57 @@
 \title{Perspective and heatmap/contour plots for models}
 \usage{
 \method{image}{lm}(x, xvar = attributes(terms(x))[["term.labels"]][1],
-  yvar = attributes(terms(x))[["term.labels"]][2], what = c("prediction",
-  "effect"), type = c("response", "link"), vcov = stats::vcov(x),
-  nx = 25L, ny = nx, nz = 20, xlab = xvar, ylab = yvar, xaxs = "i",
-  yaxs = xaxs, bty = "o", col = gray(seq(0.05, 0.95, length.out = nz),
-  alpha = 0.75), contour = TRUE, contour.labels = NULL,
-  contour.drawlabels = TRUE, contour.cex = 0.6, contour.col = "black",
-  contour.lty = 1, contour.lwd = 1, ...)
+  yvar = attributes(terms(x))[["term.labels"]][2], dx = xvar,
+  what = c("prediction", "effect"), type = c("response", "link"),
+  vcov = stats::vcov(x), nx = 25L, ny = nx, nz = 20, xlab = xvar,
+  ylab = yvar, xaxs = "i", yaxs = xaxs, bty = "o",
+  col = gray(seq(0.05, 0.95, length.out = nz), alpha = 0.75),
+  contour = TRUE, contour.labels = NULL, contour.drawlabels = TRUE,
+  contour.cex = 0.6, contour.col = "black", contour.lty = 1,
+  contour.lwd = 1, ...)
 
 \method{image}{glm}(x, xvar = attributes(terms(x))[["term.labels"]][1],
-  yvar = attributes(terms(x))[["term.labels"]][2], what = c("prediction",
-  "effect"), type = c("response", "link"), vcov = stats::vcov(x),
-  nx = 25L, ny = nx, nz = 20, xlab = xvar, ylab = yvar, xaxs = "i",
-  yaxs = xaxs, bty = "o", col = gray(seq(0.05, 0.95, length.out = nz),
-  alpha = 0.75), contour = TRUE, contour.labels = NULL,
-  contour.drawlabels = TRUE, contour.cex = 0.6, contour.col = "black",
-  contour.lty = 1, contour.lwd = 1, ...)
+  yvar = attributes(terms(x))[["term.labels"]][2], dx = xvar,
+  what = c("prediction", "effect"), type = c("response", "link"),
+  vcov = stats::vcov(x), nx = 25L, ny = nx, nz = 20, xlab = xvar,
+  ylab = yvar, xaxs = "i", yaxs = xaxs, bty = "o",
+  col = gray(seq(0.05, 0.95, length.out = nz), alpha = 0.75),
+  contour = TRUE, contour.labels = NULL, contour.drawlabels = TRUE,
+  contour.cex = 0.6, contour.col = "black", contour.lty = 1,
+  contour.lwd = 1, ...)
 
 \method{image}{loess}(x, xvar = attributes(terms(x))[["term.labels"]][1],
-  yvar = attributes(terms(x))[["term.labels"]][2], what = c("prediction",
-  "effect"), type = c("response", "link"), vcov = stats::vcov(x),
-  nx = 25L, ny = nx, nz = 20, xlab = xvar, ylab = yvar, xaxs = "i",
-  yaxs = xaxs, bty = "o", col = gray(seq(0.05, 0.95, length.out = nz),
-  alpha = 0.75), contour = TRUE, contour.labels = NULL,
-  contour.drawlabels = TRUE, contour.cex = 0.6, contour.col = "black",
-  contour.lty = 1, contour.lwd = 1, ...)
+  yvar = attributes(terms(x))[["term.labels"]][2], dx = xvar,
+  what = c("prediction", "effect"), type = c("response", "link"),
+  vcov = stats::vcov(x), nx = 25L, ny = nx, nz = 20, xlab = xvar,
+  ylab = yvar, xaxs = "i", yaxs = xaxs, bty = "o",
+  col = gray(seq(0.05, 0.95, length.out = nz), alpha = 0.75),
+  contour = TRUE, contour.labels = NULL, contour.drawlabels = TRUE,
+  contour.cex = 0.6, contour.col = "black", contour.lty = 1,
+  contour.lwd = 1, ...)
 
 \method{persp}{lm}(x, xvar = attributes(terms(x))[["term.labels"]][1],
-  yvar = attributes(terms(x))[["term.labels"]][2], what = c("prediction",
-  "effect"), type = c("response", "link"), vcov = stats::vcov(x),
-  nx = 25L, ny = nx, theta = 45, phi = 10, shade = 0.75,
-  xlab = xvar, ylab = yvar, zlab = if (match.arg(what) == "prediction")
-  "Predicted value" else paste0("Marginal effect of ", xvar),
+  yvar = attributes(terms(x))[["term.labels"]][2], dx = xvar,
+  what = c("prediction", "effect"), type = c("response", "link"),
+  vcov = stats::vcov(x), nx = 25L, ny = nx, theta = 45, phi = 10,
+  shade = 0.75, xlab = xvar, ylab = yvar, zlab = if (match.arg(what) ==
+  "prediction") "Predicted value" else paste0("Marginal effect of ", dx),
   ticktype = c("detailed", "simple"), ...)
 
 \method{persp}{glm}(x, xvar = attributes(terms(x))[["term.labels"]][1],
-  yvar = attributes(terms(x))[["term.labels"]][2], what = c("prediction",
-  "effect"), type = c("response", "link"), vcov = stats::vcov(x),
-  nx = 25L, ny = nx, theta = 45, phi = 10, shade = 0.75,
-  xlab = xvar, ylab = yvar, zlab = if (match.arg(what) == "prediction")
-  "Predicted value" else paste0("Marginal effect of ", xvar),
+  yvar = attributes(terms(x))[["term.labels"]][2], dx = xvar,
+  what = c("prediction", "effect"), type = c("response", "link"),
+  vcov = stats::vcov(x), nx = 25L, ny = nx, theta = 45, phi = 10,
+  shade = 0.75, xlab = xvar, ylab = yvar, zlab = if (match.arg(what) ==
+  "prediction") "Predicted value" else paste0("Marginal effect of ", dx),
   ticktype = c("detailed", "simple"), ...)
 
 \method{persp}{loess}(x, xvar = attributes(terms(x))[["term.labels"]][1],
-  yvar = attributes(terms(x))[["term.labels"]][2], what = c("prediction",
-  "effect"), type = c("response", "link"), vcov = stats::vcov(x),
-  nx = 25L, ny = nx, theta = 45, phi = 10, shade = 0.75,
-  xlab = xvar, ylab = yvar, zlab = if (match.arg(what) == "prediction")
-  "Predicted value" else paste0("Marginal effect of ", xvar),
+  yvar = attributes(terms(x))[["term.labels"]][2], dx = xvar,
+  what = c("prediction", "effect"), type = c("response", "link"),
+  vcov = stats::vcov(x), nx = 25L, ny = nx, theta = 45, phi = 10,
+  shade = 0.75, xlab = xvar, ylab = yvar, zlab = if (match.arg(what) ==
+  "prediction") "Predicted value" else paste0("Marginal effect of ", dx),
   ticktype = c("detailed", "simple"), ...)
 }
 \arguments{
@@ -67,7 +70,9 @@
 
 \item{yvar}{A character string specifying the name of variable to use as the \samp{y} dimension in the plot. See \code{\link[graphics]{persp}} for details.}
 
-\item{what}{A character string specifying whether to draw \dQuote{prediction} (fitted values from the model, calculated using \code{\link[stats]{predict}}) or \dQuote{effect} (marginal effect of \code{x}, using \code{\link{margins}}).}
+\item{dx}{A character string specifying the name of the variable for which the conditional average marginal effect is desired when \code{what = "effect"}. By default this is \code{xvar}.}
+
+\item{what}{A character string specifying whether to draw \dQuote{prediction} (fitted values from the model, calculated using \code{\link[stats]{predict}}) or \dQuote{effect} (marginal effect of \code{dx}, using \code{\link{margins}}).}
 
 \item{type}{A character string specifying whether to calculate predictions on the response scale (default) or link (only relevant for non-linear models).}
 
@@ -120,33 +125,32 @@
 \description{
 Draw one or more perspectives plots reflecting predictions or marginal effects from a model, or the same using a flat heatmap or \dQuote{filled contour} (\code{\link[graphics]{image}}) representation. Currently methods exist for \dQuote{lm}, \dQuote{glm}, and \dQuote{loess} models.
 }
-\details{
-Currently, this implements \dQuote{marginal effects at means} of all covariates.
-}
 \examples{
 \dontrun{
-require('datasets')
-# prediction from several angles
-m <- lm(mpg ~ wt*drat, data = mtcars)
-persp(m, theta = c(45, 135, 225, 315))
-## flat/heatmap representation
-image(m)
+  require('datasets')
+  # prediction from several angles
+  m <- lm(mpg ~ wt*drat, data = mtcars)
+  persp(m, theta = c(45, 135, 225, 315))
 
-# marginal effect of 'drat' across drat and wt
-m <- lm(mpg ~ wt*drat*I(drat^2), data = mtcars)
-persp(m, xvar = "drat", yvar = "wt", what = "effect", 
-      nx = 10, ny = 10, ticktype = "detailed")
+  # flat/heatmap representation
+  image(m)
 
-# a non-linear model
-m <- glm(am ~ wt*drat, data = mtcars, family = binomial)
-persp(m, theta = c(30, 60)) # prediction
-## flat/heatmap representation
-image(m)
+  # marginal effect of 'drat' across drat and wt
+  m <- lm(mpg ~ wt*drat*I(drat^2), data = mtcars)
+  persp(m, xvar = "drat", yvar = "wt", what = "effect", 
+        nx = 10, ny = 10, ticktype = "detailed")
 
-# effects on linear predictor and outcome
-persp(m, xvar = "drat", yvar = "wt", what = "effect", type = "link")
-persp(m, xvar = "drat", yvar = "wt", what = "effect", type = "response")
+  # a non-linear model
+  m <- glm(am ~ wt*drat, data = mtcars, family = binomial)
+  persp(m, theta = c(30, 60)) # prediction
+  # flat/heatmap representation
+  image(m)
+
+  # effects on linear predictor and outcome
+  persp(m, xvar = "drat", yvar = "wt", what = "effect", type = "link")
+  persp(m, xvar = "drat", yvar = "wt", what = "effect", type = "response")
 }
+
 }
 \seealso{
 \code{\link{plot.margins}}, \code{\link{cplot}}

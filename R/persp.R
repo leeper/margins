@@ -4,7 +4,8 @@
 #' @param x A model object.
 #' @param xvar A character string specifying the name of variable to use as the \samp{x} dimension in the plot. See \code{\link[graphics]{persp}} for details.
 #' @param yvar A character string specifying the name of variable to use as the \samp{y} dimension in the plot. See \code{\link[graphics]{persp}} for details.
-#' @param what A character string specifying whether to draw \dQuote{prediction} (fitted values from the model, calculated using \code{\link[stats]{predict}}) or \dQuote{effect} (marginal effect of \code{x}, using \code{\link{margins}}).
+#' @param dx A character string specifying the name of the variable for which the conditional average marginal effect is desired when \code{what = "effect"}. By default this is \code{xvar}.
+#' @param what A character string specifying whether to draw \dQuote{prediction} (fitted values from the model, calculated using \code{\link[stats]{predict}}) or \dQuote{effect} (marginal effect of \code{dx}, using \code{\link{margins}}).
 #' @param type A character string specifying whether to calculate predictions on the response scale (default) or link (only relevant for non-linear models).
 #' @param vcov A matrix containing the variance-covariance matrix for estimated model coefficients, or a function to perform the estimation with \code{model} as its only argument.
 #' @param nx An integer specifying the number of points across \code{x} at which to calculate the predicted value or marginal effect.
@@ -18,31 +19,32 @@
 #' @param zlab A character string specifying the value of \code{zlab} (vertical axis label) in \code{\link[graphics]{persp}}. 
 #' @param ticktype A character string specifying one of: \dQuote{detailed} (the default) or \dQuote{simple}. See \code{\link[graphics]{persp}}.
 #' @param \dots Additional arguments passed to \code{\link[graphics]{persp}} or \code{\link[graphics]{image}}.
-#' @details Currently, this implements \dQuote{marginal effects at means} of all covariates.
 #' @examples
 #' \dontrun{
-#' require('datasets')
-#' # prediction from several angles
-#' m <- lm(mpg ~ wt*drat, data = mtcars)
-#' persp(m, theta = c(45, 135, 225, 315))
-#' ## flat/heatmap representation
-#' image(m)
+#'   require('datasets')
+#'   # prediction from several angles
+#'   m <- lm(mpg ~ wt*drat, data = mtcars)
+#'   persp(m, theta = c(45, 135, 225, 315))
 #' 
-#' # marginal effect of 'drat' across drat and wt
-#' m <- lm(mpg ~ wt*drat*I(drat^2), data = mtcars)
-#' persp(m, xvar = "drat", yvar = "wt", what = "effect", 
-#'       nx = 10, ny = 10, ticktype = "detailed")
+#'   # flat/heatmap representation
+#'   image(m)
 #' 
-#' # a non-linear model
-#' m <- glm(am ~ wt*drat, data = mtcars, family = binomial)
-#' persp(m, theta = c(30, 60)) # prediction
-#' ## flat/heatmap representation
-#' image(m)
+#'   # marginal effect of 'drat' across drat and wt
+#'   m <- lm(mpg ~ wt*drat*I(drat^2), data = mtcars)
+#'   persp(m, xvar = "drat", yvar = "wt", what = "effect", 
+#'         nx = 10, ny = 10, ticktype = "detailed")
 #' 
-#' # effects on linear predictor and outcome
-#' persp(m, xvar = "drat", yvar = "wt", what = "effect", type = "link")
-#' persp(m, xvar = "drat", yvar = "wt", what = "effect", type = "response")
+#'   # a non-linear model
+#'   m <- glm(am ~ wt*drat, data = mtcars, family = binomial)
+#'   persp(m, theta = c(30, 60)) # prediction
+#'   # flat/heatmap representation
+#'   image(m)
+#' 
+#'   # effects on linear predictor and outcome
+#'   persp(m, xvar = "drat", yvar = "wt", what = "effect", type = "link")
+#'   persp(m, xvar = "drat", yvar = "wt", what = "effect", type = "response")
 #' }
+#' 
 #' @seealso \code{\link{plot.margins}}, \code{\link{cplot}}
 #' @keywords graphics hplot
 #' @importFrom graphics persp layout
@@ -52,6 +54,7 @@ persp.lm <-
 function(x, 
          xvar = attributes(terms(x))[["term.labels"]][1],
          yvar = attributes(terms(x))[["term.labels"]][2], 
+         dx = xvar,
          what = c("prediction", "effect"), 
          type = c("response", "link"), 
          vcov = stats::vcov(x),
@@ -62,13 +65,13 @@ function(x,
          shade = 0.75, 
          xlab = xvar, 
          ylab = yvar, 
-         zlab = if (match.arg(what) == "prediction") "Predicted value" else paste0("Marginal effect of ", xvar),
+         zlab = if (match.arg(what) == "prediction") "Predicted value" else paste0("Marginal effect of ", dx),
          ticktype = c("detailed", "simple"),
          ...) {
     
     what <- match.arg(what)
     type <- match.arg(type)
-    surface <- calculate_surface(x = x, xvar = xvar, yvar = yvar, nx = nx, ny = ny, type = type, vcov = vcov, what = what)
+    surface <- calculate_surface(x = x, xvar = xvar, yvar = yvar, dx = dx, nx = nx, ny = ny, type = type, vcov = vcov, what = what)
     outcome <- surface[["outcome"]]
     xvals <- surface[["xvals"]]
     yvals <- surface[["yvals"]]
