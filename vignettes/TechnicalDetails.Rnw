@@ -554,6 +554,7 @@ persp(m, "wt", "hp", what = "effect", phi = 30)
 image(m, "wt", "hp", what = "effect")
 @
 
+All of the plotting functions in the package return data structures, which can also be passed to other plotting tools (such as \textbf{ggplot2}). The \textbf{LinRegInteractive} package provide an alternative set of visualization methods but calculates marginal effects in a quite different way.
 
 \subsection{Comparison with Other R Packages}
 
