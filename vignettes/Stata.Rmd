@@ -8,7 +8,7 @@ output:
     toc_float:
       collapsed: false
       smooth_scroll: false
-    toc_depth: 3
+    toc_depth: 2
 vignette: >
   %\VignetteIndexEntry{Comparison with Stata's 'margins' command}
   %\VignetteEngine{knitr::rmarkdown}
