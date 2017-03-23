@@ -15,8 +15,6 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-# An Introduction to 'margins'
-
 **margins** is an effort to port Stata's (closed source) [`margins`](http://www.stata.com/help.cgi?margins) command to R as an S3 generic method for calculating the marginal effects (or "partial effects") of covariates included in model objects (like those of classes "lm" and "glm"). A plot method for the new "margins" class additionally ports the `marginsplot` command, and various additional functions support interpretation and visualization of such models.
 
 Stata's `margins` command is very simple and intuitive to use:
