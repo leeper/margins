@@ -38,7 +38,7 @@ Stata's `margins` command is very simple and intuitive to use:
 
 ![marginsplot](http://i.imgur.com/VhoaFGp.png)
 
-With **margins** in R, replicating Stata's results is incredibly simple using just the `margins()` method to obtain average marginal effects:
+With **margins** in R, replicating Stata's results is incredibly simple using just the `margins()` method to obtain average marginal effects and its `summary()` method to obtain Stata-like output:
 
 ```{r margins}
 library("margins")
@@ -55,17 +55,17 @@ plot(m)
 
 ## Using Optional Arguments in `margins`
 
-**margins** is intended as a port of (some of) the features of Stata's `margins` command, which includes numerous options for calculating marginal effects at the mean values of a dataset (i.e., the marginal effects at the mean), an average of the marginal effects at each value of a dataset (i.e., the average marginal effect), marginal effects at representative values, and any of those operations on various subsets of a dataset. In particular, Stata provides the following options:
+**margins** is intended as a port of (some of) the features of Stata's `margins` command, which includes numerous options for calculating marginal effects at the mean values of a dataset (i.e., the marginal effects at the mean), an average of the marginal effects at each value of a dataset (i.e., the average marginal effect), marginal effects at representative values, and any of those operations on various subsets of a dataset. (The functionality of Stata's command to produce *predictive* margins is not ported, as this is easily obtained from the [prediction](https://cran.r-project.org/package=prediction) package.) In particular, Stata provides the following options:
 
  - `at`: calculate marginal effects at (potentially representative) specified values (i.e., replacing observed values with specified replacement values before calculating marginal effects)
  - `atmeans`: calculate marginal effects at the mean (MEMs) of a dataset rather than the default behavior of calculating average marginal effects (AMEs)
  - `over`: calculate marginal effects (including MEMs and/or AMEs at observed or specified values) on subsets of the original data (e.g., the marginal effect of a treatment separately for men and women)
  
-The `at` argument has been translated into `margins()`. It can be used by specifying a list of variable names and specified values for those variables at which to calculate marginal effects. When using `at`, `margins()` constructs modified datasets - using `build_datalist()` - containing the specified values and calculates marginal effects on each modified dataset.
+The `at` argument has been translated into `margins()` in a very similar manner. It can be used by specifying a list of variable names and specified values for those variables at which to calculate marginal effects, such as `margins(x, at = list(hp=150))`. When using `at`, `margins()` constructs modified datasets - using `build_datalist()` - containing the specified values and calculates marginal effects on each modified dataset, `rbind`-ing them back into a single "margins" object.
 
-Stata's `atmeans` argument is not implemented in `margins()` for various reasons, including because it is possible to achieve the effect manually through an operation like `data$var <- mean(data$var, na.rm = TRUE)` and passing the modified data frame to `margins()`. 
+Stata's `atmeans` argument is not implemented in `margins()` for various reasons, including because it is possible to achieve the effect manually through an operation like `data$var <- mean(data$var, na.rm = TRUE)` and passing the modified data frame to `margins(x, data = data)`. 
 
-At present, `margins()` does not implement the `over` option. The reason for this is simple: R already makes data subsetting operations quite simple using simple `[` extraction. If, for example, one wanted to calculate marginal effects on subsets of a data.frame, those subsets can be passed directly to `margins()` via the `newdata` argument (as in a call to `prediction()`).
+At present, `margins()` does not implement the `over` option. The reason for this is also simple: R already makes data subsetting operations quite simple using simple `[` extraction. If, for example, one wanted to calculate marginal effects on subsets of a data frame, those subsets can be passed directly to `margins()` via the `data` argument (as in a call to `prediction()`).
 
 The rest of this vignette shows how to use `at` and `data` to obtain various kinds of marginal effects, and how to use plotting functions to visualize those inferences.
 
@@ -82,21 +82,21 @@ We can start by loading the **margins** package:
 library("margins")
 ```
 
-We'll use a simple example regression model based on the `mtcars` dataset:
+We'll use a simple example regression model based on the built-in `mtcars` dataset:
 
 ```{r}
 x <- lm(mpg ~ cyl + hp * wt, data = mtcars)
 ```
 
-To obtain average marginal effects (AMEs), we simply call `margins` on the model object created by `lm`:
+To obtain average marginal effects (AMEs), we simply call `margins` on the model object created by `lm()`:
 
 ```{r}
 margins(x)
 ```
 
-The result is a list containing a single object of class `"margins"`. `"margins"` objects are printed in a tidy summary format, by default, as you can see above. 
+The result is a data frame with special class `"margins"`. `"margins"` objects are printed in a tidy summary format, by default, as you can see above. The only difference between a `"margins"` object and a regular data frame are some additional data frame-level attributes that dictate how the object is printed.
 
-In an ordinary least squares regression, there is really only one way of examining marginal effects (that is, on the scale of the outcome variable). In a generalized linear model (e.g., logit), however, it is possible to examine true "marginal effects" (i.e., the marginal contribution of each variable on the scale of the linear predictor) or "partial effects" (i.e., the contribution of each variable on the outcome scale, conditional on the other variables involved in the link function transformation of the linear predictor). The latter are the default in `margins()`, which implicitly sets the argument `type = "response"` in `prediction()` methods. To obtain the former, simply set `type = "link"`. There's some debate about which of these is preferred and even what to call the two different quantities of interest. Regardless of all of that, here's how you obtain either:
+In an ordinary least squares regression, there is really only one way of examining marginal effects (that is, on the scale of the outcome variable). In a generalized linear model (e.g., logit), however, it is possible to examine true "marginal effects" (i.e., the marginal contribution of each variable on the scale of the linear predictor) or "partial effects" (i.e., the contribution of each variable on the outcome scale, conditional on the other variables involved in the link function transformation of the linear predictor). The latter are the default in `margins()`, which implicitly sets the argument `margins(x, type = "response")` and passes that through to `prediction()` methods. To obtain the former, simply set `margins(x, type = "link")`. There's some debate about which of these is preferred and even what to call the two different quantities of interest. Regardless of all of that, here's how you obtain either:
 
 ```{r}
 x <- glm(am ~ cyl + hp * wt, data = mtcars, family = binomial)
@@ -104,13 +104,13 @@ margins(x, type = "response")
 margins(x, type = "link") # the default
 ```
 
-Note that some other packages available for R, as well as Stata's `margins` and `mfx` packages enable calculation of so-called "marginal effects at means" (i.e., the marginal effect for a single observation that has covariate values equal to the means of the sample as a whole). The substantive interpretation of these is fairly ambiguous. While it was once common practice to estimate MEMs - rather than AMEs or MERs - this is now considered somewhat inappropriate because it focuses on cases that may not exist (e.g., the average of a 0/1 variable is not going to reflect a case that can actually exist in reality) and we are often interested in the effect of a variable at multiple possible values of covariates, rather than an arbitrarily selected case that is deemed "typica" in thi sway. As such, `margins()` defaults to reporting AMEs, unless modified by the `at` argument to calculate average "marginal effects for representative cases" (MERs). MEMs could be obtained by manually specifying `at` for every variable in a way that respects the variables classes and inherent meaning of the data, but that functionality is not demonstrated here.
+Note that some other packages available for R, as well as Stata's `margins` and `mfx` packages enable calculation of so-called "marginal effects at means" (i.e., the marginal effect for a single observation that has covariate values equal to the means of the sample as a whole). The substantive interpretation of these is fairly ambiguous. While it was once common practice to estimate MEMs - rather than AMEs or MERs - this is now considered somewhat inappropriate because it focuses on cases that may not exist (e.g., the average of a 0/1 variable is not going to reflect a case that can actually exist in reality) and we are often interested in the effect of a variable at multiple possible values of covariates, rather than an arbitrarily selected case that is deemed "typical" in this way. As such, `margins()` defaults to reporting AMEs, unless modified by the `at` argument to calculate average "marginal effects for representative cases" (MERs). MEMs could be obtained by manually specifying `at` for every variable in a way that respects the variables classes and inherent meaning of the data, but that functionality is not demonstrated here.
 
 ### Using the `at` Argument
 
-The `at` argument allows you to calculate marginal effects at representative cases (sometimes "MERs") or marginal effects at means - or any other statistic - (sometimes "MEMs"), which are marginal effects for particularly interesting (sets of) observations in a dataset. This differs from marginal effects on subsets of the original data (see the next section for a demonstration of that) in that it operates on a modified set of the full dataset wherein particular variables have been replaced by specified values. This is helpful because it allows for calculation of marginal effects for counterfactual datasets (e.g., what if all women were instead men? what if all democracies were instead autocracies? what if all foreign cars were instead domestic?).
+The `at` argument allows you to calculate marginal effects at representative cases (sometimes "MERs") or marginal effects at means - or any other statistic - (sometimes "MEMs"), which are marginal effects for particularly interesting (sets of) observations in a dataset. This differs from marginal effects on subsets of the original data (see the next section for a demonstration of that) in that it operates on a modified set of the full dataset wherein particular variables have been replaced by specified values. This is helpful because it allows for calculation of marginal effects for *counterfactual* datasets (e.g., what if all women were instead men? what if all democracies were instead autocracies? what if all foreign cars were instead domestic?).
 
-As an example, if we wanted to know if the marginal effect of horsepower (`hp`) on fuel economy differed across different types of automobile transmissions, we could simply use `at` to obtain separate marginal effect estimates for our data as if every car observation were a manual versus if every car observation were an automatic.
+As an example, if we wanted to know if the marginal effect of horsepower (`hp`) on fuel economy differed across different types of automobile transmissions, we could simply use `at` to obtain separate marginal effect estimates for our data as if every car observation were a manual versus if every car observation were an automatic. The output of `margins()` is a simplified summary of the estimated marginal effects across the requested variable levels/combinations specified in `at`:
 
 ```{r, results = "hold"}
 x <- lm(mpg ~ cyl + wt + hp * am, data = mtcars)
@@ -123,9 +123,9 @@ Because of the `hp * am` interaction in the regression, the marginal effect of h
 margins(x, at = list(am = 0:1, hp = fivenum(mtcars$hp)))
 ```
 
-Because this is a linear model, the marginal effects of `cyl` and `wt` do not vary across levels of `am` or `hp`. The minimum and Q1 value of `hp` are also the same, so the marginal effects of `am` are the same in the first two results tables. As you can see, however, the marginal effect of `hp` differs when `am == 0` versus `am == 1` (first and second results tables) and the marginal effect of `am` differs across levels of `hp` (e.g., between the first and third tables). As should be clear, the `at` argument is incredibly useful for getting a better grasp of the marginal effects of different covariates.
+Because this is a linear model, the marginal effects of `cyl` and `wt` do not vary across levels of `am` or `hp`. The minimum and Q1 value of `hp` are also the same, so the marginal effects of `am` are the same in the first two results. As you can see, however, the marginal effect of `hp` differs when `am == 0` versus `am == 1` (first and second rows) and the marginal effect of `am` differs across levels of `hp` (e.g., between the first and third rows). As should be clear, the `at` argument is incredibly useful for getting a better grasp of the marginal effects of different covariates.
 
-This becomes especially apparent when a model includes power-terms (or any other alternative form of a covariate). Consider, for example, the simple model of fuel economy as a function of weight, with weight included as both a first- and second-order term:
+This becomes especially apparent when a model includes power-terms (or any other alternative functional form of a covariate). Consider, for example, the simple model of fuel economy as a function of weight, with weight included as both a first- and second-order term:
 
 ```{r, results = "hold"}
 x <- lm(mpg ~ wt + I(wt^2), data = mtcars)
@@ -135,8 +135,7 @@ summary(x)
 Looking only at the regression results table, it is actually quite difficult to understand the effect of `wt` on fuel economy because it requires performing mental multiplication and addition on all possible values of `wt`. Using the `at` option to margins, you could quickly obtain a sense of the average marginal effect of `wt` at a range of plausible values:
 
 ```{r, results = "hold"}
-wt_tmp <- fivenum(mtcars$wt)
-margins(x, at = list(wt = wt_tmp))
+margins(x, at = list(wt = fivenum(mtcars$wt)))
 ```
 
 The marginal effects in the first column of results reveal that the average marginal effect of `wt` is large and negative except when `wt` is very large, in which case it has an effect not distinguishable from zero. We can easily plot these results using the `cplot()` function to see the effect visually in terms of either predicted fuel economy or the marginal effect of `wt`:
@@ -146,18 +145,18 @@ cplot(x, "wt", what = "prediction", main = "Predicted Fuel Economy, Given Weight
 cplot(x, "wt", what = "effect", main = "Average Marginal Effect of Weight")
 ```
 
-A really nice feature of Stata's margins command is that it handles factor variables gracefully. This functionality is difficult to emulate in R, but the `margins` function does its best. Here we see the marginal effects of a simple regression that includes a factor variable:
+A really nice feature of Stata's margins command is that it handles factor variables gracefully. This functionality is difficult to emulate in R, but the `margins()` function does its best. Here we see the marginal effects of a simple regression that includes a factor variable:
 
 ```{r}
 x <- lm(mpg ~ factor(cyl) * hp + wt, data = mtcars)
 margins(x)
 ```
 
-`margins` recognizes the factor and displays the marginal effect for each level of the factor separately. This may not work with `at` specifications (yet).
+`margins()` recognizes the factor and displays the marginal effect for each level of the factor separately. (Caveat: this may not work with certain `at` specifications, yet.)
 
 ### Subsetting
 
-Stata's margins command includes an `over()` option, which allows you to very easily calculate marginal effects on subsets of the data (e.g., separately for men and women). This is useful in Stata because the program only allows one dataset in memory. Because R does not impose this restriction and further makes subsetting expressions very simple, that feature is not really useful and can be achieved using standard subsetting notation in R:
+Stata's `margins` command includes an `over()` option, which allows you to very easily calculate marginal effects on subsets of the data (e.g., separately for men and women). This is useful in Stata because the program only allows one dataset in memory. Because R does not impose this restriction and further makes subsetting expressions very simple, that feature is not really useful and can be achieved using standard subsetting notation in R:
 
 
 ```{r}
@@ -169,15 +168,22 @@ margins(x, data = mtcars[mtcars$am == 0, ])
 margins(x, data = mtcars[mtcars$am == 0, ])
 ```
 
+Because a `"margins"` object is just a data frame, it is also possible to obtain the same result by subsetting the *output* of `margins()`:
+
+```{r}
+m <- margins(x)
+split(m, m$am)
+```
+
 ---
 
 ## Marginal Effects Plots
 
-Using `margins()` to calculate marginal effects enables several kinds of plotting. The built-in `plot()` method for objects of class `"margins"` creates simple diagnostic plots for examining the output of `margins` in visual rather than tabular format. It is also possible to use the output of `margins()` to produce more typical marginal effects plots that show the marginal effect of one variable across levels of another variable. This vignette walks through the `plot` method and then shows how to produce marginal effects plots using base graphics.
+Using `margins()` to calculate marginal effects enables several kinds of plotting. The built-in `plot()` method for objects of class `"margins"` creates simple diagnostic plots for examining the output of `margins()` in visual rather than tabular format. It is also possible to use the output of `margins()` to produce more typical marginal effects plots that show the marginal effect of one variable across levels of another variable. This section walks through the `plot()` method and then shows how to produce marginal effects plots using base graphics.
 
 ### The `plot()` method for "margins" objects
 
-The **margins** package implements a `plot()` method for objects of class "margins" (seen above). This produces a plot similar (in spirit) to the output of Stata's `marginsplot`. It is highly customizable, but is meant primarily as a diagnostic tool to examine the results of `margins()`. It simply produces, by default, a plot of marginal effects along with 95% confidence intervals for those effects. The confidence level can be modified using the `levels` argument, which is vectorized to allow multiple levels to be specified simultaneously.
+The **margins** package implements a `plot()` method for objects of class `"margins"` (seen above). This produces a plot similar (in spirit) to the output of Stata's `marginsplot`. It is highly customizable, but is meant primarily as a diagnostic tool to examine the results of `margins()`. It simply produces, by default, a plot of marginal effects along with 95% confidence intervals for those effects. The confidence level can be modified using the `levels` argument, which is vectorized to allow multiple levels to be specified simultaneously.
 
 ### More advanced plotting
 
@@ -229,7 +235,6 @@ One of principal motives for developing **margins** is to facilitate the substan
 If we begin with a simple example of a regression model with an interaction term, the difficulties of interpretation become almost immediately clear. In this first model, we'll use the `mtcars` dataset to understand vehicle fuel economy as a function of `drat` (rear axle ratio), `wt` (weight), and their interaction. As Brambor et al. (2006) make clear, the most common mistake in such models is estimating the model without the constituent variables. We can see why this is a problem by estimating the model with and without the constituent terms:
 
 ```{r}
-library("margins")
 summary(lm(mpg ~ drat:wt, data = mtcars))
 summary(lm(mpg ~ drat * wt, data = mtcars))
 ```
@@ -252,12 +257,12 @@ Now `margins()` returns two `"margins"` objects, one for each combination of val
 The `at` argument accepts multiple named combinations of variables, so we can specify particular values of both `drat` and `wt` and `am` for which we would like to understand the marginal effect of each variable. For example, we might want to look at the effects of each variable for vehicles with varying axle ratios but also across some representative values of the `wt` distribution, separately for manual and automatic vehicles. (Note that the order of values in the `at` object does matter and it can inclue variables that are not explicitly being modelled).
 
 ```{r}
-wts <- seq(range(mtcars$wt)[1], range(mtcars$wt)[2], length.out = 10)
+wts <- prediction::seq_range(mtcars$wt, 10)
 m1 <- margins(x1, at = list(wt = wts, drat = range(mtcars$drat), am = 0:1))
-length(unique(m1[[".at"]]))
+nrow(m1)/nrow(mtcars)
 ```
 
-As you can see above, the result is a relatively long data frame (basically a stack of `"margins"` objects specific to each requested intersection of `at` values). We can examine the whole stack, but it's an extremely long output (one row for each estimate times the number of unique combinations of `at` values, so 120 rows in this instance). 
+As you can see above, the result is a relatively long data frame (basically a stack of `"margins"` objects specific to each of the - 40 - requested combinations of `at` values). We can examine the whole stack using `summary()`, but it's an extremely long output (one row for each estimate times the number of unique combinations of `at` values, so 120 rows in this instance). 
 
 An easier way to understand all of this is to use graphing. The `cplot()` function, in particular, is useful here. We can, for example, plot the marginal effect of axle ratio across levels of vehicle weight, separately for automatic vehicles (in red) and manual vehicles (in blue):
 
@@ -290,7 +295,7 @@ cplot(x1b, x = "wt", dx = "wt", what = "effect",
       draw = "add")
 ```
 
-Note, however, that tnterpreting these kind of continuous-by-continuous interaction terms is slightly more complex because the marginal effect of both constituent variables always depends on the level of the other variable. We'll use the horsepower (`hp`) variable from `mtcars` to understand this type of interaction. We can start by looking at the AMEs:
+Note, however, that interpreting these kind of continuous-by-continuous interaction terms is slightly more complex because the marginal effect of both constituent variables always depends on the level of the other variable. We'll use the horsepower (`hp`) variable from `mtcars` to understand this type of interaction. We can start by looking at the AMEs:
 
 ```{r}
 x2 <- lm(mpg ~ hp * wt, data = mtcars)
