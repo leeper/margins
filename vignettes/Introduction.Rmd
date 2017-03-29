@@ -163,7 +163,7 @@ x <- lm(mpg ~ factor(cyl) * am + hp + wt, data = mtcars)
 margins(x, data = mtcars[mtcars$am == 0, ])
 
 # manual vehicles
-margins(x, data = mtcars[mtcars$am == 0, ])
+margins(x, data = mtcars[mtcars$am == 1, ])
 ```
 
 Because a `"margins"` object is just a data frame, it is also possible to obtain the same result by subsetting the *output* of `margins()`:
