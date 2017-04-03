@@ -39,3 +39,16 @@
 marginal_effects <- function(model, data, ...) {
     UseMethod("marginal_effects")
 }
+
+#' @rdname marginal_effects
+#' @export
+marginal_effects.margins <- function(model, data, ...) {
+    if (!missing(data)) {
+        stop("Argument 'data' is ignored for objects of class 'margins'")
+    }
+    w <- grepl("^dydx", names(model))
+    out <- model[, w, drop = FALSE]
+    attributes(out) <- attributes(model)[names(attributes(model)) != "names"]
+    names(out) <- names(model)[w]
+    out
+}

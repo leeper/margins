@@ -103,5 +103,6 @@ function(model, ...) {
 
 #' @export
 prediction::prediction
+
 #' @export
 prediction::find_data
