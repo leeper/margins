@@ -14,7 +14,7 @@
 #' @param iterations If \code{vce = "bootstrap"}, the number of bootstrap iterations. If \code{vce = "simulation"}, the number of simulated effects to draw. Ignored otherwise.
 #' @param unit_ses If \code{vce = "delta"}, a logical specifying whether to calculate and return unit-specific marginal effect variances. This calculation is time consuming and the information is often not needed, so this is set to \code{FALSE} by default.
 #' @param eps A numeric value specifying the \dQuote{step} to use when calculating numerical derivatives.
-#' @param \dots Arguments passed through various internal functions to \code{\link{dydx}} methods.
+#' @param \dots Arguments passed to methods, and onward to \code{\link{dydx}} methods and possibly further to \code{\link[prediction]{prediction}} methods. This can be useful, for example, for setting \code{type} (predicted value type), \code{eps} (precision), or \code{category} (category for multi-category outcome models), etc.
 #' @details Methods for this generic return a \dQuote{margins} object, which is a data frame consisting of the original data, predicted values and standard errors thereof, estimated marginal effects from the model \code{model}, with attributes describing various features of the marginal effects estimates.
 #' 
 #' Some modelling functions set \code{model = FALSE} by default. For \code{margins} to work best, this should be set to \code{TRUE}. Otherwise the \code{data} argument to \code{margins} is probably required.
@@ -26,6 +26,7 @@
 #'   \item \dQuote{lm}, see \code{\link[stats]{lm}}
 #'   \item \dQuote{glm}, see \code{\link[stats]{glm}}, \code{\link[MASS]{glm.nb}}
 #'   \item \dQuote{loess}, see \code{\link[stats]{loess}}
+#'   \item \dQuote{nnet}, see \code{\link[nnet]{nnet}}
 #' }
 #'
 #' The \code{margins} method for objects of class \dQuote{lm} or \dQuote{glm} simply constructs a list of data frames (using \code{\link{build_datalist}}), calculates marginal effects for each data frame (via \code{\link{marginal_effects}} and, in turn, \code{\link[prediction]{prediction}}), and row-binds the results together. Alternatively, you can use \code{\link{marginal_effects}} to retrieve a data frame of marginal effects without constructing a \dQuote{margins} object. That can be efficient for plotting, etc., given the time-consuming nature of variance estimation.
@@ -89,6 +90,17 @@
 #' margins(x, type = "response")
 #' margins(x, type = "link")
 #' 
+#' # multi-category outcome
+#' if (requireNamespace("nnet")) {
+#'   data("iris3", package = "datasets")
+#'   ird <- data.frame(rbind(iris3[,,1], iris3[,,2], iris3[,,3]),
+#'                     species = factor(c(rep("s",50), rep("c", 50), rep("v", 50))))
+#'   m <- nnet::nnet(species ~ ., data = ird, size = 2, rang = 0.1,
+#'                   decay = 5e-4, maxit = 200, trace = FALSE)
+#'   margins(m) # default
+#'   margins(m, category = "v") # explicit category
+#' }
+#'
 #' @seealso \code{\link{marginal_effects}}, \code{\link{dydx}}, \code{\link[prediction]{prediction}}
 #' @keywords models package
 #' @import stats

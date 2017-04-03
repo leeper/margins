@@ -1,3 +1,7 @@
+## margins 0.3.1
+
+* Added methods for class "nnet" from **nnet** as an initial implementation of multi-category outcome models. (#60)
+
 ## margins 0.3.0
 
 * Significantly modified the data structure returned by `margins()`. It now returns a data frame with an added `at` attribute, specifying the names of the variables that have been fixed by `build_datalist()`. (#58)

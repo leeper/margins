@@ -13,14 +13,20 @@ function(model,
     allvars <- all.vars(terms(model))[-1]
     
     # march.arg() for arguments
-    type <- match.arg(type)
+    if (!is.null(type)) {
+        type <- match.arg(type)
+    }
     vce <- match.arg(vce)
     if (is.function(vcov)) {
         vcov <- vcov(model)
     }
     
     # obtain gradient with respect to each variable in data
-    mes <- marginal_effects(model = model, data = data, type = type, eps = eps, ...)
+    if (!is.null(type)) {
+        mes <- marginal_effects(model = model, data = data, type = type, eps = eps, ...)
+    } else {
+        mes <- marginal_effects(model = model, data = data, eps = eps, ...)
+    }
     
     # variance estimation technique
     if (vce != "none") {
@@ -41,7 +47,11 @@ function(model,
     }
     
     # obtain predicted values and standard errors
-    pred <- prediction(model = model, data = data, type = type)
+    if (!is.null(type)) {
+        pred <- prediction(model = model, data = data, type = type, ...)
+    } else {
+        pred <- prediction(model = model, data = data, ...)
+    }
     
     # setup output structure
     structure(if ((vce == "delta") && (isTRUE(unit_ses))) {

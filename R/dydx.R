@@ -69,7 +69,6 @@ function(data,
          change = c("dydx", "minmax", "iqr", "sd"),
          eps = 1e-7, ...) {
     
-    type <- match.arg(type)
     if (is.numeric(change)) {
         stopifnot(length(change) == 2)
         lwr <- change[1]
@@ -116,8 +115,14 @@ function(data,
         d1[[variable]] <- upr
     }
     
-    P0 <- prediction(model = model, data = d0, type = type)[["fitted"]]
-    P1 <- prediction(model = model, data = d1, type = type)[["fitted"]]
+    if (!is.null(type)) {
+        type <- match.arg(type)
+        P0 <- prediction(model = model, data = d0, type = type, ...)[["fitted"]]
+        P1 <- prediction(model = model, data = d1, type = type, ...)[["fitted"]]
+    } else {
+        P0 <- prediction(model = model, data = d0, ...)[["fitted"]]
+        P1 <- prediction(model = model, data = d1, ...)[["fitted"]]
+    }
     
     if (change == "dydx") {
         out <- (P1 - P0) / (d1[[variable]] - d0[[variable]])
@@ -134,8 +139,6 @@ function(data,
 #' @rdname dydx
 #' @export
 dydx.factor <- function(data, model, variable, type = c("response", "link"), fwrap = FALSE, ...) {
-    
-    type <- match.arg(type)
     
     levs <- levels(as.factor(data[[variable]]))
     base <- levs[1]
@@ -156,12 +159,21 @@ dydx.factor <- function(data, model, variable, type = c("response", "link"), fwr
     D0 <- build_datalist(data, at = setNames(list(base), variable))[[1]]
     
     # setup functions through predict_factory
-    P0 <- prediction(model = model, data = D0, type = type)[["fitted"]]
+    if (!is.null(type)) {
+        type <- match.arg(type)
+        P0 <- prediction(model = model, data = D0, type = type, ...)[["fitted"]]
+    } else {
+        P0 <- prediction(model = model, data = D0, ...)[["fitted"]]
+    }
     
     # calculate difference for each factor level
     for (i in seq_along(levs)) {
         D <- build_datalist(data, at = setNames(list(levs[i]), variable))[[1]]
-        P1 <- prediction(model = model, data = D, type = type)[["fitted"]]
+        if (!is.null(type)) {
+            P1 <- prediction(model = model, data = D, type = type, ...)[["fitted"]]
+        } else {
+            P1 <- prediction(model = model, data = D, ...)[["fitted"]]
+        }
         out[[outcolnames[i]]] <- structure(P1 - P0, class = c("marginaleffect", "numeric"))
     }
     # return data.frame with column(s) of differences
@@ -176,8 +188,6 @@ dydx.ordered <- dydx.factor
 #' @export
 dydx.logical <- function(data, model, variable, type = c("response", "link"), ...) {
     
-    type <- match.arg(type)
-    
     # setup response object
     out <- structure(list(list()), 
                      class = "data.frame", 
@@ -188,11 +198,20 @@ dydx.logical <- function(data, model, variable, type = c("response", "link"), ..
     D0 <- build_datalist(data, at = setNames(list(FALSE), variable))[[1]]
     
     # setup functions through predict_factory
-    P0 <- prediction(model = model, data = D0, type = type)[["fitted"]]
+    if (!is.null(type)) {
+        type <- match.arg(type)
+        P0 <- prediction(model = model, data = D0, type = type, ...)[["fitted"]]
+    } else {
+        P0 <- prediction(model = model, data = D0, ...)[["fitted"]]
+    }
     
     # calculate difference for moving FALSE to TRUE
     D1 <- build_datalist(data, at = setNames(list(TRUE), variable))[[1]]
-    P1 <- prediction(model = model, data = D1, type = type)[["fitted"]]
+    if (!is.null(type)) {
+        P1 <- prediction(model = model, data = D1, type = type, ...)[["fitted"]]
+    } else {
+        P1 <- prediction(model = model, data = D1, ...)[["fitted"]]
+    }
     out[[paste0("dydx_",variable)]] <- P1 - P0
     
     # return data.frame with column of differences
