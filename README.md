@@ -209,6 +209,7 @@ The numerous package vignettes and help files contain extensive documentation an
 ## Requirements and Installation
 
 [![CRAN](http://www.r-pkg.org/badges/version/margins)](https://cran.r-project.org/package=margins)
+![Downloads](http://cranlogs.r-pkg.org/badges/margins)
 [![Build Status](https://travis-ci.org/leeper/margins.svg?branch=master)](https://travis-ci.org/leeper/margins)
 [![Build status](https://ci.appveyor.com/api/projects/status/t6nxndmvvcw3gw7f/branch/master?svg=true)](https://ci.appveyor.com/project/leeper/margins/branch/master)
 [![codecov.io](http://codecov.io/github/leeper/margins/coverage.svg?branch=master)](http://codecov.io/github/leeper/margins?branch=master)
