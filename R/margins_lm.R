@@ -1,3 +1,3 @@
 #' @rdname margins
 #' @export
-margins.lm <- margins.default
+margins.lm <- margins.glm

@@ -2,7 +2,7 @@
 % Please edit documentation in R/marginal_effects.R,
 %   R/marginal_effects_default.R, R/marginal_effects_glm.R,
 %   R/marginal_effects_lm.R, R/marginal_effects_loess.R,
-%   R/marginal_effects_nnet.R
+%   R/marginal_effects_nnet.R, R/marginal_effects_polr.R
 \name{marginal_effects}
 \alias{marginal_effects}
 \alias{marginal_effects.margins}
@@ -11,6 +11,7 @@
 \alias{marginal_effects.lm}
 \alias{marginal_effects.loess}
 \alias{marginal_effects.nnet}
+\alias{marginal_effects.polr}
 \title{Differentiate a Model Object with Respect to All Variables}
 \usage{
 marginal_effects(model, data, ...)
@@ -30,6 +31,9 @@ marginal_effects(model, data, ...)
   parent.frame()), type = c("response", "link"), eps = 1e-07, ...)
 
 \method{marginal_effects}{nnet}(model, data = find_data(model,
+  parent.frame()), eps = 1e-07, ...)
+
+\method{marginal_effects}{polr}(model, data = find_data(model,
   parent.frame()), eps = 1e-07, ...)
 }
 \arguments{
@@ -58,6 +62,7 @@ Methods are currently implemented for the following object classes:
   \item \dQuote{glm}, see \code{\link[stats]{glm}}, \code{\link[MASS]{glm.nb}}
   \item \dQuote{loess}, see \code{\link[stats]{loess}}
   \item \dQuote{nnet}, see \code{\link[nnet]{nnet}}
+  \item \dQuote{polr}, see \code{\link[MASS]{polr}}
 }
 
 A methods is also provided for the object classes \dQuote{margins} to return a simplified data frame from complete \dQuote{margins} objects.

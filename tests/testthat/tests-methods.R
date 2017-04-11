@@ -19,3 +19,17 @@ if (requireNamespace("nnet")) {
         expect_true(inherits(margins(m, category = "c"), "margins"))
     })
 }
+
+context("Test 'MASS' methods")
+if (requireNamespace("MASS")) {
+    data("housing", package = "MASS")
+    m <- MASS::polr(Sat ~ Infl + Type + Cont, weights = Freq, data = housing)
+    test_that("Test marginal_effects() for 'polr'", {
+        expect_true(inherits(marginal_effects(m), "data.frame"))
+        expect_true(inherits(marginal_effects(m, category = "Low"), "data.frame"))
+    })
+    test_that("Test margins() for 'polr'", {
+        expect_true(inherits(margins(m), "margins"))
+        expect_true(inherits(margins(m, category = "Low"), "margins"))
+    })
+}

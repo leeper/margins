@@ -1,3 +1,7 @@
+## margins 0.3.2
+
+* Added methods for class "polr" from **MASS**. (#60)
+
 ## margins 0.3.1
 
 * Added methods for class "nnet" from **nnet** as an initial implementation of multi-category outcome models. (#60)

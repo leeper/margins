@@ -1,6 +1,7 @@
 ^\.travis\.yml$
 ^appveyor\.yml$
 ^travis-tool\.sh$
+^Makefile$
 ^README\.Rmd$
 ^README\.html$
 ^CONTRIBUTING\.md$

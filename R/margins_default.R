@@ -6,7 +6,7 @@ function(model,
          at = NULL, 
          type = c("response", "link", "terms"),
          vcov = stats::vcov(model),
-         vce = c("delta", "simulation", "bootstrap", "none"),
+         vce = c("none", "delta", "simulation", "bootstrap"),
          iterations = 50L, # if vce == "bootstrap" or "simulation"
          unit_ses = FALSE,
          eps = 1e-7,
@@ -21,10 +21,6 @@ function(model,
     if (is.null(names(data_list))) {
         names(data_list) <- NA_character_
     }
-    
-    # reduce memory profile
-    model[["model"]] <- NULL
-    attr(model[["terms"]], ".Environment") <- NULL
     
     # warn about weights
     warn_for_weights(model)
