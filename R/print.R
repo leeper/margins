@@ -1,6 +1,6 @@
 #' @export
 print.margins <- 
-function(x, digits = 4, order = NULL, ...) {
+function(x, digits = 4, order = NULL, FUN = weighted.mean, ...) {
     if (is.null(attributes(x)[["at"]])) {
         message("Average marginal effects")
         if (!is.null(attributes(x)[["call"]])) {
@@ -8,7 +8,7 @@ function(x, digits = 4, order = NULL, ...) {
         }
         x <- marginal_effects(x, with_at = FALSE)
         names(x) <- gsub("^dydx_", "", names(x))
-        print(aggregate(. ~ 1L, data = x, FUN = mean, na.rm = TRUE), digits = digits, row.names = FALSE, ...)
+        print(aggregate(. ~ 1L, data = x, FUN = FUN, na.rm = TRUE), digits = digits, row.names = FALSE, ...)
     } else {
         message("Average marginal effects at specified values")
         if (!is.null(attributes(x)[["call"]])) {
@@ -16,7 +16,7 @@ function(x, digits = 4, order = NULL, ...) {
         }
         tmp <- cbind(x[, grepl("^dydx_", names(x)), drop = FALSE])
         xby <- x[ , attributes(x)[["at"]], drop = FALSE]
-        out <- aggregate(tmp, xby, FUN = mean, na.rm = TRUE)
+        out <- aggregate(tmp, xby, FUN = FUN, na.rm = TRUE)
         #names(out)[names(out) == "at"] <- paste0("_at(", paste0(names(xby), collapse = ","), ")")
         names(out)[!grepl("^dydx", names(out))] <- paste0("at(", names(out)[!grepl("^dydx", names(out))], ")")
         names(out) <- gsub("^dydx_", "", names(out))

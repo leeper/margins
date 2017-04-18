@@ -1,6 +1,7 @@
 ## margins 0.3.3
 
 * Fixed "margins" object structure in `margins.merMod()`.
+* Switched `print()` and `summary()` methods to using `weighted.mean()` instead of `mean()`. (#45)
 
 ## margins 0.3.2
 
