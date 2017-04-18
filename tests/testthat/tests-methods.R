@@ -33,3 +33,19 @@ if (requireNamespace("MASS")) {
         expect_true(inherits(margins(m, category = "Low"), "margins"))
     })
 }
+
+context("Test 'ordinal' methods")
+if (requireNamespace("ordinal")) {
+    test_that("Test marignal_effects() for 'clm'", {
+        data("wine", package = "ordinal")
+        m <- ordinal::clm(rating ~ temp * contact, data = wine)
+        expect_true(inherits(marginal_effects(m), "data.frame"))
+        expect_true(inherits(marginal_effects(m, category = 1), "data.frame"))
+    })
+    test_that("Test margins() for 'clm'", {
+        data("wine", package = "ordinal")
+        m <- ordinal::clm(rating ~ temp * contact, data = wine)
+        expect_true(inherits(margins(m), "margins"))
+        expect_true(inherits(margins(m, category = 1), "margins"))
+    })
+}
