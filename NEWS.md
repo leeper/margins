@@ -1,3 +1,7 @@
+## margins 0.3.3
+
+* Fixed "margins" object structure in `margins.merMod()`.
+
 ## margins 0.3.2
 
 * Added methods for class "polr" from **MASS**. (#60)

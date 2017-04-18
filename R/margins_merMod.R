@@ -16,5 +16,11 @@ margins.merMod <- function(model,
     })
     
     # return value
-    structure(do.call("rbind", out), class = c("margins", "data.frame"))
+    structure(do.call("rbind", out), 
+              class = c("margins", "data.frame"),
+              at = if (is.null(at)) at else names(at),
+              type = NULL,
+              call = if ("call" %in% names(model)) model[["call"]] else NULL,
+              vce = "none", 
+              iterations = NULL)
 }
