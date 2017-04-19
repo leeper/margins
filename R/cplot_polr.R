@@ -73,9 +73,9 @@ function(object,
         outdat <- prediction(model = object, data = tmpdat, level = level)
         if (what == "classprediction") {
             out <- structure(list(xvals = xvals,
-                                  yvals = outdat[["fitted"]]),
+                                  yvals = outdat[["fitted.class"]]),
                              class = "data.frame", 
-                             row.names = seq_along(outdat[["fitted"]]))
+                             row.names = seq_along(outdat[["fitted.class"]]))
             out <- list(out)
         } else {
             out <- list()
