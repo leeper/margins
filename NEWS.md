@@ -1,3 +1,12 @@
+## margins 0.3.4
+
+* Fixed a bug in `cplot.polr()`. (#62, h/t David Barron)
+
+## margins 0.3.3
+
+* Fixed "margins" object structure in `margins.merMod()`.
+* Switched `print()` and `summary()` methods to using `weighted.mean()` instead of `mean()`. (#45)
+
 ## margins 0.3.2
 
 * Added methods for class "polr" from **MASS**. (#60)
