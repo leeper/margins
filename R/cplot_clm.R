@@ -79,7 +79,7 @@ function(object,
             out <- list(out)
         } else {
             out <- list()
-            preds <- grep("^Pr", names(outdat))
+            preds <- grep("^Pr(", names(outdat))
             for (i in preds) {
                 if (what == "stackedprediction" && i != preds[1L]) {
                     outdat[[i]] <- outdat[[i]] + outdat[[i - 1L]]
