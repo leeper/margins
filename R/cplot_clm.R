@@ -17,7 +17,7 @@ function(object,
          xlab = x, 
          ylab = if (match.arg(what) == "effect") paste0("Marginal effect of ", dx) else paste0("Predicted value"),
          xlim = NULL,
-         ylim = if (match.arg(what) %in% c("prediction", "stackedprediction")) c(0,1.04) else NULL,
+         ylim = if (match.arg(what) %in% c("prediction", "stackedprediction")) c(0, 1.04) else NULL,
          lwd = 1L,
          col = "black",
          lty = 1L,
@@ -79,7 +79,7 @@ function(object,
             out <- list(out)
         } else {
             out <- list()
-            preds <- grep("^Pr(", names(outdat))
+            preds <- grep("Pr\\(", names(outdat))
             for (i in preds) {
                 if (what == "stackedprediction" && i != preds[1L]) {
                     outdat[[i]] <- outdat[[i]] + outdat[[i - 1L]]
@@ -125,9 +125,11 @@ function(object,
         if (length(factor.fill) != length(out)) {
             factor.fill <- rep(factor.fill, length(out))
         }
-        for (i in seq_along(out)) {
-            draw_one(xvals = out[[i]][["xvals"]], 
-                     yvals = out[[i]][["yvals"]], 
+      
+        preds <- out[1:(length(out) / 2)]
+        for (i in seq_along(preds)) {
+            draw_one(xvals = preds[[i]][["xvals"]], 
+                     yvals = preds[[i]][["yvals"]], 
                      x_is_factor = x_is_factor,
                      y_is_factor = y_is_factor,
                      col = col[i], lty = lty[i], lwd = lwd,
