@@ -11,7 +11,10 @@ Authors@R: c(person("Thomas J.", "Leeper",
                     email = "thosjleeper@gmail.com"),
              person("Jeffrey", "Arnold", 
                     role = c("ctb"),
-                    email = "jeffrey.arnold@gmail.com")
+                    email = "jeffrey.arnold@gmail.com"),
+             person("David", "Barron",
+                    role = c("ctb"),
+                    email = "dnbarron@gmail.com")
              )
 URL: https://github.com/leeper/margins
 BugReports: https://github.com/leeper/margins/issues
