@@ -1,3 +1,7 @@
+## margins 0.3.5
+
+* Added a `cplot.clm()` method. (#63, h/t David Barron)
+
 ## margins 0.3.4
 
 * Fixed a bug in `cplot.polr()`. (#62, h/t David Barron)

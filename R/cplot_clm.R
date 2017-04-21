@@ -146,4 +146,3 @@ function(object,
     invisible(do.call("rbind", out))
 #    invisible(out)
 }
-
