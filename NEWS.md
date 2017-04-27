@@ -1,3 +1,7 @@
+## margins 0.3.6
+
+* Export `margins.merMod()`. (#56)
+
 ## margins 0.3.5
 
 * Added a `cplot.clm()` method. (#63, h/t David Barron)

@@ -1,6 +1,6 @@
-# @rdname marginal_effects
-# @importFrom prediction find_data
-# @export
+#' @rdname marginal_effects
+#' @importFrom prediction find_data
+#' @export
 marginal_effects.merMod <- 
 function(model, 
          data = find_data(model), 

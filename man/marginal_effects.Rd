@@ -2,7 +2,8 @@
 % Please edit documentation in R/marginal_effects.R,
 %   R/marginal_effects_default.R, R/marginal_effects_glm.R,
 %   R/marginal_effects_lm.R, R/marginal_effects_loess.R,
-%   R/marginal_effects_nnet.R, R/marginal_effects_polr.R
+%   R/marginal_effects_merMod.R, R/marginal_effects_nnet.R,
+%   R/marginal_effects_polr.R
 \name{marginal_effects}
 \alias{marginal_effects}
 \alias{marginal_effects.margins}
@@ -10,6 +11,7 @@
 \alias{marginal_effects.glm}
 \alias{marginal_effects.lm}
 \alias{marginal_effects.loess}
+\alias{marginal_effects.merMod}
 \alias{marginal_effects.nnet}
 \alias{marginal_effects.polr}
 \title{Differentiate a Model Object with Respect to All Variables}
@@ -29,6 +31,9 @@ marginal_effects(model, data, ...)
 
 \method{marginal_effects}{loess}(model, data = find_data(model,
   parent.frame()), type = c("response", "link"), eps = 1e-07, ...)
+
+\method{marginal_effects}{merMod}(model, data = find_data(model),
+  type = c("response", "link"), eps = 1e-07, ...)
 
 \method{marginal_effects}{nnet}(model, data = find_data(model,
   parent.frame()), eps = 1e-07, ...)
