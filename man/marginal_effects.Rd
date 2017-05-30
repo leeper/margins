@@ -21,25 +21,27 @@ marginal_effects(model, data, ...)
 \method{marginal_effects}{margins}(model, data, ...)
 
 \method{marginal_effects}{default}(model, data = find_data(model,
-  parent.frame()), type = c("response", "link"), eps = 1e-07, ...)
+  parent.frame()), variables = NULL, type = c("response", "link"),
+  eps = 1e-07, ...)
 
 \method{marginal_effects}{glm}(model, data = find_data(model, parent.frame()),
-  type = c("response", "link"), eps = 1e-07, ...)
+  variables = NULL, type = c("response", "link"), eps = 1e-07, ...)
 
 \method{marginal_effects}{lm}(model, data = find_data(model, parent.frame()),
-  type = c("response", "link"), eps = 1e-07, ...)
+  variables = NULL, type = c("response", "link"), eps = 1e-07, ...)
 
 \method{marginal_effects}{loess}(model, data = find_data(model,
-  parent.frame()), type = c("response", "link"), eps = 1e-07, ...)
+  parent.frame()), variables = NULL, type = c("response", "link"),
+  eps = 1e-07, ...)
 
 \method{marginal_effects}{merMod}(model, data = find_data(model),
-  type = c("response", "link"), eps = 1e-07, ...)
+  variables = NULL, type = c("response", "link"), eps = 1e-07, ...)
 
 \method{marginal_effects}{nnet}(model, data = find_data(model,
-  parent.frame()), eps = 1e-07, ...)
+  parent.frame()), variables = NULL, eps = 1e-07, ...)
 
 \method{marginal_effects}{polr}(model, data = find_data(model,
-  parent.frame()), eps = 1e-07, ...)
+  parent.frame()), variables = NULL, eps = 1e-07, ...)
 }
 \arguments{
 \item{model}{A model object, perhaps returned by \code{\link[stats]{lm}} or \code{\link[stats]{glm}}}
@@ -47,6 +49,8 @@ marginal_effects(model, data, ...)
 \item{data}{A data.frame over which to calculate marginal effects. This is optional, but may be required when the underlying modelling function sets \code{model = FALSE}.}
 
 \item{\dots}{Arguments passed to methods, and onward to \code{\link{dydx}} methods and possibly further to \code{\link[prediction]{prediction}} methods. This can be useful, for example, for setting \code{type} (predicted value type), \code{eps} (precision), or \code{category} (category for multi-category outcome models), etc.}
+
+\item{variables}{A character vector with the names of variables for which to compute the marginal effects. Leave NULL to consider all variables.}
 
 \item{type}{A character string indicating the type of marginal effects to estimate. Mostly relevant for non-linear models, where the reasonable options are \dQuote{response} (the default) or \dQuote{link} (i.e., on the scale of the linear predictor in a GLM).}
 

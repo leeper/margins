@@ -3,6 +3,7 @@
 margins.nnet <- 
 function(model, 
          data = find_data(model, parent.frame()), 
+         variables = NULL,
          at = NULL, 
          vce = "none",
          eps = 1e-7,
@@ -25,6 +26,7 @@ function(model,
     for (i in seq_along(data_list)) {
         out[[i]] <- build_margins(model = model, 
                                   data = data_list[[i]], 
+                                  variables = variables,
                                   type = NULL, 
                                   vce = vce, 
                                   vcov = NULL,

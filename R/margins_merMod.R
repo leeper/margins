@@ -2,6 +2,7 @@
 # @export
 margins.merMod <- function(model, 
          data = find_data(model), 
+         variables = NULL,
          at = NULL, 
          ...){
     
@@ -10,7 +11,7 @@ margins.merMod <- function(model,
     
     # calculate marginal effects
     out <- lapply(data_list, function(thisdata) {
-        m <- build_margins(model = model, data = thisdata, vce = "none", ...)
+        m <- build_margins(model = model, variables = variables, data = thisdata, vce = "none", ...)
         attr(m, "at") <- attributes(thisdata)[["at"]]
         m
     })

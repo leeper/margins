@@ -17,27 +17,27 @@
 margins(model, ...)
 
 \method{margins}{default}(model, data = find_data(model, parent.frame()),
-  at = NULL, type = c("response", "link", "terms"),
+  variables = NULL, at = NULL, type = c("response", "link", "terms"),
   vcov = stats::vcov(model), vce = c("none", "delta", "simulation",
   "bootstrap"), iterations = 50L, unit_ses = FALSE, eps = 1e-07, ...)
 
 \method{margins}{glm}(model, data = find_data(model, parent.frame()),
-  at = NULL, type = c("response", "link", "terms"),
+  variables = NULL, at = NULL, type = c("response", "link", "terms"),
   vcov = stats::vcov(model), vce = c("delta", "simulation", "bootstrap",
   "none"), iterations = 50L, unit_ses = FALSE, eps = 1e-07, ...)
 
 \method{margins}{lm}(model, data = find_data(model, parent.frame()),
-  at = NULL, type = c("response", "link", "terms"),
+  variables = NULL, at = NULL, type = c("response", "link", "terms"),
   vcov = stats::vcov(model), vce = c("delta", "simulation", "bootstrap",
   "none"), iterations = 50L, unit_ses = FALSE, eps = 1e-07, ...)
 
-\method{margins}{loess}(model, data, at = NULL, eps = 1e-07, ...)
+\method{margins}{loess}(model, data, variables, at = NULL, eps = 1e-07, ...)
 
 \method{margins}{nnet}(model, data = find_data(model, parent.frame()),
-  at = NULL, vce = "none", eps = 1e-07, ...)
+  variables = NULL, at = NULL, vce = "none", eps = 1e-07, ...)
 
 \method{margins}{polr}(model, data = find_data(model, parent.frame()),
-  at = NULL, vce = "none", eps = 1e-07, ...)
+  variables = NULL, at = NULL, vce = "none", eps = 1e-07, ...)
 }
 \arguments{
 \item{model}{A model object. See Details for supported model classes.}
@@ -45,6 +45,8 @@ margins(model, ...)
 \item{\dots}{Arguments passed to methods, and onward to \code{\link{dydx}} methods and possibly further to \code{\link[prediction]{prediction}} methods. This can be useful, for example, for setting \code{type} (predicted value type), \code{eps} (precision), or \code{category} (category for multi-category outcome models), etc.}
 
 \item{data}{A data frame containing the data at which to evaluate the marginal effects, as in \code{\link[stats]{predict}}. This is optional, but may be required when the underlying modelling function sets \code{model = FALSE}.}
+
+\item{variables}{A character vector with the names of variables for which to compute the marginal effects. Leave NULL to consider all variables.}
 
 \item{at}{A list of one or more named vectors, specifically values at which to calculate the marginal effects. These are used to modify the value of \code{data} (see \code{\link[prediction]{build_datalist}} for details on use).}
 

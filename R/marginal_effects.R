@@ -2,6 +2,7 @@
 #' @title Differentiate a Model Object with Respect to All Variables
 #' @description Extract marginal effects from a model object, conditional on data, using \code{\link{dydx}}.
 #' @param data A data.frame over which to calculate marginal effects. This is optional, but may be required when the underlying modelling function sets \code{model = FALSE}.
+#' @param variables A character vector with the names of variables for which to compute the marginal effects. Leave NULL to consider all variables.
 #' @param model A model object, perhaps returned by \code{\link[stats]{lm}} or \code{\link[stats]{glm}}
 #' @param type A character string indicating the type of marginal effects to estimate. Mostly relevant for non-linear models, where the reasonable options are \dQuote{response} (the default) or \dQuote{link} (i.e., on the scale of the linear predictor in a GLM).
 #' @param eps A numeric value specifying the \dQuote{step} to use when calculating numerical derivatives. By default this is the smallest floating point value that can be represented on the present architecture.

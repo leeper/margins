@@ -4,6 +4,7 @@
 marginal_effects.merMod <- 
 function(model, 
          data = find_data(model), 
+         variables = NULL,
          type = c("response", "link"), 
          eps = 1e-7, 
          ...) {
@@ -19,6 +20,15 @@ function(model,
     fnames <- NULL
     classes <- rep("numeric", length(nnames))
     warning("factor variables are not handled as factor for models of class 'merMod'")
+
+    # subset of variables for which to compute the marginal effects
+    if (!is.null(variables)) {
+        if (all(variables %in% nnames)) {
+            nnames <- nnames[nnames %in% variables]
+        } else {
+            stop('Some values in `variables` are not in the model terms.')
+        }
+    }
     
     # estimate numerical derivatives with respect to each variable (for numeric terms in the model)
     # add discrete differences for logical terms

@@ -1,0 +1,42 @@
+context("Test if users can choose a subset of regressors to compute margins")
+
+# Simulated dataset and logistic regression with a factor variable
+set.seed(1024)
+N <- 50
+dat <- data.frame('y' = sample(0:1, N, replace = TRUE),
+                  'x' = rnorm(N),
+                  'z' = rnorm(N),
+                  'w' = sample(letters[1:5], N, replace = TRUE))
+mod <- glm(y ~ x + z + w, data = dat, family = binomial())
+
+# Tests
+test_that("Correct quantities are returned by marginal_effects()", {
+    mfx_subset1 <- marginal_effects(mod, variables = 'x') 
+    expect_equal(colnames(mfx_subset1), 'dydx_x')
+
+    mfx_subset2 <- marginal_effects(mod, variables = c('x', 'z')) 
+    expect_equal(colnames(mfx_subset2), c('dydx_x', 'dydx_z'))
+
+    mfx_factor <- marginal_effects(mod, variables = c('x', 'w'))
+    expect_equal(colnames(mfx_factor), c("dydx_x", "dydx_wb", "dydx_wc",
+                                         "dydx_wd", "dydx_we"))
+
+    mfx_all <- marginal_effects(mod)
+    expect_equal(colnames(mfx_all), c("dydx_x", "dydx_z", "dydx_wb", "dydx_wc",
+                                      "dydx_wd", "dydx_we")) 
+})
+
+test_that("Correct quantities are returned by margins()", {
+    margins_subset <- margins(mod, variables = 'x') 
+    expect_equal(colnames(margins_subset), c("y", "x", "z", "w", "fitted",
+                                             "se.fitted", "dydx_x",
+                                             "Var_dydx_x"))
+
+    margins_all <- margins(mod)
+    expect_equal(colnames(margins_all), c("y", "x", "z", "w", "fitted", "se.fitted",
+                                          "dydx_x", "dydx_z", "dydx_wb",
+                                          "dydx_wc", "dydx_wd", "dydx_we",
+                                          "Var_dydx_x", "Var_dydx_z",
+                                          "Var_dydx_wb", "Var_dydx_wc",
+                                          "Var_dydx_wd", "Var_dydx_we"))
+})

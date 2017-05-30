@@ -3,6 +3,7 @@
 margins.loess <- 
 function(model, 
          data, 
+         variables,
          at = NULL, 
          eps = 1e-7,
          ...){
@@ -29,6 +30,7 @@ function(model,
     for (i in seq_along(data_list)) {
         out[[i]] <- build_margins(model = model, 
                                   data = data_list[[i]], 
+                                  variables = variables,
                                   type = "response", 
                                   vcov = NULL, 
                                   vce = "none", 

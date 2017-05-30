@@ -3,6 +3,7 @@
 margins.default <- 
 function(model, 
          data = find_data(model, parent.frame()), 
+         variables = NULL,
          at = NULL, 
          type = c("response", "link", "terms"),
          vcov = stats::vcov(model),
@@ -30,6 +31,7 @@ function(model,
     for (i in seq_along(data_list)) {
         out[[i]] <- build_margins(model = model, 
                                   data = data_list[[i]], 
+                                  variables = variables,
                                   type = type, 
                                   vcov = vcov, 
                                   vce = vce, 
