@@ -1,7 +1,7 @@
 get_effect_variances <- 
 function(data, 
          model = model, 
-         which = all.vars(model[["terms"]])[-1], # which mes do we need variances of; ignored
+         variables = NULL, # which mes do we need variances of
          type = c("response", "link", "terms"),
          vcov = stats::vcov(model),
          vce = c("delta", "simulation", "bootstrap", "none"),
@@ -37,7 +37,7 @@ function(data,
         # estimate AME from from each simulated coefficient vector
         effectmat <- apply(coefmat, 1, function(coefrow) {
             tmpmodel[["coefficients"]] <- coefrow
-            means <- colMeans(marginal_effects(data, model = tmpmodel, type = type, ...), na.rm = TRUE)
+            means <- colMeans(marginal_effects(model = tmpmodel, data = data, type = type, ...), na.rm = TRUE)
             if (!is.matrix(means)) {
                 matrix(means, ncol = 1L)
             }
@@ -59,6 +59,14 @@ function(data,
         # bootstrap the data and take the variance of bootstrapped AMEs
         variances <- apply(replicate(iterations, bootfun()), 1, var, na.rm = TRUE)
         
-    } 
+    }
+    
+    # subset to requested variables
+    if (!is.null(variables)) {
+        variances <- variances[names(variances) %in% variables]
+    }
+    # replicate to nrow(data)
+    variances <- setNames(lapply(variances, rep, nrow(data)), paste0("Var_", names(variances)))
+    
     return(variances)
 }

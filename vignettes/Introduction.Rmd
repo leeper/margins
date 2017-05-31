@@ -86,13 +86,19 @@ We'll use a simple example regression model based on the built-in `mtcars` datas
 x <- lm(mpg ~ cyl + hp * wt, data = mtcars)
 ```
 
-To obtain average marginal effects (AMEs), we simply call `margins` on the model object created by `lm()`:
+To obtain average marginal effects (AMEs), we simply call `margins()` on the model object created by `lm()`:
 
 ```{r}
 margins(x)
 ```
 
 The result is a data frame with special class `"margins"`. `"margins"` objects are printed in a tidy summary format, by default, as you can see above. The only difference between a `"margins"` object and a regular data frame are some additional data frame-level attributes that dictate how the object is printed.
+
+The default method calculates marginal effects for all variables included in the model (ala Stata's `, dydx(*)` option). To limit calculation to only a subset of variables, use the `variables` argument:
+
+```{r}
+summary(margins(x, variables = "hp"))
+```
 
 In an ordinary least squares regression, there is really only one way of examining marginal effects (that is, on the scale of the outcome variable). In a generalized linear model (e.g., logit), however, it is possible to examine true "marginal effects" (i.e., the marginal contribution of each variable on the scale of the linear predictor) or "partial effects" (i.e., the contribution of each variable on the outcome scale, conditional on the other variables involved in the link function transformation of the linear predictor). The latter are the default in `margins()`, which implicitly sets the argument `margins(x, type = "response")` and passes that through to `prediction()` methods. To obtain the former, simply set `margins(x, type = "link")`. There's some debate about which of these is preferred and even what to call the two different quantities of interest. Regardless of all of that, here's how you obtain either:
 

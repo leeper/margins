@@ -4,14 +4,16 @@ Title: Marginal Effects for Model Objects
 Description: An R port of Stata's 'margins' command, which can be used to
     calculate marginal (or partial) effects from model objects.
 License: MIT + file LICENSE
-Version: 0.3.6
-Date: 2017-04-27
+Version: 0.3.7
+Date: 2017-05-31
 Authors@R: c(person("Thomas J.", "Leeper",
                     role = c("aut", "cre"),
                     email = "thosjleeper@gmail.com"),
              person("Jeffrey", "Arnold", 
                     role = c("ctb"),
-                    email = "jeffrey.arnold@gmail.com")
+                    email = "jeffrey.arnold@gmail.com"),
+             person("Vincent", "Arel-Bundock", 
+                    role = c("ctb"))
              )
 URL: https://github.com/leeper/margins
 BugReports: https://github.com/leeper/margins/issues

@@ -1,3 +1,7 @@
+## margins 0.3.7
+
+* `margins()` and `marginal_effects()` gain a `variables` argument to request marginal effects for a subset of variables included in a model. (#65, h/t Vincent Arul-Bundock)
+
 ## margins 0.3.6
 
 * Export `margins.merMod()`. (#56)

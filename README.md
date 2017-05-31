@@ -83,7 +83,7 @@ With the exception of differences in rounding, the above results match identical
 plot(m)
 ```
 
-![plot of chunk marginsplot](http://i.imgur.com/h7royTe.png)
+![plot of chunk marginsplot](http://i.imgur.com/dERgA40.png)
 
 If you are only interested in obtaining the marginal effects (without corresponding variances or the overhead of creating a "margins" object), you can call `marginal_effects(x)` directly. Furthermore, the `dydx()` function enables the calculation of the marginal effect of a single named variable:
 
@@ -131,7 +131,7 @@ microbenchmark(marginal_effects(x))
 ```
 ## Unit: milliseconds
 ##                 expr      min       lq     mean   median       uq      max neval
-##  marginal_effects(x) 11.84615 12.60547 13.93284 13.24258 14.16953 59.52345   100
+##  marginal_effects(x) 11.89273 12.31752 13.28359 12.62733 13.91274 20.41409   100
 ```
 
 ```r
@@ -140,8 +140,20 @@ microbenchmark(margins(x))
 
 ```
 ## Unit: milliseconds
-##        expr      min       lq     mean   median       uq      max neval
-##  margins(x) 94.79466 101.7929 132.2372 118.3225 155.8833 228.6075   100
+##        expr      min       lq    mean   median       uq      max neval
+##  margins(x) 91.42759 93.86954 103.675 95.99465 100.2618 273.2648   100
+```
+
+One way to improve performance of `margins()` is to use the `variables` argument (available from v0.3.7) to calculate marginal effects for only the subset of variables used in the model that you are substantively interested in (a la setting Stata's `, dydx()` option):
+
+
+```r
+summary(margins(x, variables = "hp"))
+```
+
+```
+##  factor     AME     SE       z      p   lower   upper
+##      hp -0.0463 0.0145 -3.1909 0.0014 -0.0748 -0.0179
 ```
 
 In addition to the estimation procedures and `plot()` generic, **margins** offers several plotting methods for model objects. First, there is a new generic `cplot()` that displays predictions or marginal effects (from an "lm" or "glm" model) of a variable conditional across values of third variable (or itself). For example, here is a graph of predicted probabilities from a logit model:
@@ -152,7 +164,7 @@ m <- glm(am ~ wt*drat, data = mtcars, family = binomial)
 cplot(m, x = "wt", se.type = "shade")
 ```
 
-![plot of chunk cplot1](http://i.imgur.com/e4uFqus.png)
+![plot of chunk cplot1](http://i.imgur.com/FffsRdW.png)
 
 And fitted values with a factor independent variable:
 
@@ -161,7 +173,7 @@ And fitted values with a factor independent variable:
 cplot(lm(Sepal.Length ~ Species, data = iris))
 ```
 
-![plot of chunk cplot2](http://i.imgur.com/HvhNLq5.png)
+![plot of chunk cplot2](http://i.imgur.com/e2GKet7.png)
 
 and a graph of the effect of `drat` across levels of `wt`:
 
@@ -174,7 +186,7 @@ cplot(m, x = "wt", dx = "drat", what = "effect", se.type = "shade")
 ## Warning in warn_for_weights(model): 'weights' used in model estimation are currently ignored!
 ```
 
-![plot of chunk cplot3](http://i.imgur.com/hcOhGep.png)
+![plot of chunk cplot3](http://i.imgur.com/JAgGVgw.png)
 
 Second, the package implements methods for "lm" and "glm" class objects for the `persp()` generic plotting function. This enables three-dimensional representations of predicted outcomes:
 
@@ -183,7 +195,7 @@ Second, the package implements methods for "lm" and "glm" class objects for the 
 persp(x, xvar = "cyl", yvar = "hp")
 ```
 
-![plot of chunk persp1](http://i.imgur.com/x2Gm0Vg.png)
+![plot of chunk persp1](http://i.imgur.com/FW9Rq5l.png)
 
 and marginal effects:
 
@@ -192,7 +204,7 @@ and marginal effects:
 persp(x, xvar = "cyl", yvar = "hp", what = "effect", nx = 10)
 ```
 
-![plot of chunk persp2](http://i.imgur.com/10rvX5l.png)
+![plot of chunk persp2](http://i.imgur.com/F8tp7UO.png)
 
 And if three-dimensional plots aren't your thing, there are also analogous methods for the `image()` generic, to produce heatmap-style representations:
 
@@ -201,7 +213,7 @@ And if three-dimensional plots aren't your thing, there are also analogous metho
 image(x, xvar = "cyl", yvar = "hp", main = "Predicted Fuel Efficiency,\nby Cylinders and Horsepower")
 ```
 
-![plot of chunk image11](http://i.imgur.com/tRt3a04.png)
+![plot of chunk image11](http://i.imgur.com/SutOfpC.png)
 
 
 The numerous package vignettes and help files contain extensive documentation and examples of all package functionality.

@@ -6,6 +6,13 @@ r_github_packages:
 r_packages:
 - knitr
 - rmarkdown
+- testthat
 - covr
+- ggplot2
+- gapminder
+- nnet
+- ordinal
+- sandwich
+- stargazer
 after_success:
 - Rscript -e 'library("covr");codecov()'

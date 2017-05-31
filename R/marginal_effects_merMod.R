@@ -23,11 +23,10 @@ function(model,
 
     # subset of variables for which to compute the marginal effects
     if (!is.null(variables)) {
-        if (all(variables %in% nnames)) {
-            nnames <- nnames[nnames %in% variables]
-        } else {
-            stop('Some values in `variables` are not in the model terms.')
+        if (any(!variables %in% nnames)) {
+            stop("Some values in 'variables' are not in the model terms.")
         }
+        nnames <- nnames[nnames %in% variables]
     }
     
     # estimate numerical derivatives with respect to each variable (for numeric terms in the model)

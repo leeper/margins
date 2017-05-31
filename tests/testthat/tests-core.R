@@ -91,14 +91,11 @@ test_that("confint() for 'margins' object", {
 })
 
 
-
+context("Variance tests")
 test_that("minimum test of variance calculations", {
     x <- lm(mpg ~ wt * hp, data = mtcars)
-    expect_true(inherits(plot(margins(x, vce = "delta")), "margins"))
-    dev.off()
-    expect_true(inherits(plot(margins(x, vce = "simulation", iter = 5L)), "margins"))
-    dev.off()
-    expect_true(inherits(plot(margins(x, vce = "bootstrap", iter = 5L)), "margins"))
-    dev.off()
+    expect_true(inherits(margins(x, vce = "delta"), "margins"))
+    expect_true(inherits(margins(x, vce = "simulation", iter = 5L), "margins"))
+    expect_true(inherits(margins(x, vce = "bootstrap", iter = 5L), "margins"))
 })
 

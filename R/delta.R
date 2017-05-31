@@ -23,7 +23,7 @@ function(data,
     
     FUN <- .build_grad_fun(data = data, model = model, type = type, ...)
     #jacobian <- numDeriv::jacobian(FUN, model[["coefficients"]], method = "simple")
-    jacobian <- jacobian(FUN, model[["coefficients"]], eps = eps)
+    jacobian <- jacobian(FUN, coef(model), eps = eps)
     vout <- diag(jacobian %*% vcov %*% t(jacobian))
     return(vout)
 }
@@ -41,6 +41,8 @@ function(data,
 jacobian <- function(FUN, coefficients, eps = 1e-4) {
     F0 <- FUN(coefficients)
     out <- matrix(NA_real_, nrow = length(F0), ncol = length(coefficients))
+    colnames(out) <- names(coefficients)
+    rownames(out) <- names(F0)
     for (i in seq_along(coefficients)) {
         coeftemp <- coefficients
         coeftemp[i] <- coeftemp[i] + eps

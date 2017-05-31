@@ -1,6 +1,7 @@
 build_margins <- 
 function(model, 
          data,
+         variables = NULL, 
          type = c("response", "link", "terms"),
          vcov = stats::vcov(model),
          vce = c("delta", "simulation", "bootstrap", "none"),
@@ -23,17 +24,16 @@ function(model,
     
     # obtain gradient with respect to each variable in data
     if (!is.null(type)) {
-        mes <- marginal_effects(model = model, data = data, type = type, eps = eps, ...)
+        mes <- marginal_effects(model = model, data = data, variables = variables, type = type, eps = eps, ...)
     } else {
-        mes <- marginal_effects(model = model, data = data, eps = eps, ...)
+        mes <- marginal_effects(model = model, data = data, variables = variables, eps = eps, ...)
     }
     
     # variance estimation technique
     if (vce != "none") {
-        variances <- get_effect_variances(data = data, model = model, allvars = names(mes), 
+        variances <- get_effect_variances(data = data, model = model, variables = names(mes), 
                                           type = type, vcov = vcov, vce = vce, 
                                           iterations = iterations, eps = eps, ...)
-        variances <- setNames(lapply(variances, rep, nrow(data)), paste0("Var_", names(mes)))
     }
     
     # get unit-specific effect variances (take derivative of `.build_grad_fun()` for every row separately)

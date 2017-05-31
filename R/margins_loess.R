@@ -3,7 +3,7 @@
 margins.loess <- 
 function(model, 
          data, 
-         variables,
+         variables = NULL,
          at = NULL, 
          eps = 1e-7,
          ...){

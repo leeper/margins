@@ -83,6 +83,12 @@ microbenchmark(marginal_effects(x))
 microbenchmark(margins(x))
 ```
 
+One way to improve performance of `margins()` is to use the `variables` argument (available from v0.3.7) to calculate marginal effects for only the subset of variables used in the model that you are substantively interested in (a la setting Stata's `, dydx()` option):
+
+```{r}
+summary(margins(x, variables = "hp"))
+```
+
 In addition to the estimation procedures and `plot()` generic, **margins** offers several plotting methods for model objects. First, there is a new generic `cplot()` that displays predictions or marginal effects (from an "lm" or "glm" model) of a variable conditional across values of third variable (or itself). For example, here is a graph of predicted probabilities from a logit model:
 
 ```{r cplot1}

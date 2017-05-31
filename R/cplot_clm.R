@@ -43,7 +43,7 @@ function(object,
     yvar <- as.character(attributes(terms(object))[["variables"]][[2]]) #ok
     
     # handle factors and subset data
-    f <- margins:::check_factors(object = object, data = data, xvar = xvar, dx = dx) #ok
+    f <- check_factors(object = object, data = data, xvar = xvar, dx = dx) #ok
     x_is_factor <- f[["x_is_factor"]]
     dx_is_factor <- f[["dx_is_factor"]]
     dat <- f[["data"]]
@@ -51,9 +51,9 @@ function(object,
     # setup x (based on whether factor)
     if (isTRUE(x_is_factor)) {
         if (is.factor(dat[["xvar"]])) {
-            xvals <- as.character(levels(dat[[margins:::clean_terms(xvar)]]))
+            xvals <- as.character(levels(dat[[clean_terms(xvar)]]))
         } else {
-            xvals <- as.character(unique(dat[[margins:::clean_terms(xvar)]]))
+            xvals <- as.character(unique(dat[[clean_terms(xvar)]]))
         }
     } else {
         xvals <- xvals
@@ -66,7 +66,7 @@ function(object,
 
     # setup `outdat` data
     if (what %in% c("prediction", "classprediction", "stackedprediction")) {
-        tmpdat <- lapply(dat[, names(dat) != xvar, drop = FALSE], prediction:::mean_or_mode)
+        tmpdat <- lapply(dat[, names(dat) != xvar, drop = FALSE], mean_or_mode)
         tmpdat <- structure(lapply(tmpdat, rep, length(xvals)),
                             class = "data.frame", row.names = seq_len(length(xvals)))
         tmpdat[[xvar]] <- xvals
@@ -104,7 +104,7 @@ function(object,
             y_is_factor <- FALSE
         }
       
-        margins:::setup_cplot(plotdat = out[[1L]], data = data, xvals = xvals, xvar = xvar, yvar = yvar,
+        setup_cplot(plotdat = out[[1L]], data = data, xvals = xvals, xvar = xvar, yvar = yvar,
                     xlim = xlim, ylim = ylim, x_is_factor = x_is_factor, y_is_factor = y_is_factor,
                     xlab = xlab, ylab = ylab, xaxs = xaxs, yaxs = yaxs, las = las,
                     scatter = scatter, scatter.pch = scatter.pch, scatter.col = scatter.col)
@@ -126,7 +126,7 @@ function(object,
             factor.fill <- rep(factor.fill, length(out))
         }
         for (i in seq_along(out)) {
-            margins:::draw_one(xvals = out[[i]][["xvals"]], 
+            draw_one(xvals = out[[i]][["xvals"]], 
                      yvals = out[[i]][["yvals"]], 
                      x_is_factor = x_is_factor,
                      y_is_factor = y_is_factor,

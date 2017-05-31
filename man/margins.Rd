@@ -3,9 +3,10 @@
 %   R/margins_glm.R, R/margins_lm.R, R/margins_loess.R, R/margins_nnet.R,
 %   R/margins_polr.R
 \docType{package}
-\name{margins-package}
-\alias{margins-package}
+\name{margins}
 \alias{margins}
+\alias{margins-package}
+\alias{margins-package}
 \alias{margins.default}
 \alias{margins.glm}
 \alias{margins.lm}
@@ -31,7 +32,8 @@ margins(model, ...)
   vcov = stats::vcov(model), vce = c("delta", "simulation", "bootstrap",
   "none"), iterations = 50L, unit_ses = FALSE, eps = 1e-07, ...)
 
-\method{margins}{loess}(model, data, variables, at = NULL, eps = 1e-07, ...)
+\method{margins}{loess}(model, data, variables = NULL, at = NULL,
+  eps = 1e-07, ...)
 
 \method{margins}{nnet}(model, data = find_data(model, parent.frame()),
   variables = NULL, at = NULL, vce = "none", eps = 1e-07, ...)
@@ -46,7 +48,7 @@ margins(model, ...)
 
 \item{data}{A data frame containing the data at which to evaluate the marginal effects, as in \code{\link[stats]{predict}}. This is optional, but may be required when the underlying modelling function sets \code{model = FALSE}.}
 
-\item{variables}{A character vector with the names of variables for which to compute the marginal effects. Leave NULL to consider all variables.}
+\item{variables}{A character vector with the names of variables for which to compute the marginal effects. The default (\code{NULL}) returns marginal effects for all variables.}
 
 \item{at}{A list of one or more named vectors, specifically values at which to calculate the marginal effects. These are used to modify the value of \code{data} (see \code{\link[prediction]{build_datalist}} for details on use).}
 
@@ -100,6 +102,9 @@ margins(x)
 \dontrun{
   margins(x, unit_ses = TRUE)
 }
+
+# use of 'variables' argument to estimate only some MEs
+summary(margins(x, variables = "hp"))
 
 # use of 'at' argument
 ## modifying original data values

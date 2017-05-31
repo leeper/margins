@@ -16,9 +16,9 @@
 \alias{marginal_effects.polr}
 \title{Differentiate a Model Object with Respect to All Variables}
 \usage{
-marginal_effects(model, data, ...)
+marginal_effects(model, data, variables = NULL, ...)
 
-\method{marginal_effects}{margins}(model, data, ...)
+\method{marginal_effects}{margins}(model, data, variables = NULL, ...)
 
 \method{marginal_effects}{default}(model, data = find_data(model,
   parent.frame()), variables = NULL, type = c("response", "link"),
@@ -48,9 +48,9 @@ marginal_effects(model, data, ...)
 
 \item{data}{A data.frame over which to calculate marginal effects. This is optional, but may be required when the underlying modelling function sets \code{model = FALSE}.}
 
-\item{\dots}{Arguments passed to methods, and onward to \code{\link{dydx}} methods and possibly further to \code{\link[prediction]{prediction}} methods. This can be useful, for example, for setting \code{type} (predicted value type), \code{eps} (precision), or \code{category} (category for multi-category outcome models), etc.}
+\item{variables}{A character vector with the names of variables for which to compute the marginal effects. The default (\code{NULL}) returns marginal effects for all variables.}
 
-\item{variables}{A character vector with the names of variables for which to compute the marginal effects. Leave NULL to consider all variables.}
+\item{\dots}{Arguments passed to methods, and onward to \code{\link{dydx}} methods and possibly further to \code{\link[prediction]{prediction}} methods. This can be useful, for example, for setting \code{type} (predicted value type), \code{eps} (precision), or \code{category} (category for multi-category outcome models), etc.}
 
 \item{type}{A character string indicating the type of marginal effects to estimate. Mostly relevant for non-linear models, where the reasonable options are \dQuote{response} (the default) or \dQuote{link} (i.e., on the scale of the linear predictor in a GLM).}
 
