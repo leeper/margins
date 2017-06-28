@@ -41,9 +41,13 @@ function(model,
         vmat <- do.call("rbind", lapply(seq_len(nrow(data)), function(datarow) {
             delta_once(data = data[datarow,], model = model, type = type, vcov = vcov, eps = eps, ...)
         }))
-        colnames(vmat) <- paste0("SE_", names(mes))
         vmat <- as.data.frame(vmat)
         vmat[] <- lapply(vmat, sqrt)
+
+        # When variables != NULL, vmat and mes need to be aligned
+        vmat <- vmat[, colnames(mes), drop = FALSE] # keep as data.frame even if only one column is selected
+
+        colnames(vmat) <- paste0("SE_", colnames(vmat))
     }
     
     # obtain predicted values and standard errors
