@@ -15,7 +15,7 @@ function(model,
     
     # march.arg() for arguments
     if (!is.null(type)) {
-        type <- match.arg(type)
+        type <- type[1L]
     }
     vce <- match.arg(vce)
     if (is.function(vcov)) {
