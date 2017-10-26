@@ -14,7 +14,7 @@ function(model,
          ...) {
     
     # match.arg()
-    type <- match.arg(type)
+    type <- type[1L]
     vce <- match.arg(vce)
     
     # setup data
