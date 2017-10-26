@@ -160,7 +160,7 @@ dydx.factor <- function(data, model, variable, type = c("response", "link"), fwr
     
     # setup functions through predict_factory
     if (!is.null(type)) {
-        type <- match.arg(type)
+        type <- type[1L]
         P0 <- prediction(model = model, data = D0, type = type, ...)[["fitted"]]
     } else {
         P0 <- prediction(model = model, data = D0, ...)[["fitted"]]
@@ -170,6 +170,7 @@ dydx.factor <- function(data, model, variable, type = c("response", "link"), fwr
     for (i in seq_along(levs)) {
         D <- build_datalist(data, at = setNames(list(levs[i]), variable))[[1]]
         if (!is.null(type)) {
+            type <- type[1L]
             P1 <- prediction(model = model, data = D, type = type, ...)[["fitted"]]
         } else {
             P1 <- prediction(model = model, data = D, ...)[["fitted"]]
@@ -199,7 +200,7 @@ dydx.logical <- function(data, model, variable, type = c("response", "link"), ..
     
     # setup functions through predict_factory
     if (!is.null(type)) {
-        type <- match.arg(type)
+        type <- type[1L]
         P0 <- prediction(model = model, data = D0, type = type, ...)[["fitted"]]
     } else {
         P0 <- prediction(model = model, data = D0, ...)[["fitted"]]
@@ -208,6 +209,7 @@ dydx.logical <- function(data, model, variable, type = c("response", "link"), ..
     # calculate difference for moving FALSE to TRUE
     D1 <- build_datalist(data, at = setNames(list(TRUE), variable))[[1]]
     if (!is.null(type)) {
+        type <- type[1L]
         P1 <- prediction(model = model, data = D1, type = type, ...)[["fitted"]]
     } else {
         P1 <- prediction(model = model, data = D1, ...)[["fitted"]]
