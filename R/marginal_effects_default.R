@@ -9,7 +9,7 @@ function(model,
          eps = 1e-7, 
          ...) {
     
-    type <- match.arg(type)
+    type <- type[1L]
     
     # identify classes of terms in `model`
     vars <- find_terms_in_model(model, variables = variables)
