@@ -116,7 +116,7 @@ function(data,
     }
     
     if (!is.null(type)) {
-        type <- match.arg(type)
+        type <- type[1L]
         P0 <- prediction(model = model, data = d0, type = type, ...)[["fitted"]]
         P1 <- prediction(model = model, data = d1, type = type, ...)[["fitted"]]
     } else {
