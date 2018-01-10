@@ -22,6 +22,8 @@ margins.merMod <- function(model,
               at = if (is.null(at)) at else names(at),
               type = NULL,
               call = if ("call" %in% names(model)) model[["call"]] else NULL,
+              model_class = class(model),
               vce = "none", 
+              weighted = FALSE,
               iterations = NULL)
 }

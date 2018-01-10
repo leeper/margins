@@ -22,9 +22,6 @@ function(model,
     model[["model"]] <- NULL
     attr(model[["terms"]], ".Environment") <- NULL
     
-    # warn about weights
-    warn_for_weights(model)
-    
     # calculate marginal effects
     out <- list()
     for (i in seq_along(data_list)) {
@@ -45,6 +42,8 @@ function(model,
               at = if (is.null(at)) at else names(at),
               type = "response",
               call = if ("call" %in% names(model)) model[["call"]] else NULL,
+              model_class = class(model),
               vce = "none", 
+              weighted = FALSE,
               iterations = NULL)
 }

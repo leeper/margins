@@ -6,6 +6,7 @@ function(data,
          vcov = stats::vcov(model),
          vce = c("delta", "simulation", "bootstrap", "none"),
          iterations = 50L, # if vce == "bootstrap" or "simulation"
+         weights = NULL,
          eps = 1e-7,
          ...) {
     
@@ -23,7 +24,7 @@ function(data,
     } else if (vce == "delta") {
         
         # default method
-        variances <- delta_once(data = data, model = model, type = type, vcov = vcov, eps = eps, ...)
+        variances <- delta_once(data = data, model = model, type = type, vcov = vcov, weights = weights, eps = eps, ...)
         
     } else if (vce == "simulation") {
         
@@ -37,7 +38,12 @@ function(data,
         # estimate AME from from each simulated coefficient vector
         effectmat <- apply(coefmat, 1, function(coefrow) {
             tmpmodel[["coefficients"]] <- coefrow
-            means <- colMeans(marginal_effects(model = tmpmodel, data = data, type = type, ...), na.rm = TRUE)
+            if (is.null(weights)) {
+                means <- colMeans(marginal_effects(model = tmpmodel, data = data, type = type, eps = eps, ...), na.rm = TRUE)
+            } else {
+                me_tmp <- marginal_effects(model = tmpmodel, data = data, type = type, eps = eps, ...)
+                means <- unlist(stats::setNames(lapply(me_tmp, stats::weighted.mean, w = weights, na.rm = TRUE), names(me_tmp)))
+            }
             if (!is.matrix(means)) {
                 matrix(means, ncol = 1L)
             }
@@ -54,7 +60,13 @@ function(data,
             tmpmodel <- model
             tmpmodel[["call"]][["data"]] <- data[samp,]
             tmpmodel <- eval(tmpmodel[["call"]])
-            colMeans(marginal_effects(model = tmpmodel, data = data[samp,], type = type, ...), na.rm = TRUE)
+            if (is.null(weights)) {
+                means <- colMeans(marginal_effects(model = tmpmodel, data = data[samp,], type = type, eps = eps, ...), na.rm = TRUE)
+            } else {
+                me_tmp <- marginal_effects(model = tmpmodel, data = data[samp,], type = type, eps = eps, ...)
+                means <- unlist(stats::setNames(lapply(me_tmp, stats::weighted.mean, w = weights, na.rm = TRUE), names(me_tmp)))
+            }
+            means
         }
         # bootstrap the data and take the variance of bootstrapped AMEs
         variances <- apply(replicate(iterations, bootfun()), 1, var, na.rm = TRUE)

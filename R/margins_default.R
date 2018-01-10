@@ -23,9 +23,6 @@ function(model,
         names(data_list) <- NA_character_
     }
     
-    # warn about weights
-    warn_for_weights(model)
-    
     # calculate marginal effects
     out <- list()
     for (i in seq_along(data_list)) {
@@ -47,14 +44,8 @@ function(model,
               at = if (is.null(at)) at else names(at),
               type = type,
               call = if ("call" %in% names(model)) model[["call"]] else NULL,
+              model_class = class(model),
               vce = vce, 
+              weighted = FALSE,
               iterations = if (vce == "bootstrap") iterations else NULL)
-}
-
-warn_for_weights <- function(model) {
-    wghts <- unname(model[["weights"]])
-    if (!isTRUE(all.equal(wghts, rep(wghts[1], length(wghts))))) {
-        warning("'weights' used in model estimation are currently ignored!")
-    }
-    NULL
 }

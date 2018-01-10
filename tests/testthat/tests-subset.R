@@ -10,7 +10,7 @@ dat <- data.frame('y' = sample(0:1, N, replace = TRUE),
 mod <- glm(y ~ x + z + w, data = dat, family = binomial())
 
 # Tests
-test_that("Correct quantities are returned by marginal_effects()", {
+test_that("Correct attributes are returned by marginal_effects()", {
     mfx_subset1 <- marginal_effects(mod, variables = 'x') 
     expect_equal(names(mfx_subset1), 'dydx_x')
 
@@ -26,11 +26,11 @@ test_that("Correct quantities are returned by marginal_effects()", {
                                    "dydx_wd", "dydx_we")) 
 })
 
-test_that("Correct quantities are returned by margins()", {
-    margins_subset <- margins(mod, variables = 'x') 
+test_that("Correct attributes are returned by margins()", {
+    margins_subset <- margins(mod, variables = 'x')
     expect_equal(names(margins_subset), c("y", "x", "z", "w", "fitted",
                                           "se.fitted", "dydx_x",
-                                          "Var_dydx_x"))
+                                          "Var_dydx_x", "_weights"))
 
     margins_all <- margins(mod)
     expect_equal(names(margins_all), c("y", "x", "z", "w", "fitted", "se.fitted",
@@ -38,5 +38,6 @@ test_that("Correct quantities are returned by margins()", {
                                        "dydx_wc", "dydx_wd", "dydx_we",
                                        "Var_dydx_x", "Var_dydx_z",
                                        "Var_dydx_wb", "Var_dydx_wc",
-                                       "Var_dydx_wd", "Var_dydx_we"))
+                                       "Var_dydx_wd", "Var_dydx_we",
+                                       "_weights"))
 })

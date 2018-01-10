@@ -1,3 +1,9 @@
+## margins 0.3.8
+
+* Added method for "svyglm" from **survey**.
+* Improved handling of survey-weighted estimates. Removed weight-related warnings from `margins()` for unweighted models.
+* `print()` and `summary()` now handle survey-weighted marginal effects.
+
 ## margins 0.3.7
 
 * `margins()` and `marginal_effects()` gain a `variables` argument to request marginal effects for a subset of variables included in a model. (#65, h/t Vincent Arul-Bundock)
@@ -21,11 +27,11 @@
 
 ## margins 0.3.2
 
-* Added methods for class "polr" from **MASS**. (#60)
+* Added method for class "polr" from **MASS**. (#60)
 
 ## margins 0.3.1
 
-* Added methods for class "nnet" from **nnet** as an initial implementation of multi-category outcome models. (#60)
+* Added method for class "nnet" from **nnet** as an initial implementation of multi-category outcome models. (#60)
 
 ## margins 0.3.0
 

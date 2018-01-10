@@ -7,6 +7,7 @@ function(model,
          vce = c("delta", "simulation", "bootstrap", "none"),
          iterations = 50L, # if vce == "bootstrap" or "simulation"
          unit_ses = FALSE,
+         weights = NULL,
          eps = 1e-7,
          ...) {
     
@@ -33,13 +34,13 @@ function(model,
     if (vce != "none") {
         variances <- get_effect_variances(data = data, model = model, variables = names(mes), 
                                           type = type, vcov = vcov, vce = vce, 
-                                          iterations = iterations, eps = eps, ...)
+                                          iterations = iterations, weights = weights, eps = eps, ...)
     }
     
     # get unit-specific effect variances (take derivative of `.build_grad_fun()` for every row separately)
     if ((vce == "delta") && (isTRUE(unit_ses))) {
         vmat <- do.call("rbind", lapply(seq_len(nrow(data)), function(datarow) {
-            delta_once(data = data[datarow,], model = model, type = type, vcov = vcov, eps = eps, ...)
+            delta_once(data = data[datarow,], model = model, type = type, vcov = vcov, vce = vce, weights = weights, eps = eps, ...)
         }))
         colnames(vmat) <- paste0("SE_", names(mes))
         vmat <- as.data.frame(vmat)
@@ -54,13 +55,21 @@ function(model,
     }
     
     # setup output structure
-    structure(if ((vce == "delta") && (isTRUE(unit_ses))) {
-                  cbind(pred, mes, variances, vmat)
-              } else if (vce == "none") { 
-                  cbind(pred, mes)
-              } else { 
-                  cbind(pred, mes, variances)
-              }, 
+    if ((vce == "delta") && (isTRUE(unit_ses))) {
+        out <- cbind(pred, mes, variances, vmat)
+    } else if (vce == "none") { 
+        out <- cbind(pred, mes)
+    } else { 
+        out <- cbind(pred, mes, variances)
+    }
+    
+    if (is.null(weights)) {
+        out[["_weights"]] <- NA_real_
+    } else {
+        out[["_weights"]] <- weights
+    }
+    
+    structure(out, 
               class = "data.frame", 
               row.names = seq_len(nrow(pred)))
 }

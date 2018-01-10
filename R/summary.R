@@ -1,15 +1,20 @@
 #' @export
 summary.margins <- 
-function(object, level = 0.95, by_factor = TRUE, FUN = weighted.mean, ...) {
-    at_names <- attributes(object)[["at"]]
+function(object, level = 0.95, by_factor = TRUE, ...) {
+    
+    # check for weights
+    is_weighted <- attr(object, "weighted")
+    
+    # check for `at` specification
+    at_names <- attr(object, "at")
     if (is.null(at_names)) {
-        out <- summarize_one(object, level = level, ...)
+        out <- summarize_one(object, level = level, is_weighted = is_weighted, ...)
         out <- out[order(out[["factor"]]), ]
     } else {
         at_split <- split(object, object[at_names])
         out <- list()
         for (i in seq_along(at_split)) {
-            out[[i]] <- summarize_one(at_split[[i]], level = level, FUN = FUN, ...)
+            out[[i]] <- summarize_one(at_split[[i]], level = level, is_weighted = is_weighted, ...)
             out[[i]] <- cbind(out[[i]], at_split[[i]][1L, at_names, drop = FALSE])
         }
         out <- do.call("rbind", out)
@@ -30,12 +35,18 @@ function(object, level = 0.95, by_factor = TRUE, FUN = weighted.mean, ...) {
               at = attributes(object)[["at"]])
 }
 
-summarize_one <- function(object, level = 0.95, FUN = weighted.mean, ...) {
+summarize_one <- function(object, level = 0.95, is_weighted = FALSE, ...) {
     mes <- marginal_effects(object)
     names(mes) <- gsub("^dydx_", "", names(mes))
     variances <- unlist(object[1L, grepl("Var_dydx_", names(object), fixed = TRUE), drop = TRUE])
+    if (isTRUE(is_weighted)) {
+        wts <- object[["_weights"]]
+        ames <- unlist(lapply(mes, function(one) stats::weighted.mean(one, w = wts, na.rm = TRUE)))
+    } else {
+        ames <- unlist(lapply(mes, FUN = mean, na.rm = TRUE))
+    }
     tab <- structure(list("factor" = names(mes), 
-                          "AME" = unlist(lapply(mes, FUN = FUN, na.rm = TRUE)),
+                          "AME" = ames,
                           "SE" = if (is.null(variances)) rep(NA_real_, ncol(mes)) else sqrt(variances)
                           ),
                      class = "data.frame", row.names = names(mes))

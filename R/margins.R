@@ -8,6 +8,7 @@
 #' The package also provides a low-level function, \code{\link{marginal_effects}}, to estimate those quantities and return a data frame of unit-specific effects and another, \code{\link{dydx}}, to provide variable-specific derivatives from models. Some of the underlying architecture for the package is provided by the low-level function \code{\link[prediction]{prediction}}, which provides a consistent data frame interface to \code{\link[stats]{predict}} for a large number of model types.
 #' @param model A model object. See Details for supported model classes.
 #' @param data A data frame containing the data at which to evaluate the marginal effects, as in \code{\link[stats]{predict}}. This is optional, but may be required when the underlying modelling function sets \code{model = FALSE}.
+#' @param design Only for models estimated using \code{\link[survey]{svyglm}}, the \dQuote{survey.design} object used to estimate the model. This is required.
 #' @param variables A character vector with the names of variables for which to compute the marginal effects. The default (\code{NULL}) returns marginal effects for all variables.
 #' @param at A list of one or more named vectors, specifically values at which to calculate the marginal effects. These are used to modify the value of \code{data} (see \code{\link[prediction]{build_datalist}} for details on use).
 #' @param type A character string indicating the type of marginal effects to estimate. Mostly relevant for non-linear models, where the reasonable options are \dQuote{response} (the default) or \dQuote{link} (i.e., on the scale of the linear predictor in a GLM).
@@ -27,6 +28,7 @@
 #' \itemize{
 #'   \item \dQuote{lm}, see \code{\link[stats]{lm}}
 #'   \item \dQuote{glm}, see \code{\link[stats]{glm}}, \code{\link[MASS]{glm.nb}}
+#'   \item \dQuote{svyglm}, see \code{\link[survey]{svyglm}}
 #'   \item \dQuote{loess}, see \code{\link[stats]{loess}}
 #'   \item \dQuote{nnet}, see \code{\link[nnet]{nnet}}
 #'   \item \dQuote{polr}, see \code{\link[MASS]{polr}}
