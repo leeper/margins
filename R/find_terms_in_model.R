@@ -8,7 +8,7 @@ find_terms_in_model <- function(model, variables = NULL) {
     # handle character variables as factors
     classes[classes == "character"] <- "factor"
     ## cleanup names of terms
-    terms2 <- sapply(names(classes), function(x) all.vars(parse(text = x)))
+    terms2 <- sapply(names(classes), function(x) all.vars(parse(text = paste0("`", x, "`"))))
     names(classes)[names(classes) %in% names(terms2)] <- terms2[names(classes) %in% names(terms2)]
     
     # identify factors versus numeric terms in `model`

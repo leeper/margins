@@ -20,9 +20,9 @@ function(x, digits = 4, order = NULL, ...) {
         tmp <- marginal_effects(x, with_at = FALSE)
         names(tmp) <- gsub("^dydx_", "", names(tmp))
         if (isTRUE(is_weighted)) {
-            out <- data.frame(lapply(tmp, stats::weighted.mean, w = wts, na.rm = TRUE))
+            out <- data.frame(lapply(tmp, stats::weighted.mean, w = wts, na.rm = TRUE), check.names = FALSE)
         } else {
-            out <- data.frame(lapply(tmp, mean, na.rm = TRUE))
+            out <- data.frame(lapply(tmp, mean, na.rm = TRUE), check.names = FALSE)
         }
         print(out, digits = digits, row.names = FALSE, ...)
     } else {
@@ -39,7 +39,7 @@ function(x, digits = 4, order = NULL, ...) {
             xby <- x[ , attr(x, "at"), drop = FALSE]
             splits <- split(tmp, xby)
             out <- do.call("rbind", lapply(splits, function(set) {
-                cbind(set[1L, attr(x, "at"), drop = FALSE], data.frame(lapply(set[, !names(set) %in% c("_weights", attr(x, "at")), drop = FALSE], stats::weighted.mean, w = set[["_weights"]], na.rm = TRUE)))
+                cbind(set[1L, attr(x, "at"), drop = FALSE], data.frame(lapply(set[, !names(set) %in% c("_weights", attr(x, "at")), drop = FALSE], stats::weighted.mean, w = set[["_weights"]], na.rm = TRUE), check.names = FALSE))
             }))
         } else {
             tmp <- x[, grepl("^dydx_", names(x)), drop = FALSE]

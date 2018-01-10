@@ -1,3 +1,7 @@
+## margins 0.3.9
+
+* Fixed a bug wherein model formulae involving non-standard variables names with spaces in them led to errors. (#80)
+
 ## margins 0.3.8
 
 * Added method for "svyglm" from **survey**.
