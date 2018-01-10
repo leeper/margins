@@ -8,6 +8,7 @@ function(data,
          iterations = 50L, # if vce == "bootstrap" or "simulation"
          weights = NULL,
          eps = 1e-7,
+         varslist = NULL,
          ...) {
     
     # march.arg() for arguments
@@ -17,6 +18,11 @@ function(data,
         vcov <- vcov(model)
     }
     
+    # identify classes of terms in `model`
+    if (is.null(varslist)) {
+        varslist <- find_terms_in_model(model, variables = variables)
+    }
+    
     if (vce == "none") {
         
         return(NULL)
@@ -24,7 +30,15 @@ function(data,
     } else if (vce == "delta") {
         
         # default method
-        variances <- delta_once(data = data, model = model, type = type, vcov = vcov, weights = weights, eps = eps, ...)
+        variances <- delta_once(data = data,
+                                model = model,
+                                variables = variables,
+                                type = type,
+                                vcov = vcov,
+                                weights = weights,
+                                eps = eps,
+                                varslist = varslist,
+                                ...)
         
     } else if (vce == "simulation") {
         
@@ -39,9 +53,9 @@ function(data,
         effectmat <- apply(coefmat, 1, function(coefrow) {
             tmpmodel[["coefficients"]] <- coefrow
             if (is.null(weights)) {
-                means <- colMeans(marginal_effects(model = tmpmodel, data = data, type = type, eps = eps, ...), na.rm = TRUE)
+                means <- colMeans(marginal_effects(model = tmpmodel, data = data, variables = variables, type = type, eps = eps, varslist = varslist, ...), na.rm = TRUE)
             } else {
-                me_tmp <- marginal_effects(model = tmpmodel, data = data, type = type, eps = eps, ...)
+                me_tmp <- marginal_effects(model = tmpmodel, data = data, variables = variables, type = type, eps = eps, varslist = varslist, ...)
                 means <- unlist(stats::setNames(lapply(me_tmp, stats::weighted.mean, w = weights, na.rm = TRUE), names(me_tmp)))
             }
             if (!is.matrix(means)) {
@@ -61,9 +75,15 @@ function(data,
             tmpmodel[["call"]][["data"]] <- data[samp,]
             tmpmodel <- eval(tmpmodel[["call"]])
             if (is.null(weights)) {
-                means <- colMeans(marginal_effects(model = tmpmodel, data = data[samp,], type = type, eps = eps, ...), na.rm = TRUE)
+                means <- colMeans(marginal_effects(model = tmpmodel,
+                                                   data = data[samp,],
+                                                   variables = variables,
+                                                   type = type,
+                                                   eps = eps,
+                                                   varslist = varslist,
+                                                   ...), na.rm = TRUE)
             } else {
-                me_tmp <- marginal_effects(model = tmpmodel, data = data[samp,], type = type, eps = eps, ...)
+                me_tmp <- marginal_effects(model = tmpmodel, data = data[samp,], variables = variables, type = type, eps = eps, varslist = varslist, ...)
                 means <- unlist(stats::setNames(lapply(me_tmp, stats::weighted.mean, w = weights, na.rm = TRUE), names(me_tmp)))
             }
             means

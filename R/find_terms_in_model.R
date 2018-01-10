@@ -1,4 +1,11 @@
+# function to identify terms in model formula
+## @return A four-element list containing: 
+## - `nnames` (numeric variables)
+## - `lnames` (logical variables)
+## - `fnames` (factor variables)
+## - `fnames2` (numeric variables made into factors in formula specification)
 find_terms_in_model <- function(model, variables = NULL) {
+    
     # identify classes of terms in `model`
     classes <- attributes(terms(model))[["dataClasses"]][-1]
     # drop specially named "(weights)" variables
@@ -32,4 +39,9 @@ find_terms_in_model <- function(model, variables = NULL) {
     }
     
     return(vars)
+}
+
+# call gsub_bracket on all common formula operations
+clean_terms <- function(terms) {
+    unique(unlist(lapply(terms, function(x) all.vars(update(~ ., paste0("~", x))))))
 }

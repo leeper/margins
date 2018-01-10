@@ -1,3 +1,9 @@
+## margins 0.3.10
+
+* Added an (internal use only) argument, `varslist`, to `marginal_effects()` and several internal functions that significantly improves performance. The performance gain is due to computational cost of identifying terms in model formulae each time `marginal_effects()` was called, which occurred repeatedly (e.g., during variance estimation). By performing this once at the `margins()`-level and passing the argument throughout, `margins()` is perhaps twice as fast as in versions <= 0.3.9. But, importantly, note that this argument should not be specified by end users!
+* Some internal edits were made to the formula-processing functions `find_terms_in_model()` and `clean_terms()`, removing many regex calls with the goal of improving performance.
+* Removed **compiler** dependency, which appeared to not improve performance.
+
 ## margins 0.3.9
 
 * Fixed a bug wherein model formulae involving non-standard variables names with spaces in them led to errors. (#80)

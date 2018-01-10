@@ -37,6 +37,9 @@ function(model,
         names(data_list) <- NA_character_
     }
     
+    # identify classes of terms in `model`
+    varslist <- find_terms_in_model(model, variables = variables)
+    
     # reduce memory profile
     model[["model"]] <- NULL
     attr(model[["terms"]], ".Environment") <- NULL
@@ -57,6 +60,7 @@ function(model,
                                   unit_ses = unit_ses,
                                   weights = wts,
                                   eps = eps,
+                                  varslist = varslist,
                                   ...)
     }
     

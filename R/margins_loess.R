@@ -18,6 +18,9 @@ function(model,
     }
     data_list <- build_datalist(data, at = at)
     
+    # identify classes of terms in `model`
+    varslist <- find_terms_in_model(model, variables = variables)
+    
     # reduce memory profile
     model[["model"]] <- NULL
     attr(model[["terms"]], ".Environment") <- NULL
@@ -32,7 +35,8 @@ function(model,
                                   vcov = NULL, 
                                   vce = "none", 
                                   unit_ses = FALSE, 
-                                  eps = eps, 
+                                  eps = eps,
+                                  varslist = varslist,
                                   ...)
     }
     

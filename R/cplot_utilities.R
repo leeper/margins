@@ -1,4 +1,4 @@
-# function to check whether 
+# function to check factors
 check_factors <- function(object, data, xvar, dx) {
     # check factors
     classes <- attributes(terms(object))[["dataClasses"]][-1]

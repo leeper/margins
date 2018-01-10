@@ -113,7 +113,6 @@
 #' @keywords models package
 #' @import stats
 #' @importFrom prediction prediction find_data build_datalist
-#' @importFrom compiler cmpfun
 #' @importFrom MASS mvrnorm
 #' @export
 margins <- 

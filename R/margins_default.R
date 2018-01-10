@@ -23,6 +23,9 @@ function(model,
         names(data_list) <- NA_character_
     }
     
+    # identify classes of terms in `model`
+    varslist <- find_terms_in_model(model, variables = variables)
+    
     # calculate marginal effects
     out <- list()
     for (i in seq_along(data_list)) {
@@ -34,7 +37,8 @@ function(model,
                                   vce = vce, 
                                   iterations = iterations, 
                                   unit_ses = unit_ses, 
-                                  eps = eps, 
+                                  eps = eps,
+                                  varslist = varslist,
                                   ...)
     }
     

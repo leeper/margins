@@ -9,6 +9,7 @@ function(model,
          unit_ses = FALSE,
          weights = NULL,
          eps = 1e-7,
+         varslist = NULL,
          ...) {
     
     # variables in the model
@@ -23,24 +24,32 @@ function(model,
         vcov <- vcov(model)
     }
     
+    # identify classes of terms in `model`
+    if (is.null(varslist)) {
+        varslist <- find_terms_in_model(model, variables = variables)
+    }
+    
     # obtain gradient with respect to each variable in data
     if (!is.null(type)) {
-        mes <- marginal_effects(model = model, data = data, variables = variables, type = type, eps = eps, ...)
+        mes <- marginal_effects(model = model, data = data, variables = variables, type = type, eps = eps, varslist = varslist, ...)
     } else {
-        mes <- marginal_effects(model = model, data = data, variables = variables, eps = eps, ...)
+        mes <- marginal_effects(model = model, data = data, variables = variables, eps = eps, varslist = varslist, ...)
     }
     
     # variance estimation technique
     if (vce != "none") {
-        variances <- get_effect_variances(data = data, model = model, variables = names(mes), 
-                                          type = type, vcov = vcov, vce = vce, 
-                                          iterations = iterations, weights = weights, eps = eps, ...)
+        variances <- get_effect_variances(data = data, model = model, variables = names(mes),
+                                          type = type, vcov = vcov, vce = vce,
+                                          iterations = iterations, weights = weights, eps = eps,
+                                          varslist = varslist, ...)
     }
     
     # get unit-specific effect variances (take derivative of `.build_grad_fun()` for every row separately)
     if ((vce == "delta") && (isTRUE(unit_ses))) {
         vmat <- do.call("rbind", lapply(seq_len(nrow(data)), function(datarow) {
-            delta_once(data = data[datarow,], model = model, type = type, vcov = vcov, vce = vce, weights = weights, eps = eps, ...)
+            delta_once(data = data[datarow,], model = model, variables = variables,
+                       type = type, vcov = vcov, vce = vce, weights = weights,
+                       eps = eps, varslist = varslist, ...)
         }))
         colnames(vmat) <- paste0("SE_", names(mes))
         vmat <- as.data.frame(vmat)

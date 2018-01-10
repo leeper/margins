@@ -23,6 +23,9 @@ function(model,
         names(data_list) <- NA_character_
     }
     
+    # identify classes of terms in `model`
+    varslist <- find_terms_in_model(model, variables = variables)
+    
     # reduce memory profile
     model[["model"]] <- NULL
     attr(model[["terms"]], ".Environment") <- NULL
@@ -38,7 +41,8 @@ function(model,
                                   vce = vce, 
                                   iterations = iterations, 
                                   unit_ses = unit_ses, 
-                                  eps = eps, 
+                                  eps = eps,
+                                  varslist = varslist,
                                   ...)
     }
     

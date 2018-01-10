@@ -6,20 +6,23 @@ function(model,
          data = find_data(model, parent.frame()), 
          variables = NULL,
          eps = 1e-7, 
+         varslist = NULL,
          ...) {
     
     # identify classes of terms in `model`
-    vars <- find_terms_in_model(model, variables = variables)
-
+    if (is.null(varslist)) {
+        varslist <- find_terms_in_model(model, variables = variables)
+    }
+    
     # estimate numerical derivatives with respect to each variable (for numeric terms in the model)
     # add discrete differences for logical terms
-    out1 <- lapply(c(vars$nnames, vars$lnames), dydx, data = data, model = model, type = NULL, eps = eps, ...)
+    out1 <- lapply(c(varslist$nnames, varslist$lnames), dydx, data = data, model = model, type = NULL, eps = eps, ...)
     
     # add discrete differences for factor terms
     ## exact number depends on number of factor levels
     out2 <- list()
-    for (i in seq_along(vars$fnames)) {
-        out2[[i]] <- dydx.factor(data = data, model = model, vars$fnames[i], fwrap = (vars$fnames != vars$fnames2)[i], type = NULL, ...)
+    for (i in seq_along(varslist$fnames)) {
+        out2[[i]] <- dydx.factor(data = data, model = model, varslist$fnames[i], fwrap = FALSE, type = NULL, ...)
     }
     
     out <- c(out1, out2)
