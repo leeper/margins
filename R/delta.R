@@ -52,13 +52,14 @@ function(data,
         varslist <- find_terms_in_model(model, variables = variables)
     }
     
-    # factory function to return prediction holding data constant but varying coefficients
+    # factory function to return marginal effects holding data constant but varying coefficients
     FUN <- function(coefs) {
         model[["coefficients"]] <- coefs
         if (is.null(weights)) {
-            means <- colMeans(marginal_effects(model = model, data = data, variables = variables, type = type, eps = eps, varslist = varslist, ...), na.rm = TRUE)
+            me_tmp <- marginal_effects(model = model, data = data, variables = variables, type = type, eps = eps, as.data.frame = FALSE, varslist = varslist, ...)
+            means <- stats::setNames(.colMeans(me_tmp, nrow(me_tmp), ncol(me_tmp), na.rm = TRUE), colnames(me_tmp))
         } else {
-            me_tmp <- marginal_effects(model = model, data = data, variables = variables, type = type, eps = eps, varslist = varslist, ...)
+            me_tmp <- marginal_effects(model = model, data = data, variables = variables, type = type, eps = eps, as.data.frame = FALSE, varslist = varslist, ...)
             means <- unlist(stats::setNames(lapply(me_tmp, stats::weighted.mean, w = weights, na.rm = TRUE), names(me_tmp)))
         }
         means
@@ -66,7 +67,7 @@ function(data,
     return(FUN)
 }
 
-jacobian <- function(FUN, coefficients, eps = 1e-4) {
+jacobian <- function(FUN, coefficients, eps = 1e-7) {
     F0 <- FUN(coefficients)
     out <- matrix(NA_real_, nrow = length(F0), ncol = length(coefficients))
     colnames(out) <- names(coefficients)

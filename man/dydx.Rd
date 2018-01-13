@@ -11,16 +11,17 @@
 dydx(data, model, variable, ...)
 
 \method{dydx}{default}(data, model, variable, type = c("response", "link"),
-  change = c("dydx", "minmax", "iqr", "sd"), eps = 1e-07, ...)
+  change = c("dydx", "minmax", "iqr", "sd"), eps = 1e-07,
+  as.data.frame = TRUE, ...)
 
 \method{dydx}{factor}(data, model, variable, type = c("response", "link"),
-  fwrap = FALSE, ...)
+  fwrap = FALSE, as.data.frame = TRUE, ...)
 
 \method{dydx}{ordered}(data, model, variable, type = c("response", "link"),
-  fwrap = FALSE, ...)
+  fwrap = FALSE, as.data.frame = TRUE, ...)
 
 \method{dydx}{logical}(data, model, variable, type = c("response", "link"),
-  ...)
+  as.data.frame = TRUE, ...)
 }
 \arguments{
 \item{data}{The dataset on which to to calculate \eqn{\hat{y}}.}
@@ -36,6 +37,8 @@ dydx(data, model, variable, ...)
 \item{change}{For numeric variables, a character string specifying the type of change to express. The default is the numerical approximation of the derivative. Alternative values are occasionally desired quantities: \dQuote{minmax} (the discrete change moving from \code{min(x)} to \code{max(x)}), \dQuote{iqr} (the move from the 1st quartile to 3rd quartile of \code{x}), or \dQuote{sd} (the change from \code{mean(x) - sd(x)} to \code{mean(x) + sd(x)}), or a two-element numeric vector expressing values of the variable to calculate the prediction for (and difference the associated predictions).}
 
 \item{eps}{If \code{change == "dydx"} (the default), the value of the step \eqn{\epsilon} to use in calculation of the numerical derivative for numeric variables.}
+
+\item{as.data.frame}{A logical indicating whether to return a data frame (the default) or a matrix.}
 
 \item{fwrap}{A logical specifying how to name factor columns in the response.}
 }

@@ -22,28 +22,31 @@ marginal_effects(model, data, variables = NULL, ...)
 
 \method{marginal_effects}{default}(model, data = find_data(model,
   parent.frame()), variables = NULL, type = c("response", "link"),
-  eps = 1e-07, varslist = NULL, ...)
+  eps = 1e-07, as.data.frame = TRUE, varslist = NULL, ...)
 
 \method{marginal_effects}{glm}(model, data = find_data(model, parent.frame()),
   variables = NULL, type = c("response", "link"), eps = 1e-07,
-  varslist = NULL, ...)
+  as.data.frame = TRUE, varslist = NULL, ...)
 
 \method{marginal_effects}{lm}(model, data = find_data(model, parent.frame()),
   variables = NULL, type = c("response", "link"), eps = 1e-07,
-  varslist = NULL, ...)
+  as.data.frame = TRUE, varslist = NULL, ...)
 
 \method{marginal_effects}{loess}(model, data = find_data(model,
   parent.frame()), variables = NULL, type = c("response", "link"),
-  eps = 1e-07, varslist = NULL, ...)
+  eps = 1e-07, as.data.frame = TRUE, varslist = NULL, ...)
 
 \method{marginal_effects}{merMod}(model, data = find_data(model),
-  variables = NULL, type = c("response", "link"), eps = 1e-07, ...)
+  variables = NULL, type = c("response", "link"), eps = 1e-07,
+  as.data.frame = TRUE, ...)
 
 \method{marginal_effects}{nnet}(model, data = find_data(model,
-  parent.frame()), variables = NULL, eps = 1e-07, varslist = NULL, ...)
+  parent.frame()), variables = NULL, eps = 1e-07, varslist = NULL,
+  as.data.frame = TRUE, ...)
 
 \method{marginal_effects}{polr}(model, data = find_data(model,
-  parent.frame()), variables = NULL, eps = 1e-07, varslist = NULL, ...)
+  parent.frame()), variables = NULL, eps = 1e-07, varslist = NULL,
+  as.data.frame = TRUE, ...)
 }
 \arguments{
 \item{model}{A model object, perhaps returned by \code{\link[stats]{lm}} or \code{\link[stats]{glm}}}
@@ -57,6 +60,8 @@ marginal_effects(model, data, variables = NULL, ...)
 \item{type}{A character string indicating the type of marginal effects to estimate. Mostly relevant for non-linear models, where the reasonable options are \dQuote{response} (the default) or \dQuote{link} (i.e., on the scale of the linear predictor in a GLM).}
 
 \item{eps}{A numeric value specifying the \dQuote{step} to use when calculating numerical derivatives. By default this is the smallest floating point value that can be represented on the present architecture.}
+
+\item{as.data.frame}{A logical indicating whether to return a data frame (the default) or a matrix.}
 
 \item{varslist}{A list structure used internally by \code{\link{margins}}. Users should not set this.}
 }

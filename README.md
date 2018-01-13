@@ -83,7 +83,7 @@ With the exception of differences in rounding, the above results match identical
 plot(m)
 ```
 
-![plot of chunk marginsplot](https://i.imgur.com/gjesNts.png)
+![plot of chunk marginsplot](https://i.imgur.com/KX06RcP.png)
 
 If you are only interested in obtaining the marginal effects (without corresponding variances or the overhead of creating a "margins" object), you can call `marginal_effects(x)` directly. Furthermore, the `dydx()` function enables the calculation of the marginal effect of a single named variable:
 
@@ -130,8 +130,8 @@ microbenchmark(marginal_effects(x))
 
 ```
 ## Unit: milliseconds
-##                 expr     min       lq     mean   median       uq      max neval
-##  marginal_effects(x) 6.99712 7.695236 8.672422 7.960949 8.566312 56.52701   100
+##                 expr      min       lq     mean  median       uq      max neval
+##  marginal_effects(x) 4.835626 5.028542 6.431395 5.75402 6.169881 51.87056   100
 ```
 
 ```r
@@ -141,7 +141,7 @@ microbenchmark(margins(x))
 ```
 ## Unit: milliseconds
 ##        expr      min       lq     mean   median       uq      max neval
-##  margins(x) 52.28282 54.27909 57.52403 55.58466 57.00655 175.5959   100
+##  margins(x) 35.03045 36.58213 38.29407 37.52524 39.30443 60.20756   100
 ```
 
 One way to improve performance of `margins()` is to use the `variables` argument (available from v0.3.7) to calculate marginal effects for only the subset of variables used in the model that you are substantively interested in (a la setting Stata's `, dydx()` option):
@@ -164,7 +164,7 @@ m <- glm(am ~ wt*drat, data = mtcars, family = binomial)
 cplot(m, x = "wt", se.type = "shade")
 ```
 
-![plot of chunk cplot1](https://i.imgur.com/q5bl6KL.png)
+![plot of chunk cplot1](https://i.imgur.com/24aWZVk.png)
 
 And fitted values with a factor independent variable:
 
@@ -173,7 +173,7 @@ And fitted values with a factor independent variable:
 cplot(lm(Sepal.Length ~ Species, data = iris))
 ```
 
-![plot of chunk cplot2](https://i.imgur.com/eLhskkX.png)
+![plot of chunk cplot2](https://i.imgur.com/9wKN0Z9.png)
 
 and a graph of the effect of `drat` across levels of `wt`:
 
@@ -182,7 +182,7 @@ and a graph of the effect of `drat` across levels of `wt`:
 cplot(m, x = "wt", dx = "drat", what = "effect", se.type = "shade")
 ```
 
-![plot of chunk cplot3](https://i.imgur.com/h46RJwh.png)
+![plot of chunk cplot3](https://i.imgur.com/lEaYefI.png)
 
 Second, the package implements methods for "lm" and "glm" class objects for the `persp()` generic plotting function. This enables three-dimensional representations of predicted outcomes:
 
@@ -191,7 +191,7 @@ Second, the package implements methods for "lm" and "glm" class objects for the 
 persp(x, xvar = "cyl", yvar = "hp")
 ```
 
-![plot of chunk persp1](https://i.imgur.com/edxsLnE.png)
+![plot of chunk persp1](https://i.imgur.com/HF8clpG.png)
 
 and marginal effects:
 
@@ -200,7 +200,7 @@ and marginal effects:
 persp(x, xvar = "cyl", yvar = "hp", what = "effect", nx = 10)
 ```
 
-![plot of chunk persp2](https://i.imgur.com/V4N7lV0.png)
+![plot of chunk persp2](https://i.imgur.com/CJHj9l8.png)
 
 And if three-dimensional plots aren't your thing, there are also analogous methods for the `image()` generic, to produce heatmap-style representations:
 
@@ -209,7 +209,7 @@ And if three-dimensional plots aren't your thing, there are also analogous metho
 image(x, xvar = "cyl", yvar = "hp", main = "Predicted Fuel Efficiency,\nby Cylinders and Horsepower")
 ```
 
-![plot of chunk image11](https://i.imgur.com/upnrMyN.png)
+![plot of chunk image11](https://i.imgur.com/lxCPsF1.png)
 
 
 The numerous package vignettes and help files contain extensive documentation and examples of all package functionality.

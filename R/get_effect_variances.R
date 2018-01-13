@@ -39,7 +39,7 @@ function(data,
                                 eps = eps,
                                 varslist = varslist,
                                 ...)
-        
+    
     } else if (vce == "simulation") {
         
         # copy model for quick use in estimation

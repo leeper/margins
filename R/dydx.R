@@ -8,6 +8,7 @@
 #' @param change For numeric variables, a character string specifying the type of change to express. The default is the numerical approximation of the derivative. Alternative values are occasionally desired quantities: \dQuote{minmax} (the discrete change moving from \code{min(x)} to \code{max(x)}), \dQuote{iqr} (the move from the 1st quartile to 3rd quartile of \code{x}), or \dQuote{sd} (the change from \code{mean(x) - sd(x)} to \code{mean(x) + sd(x)}), or a two-element numeric vector expressing values of the variable to calculate the prediction for (and difference the associated predictions).
 #' @param eps If \code{change == "dydx"} (the default), the value of the step \eqn{\epsilon} to use in calculation of the numerical derivative for numeric variables.
 #' @param fwrap A logical specifying how to name factor columns in the response.
+#' @param as.data.frame A logical indicating whether to return a data frame (the default) or a matrix.
 #' @param \dots Ignored.
 #' @details
 #' These functions provide a simple interface to the calculation of marginal effects for specific variables used in a model, and are the workhorse functions called internally by \code{\link{marginal_effects}}.
@@ -67,7 +68,9 @@ function(data,
          variable, 
          type = c("response", "link"), 
          change = c("dydx", "minmax", "iqr", "sd"),
-         eps = 1e-7, ...) {
+         eps = 1e-7,
+         as.data.frame = TRUE,
+         ...) {
     
     if (is.numeric(change)) {
         stopifnot(length(change) == 2)
@@ -117,32 +120,44 @@ function(data,
     
     if (!is.null(type)) {
         type <- type[1L]
-        P0 <- prediction(model = model, data = d0, type = type, ...)[["fitted"]]
-        P1 <- prediction(model = model, data = d1, type = type, ...)[["fitted"]]
+        pred <- prediction(model = model, data = rbind(d0, d1), type = type, ...)[["fitted"]]
     } else {
-        P0 <- prediction(model = model, data = d0, ...)[["fitted"]]
-        P1 <- prediction(model = model, data = d1, ...)[["fitted"]]
+        pred <- prediction(model = model, data = rbind(d0, d1), ...)[["fitted"]]
     }
     
     if (change == "dydx") {
-        out <- (P1 - P0) / (d1[[variable]] - d0[[variable]])
+        out <- (pred[nrow(d0) + seq_len(nrow(d0))] - pred[seq_len(nrow(d0))]) / (d1[[variable]] - d0[[variable]])
     } else {
-        out <- (P1 - P0)
+        out <- (pred[nrow(d0) + seq_len(nrow(d0))] - pred[seq_len(nrow(d0))])
     }
-    # return data.frame with column of derivatives
     class(out) <- c("marginaleffect", "numeric")
-    return(structure(setNames(list(out), paste0("dydx_",variable)), 
-                     class = c("data.frame"), 
-                     row.names = seq_len(nrow(data))))
+    
+    # return data.frame (or matrix) with column of derivatives
+    if (isTRUE(as.data.frame)) {
+        return(structure(list(out),
+                         names = paste0("dydx_",variable),
+                         class = c("data.frame"), 
+                         row.names = seq_len(nrow(data))))
+    } else {
+        return(structure(matrix(out, ncol = 1L), dimnames = list(seq_len(length(out)), paste0("dydx_",variable))))
+    }
 }
 
 #' @rdname dydx
 #' @export
-dydx.factor <- function(data, model, variable, type = c("response", "link"), fwrap = FALSE, ...) {
+dydx.factor <- 
+function(data,
+         model,
+         variable,
+         type = c("response", "link"),
+         fwrap = FALSE,
+         as.data.frame = TRUE,
+         ...
+) {
     
     levs <- levels(as.factor(data[[variable]]))
-    base <- levs[1]
-    levs <- levs[-1]
+    base <- levs[1L]
+    levs <- levs[-1L]
     
     # setup response object
     if (isTRUE(fwrap)) {
@@ -150,34 +165,37 @@ dydx.factor <- function(data, model, variable, type = c("response", "link"), fwr
     } else {
         outcolnames <- paste0("dydx_", variable, levs)
     }
-    out <- structure(rep(list(list()), length(levs)), 
-                     class = "data.frame", 
-                     names = outcolnames, 
-                     row.names = seq_len(nrow(data)))
+    
+    if (isTRUE(as.data.frame)) {
+        out <- structure(rep(list(list()), length(levs)), 
+                         class = "data.frame", 
+                         names = outcolnames, 
+                         row.names = seq_len(nrow(data)))
+    } else {
+        out <- matrix(NA_real_, nrow = nrow(data), ncol = length(levs), dimnames = list(seq_len(nrow(data)), outcolnames))
+    }
     
     # setup base data and prediction
-    D0 <- build_datalist(data, at = setNames(list(base), variable))[[1]]
-    
-    # setup functions through predict_factory
-    if (!is.null(type)) {
-        type <- type[1L]
-        P0 <- prediction(model = model, data = D0, type = type, ...)[["fitted"]]
-    } else {
-        P0 <- prediction(model = model, data = D0, ...)[["fitted"]]
-    }
+    d0 <- d1 <- data
+    d0[[variable]] <- base
     
     # calculate difference for each factor level
     for (i in seq_along(levs)) {
-        D <- build_datalist(data, at = setNames(list(levs[i]), variable))[[1]]
+        d1[[variable]] <- levs[i]
         if (!is.null(type)) {
             type <- type[1L]
-            P1 <- prediction(model = model, data = D, type = type, ...)[["fitted"]]
+            pred <- prediction(model = model, data = rbind(d0, d1), type = type, ...)[["fitted"]]
         } else {
-            P1 <- prediction(model = model, data = D, ...)[["fitted"]]
+            pred <- prediction(model = model, data = rbind(d0, d1), ...)[["fitted"]]
         }
-        out[[outcolnames[i]]] <- structure(P1 - P0, class = c("marginaleffect", "numeric"))
+        if (isTRUE(as.data.frame)) {
+            out[[outcolnames[i]]] <- structure(pred[nrow(d0) + seq_len(nrow(d0))] - pred[seq_len(nrow(d0))], class = c("marginaleffect", "numeric"))
+        } else {
+            out[, outcolnames[i]] <- pred[nrow(d0) + seq_len(nrow(d0))] - pred[seq_len(nrow(d0))]
+        }
     }
-    # return data.frame with column(s) of differences
+    
+    # return data.frame (or matrix) with column of derivatives
     return(out)
 }
 
@@ -187,36 +205,37 @@ dydx.ordered <- dydx.factor
 
 #' @rdname dydx
 #' @export
-dydx.logical <- function(data, model, variable, type = c("response", "link"), ...) {
-    
-    # setup response object
-    out <- structure(list(list()), 
-                     class = "data.frame", 
-                     names = paste0("dydx_",variable), 
-                     row.names = seq_len(nrow(data)))
+dydx.logical <- 
+function(data,
+         model,
+         variable,
+         type = c("response", "link"),
+         as.data.frame = TRUE,
+         ...
+) {
     
     # setup base data and prediction
-    D0 <- build_datalist(data, at = setNames(list(FALSE), variable))[[1]]
-    
-    # setup functions through predict_factory
-    if (!is.null(type)) {
-        type <- type[1L]
-        P0 <- prediction(model = model, data = D0, type = type, ...)[["fitted"]]
-    } else {
-        P0 <- prediction(model = model, data = D0, ...)[["fitted"]]
-    }
+    d0 <- d1 <- data
+    d0[[variable]] <- FALSE
+    d1[[variable]] <- TRUE
     
     # calculate difference for moving FALSE to TRUE
-    D1 <- build_datalist(data, at = setNames(list(TRUE), variable))[[1]]
     if (!is.null(type)) {
         type <- type[1L]
-        P1 <- prediction(model = model, data = D1, type = type, ...)[["fitted"]]
+        pred <- prediction(model = model, data = rbind(d0, d1), type = type, ...)[["fitted"]]
     } else {
-        P1 <- prediction(model = model, data = D1, ...)[["fitted"]]
+        pred <- prediction(model = model, data = rbind(d0, d1), ...)[["fitted"]]
     }
-    out[[paste0("dydx_",variable)]] <- P1 - P0
+    out <- structure(pred[nrow(d0) + seq_len(nrow(d0))] - pred[seq_len(nrow(d0))], class = c("marginaleffect", "numeric"))
     
-    # return data.frame with column of differences
-    class(out[[1]]) <- c("marginaleffect", "numeric")
-    return(out)
+    # return data.frame (or matrix) with column of derivatives
+    class(out) <- c("marginaleffect", "numeric")
+    if (isTRUE(as.data.frame)) {
+        return(structure(list(out),
+                         names = paste0("dydx_",variable),
+                         class = c("data.frame"), 
+                         row.names = seq_len(nrow(data))))
+    } else {
+        return(structure(matrix(out, ncol = 1L), dimnames = list(seq_len(length(out)), paste0("dydx_",variable))))
+    }
 }
