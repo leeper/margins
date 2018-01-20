@@ -55,6 +55,7 @@
 #' 
 #' @seealso \code{\link{marginal_effects}}, \code{\link{margins}}
 #' @importFrom prediction prediction
+#' @importFrom data.table rbindlist
 #' @export
 dydx <- function(data, model, variable, ...) {
     UseMethod("dydx", data[[variable]])
@@ -120,9 +121,9 @@ function(data,
     
     if (!is.null(type)) {
         type <- type[1L]
-        pred <- prediction(model = model, data = rbind(d0, d1), type = type, ...)[["fitted"]]
+        pred <- prediction(model = model, data = data.table::rbindlist(list(d0, d1)), type = type, calculate_se = FALSE, ...)[["fitted"]]
     } else {
-        pred <- prediction(model = model, data = rbind(d0, d1), ...)[["fitted"]]
+        pred <- prediction(model = model, data = data.table::rbindlist(list(d0, d1)), calculate_se = FALSE, ...)[["fitted"]]
     }
     
     if (change == "dydx") {
@@ -178,20 +179,21 @@ function(data,
     # setup base data and prediction
     d0 <- d1 <- data
     d0[[variable]] <- base
+    pred0 <- prediction(model = model, data = d0, type = type, calculate_se = FALSE, ...)[["fitted"]]
     
     # calculate difference for each factor level
     for (i in seq_along(levs)) {
         d1[[variable]] <- levs[i]
         if (!is.null(type)) {
             type <- type[1L]
-            pred <- prediction(model = model, data = rbind(d0, d1), type = type, ...)[["fitted"]]
+            pred1 <- prediction(model = model, data = d1, type = type, calculate_se = FALSE, ...)[["fitted"]]
         } else {
-            pred <- prediction(model = model, data = rbind(d0, d1), ...)[["fitted"]]
+            pred1 <- prediction(model = model, data = d1, calculate_se = FALSE, ...)[["fitted"]]
         }
         if (isTRUE(as.data.frame)) {
-            out[[outcolnames[i]]] <- structure(pred[nrow(d0) + seq_len(nrow(d0))] - pred[seq_len(nrow(d0))], class = c("marginaleffect", "numeric"))
+            out[[outcolnames[i]]] <- structure(pred1 - pred0, class = c("marginaleffect", "numeric"))
         } else {
-            out[, outcolnames[i]] <- pred[nrow(d0) + seq_len(nrow(d0))] - pred[seq_len(nrow(d0))]
+            out[, outcolnames[i]] <- pred1 - pred0
         }
     }
     
@@ -222,9 +224,9 @@ function(data,
     # calculate difference for moving FALSE to TRUE
     if (!is.null(type)) {
         type <- type[1L]
-        pred <- prediction(model = model, data = rbind(d0, d1), type = type, ...)[["fitted"]]
+        pred <- prediction(model = model, data = data.table::rbindlist(list(d0, d1)), type = type, calculate_se = FALSE, ...)[["fitted"]]
     } else {
-        pred <- prediction(model = model, data = rbind(d0, d1), ...)[["fitted"]]
+        pred <- prediction(model = model, data = data.table::rbindlist(list(d0, d1)), calculate_se = FALSE, ...)[["fitted"]]
     }
     out <- structure(pred[nrow(d0) + seq_len(nrow(d0))] - pred[seq_len(nrow(d0))], class = c("marginaleffect", "numeric"))
     

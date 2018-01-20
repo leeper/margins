@@ -1,3 +1,8 @@
+## margins 0.3.12
+
+* `dydx()` now uses the performance-enhancing `prediction::prediction(..., calculate_se = FALSE)` setting, where possible (introduced in **prediction** 0.2.4)
+* `data.table::rbindlist()` is used instead of `base::rbind()` inside `dydx()`.
+
 ## margins 0.3.11
 
 * Changed some internal representations from data frames to matrices in an effort to improve performance. `marginal_effects()` and `dydx()` gain an `as.data.frame` argument to regulate the class of their responses.
