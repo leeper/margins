@@ -179,8 +179,12 @@ function(data,
     # setup base data and prediction
     d0 <- d1 <- data
     d0[[variable]] <- base
-    pred0 <- prediction(model = model, data = d0, type = type, calculate_se = FALSE, ...)[["fitted"]]
-    
+    if (!is.null(type)) {
+        type <- type[1L]
+        pred0 <- prediction(model = model, data = d0, type = type, calculate_se = FALSE, ...)[["fitted"]]
+    } else {
+        pred0 <- prediction(model = model, data = d0, calculate_se = FALSE, ...)[["fitted"]]
+    }
     # calculate difference for each factor level
     for (i in seq_along(levs)) {
         d1[[variable]] <- levs[i]

@@ -18,7 +18,7 @@ find_terms_in_model <- function(model, variables = NULL) {
     terms2 <- sapply(names(classes), function(x) all.vars(parse(text = paste0("`", x, "`"))))
     names(classes)[names(classes) %in% names(terms2)] <- terms2[names(classes) %in% names(terms2)]
     
-    # identify factors versus numeric terms in `model`
+    # identify factors versus numeric terms in `model`, and cleanup the names of terms
     vars <- list(
       nnames = clean_terms(names(classes)[!classes %in% c("factor", "ordered", "logical")]),
       lnames = clean_terms(names(classes)[classes == "logical"]),
@@ -43,5 +43,6 @@ find_terms_in_model <- function(model, variables = NULL) {
 
 # call gsub_bracket on all common formula operations
 clean_terms <- function(terms) {
-    unique(unlist(lapply(terms, function(x) all.vars(update(~ ., paste0("~", x))))))
+    # the use of paste("`", x, "`") is a hack to deal with variables that have spaces in their names
+    unique(unlist(lapply(terms, function(x) all.vars(formula(paste0("~", ifelse(grepl(" ", x), paste0("`", x, "`"), x)))))))
 }

@@ -1,3 +1,7 @@
+## margins 0.3.13
+
+* Fixed a bug in all functions (ultimately in internal utility `clean_terms()`) that occurred when formulae contained variables with backticked names that contained spaces. (#80)
+
 ## margins 0.3.12
 
 * `dydx()` now uses the performance-enhancing `prediction::prediction(..., calculate_se = FALSE)` setting, where possible (introduced in **prediction** 0.2.4)
