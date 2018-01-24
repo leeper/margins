@@ -1,3 +1,7 @@
+## margins 0.3.14
+
+* Fixed a bug in survey-weighted objects involving weights and expanded the test suite to cover these cases.
+
 ## margins 0.3.13
 
 * Fixed a bug in all functions (ultimately in internal utility `clean_terms()`) that occurred when formulae contained variables with backticked names that contained spaces. (#80)

@@ -49,3 +49,29 @@ if (requireNamespace("ordinal")) {
         expect_true(inherits(margins(m, category = 1), "margins"))
     })
 }
+
+test_that("Test 'svyglm' methods", {
+    if (requireNamespace("survey")) {
+        data("fpc", package = "survey")
+        svyd <- survey::svydesign(weights=~weight, ids=~psuid, strata=~stratid, fpc=~Nh, variables=~x + nh, data=fpc, nest=TRUE)
+        x <- survey::svyglm(x ~ nh, design = svyd)
+        test_that("Test margins() for 'svyglm' without passing 'design' object", {
+            m1 <- margins(x)
+            expect_true(inherits(print(m1), "margins"), label = "print() method for margins from svyglm")
+            expect_true(inherits(summary(m1), "data.frame"), label = "summary() method for margins from svyglm")
+            expect_true(inherits(print(summary(m1)), "data.frame"), label = "print() method for summary.margins from svyglm")
+        })
+        test_that("Test margins() for 'svyglm' with 'design' object", {
+            m2 <- margins(x, design = svyd)
+            expect_true(inherits(print(m2), "margins"), label = "print() method for margins from svyglm (with 'design')")
+            expect_true(inherits(summary(m2), "data.frame"), label = "summary() method for margins from svyglm (with 'design')")
+            expect_true(inherits(print(summary(m2)), "data.frame"), label = "print() method for summary.margins from svyglm (with 'design')")
+        })
+        test_that("Test margins() for 'svyglm' with 'design' object and 'at' specification", {
+            m3 <- margins(x, at = list(nh = mean(fpc$nh)), design = svyd)
+            expect_true(inherits(print(m3), "margins"), label = "print() method for margins from svyglm (with 'at')")
+            expect_true(inherits(summary(m3), "data.frame"), label = "summary() method for margins from svyglm (with 'at')")
+            expect_true(inherits(print(summary(m3)), "data.frame"), label = "print() method for summary.margins from svyglm (with 'at')")
+        })
+    }
+})

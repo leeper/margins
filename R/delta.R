@@ -40,7 +40,7 @@ function(data,
                            eps = eps,
                            varslist = varslist,
                            ...)
-    jacobian <- jacobian(FUN, coef(model), eps = eps)
+    jacobian <- jacobian(FUN, coef(model), weights = weights, eps = eps)
     vout <- diag(jacobian %*% vcov %*% t(jacobian))
     return(vout)
 }
@@ -53,29 +53,33 @@ function(data,
     }
     
     # factory function to return marginal effects holding data constant but varying coefficients
-    FUN <- function(coefs) {
+    FUN <- function(coefs, weights = NULL) {
         model[["coefficients"]] <- coefs
         if (is.null(weights)) {
+            # build matrix of unit-specific marginal effects
             me_tmp <- marginal_effects(model = model, data = data, variables = variables, type = type, eps = eps, as.data.frame = FALSE, varslist = varslist, ...)
+            # apply colMeans to get average marginal effects
             means <- stats::setNames(.colMeans(me_tmp, nrow(me_tmp), ncol(me_tmp), na.rm = TRUE), colnames(me_tmp))
         } else {
+            # build matrix of unit-specific marginal effects
             me_tmp <- marginal_effects(model = model, data = data, variables = variables, type = type, eps = eps, as.data.frame = FALSE, varslist = varslist, ...)
-            means <- unlist(stats::setNames(lapply(me_tmp, stats::weighted.mean, w = weights, na.rm = TRUE), names(me_tmp)))
+            # apply colMeans to get average marginal effects
+            means <- apply(me_tmp, 2L, stats::weighted.mean, w = weights, na.rm = TRUE)
         }
         means
     }
     return(FUN)
 }
 
-jacobian <- function(FUN, coefficients, eps = 1e-7) {
-    F0 <- FUN(coefficients)
+jacobian <- function(FUN, coefficients, weights = NULL, eps = 1e-7) {
+    F0 <- FUN(coefficients, weights = weights)
     out <- matrix(NA_real_, nrow = length(F0), ncol = length(coefficients))
     colnames(out) <- names(coefficients)
     rownames(out) <- names(F0)
     for (i in seq_along(coefficients)) {
         coeftemp <- coefficients
         coeftemp[i] <- coeftemp[i] + eps
-        out[, i] <- (FUN(coeftemp) - F0) / eps
+        out[, i] <- (FUN(coeftemp, weights = weights) - F0) / eps
     }
     out
 }
