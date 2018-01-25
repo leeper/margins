@@ -6,18 +6,15 @@ check_factors <- function(object, data, xvar, dx) {
     classes[classes == "character"] <- "factor"
     nnames <- clean_terms(names(classes)[classes != "factor"])
     fnames <- clean_terms(names(classes)[classes == "factor"])
-    fnames2 <- names(classes)[classes == "factor"] # for checking stupid variable naming behavior by R
     
     # subset data
-    data <- data[, c(nnames, fnames2), drop = FALSE]
-    names(data)[names(data) %in% fnames2] <- fnames
+    data <- data[, c(nnames), drop = FALSE]
     
     list(classes = classes,
          nnames = nnames,
          fnnames = fnames,
-         fnnames2 = fnames2, 
-         x_is_factor = (xvar %in% c(fnames, fnames2)),
-         dx_is_factor = (dx %in% c(fnames, fnames2)),
+         x_is_factor = xvar %in% fnames,
+         dx_is_factor = dx %in% fnames,
          data = data)
 }
 
