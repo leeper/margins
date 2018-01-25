@@ -33,7 +33,7 @@ With the introduction of Stata's `margins` command, it has become incredibly sim
 
 Stata's `margins` command is incredibly robust. It works with nearly any kind of statistical model and estimation procedure, including OLS, generalized linear models, panel regression models, and so forth. It also represents a significant improvement over Stata's previous marginal effects command - `mfx` - which was subject to various well-known bugs. While other Stata modules have provided functionality for deriving quantities of interest from regression estimates (e.g., [Clarify](http://gking.harvard.edu/clarify)), none has done so with the simplicity and genearlity of `margins`.
 
-By comparison, R has no robust functionality in the base tools for drawing out marginal effects from model estimates (though the S3 `predict()` methods implement some of the functionality for computing fitted/predicted values). Nor do any add-on packages implement appropriate marginal effect estimates. Notably, several packages provide estimates of marginal effects for different types of models. Among these are [car](https://cran.r-project.org/package=car), [alr3](https://cran.r-project.org/package=alr3), [mfx](https://cran.r-project.org/package=mfx), [erer](https://cran.r-project.org/package=erer), among others. Unfortunately, none of these packages implement marginal effects correctly (i.e., correctly account for interrelated variables such as interaction terms (e.g., `a:b`) or power terms (e.g., `I(a^2)`) and the packages all implement quite different interfaces for different types of models. [interflex](https://cran.r-project.org/package=interflex), [interplot](https://cran.r-project.org/package=interplot), and [plotMElm](https://cran.r-project.org/package=plotMElm) provide functionality simply for plotting quantities of interest from multiplicative interaction terms in models but do not appear to support general marginal effects displays (in either tabular or graphical form), while [visreg](https://cran.r-project.org/package=visreg) provides a more general plotting function but no tabular output. [interactionTest](https://cran.r-project.org/package=interactionTest) provides some additional useful functionality for controlling the false discovery rate when making such plots and interpretations, but is again not a general tool for marginal effect estimation.
+By comparison, R has no robust functionality in the base tools for drawing out marginal effects from model estimates (though the S3 `predict()` methods implement some of the functionality for computing fitted/predicted values). The closest approximation is [modmarg](https://cran.r-project.org/package=modmarg), which does one-variable-at-a-time estimation of marginal effects is quite robust. Other than this relatively new package on the scene, no packages implement appropriate marginal effect estimates. Notably, several packages provide estimates of marginal effects for different types of models. Among these are [car](https://cran.r-project.org/package=car), [alr3](https://cran.r-project.org/package=alr3), [mfx](https://cran.r-project.org/package=mfx), [erer](https://cran.r-project.org/package=erer), among others. Unfortunately, none of these packages implement marginal effects correctly (i.e., correctly account for interrelated variables such as interaction terms (e.g., `a:b`) or power terms (e.g., `I(a^2)`) and the packages all implement quite different interfaces for different types of models. [interflex](https://cran.r-project.org/package=interflex), [interplot](https://cran.r-project.org/package=interplot), and [plotMElm](https://cran.r-project.org/package=plotMElm) provide functionality simply for plotting quantities of interest from multiplicative interaction terms in models but do not appear to support general marginal effects displays (in either tabular or graphical form), while [visreg](https://cran.r-project.org/package=visreg) provides a more general plotting function but no tabular output. [interactionTest](https://cran.r-project.org/package=interactionTest) provides some additional useful functionality for controlling the false discovery rate when making such plots and interpretations, but is again not a general tool for marginal effect estimation.
 
 Given the challenges of interpreting the contribution of a given regressor in any model that includes quadratic terms, multiplicative interactions, a non-linear transformation, or other complexities, there is a clear need for a simple, consistent way to estimate marginal effects for popular statistical models. This package aims to correctly calculate marginal effects that include complex terms and provide a uniform interface for doing those calculations. Thus, the package implements a single S3 generic method (`margins()`) that can be easily generalized for any type of model implemented in R.
 
@@ -83,7 +83,7 @@ With the exception of differences in rounding, the above results match identical
 plot(m)
 ```
 
-![plot of chunk marginsplot](https://i.imgur.com/473nj3b.png)
+![plot of chunk marginsplot](https://i.imgur.com/Z30m92b.png)
 
 If you are only interested in obtaining the marginal effects (without corresponding variances or the overhead of creating a "margins" object), you can call `marginal_effects(x)` directly. Furthermore, the `dydx()` function enables the calculation of the marginal effect of a single named variable:
 
@@ -130,8 +130,8 @@ microbenchmark(marginal_effects(x))
 
 ```
 ## Unit: milliseconds
-##                 expr     min       lq     mean   median       uq      max neval
-##  marginal_effects(x) 3.61313 3.889105 4.596403 4.365786 5.066365 9.853335   100
+##                 expr      min       lq     mean   median       uq      max neval
+##  marginal_effects(x) 3.375549 3.722798 4.398846 4.180284 4.737934 7.560014   100
 ```
 
 ```r
@@ -140,8 +140,8 @@ microbenchmark(margins(x))
 
 ```
 ## Unit: milliseconds
-##        expr      min       lq     mean   median       uq      max neval
-##  margins(x) 24.14506 26.21334 30.04295 28.21967 31.85675 59.90612   100
+##        expr      min       lq     mean   median       uq     max neval
+##  margins(x) 25.00681 27.03975 29.39063 28.80165 31.05258 59.3173   100
 ```
 
 One way to improve performance of `margins()` is to use the `variables` argument (available from v0.3.7) to calculate marginal effects for only the subset of variables used in the model that you are substantively interested in (a la setting Stata's `, dydx()` option):
@@ -164,7 +164,7 @@ m <- glm(am ~ wt*drat, data = mtcars, family = binomial)
 cplot(m, x = "wt", se.type = "shade")
 ```
 
-![plot of chunk cplot1](https://i.imgur.com/G9UW0Yx.png)
+![plot of chunk cplot1](https://i.imgur.com/P1Sntqq.png)
 
 And fitted values with a factor independent variable:
 
@@ -173,7 +173,19 @@ And fitted values with a factor independent variable:
 cplot(lm(Sepal.Length ~ Species, data = iris))
 ```
 
-![plot of chunk cplot2](https://i.imgur.com/QGGbMSn.png)
+```
+## Warning in min(x): no non-missing arguments to min; returning Inf
+```
+
+```
+## Warning in max(x): no non-missing arguments to max; returning -Inf
+```
+
+```
+## Error in plot.window(...): need finite 'ylim' values
+```
+
+![plot of chunk cplot2](https://i.imgur.com/ktkTfPg.png)
 
 and a graph of the effect of `drat` across levels of `wt`:
 
@@ -182,7 +194,7 @@ and a graph of the effect of `drat` across levels of `wt`:
 cplot(m, x = "wt", dx = "drat", what = "effect", se.type = "shade")
 ```
 
-![plot of chunk cplot3](https://i.imgur.com/UKymuBl.png)
+![plot of chunk cplot3](https://i.imgur.com/LaFMQNf.png)
 
 Second, the package implements methods for "lm" and "glm" class objects for the `persp()` generic plotting function. This enables three-dimensional representations of predicted outcomes:
 
@@ -191,7 +203,7 @@ Second, the package implements methods for "lm" and "glm" class objects for the 
 persp(x, xvar = "cyl", yvar = "hp")
 ```
 
-![plot of chunk persp1](https://i.imgur.com/hjF24Li.png)
+![plot of chunk persp1](https://i.imgur.com/MuMLUdt.png)
 
 and marginal effects:
 
@@ -200,7 +212,7 @@ and marginal effects:
 persp(x, xvar = "cyl", yvar = "hp", what = "effect", nx = 10)
 ```
 
-![plot of chunk persp2](https://i.imgur.com/RcbuqXF.png)
+![plot of chunk persp2](https://i.imgur.com/elH2hcB.png)
 
 And if three-dimensional plots aren't your thing, there are also analogous methods for the `image()` generic, to produce heatmap-style representations:
 
@@ -209,7 +221,7 @@ And if three-dimensional plots aren't your thing, there are also analogous metho
 image(x, xvar = "cyl", yvar = "hp", main = "Predicted Fuel Efficiency,\nby Cylinders and Horsepower")
 ```
 
-![plot of chunk image11](https://i.imgur.com/gOg79IO.png)
+![plot of chunk image11](https://i.imgur.com/9H95wbz.png)
 
 
 The numerous package vignettes and help files contain extensive documentation and examples of all package functionality.
