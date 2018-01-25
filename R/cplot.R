@@ -187,7 +187,7 @@ function(object,
     
     # setup x (based on whether factor)
     if (isTRUE(x_is_factor)) {
-        if (is.factor(dat[["xvar"]])) {
+        if (is.factor(dat[[xvar]])) {
             xvals <- as.character(levels(dat[[clean_terms(xvar)]]))
         } else {
             xvals <- as.character(unique(dat[[clean_terms(xvar)]]))

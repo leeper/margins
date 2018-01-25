@@ -1,3 +1,7 @@
+## margins 0.3.16
+
+* Fixed a bug in `cplot()` when `xvar` was of class "ordered". (#77, h/t Francisco Llaneras)
+
 ## margins 0.3.15
 
 * Tried to improve the handling of edge case model specifications like `y ~ I(x^2)`, `y ~ x + I(2*x)`, and those involving RHS interactions between factors where some cells are not observed in the data. Added a test suite to cover these cases. (#82)

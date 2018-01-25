@@ -4,18 +4,14 @@ check_factors <- function(object, data, xvar, dx) {
     classes <- attributes(terms(object))[["dataClasses"]][-1]
     classes <- classes[names(classes) != "(weights)"]
     classes[classes == "character"] <- "factor"
-    nnames <- clean_terms(names(classes)[classes != "factor"])
-    fnames <- clean_terms(names(classes)[classes == "factor"])
     
-    # subset data
-    data <- data[, c(nnames), drop = FALSE]
+    varslist <- find_terms_in_model(model = object)
     
-    list(classes = classes,
-         nnames = nnames,
-         fnnames = fnames,
-         x_is_factor = xvar %in% fnames,
-         dx_is_factor = dx %in% fnames,
-         data = data)
+    c(list(classes = classes),
+      varslist,
+      x_is_factor = xvar %in% varslist$fnames,
+      dx_is_factor = dx %in% varslist$fnames,
+      list(data = data[, c(varslist$nnames, varslist$fnames), drop = FALSE]))
 }
 
 # PLOTTING UTILITY FUNCTIONS FOR cplot()
