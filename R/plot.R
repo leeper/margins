@@ -58,7 +58,7 @@ function(x,
     upper <- summ[, ncol(summ)]
     r <- max(upper) - min(lower)
     
-    at_levels <- unique(summ[, attributes(x)[["at"]], drop = TRUE])
+    at_levels <- unique(summ[, attributes(x)[["at"]], drop = FALSE])
     n_at_levels <- nrow(at_levels)
     if (n_at_levels > 1) {
         pos2 <- rep(pos, each = n_at_levels)

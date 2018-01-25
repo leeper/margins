@@ -1,6 +1,7 @@
 ## margins 0.3.16
 
 * Fixed a bug in `cplot()` when `xvar` was of class "ordered". (#77, h/t Francisco Llaneras)
+* Fixed a bug in `plot.margins()` when `at` contained only one variable. (#78, h/t @cyberbryce)
 
 ## margins 0.3.15
 
