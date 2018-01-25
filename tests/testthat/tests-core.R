@@ -3,6 +3,12 @@ tol <- 0.0001
 
 library("datasets")
 
+context("Edge case tests")
+test_that("margins() works with multicollinearity", {
+    x <- lm(mpg ~ wt + I(wt*2), data = mtcars)
+    margins(x)
+})
+
 context("Basic accuracy tests")
 test_that("Test accuracy for lm()", {
     x <- lm(mpg ~ wt, data = mtcars)

@@ -36,9 +36,11 @@ function(model,
         mes <- marginal_effects(model = model, data = data, variables = variables, eps = eps, varslist = varslist, ...)
     }
     
+    variables <- gsub("^dydx_", "", names(mes))
+    
     # variance estimation technique
     if (vce != "none") {
-        variances <- get_effect_variances(data = data, model = model, variables = names(mes),
+        variances <- get_effect_variances(data = data, model = model, variables = variables,
                                           type = type, vcov = vcov, vce = vce,
                                           iterations = iterations, weights = weights, eps = eps,
                                           varslist = varslist, ...)

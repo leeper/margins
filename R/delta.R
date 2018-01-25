@@ -3,7 +3,7 @@ function(data,
          model, 
          variables = NULL, # which mes do we need variances of
          type = c("response", "link", "terms"), 
-         vcov = vcov(model),
+         vcov = stats::vcov(model),
          weights = NULL,
          eps = 1e-7,
          varslist = NULL,
@@ -40,7 +40,7 @@ function(data,
                            eps = eps,
                            varslist = varslist,
                            ...)
-    jacobian <- jacobian(FUN, coef(model), weights = weights, eps = eps)
+    jacobian <- jacobian(FUN, coef(model)[names(coef(model)) %in% c("(Intercept)", colnames(vcov))], weights = weights, eps = eps)
     vout <- diag(jacobian %*% vcov %*% t(jacobian))
     return(vout)
 }
@@ -54,7 +54,7 @@ function(data,
     
     # factory function to return marginal effects holding data constant but varying coefficients
     FUN <- function(coefs, weights = NULL) {
-        model[["coefficients"]] <- coefs
+        model[["coefficients"]][names(coefs)] <- coefs
         if (is.null(weights)) {
             # build matrix of unit-specific marginal effects
             me_tmp <- marginal_effects(model = model, data = data, variables = variables, type = type, eps = eps, as.data.frame = FALSE, varslist = varslist, ...)

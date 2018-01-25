@@ -93,10 +93,6 @@ function(data,
         
     }
     
-    # subset to requested variables
-    if (!is.null(variables)) {
-        variances <- variances[names(variances) %in% variables]
-    }
     # replicate to nrow(data)
     variances <- setNames(lapply(variances, rep, nrow(data)), paste0("Var_", names(variances)))
     

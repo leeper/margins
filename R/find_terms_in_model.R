@@ -15,14 +15,17 @@ find_terms_in_model <- function(model, variables = NULL) {
     # handle character variables as factors
     classes[classes == "character"] <- "factor"
     ## cleanup names of terms
-    terms2 <- sapply(names(classes), function(x) all.vars(parse(text = paste0("`", x, "`"))))
-    names(classes)[names(classes) %in% names(terms2)] <- terms2[names(classes) %in% names(terms2)]
+    cleaned_terms <- clean_terms(names(classes))
+    ## THIS WILL DROP TERMS WHERE A TERM IS ONLY IN AN `I()` EXPRESSION
+    #classes <- classes[names(classes) %in% cleaned_terms]
+    ## LET'S TRY SOMETHING DIFFERENT
+    names(classes) <- cleaned_terms
     
     # identify factors versus numeric terms in `model`, and cleanup the names of terms
     vars <- list(
-      nnames = clean_terms(names(classes)[!classes %in% c("factor", "ordered", "logical")]),
-      lnames = clean_terms(names(classes)[classes == "logical"]),
-      fnames = clean_terms(names(classes)[classes %in% c("factor", "ordered")]),
+      nnames = names(classes)[!classes %in% c("factor", "ordered", "logical")],
+      lnames = names(classes)[classes == "logical"],
+      fnames = names(classes)[classes %in% c("factor", "ordered")],
       fnames2 = names(classes)[classes %in% c("factor", "ordered")] # for checking stupid variable naming behavior by R
     )
     
@@ -44,5 +47,5 @@ find_terms_in_model <- function(model, variables = NULL) {
 # call gsub_bracket on all common formula operations
 clean_terms <- function(terms) {
     # the use of paste("`", x, "`") is a hack to deal with variables that have spaces in their names
-    unique(unlist(lapply(terms, function(x) all.vars(formula(paste0("~", ifelse(grepl(" ", x), paste0("`", x, "`"), x)))))))
+    unlist(lapply(terms, function(x) all.vars(formula(paste0("~", ifelse(grepl("[[:alpha:]] [[:alpha:]]", x), paste0("`", x, "`"), x))))))
 }
