@@ -100,11 +100,3 @@ function(x,
     }
     invisible(out)
 }
-
-#' @rdname persp
-#' @export
-persp.glm <- persp.lm
-
-#' @rdname persp
-#' @export
-persp.loess <- persp.lm

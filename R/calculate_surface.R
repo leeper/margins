@@ -1,21 +1,16 @@
+#' @importFrom utils capture.output
 calculate_surface <- function(x, xvar, yvar, dx, nx, ny, type, vcov = stats::vcov(x), what) {
     
     # internal function to calculate surface for `persp()` and `image()`
     
-    dat <- x[["model"]]
-    dat[] <- lapply(dat, as.numeric) # this probably isn't a good idea
+    dat <- prediction::find_data(x, env = .GlobalEnv)
     
     xvals <- seq_range(dat[[xvar]], nx)
     yvals <- seq_range(dat[[yvar]], ny)
     
     if (what == "prediction") {
-        datmeans <- structure(lapply(colMeans(dat[, !names(dat) %in% c(xvar, yvar), drop = FALSE]), rep, length(xvals) * length(yvals)),
-                              class = "data.frame", row.names = seq_len(length(xvals) * length(yvals)))
-        outcome <- outer(xvals, yvals, FUN = function(a, b) {
-            datmeans[, xvar] <- a
-            datmeans[, yvar] <- b
-            prediction(model = x, data = datmeans, type = type)[["fitted"]]
-        })
+        suppressMessages(utils::capture.output(vals <- summary(prediction(model = x, at = stats::setNames(list(xvals, yvals), c(xvar, yvar)), type = type))))
+        outcome <- matrix(vals[["value"]], nrow = nx, ncol = ny)
     } else if (what == "effect") {
         mar <- summary(margins(x, at = setNames(list(xvals, yvals), c(xvar, yvar)), vce = "none", type = type))
         vals <- mar[mar[["factor"]] == dx, "AME"]

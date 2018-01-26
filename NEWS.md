@@ -1,3 +1,8 @@
+## margins 0.3.17
+
+* Setup a `cplot.default()` method and modified documentation of `cplot()`, `image()`, and `persp()` methods slightly.
+
+
 ## margins 0.3.16
 
 * Fixed a bug in `cplot()` when `xvar` was of class "ordered". (#77, h/t Francisco Llaneras)

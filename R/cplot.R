@@ -1,6 +1,6 @@
 #' @rdname cplot
 #' @title Conditional predicted value and average marginal effect plots for models
-#' @description Draw one or more conditioanl effects plots reflecting predictions or marginal effects from a model, conditional on a covariate. Currently methods exist for \dQuote{lm}, \dQuote{glm}, \dQuote{loess} class models.
+#' @description Draw one or more conditional effects plots reflecting predictions or marginal effects from a model, conditional on a covariate. Currently methods exist for \dQuote{lm}, \dQuote{glm}, \dQuote{loess} class models.
 #' @param object A model object.
 #' @param x A character string specifying the name of variable to use as the x-axis dimension in the plot.
 #' @param dx If \code{what = "effect"}, the variable whose conditional marginal effect should be displayed. By default it is \code{x} (so the plot displays the marginal effect of \code{x} across values of \code{x}); ignored otherwise. If \code{dx} is a factor with more than 2 levels, an error will be issued.
@@ -133,7 +133,7 @@ cplot <- function(object, ...) {
 
 #' @rdname cplot
 #' @export
-cplot.lm <- 
+cplot.default <- 
 function(object, 
          x = attributes(terms(object))[["term.labels"]][1L],
          dx = x, 
@@ -180,6 +180,7 @@ function(object,
     yvar <- as.character(attributes(terms(object))[["variables"]][[2]])
     
     # handle factors and subset data
+    data <- force(data)
     f <- check_factors(object, data, xvar = xvar, dx = dx)
     x_is_factor <- f[["x_is_factor"]]
     dx_is_factor <- f[["dx_is_factor"]]
@@ -203,11 +204,12 @@ function(object,
 
     # setup `outdat` data
     if (what == "prediction") {
+        # NOTE: THIS IS CALCULATING PREDICTED VALUES AT MEANS/MODES, NOT AVERAGE PREDICTIONS
         tmpdat <- lapply(dat[, names(dat) != xvar, drop = FALSE], mean_or_mode)
         tmpdat <- structure(lapply(tmpdat, rep, length(xvals)),
                             class = "data.frame", row.names = seq_len(length(xvals)))
         tmpdat[[xvar]] <- xvals
-        outdat <- prediction(model = object, data = tmpdat, type = type, level = level)
+        outdat <- prediction(model = object, data = tmpdat, at = stats::setNames(list(xvals), xvar), type = type, level = level)
         out <- structure(list(xvals = xvals,
                               yvals = outdat[["fitted"]],
                               upper = outdat[["fitted"]] + (fac[2] * outdat[["se.fitted"]]),

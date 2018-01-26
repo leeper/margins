@@ -83,7 +83,7 @@ With the exception of differences in rounding, the above results match identical
 plot(m)
 ```
 
-![plot of chunk marginsplot](https://i.imgur.com/Z30m92b.png)
+![plot of chunk marginsplot](https://i.imgur.com/GQk5B7V.png)
 
 If you are only interested in obtaining the marginal effects (without corresponding variances or the overhead of creating a "margins" object), you can call `marginal_effects(x)` directly. Furthermore, the `dydx()` function enables the calculation of the marginal effect of a single named variable:
 
@@ -131,7 +131,7 @@ microbenchmark(marginal_effects(x))
 ```
 ## Unit: milliseconds
 ##                 expr      min       lq     mean   median       uq      max neval
-##  marginal_effects(x) 3.375549 3.722798 4.398846 4.180284 4.737934 7.560014   100
+##  marginal_effects(x) 3.453476 4.164129 5.317117 4.458158 5.739764 12.56632   100
 ```
 
 ```r
@@ -140,8 +140,8 @@ microbenchmark(margins(x))
 
 ```
 ## Unit: milliseconds
-##        expr      min       lq     mean   median       uq     max neval
-##  margins(x) 25.00681 27.03975 29.39063 28.80165 31.05258 59.3173   100
+##        expr      min       lq     mean   median       uq      max neval
+##  margins(x) 24.06029 27.20567 29.29177 29.22093 30.38584 44.71196   100
 ```
 
 One way to improve performance of `margins()` is to use the `variables` argument (available from v0.3.7) to calculate marginal effects for only the subset of variables used in the model that you are substantively interested in (a la setting Stata's `, dydx()` option):
@@ -164,7 +164,7 @@ m <- glm(am ~ wt*drat, data = mtcars, family = binomial)
 cplot(m, x = "wt", se.type = "shade")
 ```
 
-![plot of chunk cplot1](https://i.imgur.com/P1Sntqq.png)
+![plot of chunk cplot1](https://i.imgur.com/6vMeadd.png)
 
 And fitted values with a factor independent variable:
 
@@ -173,19 +173,7 @@ And fitted values with a factor independent variable:
 cplot(lm(Sepal.Length ~ Species, data = iris))
 ```
 
-```
-## Warning in min(x): no non-missing arguments to min; returning Inf
-```
-
-```
-## Warning in max(x): no non-missing arguments to max; returning -Inf
-```
-
-```
-## Error in plot.window(...): need finite 'ylim' values
-```
-
-![plot of chunk cplot2](https://i.imgur.com/ktkTfPg.png)
+![plot of chunk cplot2](https://i.imgur.com/odVY6r6.png)
 
 and a graph of the effect of `drat` across levels of `wt`:
 
@@ -194,7 +182,7 @@ and a graph of the effect of `drat` across levels of `wt`:
 cplot(m, x = "wt", dx = "drat", what = "effect", se.type = "shade")
 ```
 
-![plot of chunk cplot3](https://i.imgur.com/LaFMQNf.png)
+![plot of chunk cplot3](https://i.imgur.com/oW7qI2p.png)
 
 Second, the package implements methods for "lm" and "glm" class objects for the `persp()` generic plotting function. This enables three-dimensional representations of predicted outcomes:
 
@@ -203,7 +191,9 @@ Second, the package implements methods for "lm" and "glm" class objects for the 
 persp(x, xvar = "cyl", yvar = "hp")
 ```
 
-![plot of chunk persp1](https://i.imgur.com/MuMLUdt.png)
+```
+## Error in x[["model"]]: subscript out of bounds
+```
 
 and marginal effects:
 
@@ -212,7 +202,9 @@ and marginal effects:
 persp(x, xvar = "cyl", yvar = "hp", what = "effect", nx = 10)
 ```
 
-![plot of chunk persp2](https://i.imgur.com/elH2hcB.png)
+```
+## Error in x[["model"]]: subscript out of bounds
+```
 
 And if three-dimensional plots aren't your thing, there are also analogous methods for the `image()` generic, to produce heatmap-style representations:
 
@@ -221,7 +213,9 @@ And if three-dimensional plots aren't your thing, there are also analogous metho
 image(x, xvar = "cyl", yvar = "hp", main = "Predicted Fuel Efficiency,\nby Cylinders and Horsepower")
 ```
 
-![plot of chunk image11](https://i.imgur.com/9H95wbz.png)
+```
+## Error in x[["model"]]: subscript out of bounds
+```
 
 
 The numerous package vignettes and help files contain extensive documentation and examples of all package functionality.

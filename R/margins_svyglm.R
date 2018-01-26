@@ -44,9 +44,6 @@ function(model,
     model[["model"]] <- NULL
     attr(model[["terms"]], ".Environment") <- NULL
     
-    # warn about weights
-    #warn_for_weights(model)
-    
     # calculate marginal effects
     out <- list()
     for (i in seq_along(data_list)) {

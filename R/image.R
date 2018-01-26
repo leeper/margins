@@ -57,11 +57,3 @@ function(x,
     
     invisible(NULL)
 }
-
-#' @rdname persp
-#' @export
-image.glm <- image.lm
-
-#' @rdname persp
-#' @export
-image.loess <- image.lm

@@ -18,7 +18,8 @@ check_factors <- function(object, data, xvar, dx) {
 
 # function to setup plot
 setup_cplot <- 
-function(plotdat, data, 
+function(plotdat,
+         data,
          xvals,
          xvar,
          yvar, 
