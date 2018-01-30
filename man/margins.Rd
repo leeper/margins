@@ -57,7 +57,7 @@ margins(model, ...)
 
 \item{variables}{A character vector with the names of variables for which to compute the marginal effects. The default (\code{NULL}) returns marginal effects for all variables.}
 
-\item{at}{A list of one or more named vectors, specifically values at which to calculate the marginal effects. These are used to modify the value of \code{data} (see \code{\link[prediction]{build_datalist}} for details on use).}
+\item{at}{A list of one or more named vectors, specifically values at which to calculate the marginal effects. This is an analogue of Stata's \code{, at()} option. The specified values are fully combined (i.e., a cartesian product) to find AMEs for all combinations of specified variable values. Rather than a list, this can also be a data frame of combination levels if only a subset of combinations are desired. These are used to modify the value of \code{data} when calculating AMEs across specified values (see \code{\link[prediction]{build_datalist}} for details on use). Note: This does not calculate AMEs for \emph{subgroups} but rather for counterfactual datasets where all observaations take the specified values; to obtain subgroup effects, subset \code{data} directly.}
 
 \item{type}{A character string indicating the type of marginal effects to estimate. Mostly relevant for non-linear models, where the reasonable options are \dQuote{response} (the default) or \dQuote{link} (i.e., on the scale of the linear predictor in a GLM).}
 
