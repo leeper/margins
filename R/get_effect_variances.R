@@ -30,16 +30,17 @@ function(data,
     } else if (vce == "delta") {
         
         # default method
-        variances <- delta_once(data = data,
-                                model = model,
-                                variables = variables,
-                                type = type,
-                                vcov = vcov,
-                                weights = weights,
-                                eps = eps,
-                                varslist = varslist,
-                                ...)
-    
+        vc <- delta_once(data = data,
+                         model = model,
+                         variables = variables,
+                         type = type,
+                         vcov = vcov,
+                         weights = weights,
+                         eps = eps,
+                         varslist = varslist,
+                         ...)
+        variances <- diag(vc)
+        
     } else if (vce == "simulation") {
         
         # copy model for quick use in estimation
@@ -64,7 +65,8 @@ function(data,
             return(means)
         })
         # calculate the variance of the simulated AMEs
-        variances <- apply(effectmat, 1, var, na.rm = TRUE)
+        vc <- var(t(effectmat))
+        variances <- diag(vc)
         
     } else if (vce == "bootstrap") {
     
@@ -89,12 +91,12 @@ function(data,
             means
         }
         # bootstrap the data and take the variance of bootstrapped AMEs
-        variances <- apply(replicate(iterations, bootfun()), 1, var, na.rm = TRUE)
-        
+        vc <- var(t(replicate(iterations, bootfun())))
+        variances <- diag(vc)
     }
     
     # replicate to nrow(data)
     variances <- setNames(lapply(variances, rep, nrow(data)), paste0("Var_", names(variances)))
     
-    return(variances)
+    return(list(variances = variances, vcov = vc))
 }

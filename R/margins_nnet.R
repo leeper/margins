@@ -44,6 +44,7 @@ function(model,
               call = if ("call" %in% names(model)) model[["call"]] else NULL,
               model_class = class(model),
               vce = vce, 
+              vcov = stats::setNames(lapply(out, attr, "vcov"), names(data_list)),
               weighted = FALSE,
               iterations = NULL)
 }

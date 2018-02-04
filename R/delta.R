@@ -41,8 +41,7 @@ function(data,
                            varslist = varslist,
                            ...)
     jacobian <- jacobian(FUN, coef(model)[names(coef(model)) %in% c("(Intercept)", colnames(vcov))], weights = weights, eps = eps)
-    vout <- diag(jacobian %*% vcov %*% t(jacobian))
-    return(vout)
+    return(jacobian %*% vcov %*% t(jacobian))
 }
 
 .build_grad_fun <- function(data, model, variables = NULL, type = "response", weights = NULL, eps = 1e-7, varslist = NULL, ...) {

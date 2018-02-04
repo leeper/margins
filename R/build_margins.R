@@ -44,14 +44,16 @@ function(model,
                                           type = type, vcov = vcov, vce = vce,
                                           iterations = iterations, weights = weights, eps = eps,
                                           varslist = varslist, ...)
+    } else {
+        variances <- list(variances = NULL, vcov = NULL)
     }
     
     # get unit-specific effect variances (take derivative of `.build_grad_fun()` for every row separately)
     if ((vce == "delta") && (isTRUE(unit_ses))) {
         vmat <- do.call("rbind", lapply(seq_len(nrow(data)), function(datarow) {
-            delta_once(data = data[datarow,], model = model, variables = variables,
-                       type = type, vcov = vcov, vce = vce, weights = weights,
-                       eps = eps, varslist = varslist, ...)
+            diag(delta_once(data = data[datarow,], model = model, variables = variables,
+                            type = type, vcov = vcov, vce = vce, weights = weights,
+                            eps = eps, varslist = varslist, ...))
         }))
         colnames(vmat) <- paste0("SE_", names(mes))
         vmat <- as.data.frame(vmat)
@@ -67,11 +69,11 @@ function(model,
     
     # setup output structure
     if ((vce == "delta") && (isTRUE(unit_ses))) {
-        out <- cbind(pred, mes, variances, vmat)
+        out <- cbind(pred, mes, variances[["variances"]], vmat)
     } else if (vce == "none") { 
         out <- cbind(pred, mes)
     } else { 
-        out <- cbind(pred, mes, variances)
+        out <- cbind(pred, mes, variances[["variances"]])
     }
     
     if (is.null(weights)) {
@@ -82,5 +84,6 @@ function(model,
     
     structure(out, 
               class = "data.frame", 
-              row.names = seq_len(nrow(pred)))
+              row.names = seq_len(nrow(pred)),
+              vcov = variances[["vcov"]])
 }

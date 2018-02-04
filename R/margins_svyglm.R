@@ -71,6 +71,7 @@ function(model,
               type = type,
               call = if ("call" %in% names(model)) model[["call"]] else NULL,
               vce = vce,
+              vcov = stats::setNames(lapply(out, attr, "vcov"), names(data_list)),
               weighted = if (is.null(wts)) FALSE else TRUE,
               iterations = if (vce == "bootstrap") iterations else NULL)
 }
