@@ -1,6 +1,7 @@
 ## margins 0.3.17
 
 * `margins()` now returns an attribute ("vcov") containing the variance-covariance matrix for the average marginal effects and a new `vcov.margins()` method is provided for extracting it. Behavior when using `at` specifications is unspecified and may change in the future. (h/t Trenton Mize)
+* Updated examples in `README.Rmd`. (#83)
 
 ## margins 0.3.16
 
