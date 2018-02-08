@@ -1,3 +1,4 @@
+# function to get effect variances using specified vce method
 get_effect_variances <- 
 function(data, 
          model = model, 
@@ -14,6 +15,8 @@ function(data,
     # march.arg() for arguments
     type <- match.arg(type)
     vce <- match.arg(vce)
+    
+    # setup vcov
     if (is.function(vcov)) {
         vcov <- vcov(model)
     }
@@ -23,22 +26,38 @@ function(data,
         varslist <- find_terms_in_model(model, variables = variables)
     }
     
+    # deploy appropriate vce procedure
     if (vce == "none") {
         
-        return(NULL)
+        return(list(variances = NULL, vcov = NULL, jacobian = NULL))
         
     } else if (vce == "delta") {
         
         # default method
-        vc <- delta_once(data = data,
-                         model = model,
-                         variables = variables,
-                         type = type,
-                         vcov = vcov,
-                         weights = weights,
-                         eps = eps,
-                         varslist = varslist,
-                         ...)
+        
+        # express each marginal effect as a function of estimated coefficients
+        # holding data constant (using `gradient_factory()`)
+        # use `jacobian(gradient_factory(), model$coef)`
+        # to get `jacobian`, an ME-by-beta matrix,
+        # such that jacobian %*% V %*% t(jacobian)
+        # gives the variance of each marginal effect
+        # http://www.soderbom.net/lecture10notes.pdf
+        # http://stats.stackexchange.com/questions/122066/how-to-use-delta-method-for-standard-errors-of-marginal-effects
+        
+        # build gradient function
+        FUN <- gradient_factory(data = data,
+                                model = model,
+                                variables = variables,
+                                type = type,
+                                weights = weights,
+                                eps = eps,
+                                varslist = varslist,
+                                ...)
+        # get jacobian
+        jacobian <- jacobian(FUN, coef(model)[names(coef(model)) %in% c("(Intercept)", colnames(vcov))], weights = weights, eps = eps)
+        # sandwich
+        vc <- jacobian %*% vcov %*% t(jacobian)
+        # extract variances from diagonal
         variances <- diag(vc)
         
     } else if (vce == "simulation") {
@@ -67,6 +86,7 @@ function(data,
         # calculate the variance of the simulated AMEs
         vc <- var(t(effectmat))
         variances <- diag(vc)
+        jacobian <- NULL
         
     } else if (vce == "bootstrap") {
     
@@ -93,10 +113,11 @@ function(data,
         # bootstrap the data and take the variance of bootstrapped AMEs
         vc <- var(t(replicate(iterations, bootfun())))
         variances <- diag(vc)
+        jacobian <- NULL
     }
     
     # replicate to nrow(data)
     variances <- setNames(lapply(variances, rep, nrow(data)), paste0("Var_", names(variances)))
     
-    return(list(variances = variances, vcov = vc))
+    return(list(variances = variances, vcov = vc, jacobian = jacobian))
 }

@@ -38,17 +38,20 @@ function(model,
                                   eps = eps,
                                   varslist = varslist,
                                   ...)
+        out[[i]][["_at_number"]] <- i
     }
     
     # return value
     structure(do.call("rbind", out), 
               class = c("margins", "data.frame"), 
-              at = if (is.null(at)) at else names(at),
+              at = at,
+              at_vars = if (is.null(at)) at else names(at),
               type = "response",
               call = if ("call" %in% names(model)) model[["call"]] else NULL,
               model_class = class(model),
               vce = "none", 
-              vcov = stats::setNames(lapply(out, attr, "vcov"), names(data_list)),
+              vcov = NULL,
+              jacobian = NULL,
               weighted = FALSE,
               iterations = NULL)
 }

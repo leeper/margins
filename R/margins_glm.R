@@ -44,17 +44,28 @@ function(model,
                                   eps = eps,
                                   varslist = varslist,
                                   ...)
+        out[[i]][["_at_number"]] <- i
+    }
+    if (vce == "delta") {
+        jac <- do.call("rbind", lapply(out, attr, "jacobian"))
+        rownames(jac) <- paste0(rownames(jac), ".", rep(seq_len(length(out)), each = length(unique(rownames(jac)))))
+        vc <- jac %*% vcov %*% t(jac)
+    } else {
+        jac <- NULL
+        vc <- NULL
     }
     
     # return value
     structure(do.call("rbind", out), 
               class = c("margins", "data.frame"), 
-              at = if (is.null(at)) at else names(at),
+              at = at,
+              at_vars = if (is.null(at)) at else names(at),
               type = type,
               call = if ("call" %in% names(model)) model[["call"]] else NULL,
               model_class = class(model),
               vce = vce, 
-              vcov = stats::setNames(lapply(out, attr, "vcov"), names(data_list)),
+              vcov = vc,
+              jacobian = jac,
               weighted = FALSE,
               iterations = if (vce == "bootstrap") iterations else NULL)
 }

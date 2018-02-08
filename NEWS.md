@@ -1,6 +1,12 @@
+## margins 0.3.18
+
+* `margins()` now returns attributes "vcov" and "jacobian" (the latter only when `vce = "delta"`), which contain the full variance-covariance matrix for the average marginal effects and jacobian for the same. This is different behavior from the previous draft (v0.3.17) because the attributes now always contain a single matrix; again use the `vcov()` method rather than accessing the attribute directly lest it change in the future. This allows calculation combination of marginal effects, such as the difference between two AMEs. Some internal functions have been renamed and code reorganized to make this possible. (#87, h/t Trenton Mize)
+* The "at" attribute returned by `margins()` now contains the input value passed to the `at` argument to the function. New attribute "at_vars" returns a character vector of variables specified therein.
+* The data frame returned by `margins()` now contains an added column `"_at_number"`, which specifies which `at` combination a row comes from. This may be changed or removed in the future, but is useful for matching subsets of the data frame to corresponding entries in the "vcov" and "jacobian" matrices.
+
 ## margins 0.3.17
 
-* `margins()` now returns an attribute ("vcov") containing the variance-covariance matrix for the average marginal effects and a new `vcov.margins()` method is provided for extracting it. Behavior when using `at` specifications is unspecified and may change in the future. (h/t Trenton Mize)
+* `margins()` now returns an attribute ("vcov") containing the variance-covariance matrix for the average marginal effects and a new `vcov.margins()` method is provided for extracting it. Behavior when using `at` specifications is unspecified and may change in the future. (#87, h/t Trenton Mize)
 * Updated examples in `README.Rmd`. (#83)
 
 ## margins 0.3.16

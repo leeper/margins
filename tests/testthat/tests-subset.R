@@ -30,7 +30,7 @@ test_that("Correct attributes are returned by margins()", {
     margins_subset <- margins(mod, variables = 'x')
     expect_equal(names(margins_subset), c("y", "x", "z", "w", "fitted",
                                           "se.fitted", "dydx_x",
-                                          "Var_dydx_x", "_weights"))
+                                          "Var_dydx_x", "_weights", "_at_number"))
 
     margins_all <- margins(mod)
     expect_equal(names(margins_all), c("y", "x", "z", "w", "fitted", "se.fitted",
@@ -39,5 +39,5 @@ test_that("Correct attributes are returned by margins()", {
                                        "Var_dydx_x", "Var_dydx_z",
                                        "Var_dydx_wb", "Var_dydx_wc",
                                        "Var_dydx_wd", "Var_dydx_we",
-                                       "_weights"))
+                                       "_weights", "_at_number"))
 })
