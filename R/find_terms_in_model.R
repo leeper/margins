@@ -8,7 +8,8 @@ find_terms_in_model <- function(model, variables = NULL) {
     # identify classes of terms in `model`
     classes <- attributes(terms(model))[["dataClasses"]][-1]
     # drop specially named "(weights)" variables
-    if (!is.null(model[["weights"]])) {
+    wts <- weights(model)
+    if (!is.null(wts)) {
         classes <- classes[!names(classes) %in% "(weights)"]
     }
     # handle character variables as factors
