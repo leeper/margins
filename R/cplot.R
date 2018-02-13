@@ -203,8 +203,9 @@ function(object,
 
     # setup `outdat` data
     if (what == "prediction") {
+        # generates predictions as mean/mode of all variables rather than average prediction!
         tmpdat <- lapply(dat[, names(dat) != xvar, drop = FALSE], mean_or_mode)
-        tmpdat <- structure(lapply(tmpdat, rep, length(xvals)),
+        tmpdat <- structure(lapply(tmpdat, rep, length.out = length(xvals)),
                             class = "data.frame", row.names = seq_len(length(xvals)))
         tmpdat[[xvar]] <- xvals
         outdat <- prediction(model = object, data = tmpdat, type = type, level = level)
@@ -213,6 +214,7 @@ function(object,
                               upper = outdat[["fitted"]] + (fac[2] * outdat[["se.fitted"]]),
                               lower = outdat[["fitted"]] + (fac[1] * outdat[["se.fitted"]])),
                          class = "data.frame", row.names = seq_along(outdat[["fitted"]]))
+        print(head(out, 20))
     } else if (what == "effect") {
         if (is.factor(dat[[dx]]) && nlevels(data[[dx]]) > 2L) {
             stop("Displaying effect of a factor variable with > 2 levels is not currently supported!")
@@ -224,7 +226,7 @@ function(object,
     
     # optionally draw the plot; if FALSE, just the data are returned
     if (isTRUE(draw)) {
-        setup_cplot(plotdat = out, data = data, xvals = xvals, xvar = xvar, yvar = yvar,
+        setup_cplot(plotdat = out, data = data, xvar = xvar, yvar = yvar,
                     xlim = xlim, ylim = ylim, x_is_factor = x_is_factor,
                     xlab = xlab, ylab = ylab, xaxs = xaxs, yaxs = yaxs, las = las,
                     scatter = scatter, scatter.pch = scatter.pch, scatter.col = scatter.col, ...)
