@@ -8,6 +8,7 @@ margins.merMod <- function(model,
     
     # setup data
     data_list <- build_datalist(data, at = at)
+    at_specification <- attr(data_list, "at_specification")
     
     # calculate marginal effects
     out <- list()
@@ -19,8 +20,7 @@ margins.merMod <- function(model,
     # return value
     structure(do.call("rbind", out), 
               class = c("margins", "data.frame"),
-              at = at,
-              at_vars = if (is.null(at)) at else names(at),
+              at = if (is.null(at)) NULL else at_specification,
               type = NULL,
               call = if ("call" %in% names(model)) model[["call"]] else NULL,
               model_class = class(model),

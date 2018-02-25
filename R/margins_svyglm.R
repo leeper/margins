@@ -36,6 +36,7 @@ function(model,
     if (is.null(names(data_list))) {
         names(data_list) <- NA_character_
     }
+    at_specification <- attr(data_list, "at_specification")
     
     # identify classes of terms in `model`
     varslist <- find_terms_in_model(model, variables = variables)
@@ -76,8 +77,7 @@ function(model,
     # return value
     structure(do.call("rbind", out), 
               class = c("margins", "data.frame"), 
-              at = at,
-              at_vars = if (is.null(at)) at else names(at),
+              at = if (is.null(at)) NULL else at_specification,
               type = type,
               call = if ("call" %in% names(model)) model[["call"]] else NULL,
               vce = vce,

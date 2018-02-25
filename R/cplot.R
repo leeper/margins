@@ -124,6 +124,7 @@
 #' }
 #' @seealso \code{\link{plot.margins}}, \code{\link{persp.lm}}
 #' @keywords graphics
+#' @importFrom utils head
 #' @importFrom graphics par plot lines rug polygon segments points
 #' @importFrom prediction prediction find_data seq_range mean_or_mode
 #' @export

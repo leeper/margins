@@ -8,7 +8,7 @@ function(x, digits = 4, order = NULL, ...) {
     }
     
     # check for `at` specification
-    at_names <- attr(x, "at_vars")
+    at_names <- names(attr(x, "at"))
     if (is.null(at_names)) {
         if (isTRUE(is_weighted)) {
             message("Average marginal effects (survey-weighted)")

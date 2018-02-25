@@ -1,3 +1,4 @@
+.github/*
 ^\.travis\.yml$
 ^appveyor\.yml$
 ^travis-tool\.sh$

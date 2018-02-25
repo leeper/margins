@@ -6,7 +6,7 @@ function(object, level = 0.95, by_factor = TRUE, ...) {
     is_weighted <- attr(object, "weighted")
     
     # check for `at` specification
-    at_names <- attr(object, "at_vars")
+    at_names <- names(attr(object, "at"))
     if (is.null(at_names)) {
         out <- summarize_one(object, level = level, is_weighted = is_weighted, ...)
         out <- out[order(out[["factor"]]), ]
@@ -32,7 +32,7 @@ function(object, level = 0.95, by_factor = TRUE, ...) {
               vce = attributes(object)[["vce"]],
               iterations = attributes(object)[["iterations"]],
               level = level,
-              at_vars = attributes(object)[["at"]])
+              at = attributes(object)[["at"]])
 }
 
 summarize_one <- function(object, level = 0.95, is_weighted = FALSE, ...) {
