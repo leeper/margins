@@ -8,6 +8,7 @@
 ^README_files$
 ^README_files/.+$
 ^CONTRIBUTING\.md$
+^LICENSE\.md$
 ^inst/standarderrors\.pdf$
 ^figure$
 ^figure/.+$
