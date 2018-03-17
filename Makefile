@@ -24,5 +24,5 @@ install: ../$(pkg)*.tar.gz
 	cd ../ && R CMD INSTALL $(pkg)*.tar.gz
 	rm ../$(pkg)*.tar.gz
 
-website: docs/index.html
+website: R/* README.md DESCRIPTION
 	Rscript -e "pkgdown::build_site()"
