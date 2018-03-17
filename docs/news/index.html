@@ -105,9 +105,10 @@
     </div>
 
     <div class="contents">
-    <div id="margins-0-3-18" class="section level2">
-<h2 class="hasAnchor">
-<a href="#margins-0-3-18" class="anchor"></a>margins 0.3.18</h2>
+    <div id="margins-0-3-18" class="section level1">
+<h1 class="page-header">
+<a href="#margins-0-3-18" class="anchor"></a>margins 0.3.18<small> Unreleased </small>
+</h1>
 <ul>
 <li>
 <code><a href="../reference/margins.html">margins()</a></code> now returns attributes “vcov” and “jacobian” (the latter only when <code>vce = "delta"</code>), which contain the full variance-covariance matrix for the average marginal effects and jacobian for the same. This is different behavior from the previous draft (v0.3.17) because the attributes now always contain a single matrix; again use the <code>vcov()</code> method rather than accessing the attribute directly lest it change in the future. This allows calculation combination of marginal effects, such as the difference between two AMEs. Some internal functions have been renamed and code reorganized to make this possible. (<a href='https://github.com/leeper/margins/issues/87'>#87</a>, h/t Trenton Mize)</li>
@@ -115,48 +116,54 @@
 <li>The data frame returned by <code><a href="../reference/margins.html">margins()</a></code> now contains an added column <code>"_at_number"</code>, which specifies which <code>at</code> combination a row comes from. This may be changed or removed in the future, but is useful for matching subsets of the data frame to corresponding entries in the “vcov” and “jacobian” matrices.</li>
 </ul>
 </div>
-    <div id="margins-0-3-17" class="section level2">
-<h2 class="hasAnchor">
-<a href="#margins-0-3-17" class="anchor"></a>margins 0.3.17</h2>
+    <div id="margins-0-3-17" class="section level1">
+<h1 class="page-header">
+<a href="#margins-0-3-17" class="anchor"></a>margins 0.3.17<small> Unreleased </small>
+</h1>
 <ul>
 <li>
 <code><a href="../reference/margins.html">margins()</a></code> now returns an attribute (“vcov”) containing the variance-covariance matrix for the average marginal effects and a new <code>vcov.margins()</code> method is provided for extracting it. Behavior when using <code>at</code> specifications is unspecified and may change in the future. (<a href='https://github.com/leeper/margins/issues/87'>#87</a>, h/t Trenton Mize)</li>
 <li>Updated examples in <code>README.Rmd</code>. (<a href='https://github.com/leeper/margins/issues/83'>#83</a>)</li>
 </ul>
 </div>
-    <div id="margins-0-3-16" class="section level2">
-<h2 class="hasAnchor">
-<a href="#margins-0-3-16" class="anchor"></a>margins 0.3.16</h2>
+    <div id="margins-0-3-16" class="section level1">
+<h1 class="page-header">
+<a href="#margins-0-3-16" class="anchor"></a>margins 0.3.16<small> Unreleased </small>
+</h1>
 <ul>
 <li>Fixed a bug in <code><a href="../reference/cplot.html">cplot()</a></code> when <code>xvar</code> was of class “ordered”. (<a href='https://github.com/leeper/margins/issues/77'>#77</a>, h/t Francisco Llaneras)</li>
 <li>Fixed a bug in <code><a href="../reference/plot.margins.html">plot.margins()</a></code> when <code>at</code> contained only one variable. (<a href='https://github.com/leeper/margins/issues/78'>#78</a>, h/t <a href='http://github.com/cyberbryce'>@cyberbryce</a>)</li>
 </ul>
 </div>
-    <div id="margins-0-3-15" class="section level2">
-<h2 class="hasAnchor">
-<a href="#margins-0-3-15" class="anchor"></a>margins 0.3.15</h2>
+    <div id="margins-0-3-15" class="section level1">
+<h1 class="page-header">
+<a href="#margins-0-3-15" class="anchor"></a>margins 0.3.15<small> Unreleased </small>
+</h1>
 <ul>
 <li>Tried to improve the handling of edge case model specifications like <code>y ~ I(x^2)</code>, <code>y ~ x + I(2*x)</code>, and those involving RHS interactions between factors where some cells are not observed in the data. Added a test suite to cover these cases. (<a href='https://github.com/leeper/margins/issues/82'>#82</a>)</li>
 <li>Continued to update behavior of internal function <code>find_terms_in_model()</code>.</li>
 </ul>
 </div>
-    <div id="margins-0-3-14" class="section level2">
-<h2 class="hasAnchor">
-<a href="#margins-0-3-14" class="anchor"></a>margins 0.3.14</h2>
+    <div id="margins-0-3-14" class="section level1">
+<h1 class="page-header">
+<a href="#margins-0-3-14" class="anchor"></a>margins 0.3.14<small> Unreleased </small>
+</h1>
 <ul>
 <li>Fixed a bug in survey-weighted objects involving weights and expanded the test suite to cover these cases.</li>
 </ul>
 </div>
-    <div id="margins-0-3-13" class="section level2">
-<h2 class="hasAnchor">
-<a href="#margins-0-3-13" class="anchor"></a>margins 0.3.13</h2>
+    <div id="margins-0-3-13" class="section level1">
+<h1 class="page-header">
+<a href="#margins-0-3-13" class="anchor"></a>margins 0.3.13<small> Unreleased </small>
+</h1>
 <ul>
 <li>Fixed a bug in all functions (ultimately in internal utility <code>clean_terms()</code>) that occurred when formulae contained variables with backticked names that contained spaces. (<a href='https://github.com/leeper/margins/issues/80'>#80</a>)</li>
 </ul>
 </div>
-    <div id="margins-0-3-12" class="section level2">
-<h2 class="hasAnchor">
-<a href="#margins-0-3-12" class="anchor"></a>margins 0.3.12</h2>
+    <div id="margins-0-3-12" class="section level1">
+<h1 class="page-header">
+<a href="#margins-0-3-12" class="anchor"></a>margins 0.3.12<small> Unreleased </small>
+</h1>
 <ul>
 <li>
 <code><a href="../reference/dydx.html">dydx()</a></code> now uses the performance-enhancing <code><a href="http://www.rdocumentation.org/packages/prediction/topics/prediction">prediction::prediction(..., calculate_se = FALSE)</a></code> setting, where possible (introduced in <strong>prediction</strong> 0.2.4)</li>
@@ -164,33 +171,37 @@
 <code><a href="http://www.rdocumentation.org/packages/data.table/topics/rbindlist">data.table::rbindlist()</a></code> is used instead of <code><a href="http://www.rdocumentation.org/packages/base/topics/cbind">base::rbind()</a></code> inside <code><a href="../reference/dydx.html">dydx()</a></code>.</li>
 </ul>
 </div>
-    <div id="margins-0-3-11" class="section level2">
-<h2 class="hasAnchor">
-<a href="#margins-0-3-11" class="anchor"></a>margins 0.3.11</h2>
+    <div id="margins-0-3-11" class="section level1">
+<h1 class="page-header">
+<a href="#margins-0-3-11" class="anchor"></a>margins 0.3.11<small> Unreleased </small>
+</h1>
 <ul>
 <li>Changed some internal representations from data frames to matrices in an effort to improve performance. <code><a href="../reference/marginal_effects.html">marginal_effects()</a></code> and <code><a href="../reference/dydx.html">dydx()</a></code> gain an <code>as.data.frame</code> argument to regulate the class of their responses.</li>
 <li>Internal calls to <code><a href="http://www.rdocumentation.org/packages/prediction/topics/prediction">prediction::prediction()</a></code> were halved by stacking data frames used in calculating numerical derivatives (inside <code><a href="../reference/dydx.html">dydx()</a></code> methods) and then splitting the resulting predicted value vectors.</li>
 </ul>
 </div>
-    <div id="margins-0-3-10" class="section level2">
-<h2 class="hasAnchor">
-<a href="#margins-0-3-10" class="anchor"></a>margins 0.3.10</h2>
+    <div id="margins-0-3-10" class="section level1">
+<h1 class="page-header">
+<a href="#margins-0-3-10" class="anchor"></a>margins 0.3.10<small> Unreleased </small>
+</h1>
 <ul>
 <li>Added an (internal use only) argument, <code>varslist</code>, to <code><a href="../reference/marginal_effects.html">marginal_effects()</a></code> and several internal functions that significantly improves performance. The performance gain is due to computational cost of identifying terms in model formulae each time <code><a href="../reference/marginal_effects.html">marginal_effects()</a></code> was called, which occurred repeatedly (e.g., during variance estimation). By performing this once at the <code><a href="../reference/margins.html">margins()</a></code>-level and passing the argument throughout, <code><a href="../reference/margins.html">margins()</a></code> is perhaps twice as fast as in versions &lt;= 0.3.9. But, importantly, note that this argument should not be specified by end users!</li>
 <li>Some internal edits were made to the formula-processing functions <code>find_terms_in_model()</code> and <code>clean_terms()</code>, removing many regex calls with the goal of improving performance.</li>
 <li>Removed <strong>compiler</strong> dependency, which appeared to not improve performance.</li>
 </ul>
 </div>
-    <div id="margins-0-3-9" class="section level2">
-<h2 class="hasAnchor">
-<a href="#margins-0-3-9" class="anchor"></a>margins 0.3.9</h2>
+    <div id="margins-0-3-9" class="section level1">
+<h1 class="page-header">
+<a href="#margins-0-3-9" class="anchor"></a>margins 0.3.9<small> Unreleased </small>
+</h1>
 <ul>
 <li>Fixed a bug wherein model formulae involving non-standard variables names with spaces in them led to errors. (<a href='https://github.com/leeper/margins/issues/80'>#80</a>)</li>
 </ul>
 </div>
-    <div id="margins-0-3-8" class="section level2">
-<h2 class="hasAnchor">
-<a href="#margins-0-3-8" class="anchor"></a>margins 0.3.8</h2>
+    <div id="margins-0-3-8" class="section level1">
+<h1 class="page-header">
+<a href="#margins-0-3-8" class="anchor"></a>margins 0.3.8<small> Unreleased </small>
+</h1>
 <ul>
 <li>Added method for “svyglm” from <strong>survey</strong>.</li>
 <li>Improved handling of survey-weighted estimates. Removed weight-related warnings from <code><a href="../reference/margins.html">margins()</a></code> for unweighted models.</li>
@@ -198,60 +209,68 @@
 <code>print()</code> and <code>summary()</code> now handle survey-weighted marginal effects.</li>
 </ul>
 </div>
-    <div id="margins-0-3-7" class="section level2">
-<h2 class="hasAnchor">
-<a href="#margins-0-3-7" class="anchor"></a>margins 0.3.7</h2>
+    <div id="margins-0-3-7" class="section level1">
+<h1 class="page-header">
+<a href="#margins-0-3-7" class="anchor"></a>margins 0.3.7<small> Unreleased </small>
+</h1>
 <ul>
 <li>
 <code><a href="../reference/margins.html">margins()</a></code> and <code><a href="../reference/marginal_effects.html">marginal_effects()</a></code> gain a <code>variables</code> argument to request marginal effects for a subset of variables included in a model. (<a href='https://github.com/leeper/margins/issues/65'>#65</a>, h/t Vincent Arul-Bundock)</li>
 </ul>
 </div>
-    <div id="margins-0-3-6" class="section level2">
-<h2 class="hasAnchor">
-<a href="#margins-0-3-6" class="anchor"></a>margins 0.3.6</h2>
+    <div id="margins-0-3-6" class="section level1">
+<h1 class="page-header">
+<a href="#margins-0-3-6" class="anchor"></a>margins 0.3.6<small> Unreleased </small>
+</h1>
 <ul>
 <li>Export <code>margins.merMod()</code>. (<a href='https://github.com/leeper/margins/issues/56'>#56</a>)</li>
 </ul>
 </div>
-    <div id="margins-0-3-5" class="section level2">
-<h2 class="hasAnchor">
-<a href="#margins-0-3-5" class="anchor"></a>margins 0.3.5</h2>
+    <div id="margins-0-3-5" class="section level1">
+<h1 class="page-header">
+<a href="#margins-0-3-5" class="anchor"></a>margins 0.3.5<small> Unreleased </small>
+</h1>
 <ul>
 <li>Added a <code><a href="../reference/cplot.html">cplot.clm()</a></code> method. (<a href='https://github.com/leeper/margins/issues/63'>#63</a>, h/t David Barron)</li>
 </ul>
 </div>
-    <div id="margins-0-3-4" class="section level2">
-<h2 class="hasAnchor">
-<a href="#margins-0-3-4" class="anchor"></a>margins 0.3.4</h2>
+    <div id="margins-0-3-4" class="section level1">
+<h1 class="page-header">
+<a href="#margins-0-3-4" class="anchor"></a>margins 0.3.4<small> Unreleased </small>
+</h1>
 <ul>
 <li>Fixed a bug in <code><a href="../reference/cplot.html">cplot.polr()</a></code>. (<a href='https://github.com/leeper/margins/issues/62'>#62</a>, h/t David Barron)</li>
 </ul>
 </div>
-    <div id="margins-0-3-3" class="section level2">
-<h2 class="hasAnchor">
-<a href="#margins-0-3-3" class="anchor"></a>margins 0.3.3</h2>
+    <div id="margins-0-3-3" class="section level1">
+<h1 class="page-header">
+<a href="#margins-0-3-3" class="anchor"></a>margins 0.3.3<small> Unreleased </small>
+</h1>
 <ul>
 <li>Fixed “margins” object structure in <code>margins.merMod()</code>.</li>
 <li>Switched <code>print()</code> and <code>summary()</code> methods to using <code>weighted.mean()</code> instead of <code>mean()</code>. (<a href='https://github.com/leeper/margins/issues/45'>#45</a>)</li>
 </ul>
 </div>
-    <div id="margins-0-3-2" class="section level2">
-<h2 class="hasAnchor">
-<a href="#margins-0-3-2" class="anchor"></a>margins 0.3.2</h2>
+    <div id="margins-0-3-2" class="section level1">
+<h1 class="page-header">
+<a href="#margins-0-3-2" class="anchor"></a>margins 0.3.2<small> Unreleased </small>
+</h1>
 <ul>
 <li>Added method for class “polr” from <strong>MASS</strong>. (<a href='https://github.com/leeper/margins/issues/60'>#60</a>)</li>
 </ul>
 </div>
-    <div id="margins-0-3-1" class="section level2">
-<h2 class="hasAnchor">
-<a href="#margins-0-3-1" class="anchor"></a>margins 0.3.1</h2>
+    <div id="margins-0-3-1" class="section level1">
+<h1 class="page-header">
+<a href="#margins-0-3-1" class="anchor"></a>margins 0.3.1<small> Unreleased </small>
+</h1>
 <ul>
 <li>Added method for class “nnet” from <strong>nnet</strong> as an initial implementation of multi-category outcome models. (<a href='https://github.com/leeper/margins/issues/60'>#60</a>)</li>
 </ul>
 </div>
-    <div id="margins-0-3-0" class="section level2">
-<h2 class="hasAnchor">
-<a href="#margins-0-3-0" class="anchor"></a>margins 0.3.0</h2>
+    <div id="margins-0-3-0" class="section level1">
+<h1 class="page-header">
+<a href="#margins-0-3-0" class="anchor"></a>margins 0.3.0<small> 2017-03-22 </small>
+</h1>
 <ul>
 <li>Significantly modified the data structure returned by <code><a href="../reference/margins.html">margins()</a></code>. It now returns a data frame with an added <code>at</code> attribute, specifying the names of the variables that have been fixed by <code>build_datalist()</code>. (<a href='https://github.com/leeper/margins/issues/58'>#58</a>)</li>
 <li>Renamed marginal effects, variance, and standard error columns returned by <code><a href="../reference/margins.html">margins()</a></code>. Marginal effects columns are prefixed by <code>dydx_</code>. Variances of the <em>average</em> marginal effect are stored (repeatedly, across observations) in new <code>Var_dydx_</code> columns. Unit-specific standard errors, if requested, are stored as <code>SE_dydx_</code> columns. (<a href='https://github.com/leeper/margins/issues/58'>#58</a>)</li>
@@ -272,17 +291,19 @@
 <li>Cleaned up documentation and add some examples.</li>
 </ul>
 </div>
-    <div id="margins-0-2-26" class="section level2">
-<h2 class="hasAnchor">
-<a href="#margins-0-2-26" class="anchor"></a>margins 0.2.26</h2>
+    <div id="margins-0-2-26" class="section level1">
+<h1 class="page-header">
+<a href="#margins-0-2-26" class="anchor"></a>margins 0.2.26<small> Unreleased </small>
+</h1>
 <ul>
 <li>Added support for <code>"merMod"</code> models from <strong>lme4</strong>, though no variance estimation is currently supported.</li>
 <li>Imported <code><a href="http://www.rdocumentation.org/packages/prediction/topics/mean_or_mode">prediction::mean_or_mode()</a></code> for use in <code><a href="../reference/cplot.html">cplot()</a></code> methods.</li>
 </ul>
 </div>
-    <div id="margins-0-2-25" class="section level2">
-<h2 class="hasAnchor">
-<a href="#margins-0-2-25" class="anchor"></a>margins 0.2.25</h2>
+    <div id="margins-0-2-25" class="section level1">
+<h1 class="page-header">
+<a href="#margins-0-2-25" class="anchor"></a>margins 0.2.25<small> Unreleased </small>
+</h1>
 <ul>
 <li>
 <code><a href="../reference/cplot.html">cplot.polr()</a></code> now allows the display of “stacked” (cumulative) predicted probabilities. (<a href='https://github.com/leeper/margins/issues/49'>#49</a>)</li>
@@ -291,25 +312,28 @@
 <li>A tentative <code><a href="../reference/cplot.html">cplot.multinom()</a></code> method has been added.</li>
 </ul>
 </div>
-    <div id="margins-0-2-24" class="section level2">
-<h2 class="hasAnchor">
-<a href="#margins-0-2-24" class="anchor"></a>margins 0.2.24</h2>
+    <div id="margins-0-2-24" class="section level1">
+<h1 class="page-header">
+<a href="#margins-0-2-24" class="anchor"></a>margins 0.2.24<small> Unreleased </small>
+</h1>
 <ul>
 <li>The internal code of <code><a href="../reference/cplot.html">cplot.lm()</a></code> has been refactored so that the actual plotting code now relies in non-exported utility functions, which can be used in other methods. This should make it easier to maintain existing methods and add new ones. (<a href='https://github.com/leeper/margins/issues/49'>#49</a>)</li>
 <li>A new <code><a href="../reference/cplot.html">cplot()</a></code> method for objects of class <code>"polr"</code> has been added (<a href='https://github.com/leeper/margins/issues/49'>#49</a>).</li>
 </ul>
 </div>
-    <div id="margins-0-2-23" class="section level2">
-<h2 class="hasAnchor">
-<a href="#margins-0-2-23" class="anchor"></a>margins 0.2.23</h2>
+    <div id="margins-0-2-23" class="section level1">
+<h1 class="page-header">
+<a href="#margins-0-2-23" class="anchor"></a>margins 0.2.23<small> Unreleased </small>
+</h1>
 <ul>
 <li>The <code>extract_marginal_effects()</code> function has been removed and replaced by <code><a href="../reference/marginal_effects.html">marginal_effects()</a></code> methods for objects of classes <code>"margins"</code> and <code>"marginslist"</code>.</li>
 <li>Added a dependency on <strong>prediction</strong> v.0.1.3 and, implicitly, an enhances suggestion of <strong>survey</strong> v3.31-5 to resolve an underlying <code><a href="http://www.rdocumentation.org/packages/prediction/topics/prediction">prediction()</a></code> issue for models of class <code>"svyglm"</code>. (<a href='https://github.com/leeper/margins/issues/47'>#47</a>, h/t Carl Ganz)</li>
 </ul>
 </div>
-    <div id="margins-0-2-20" class="section level2">
-<h2 class="hasAnchor">
-<a href="#margins-0-2-20" class="anchor"></a>margins 0.2.20</h2>
+    <div id="margins-0-2-20" class="section level1">
+<h1 class="page-header">
+<a href="#margins-0-2-20" class="anchor"></a>margins 0.2.20<small> Unreleased </small>
+</h1>
 <ul>
 <li>A warning is now issued when a model uses weights, indicating that they are ignored. (<a href='https://github.com/leeper/margins/issues/4'>#4</a>)</li>
 <li>Various errors and warnings that occurred when applying <code><a href="../reference/margins.html">margins()</a></code> to a model with weights have been fixed.</li>
@@ -317,25 +341,28 @@
 <code><a href="../reference/cplot.html">cplot()</a></code> now issues an error when attempting to display the effects of a factor (with &gt; 2 levels).</li>
 </ul>
 </div>
-    <div id="margins-0-2-20-1" class="section level2">
-<h2 class="hasAnchor">
-<a href="#margins-0-2-20-1" class="anchor"></a>margins 0.2.20</h2>
+    <div id="margins-0-2-20-1" class="section level1">
+<h1 class="page-header">
+<a href="#margins-0-2-20-1" class="anchor"></a>margins 0.2.20<small> Unreleased </small>
+</h1>
 <ul>
 <li>Fixed a bug in <code>get_effect_variances(vce = "bootstrap")</code>, wherein the variance of the marginal effects was always zero.</li>
 </ul>
 </div>
-    <div id="margins-0-2-20-2" class="section level2">
-<h2 class="hasAnchor">
-<a href="#margins-0-2-20-2" class="anchor"></a>margins 0.2.20</h2>
+    <div id="margins-0-2-20-2" class="section level1">
+<h1 class="page-header">
+<a href="#margins-0-2-20-2" class="anchor"></a>margins 0.2.20<small> Unreleased </small>
+</h1>
 <ul>
 <li>Factored the <code><a href="http://www.rdocumentation.org/packages/prediction/topics/prediction">prediction()</a></code> generic and methods into a separate package, <strong>prediction</strong>, to ease maintainence.</li>
 <li>Added a <code>print.summary.margins()</code> method to separate construction of the summary data frame the printing thereof.</li>
 <li>The “Technical Details” vignette now describes the package functionality and computational approach in near-complete detail.</li>
 </ul>
 </div>
-    <div id="margins-0-2-19" class="section level2">
-<h2 class="hasAnchor">
-<a href="#margins-0-2-19" class="anchor"></a>margins 0.2.19</h2>
+    <div id="margins-0-2-19" class="section level1">
+<h1 class="page-header">
+<a href="#margins-0-2-19" class="anchor"></a>margins 0.2.19<small> Unreleased </small>
+</h1>
 <ul>
 <li>Plotting functions <code><a href="../reference/cplot.html">cplot()</a></code>, <code>persp()</code>, and <code>image()</code> gain a <code>vcov</code> argumetn to pass to `build_margins(). (<a href='https://github.com/leeper/margins/issues/43'>#43</a>)</li>
 <li>
@@ -343,24 +370,27 @@
 <li>The package Introduction vignette has improved examples, including ggplot2 examples using <code><a href="../reference/cplot.html">cplot()</a></code> data. (<a href='https://github.com/leeper/margins/issues/31'>#31</a>)</li>
 </ul>
 </div>
-    <div id="margins-0-2-18" class="section level2">
-<h2 class="hasAnchor">
-<a href="#margins-0-2-18" class="anchor"></a>margins 0.2.18</h2>
+    <div id="margins-0-2-18" class="section level1">
+<h1 class="page-header">
+<a href="#margins-0-2-18" class="anchor"></a>margins 0.2.18<small> Unreleased </small>
+</h1>
 <ul>
 <li>Added support in <code><a href="../reference/dydx.html">dydx.default()</a></code> to allow the calculation of various discrete changes rather than only numerical derivatives.</li>
 </ul>
 </div>
-    <div id="margins-0-2-17" class="section level2">
-<h2 class="hasAnchor">
-<a href="#margins-0-2-17" class="anchor"></a>margins 0.2.17</h2>
+    <div id="margins-0-2-17" class="section level1">
+<h1 class="page-header">
+<a href="#margins-0-2-17" class="anchor"></a>margins 0.2.17<small> Unreleased </small>
+</h1>
 <ul>
 <li>Fixes to handling of factors and ordered variables converted within formulae. (<a href='https://github.com/leeper/margins/issues/38'>#38</a>)</li>
 <li>Reconfigured the <code>data</code> argument in <code><a href="../reference/margins.html">margins()</a></code> and <code><a href="http://www.rdocumentation.org/packages/prediction/topics/prediction">prediction()</a></code> to be clearer about what is happening when it is set to missing.</li>
 </ul>
 </div>
-    <div id="margins-0-2-16" class="section level2">
-<h2 class="hasAnchor">
-<a href="#margins-0-2-16" class="anchor"></a>margins 0.2.16</h2>
+    <div id="margins-0-2-16" class="section level1">
+<h1 class="page-header">
+<a href="#margins-0-2-16" class="anchor"></a>margins 0.2.16<small> Unreleased </small>
+</h1>
 <ul>
 <li>Switched to using a more reliable “central difference” numerical differentiation and updated the calculation of the step size to follow <code>marfx</code> (<a href='https://github.com/leeper/margins/issues/31'>#31</a>, h/t Jeffrey Arnold)</li>
 <li>Added some functionality <code><a href="http://www.rdocumentation.org/packages/prediction/topics/prediction">prediction()</a></code> methods to, hopefully, reduce memory footprint of model objects. (<a href='https://github.com/leeper/margins/issues/26'>#26</a>)</li>
@@ -368,61 +398,69 @@
 <li>Fixed some small errors in documentation and improved width of examples.</li>
 </ul>
 </div>
-    <div id="margins-0-2-15" class="section level2">
-<h2 class="hasAnchor">
-<a href="#margins-0-2-15" class="anchor"></a>margins 0.2.15</h2>
+    <div id="margins-0-2-15" class="section level1">
+<h1 class="page-header">
+<a href="#margins-0-2-15" class="anchor"></a>margins 0.2.15<small> Unreleased </small>
+</h1>
 <ul>
 <li>Expose previously internal <code><a href="../reference/dydx.html">dydx()</a></code> generic and methods to provide variable-specific marginal effects calculations. (<a href='https://github.com/leeper/margins/issues/31'>#31</a>)</li>
 <li>Added example dataset from <strong>marfx</strong> package. (<a href='https://github.com/leeper/margins/issues/31'>#31</a>)</li>
 </ul>
 </div>
-    <div id="margins-0-2-13" class="section level2">
-<h2 class="hasAnchor">
-<a href="#margins-0-2-13" class="anchor"></a>margins 0.2.13</h2>
+    <div id="margins-0-2-13" class="section level1">
+<h1 class="page-header">
+<a href="#margins-0-2-13" class="anchor"></a>margins 0.2.13<small> Unreleased </small>
+</h1>
 <ul>
 <li>Added support for calculating marginal effects of logical terms, treating them as factors. (<a href='https://github.com/leeper/margins/issues/31'>#31</a>)</li>
 </ul>
 </div>
-    <div id="margins-0-2-12" class="section level2">
-<h2 class="hasAnchor">
-<a href="#margins-0-2-12" class="anchor"></a>margins 0.2.12</h2>
+    <div id="margins-0-2-12" class="section level1">
+<h1 class="page-header">
+<a href="#margins-0-2-12" class="anchor"></a>margins 0.2.12<small> Unreleased </small>
+</h1>
 <ul>
 <li>Added an <code>image()</code> method for “lm”, “glm”, and “loess” objects, as a flat complement to existing <code>persp()</code> methods. (<a href='https://github.com/leeper/margins/issues/42'>#42</a>)</li>
 </ul>
 </div>
-    <div id="margins-0-2-11" class="section level2">
-<h2 class="hasAnchor">
-<a href="#margins-0-2-11" class="anchor"></a>margins 0.2.11</h2>
+    <div id="margins-0-2-11" class="section level1">
+<h1 class="page-header">
+<a href="#margins-0-2-11" class="anchor"></a>margins 0.2.11<small> Unreleased </small>
+</h1>
 <ul>
 <li>Added a <code><a href="http://www.rdocumentation.org/packages/prediction/topics/prediction">prediction()</a></code> method for “gls” objects (from <code>MASS::gls()</code>). (<a href='https://github.com/leeper/margins/issues/3'>#3</a>)</li>
 </ul>
 </div>
-    <div id="margins-0-2-10" class="section level2">
-<h2 class="hasAnchor">
-<a href="#margins-0-2-10" class="anchor"></a>margins 0.2.10</h2>
+    <div id="margins-0-2-10" class="section level1">
+<h1 class="page-header">
+<a href="#margins-0-2-10" class="anchor"></a>margins 0.2.10<small> Unreleased </small>
+</h1>
 <ul>
 <li>Replaced <code><a href="http://www.rdocumentation.org/packages/numDeriv/topics/jacobian">numDeriv::jacobian()</a></code> with an internal alternative. (<a href='https://github.com/leeper/margins/issues/41'>#41</a>)</li>
 </ul>
 </div>
-    <div id="margins-0-2-8" class="section level2">
-<h2 class="hasAnchor">
-<a href="#margins-0-2-8" class="anchor"></a>margins 0.2.8</h2>
+    <div id="margins-0-2-8" class="section level1">
+<h1 class="page-header">
+<a href="#margins-0-2-8" class="anchor"></a>margins 0.2.8<small> Unreleased </small>
+</h1>
 <ul>
 <li>Added a <code><a href="http://www.rdocumentation.org/packages/prediction/topics/prediction">prediction()</a></code> method for “ivreg” objects (from <code>AER::ivreg()</code>). (<a href='https://github.com/leeper/margins/issues/3'>#3</a>)</li>
 <li>Added a <code><a href="http://www.rdocumentation.org/packages/prediction/topics/prediction">prediction()</a></code> method for “survreg” objects (from <code><a href="http://www.rdocumentation.org/packages/survival/topics/survreg">survival::survreg()</a></code>). (<a href='https://github.com/leeper/margins/issues/3'>#3</a>)</li>
 </ul>
 </div>
-    <div id="margins-0-2-7" class="section level2">
-<h2 class="hasAnchor">
-<a href="#margins-0-2-7" class="anchor"></a>margins 0.2.7</h2>
+    <div id="margins-0-2-7" class="section level1">
+<h1 class="page-header">
+<a href="#margins-0-2-7" class="anchor"></a>margins 0.2.7<small> Unreleased </small>
+</h1>
 <ul>
 <li>Added a <code><a href="http://www.rdocumentation.org/packages/prediction/topics/prediction">prediction()</a></code> method for “polr” objects (from <code><a href="http://www.rdocumentation.org/packages/MASS/topics/polr">MASS::polr()</a></code>). (<a href='https://github.com/leeper/margins/issues/3'>#3</a>)</li>
 <li>Added a <code><a href="http://www.rdocumentation.org/packages/prediction/topics/prediction">prediction()</a></code> method for “coxph” objects (from <code><a href="http://www.rdocumentation.org/packages/survival/topics/coxph">survival::coxph()</a></code>). (<a href='https://github.com/leeper/margins/issues/3'>#3</a>)</li>
 </ul>
 </div>
-    <div id="margins-0-2-7-1" class="section level2">
-<h2 class="hasAnchor">
-<a href="#margins-0-2-7-1" class="anchor"></a>margins 0.2.7</h2>
+    <div id="margins-0-2-7-1" class="section level1">
+<h1 class="page-header">
+<a href="#margins-0-2-7-1" class="anchor"></a>margins 0.2.7<small> Unreleased </small>
+</h1>
 <ul>
 <li>
 <code><a href="../reference/marginal_effects.html">marginal_effects()</a></code> and <code><a href="http://www.rdocumentation.org/packages/prediction/topics/prediction">prediction()</a></code> are now S3 generics, with methods for “lm” and “glm” objects, improving extensability. (<a href='https://github.com/leeper/margins/issues/39'>#39</a>, <a href='https://github.com/leeper/margins/issues/40'>#40</a>)</li>
@@ -433,17 +471,19 @@
 <li>Internal function <code>get_effect_variances()</code> gains a “none” option for the <code>vce</code> argument, to skip calculation of ME variances.</li>
 </ul>
 </div>
-    <div id="margins-0-2-7-2" class="section level2">
-<h2 class="hasAnchor">
-<a href="#margins-0-2-7-2" class="anchor"></a>margins 0.2.7</h2>
+    <div id="margins-0-2-7-2" class="section level1">
+<h1 class="page-header">
+<a href="#margins-0-2-7-2" class="anchor"></a>margins 0.2.7<small> Unreleased </small>
+</h1>
 <ul>
 <li>
 <code><a href="../reference/marginal_effects.html">marginal_effects()</a></code> issues a warning (rather than fails) when trying to extract the marginal effect of a factor variable that was coerced to numeric in a model formula via <code>I()</code>. (<a href='https://github.com/leeper/margins/issues/38'>#38</a>)</li>
 </ul>
 </div>
-    <div id="margins-0-2-5" class="section level2">
-<h2 class="hasAnchor">
-<a href="#margins-0-2-5" class="anchor"></a>margins 0.2.5</h2>
+    <div id="margins-0-2-5" class="section level1">
+<h1 class="page-header">
+<a href="#margins-0-2-5" class="anchor"></a>margins 0.2.5<small> Unreleased </small>
+</h1>
 <ul>
 <li>Added better support for factor <code>x</code> variables in <code><a href="../reference/cplot.html">cplot()</a></code>.</li>
 <li>Added (rudimentary) tests of variance methods. (<a href='https://github.com/leeper/margins/issues/21'>#21</a>)</li>
@@ -451,9 +491,10 @@
 <li>Fix vignettes so package can be built with them. (<a href='https://github.com/leeper/margins/issues/16'>#16</a>)</li>
 </ul>
 </div>
-    <div id="margins-0-2-4" class="section level2">
-<h2 class="hasAnchor">
-<a href="#margins-0-2-4" class="anchor"></a>margins 0.2.4</h2>
+    <div id="margins-0-2-4" class="section level1">
+<h1 class="page-header">
+<a href="#margins-0-2-4" class="anchor"></a>margins 0.2.4<small> Unreleased </small>
+</h1>
 <ul>
 <li>Modified <code><a href="../reference/marginal_effects.html">marginal_effects()</a></code> to use a vectorized approach to simple numerical differentiation. (<a href='https://github.com/leeper/margins/issues/36'>#36</a>/<a href='https://github.com/leeper/margins/issues/37'>#37</a>, h/t Vincent Arel-Bundock)</li>
 <li>Removed <code>margins.plm()</code> method, which didn’t actually work because “plm” does not provide a <code>predict()</code> method.</li>
@@ -461,24 +502,27 @@
 <li>Expanded tests of unit-specific variances. (<a href='https://github.com/leeper/margins/issues/21'>#21</a>)</li>
 </ul>
 </div>
-    <div id="margins-0-2-3" class="section level2">
-<h2 class="hasAnchor">
-<a href="#margins-0-2-3" class="anchor"></a>margins 0.2.3</h2>
+    <div id="margins-0-2-3" class="section level1">
+<h1 class="page-header">
+<a href="#margins-0-2-3" class="anchor"></a>margins 0.2.3<small> Unreleased </small>
+</h1>
 <ul>
 <li>Added a logical argument to enable/disable calculation of unit-specific marginal effect variances and set it to FALSE by default. (<a href='https://github.com/leeper/margins/issues/36'>#36</a>, h/t Vincent Arel-Bundock)</li>
 </ul>
 </div>
-    <div id="margins-0-2-2" class="section level2">
-<h2 class="hasAnchor">
-<a href="#margins-0-2-2" class="anchor"></a>margins 0.2.2</h2>
+    <div id="margins-0-2-2" class="section level1">
+<h1 class="page-header">
+<a href="#margins-0-2-2" class="anchor"></a>margins 0.2.2<small> Unreleased </small>
+</h1>
 <ul>
 <li>Removed support for “marginal effects at means” (MEMs) and the <code>atmeans</code> argument throughout package. (<a href='https://github.com/leeper/margins/issues/35'>#35</a>)</li>
 <li>Renamed the <code>vc</code> argument to <code>vcov</code> for consistency with other packages. (<a href='https://github.com/leeper/margins/issues/34'>#34</a>)</li>
 </ul>
 </div>
-    <div id="margins-0-2-1" class="section level2">
-<h2 class="hasAnchor">
-<a href="#margins-0-2-1" class="anchor"></a>margins 0.2.1</h2>
+    <div id="margins-0-2-1" class="section level1">
+<h1 class="page-header">
+<a href="#margins-0-2-1" class="anchor"></a>margins 0.2.1<small> Unreleased </small>
+</h1>
 <ul>
 <li>
 <code>build_margins()</code> now returns columns containing unit-specific standard errors of marginal effects.</li>

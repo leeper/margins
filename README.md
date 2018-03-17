@@ -187,7 +187,7 @@ summary(marg3 <- margins(mod3))
 plot(marg3)
 ```
 
-![](https://i.imgur.com/AaklS2i.png)
+![](https://i.imgur.com/vuLstli.png)
 
 In addition to the estimation procedures and `plot()` generic, **margins** offers several plotting methods for model objects. First, there is a new generic `cplot()` that displays predictions or marginal effects (from an "lm" or "glm" model) of a variable conditional across values of third variable (or itself). For example, here is a graph of predicted probabilities from a logit model:
 
@@ -196,7 +196,7 @@ mod4 <- glm(am ~ wt*drat, data = mtcars, family = binomial)
 cplot(mod4, x = "wt", se.type = "shade")
 ```
 
-![](https://i.imgur.com/A4Tjxh0.png)
+![](https://i.imgur.com/vJeopxu.png)
 
 And fitted values with a factor independent variable:
 
@@ -204,7 +204,7 @@ And fitted values with a factor independent variable:
 cplot(lm(Sepal.Length ~ Species, data = iris))
 ```
 
-![](https://i.imgur.com/5n6O908.png)
+![](https://i.imgur.com/8aWB52b.png)
 
 and a graph of the effect of `drat` across levels of `wt`:
 
@@ -212,7 +212,7 @@ and a graph of the effect of `drat` across levels of `wt`:
 cplot(mod4, x = "wt", dx = "drat", what = "effect", se.type = "shade")
 ```
 
-![](https://i.imgur.com/w4YlfIz.png)
+![](https://i.imgur.com/n7FYknc.png)
 
 `cplot()` also returns a data frame of values, so that it can be used just for calculating quantities of interest before plotting them with another graphics package, such as **ggplot2**:
 
@@ -240,7 +240,7 @@ ggplot(dat, aes(x = xvals)) +
   theme_bw()
 ```
 
-![](https://i.imgur.com/BPz3mVR.png)
+![](https://i.imgur.com/kKsBcN3.png)
 
 Second, the package implements methods for "lm" and "glm" class objects for the `persp()` generic plotting function. This enables three-dimensional representations of predicted outcomes:
 
@@ -248,7 +248,7 @@ Second, the package implements methods for "lm" and "glm" class objects for the 
 persp(mod1, xvar = "cyl", yvar = "hp")
 ```
 
-![](https://i.imgur.com/8KZjOnC.png)
+![](https://i.imgur.com/FLLGQbp.png)
 
 and marginal effects:
 
@@ -256,7 +256,7 @@ and marginal effects:
 persp(mod1, xvar = "cyl", yvar = "hp", what = "effect", nx = 10)
 ```
 
-![](https://i.imgur.com/SQMKufa.png)
+![](https://i.imgur.com/YpakIN9.png)
 
 And if three-dimensional plots aren't your thing, there are also analogous methods for the `image()` generic, to produce heatmap-style representations:
 
@@ -264,7 +264,7 @@ And if three-dimensional plots aren't your thing, there are also analogous metho
 image(mod1, xvar = "cyl", yvar = "hp", main = "Predicted Fuel Efficiency,\nby Cylinders and Horsepower")
 ```
 
-![](https://i.imgur.com/Q4LMh8x.png)
+![](https://i.imgur.com/b6cGSvK.png)
 
 The numerous package vignettes and help files contain extensive documentation and examples of all package functionality.
 
@@ -278,8 +278,8 @@ microbenchmark(marginal_effects(mod1))
 ```
 
     ## Unit: milliseconds
-    ##                    expr      min       lq     mean   median       uq      max neval
-    ##  marginal_effects(mod1) 3.411282 3.558011 4.234915 3.858694 4.338417 9.125007   100
+    ##                    expr      min      lq     mean   median       uq      max neval
+    ##  marginal_effects(mod1) 3.378211 3.46583 3.776552 3.566754 3.856033 6.456878   100
 
 ``` r
 microbenchmark(margins(mod1))
@@ -287,7 +287,7 @@ microbenchmark(margins(mod1))
 
     ## Unit: milliseconds
     ##           expr      min       lq     mean   median       uq      max neval
-    ##  margins(mod1) 24.61528 25.54242 29.34041 26.30914 29.46288 162.4935   100
+    ##  margins(mod1) 24.20816 24.64626 27.91184 25.27861 27.77188 161.7352   100
 
 The most computationally expensive part of `margins()` is variance estimation. If you don't need variances, use `marginal_effects()` directly or specify `margins(..., vce = "none")`.
 
