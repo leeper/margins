@@ -23,3 +23,6 @@ check: ../$(pkg)*.tar.gz
 install: ../$(pkg)*.tar.gz
 	cd ../ && R CMD INSTALL $(pkg)*.tar.gz
 	rm ../$(pkg)*.tar.gz
+
+website: docs/index.html
+	Rscript -e "pkgdown::build_site()"

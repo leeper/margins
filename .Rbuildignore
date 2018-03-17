@@ -5,11 +5,15 @@
 ^Makefile$
 ^README\.Rmd$
 ^README\.html$
+^README_files$
+^README_files/.+$
 ^CONTRIBUTING\.md$
 ^inst/standarderrors\.pdf$
-^figure/$
+^figure$
 ^figure/.+$
 ^cache/.+$
+^docs$
+^docs/.+$
 ^ignore$
 ^inst/doc/.+\.log$
 ^inst/doc/.+\.Rmd$
