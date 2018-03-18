@@ -8,6 +8,7 @@ r_packages:
 - rmarkdown
 - testthat
 - covr
+- betareg
 - ggplot2
 - gapminder
 - nnet

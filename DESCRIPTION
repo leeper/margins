@@ -34,6 +34,7 @@ Suggests:
     stargazer,
     testthat
 Enhances:
+    betareg,
     ordinal,
     survey
 ByteCompile: true

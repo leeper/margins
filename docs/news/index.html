@@ -110,6 +110,14 @@
 <a href="#margins-0-3-18" class="anchor"></a>margins 0.3.18<small> Unreleased </small>
 </h1>
 <ul>
+<li>Added support for objects of class “betareg” from <strong>betareg</strong>. (<a href='https://github.com/leeper/margins/issues/90'>#90</a>)</li>
+</ul>
+</div>
+    <div id="margins-0-3-18-1" class="section level1">
+<h1 class="page-header">
+<a href="#margins-0-3-18-1" class="anchor"></a>margins 0.3.18<small> Unreleased </small>
+</h1>
+<ul>
 <li>
 <code><a href="../reference/margins.html">margins()</a></code> now returns attributes “vcov” and “jacobian” (the latter only when <code>vce = "delta"</code>), which contain the full variance-covariance matrix for the average marginal effects and jacobian for the same. This is different behavior from the previous draft (v0.3.17) because the attributes now always contain a single matrix; again use the <code>vcov()</code> method rather than accessing the attribute directly lest it change in the future. This allows calculation combination of marginal effects, such as the difference between two AMEs. Some internal functions have been renamed and code reorganized to make this possible. (<a href='https://github.com/leeper/margins/issues/87'>#87</a>, h/t Trenton Mize)</li>
 <li>The “at” attribute returned by <code><a href="../reference/margins.html">margins()</a></code> now contains the input value passed to the <code>at</code> argument to the function. New attribute “at_vars” returns a character vector of variables specified therein.</li>
@@ -566,6 +574,7 @@
       <h2>Contents</h2>
       <ul class="nav nav-pills nav-stacked">
         <li><a href="#margins-0-3-18">0.3.18</a></li>
+        <li><a href="#margins-0-3-18-1">0.3.18</a></li>
         <li><a href="#margins-0-3-17">0.3.17</a></li>
         <li><a href="#margins-0-3-16">0.3.16</a></li>
         <li><a href="#margins-0-3-15">0.3.15</a></li>
