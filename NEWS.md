@@ -1,4 +1,9 @@
-# margins 0.3.18
+# margins 0.3.20
+
+* Added support for objects of class "ivreg" from **AER**.
+* `margins.default()` now attempts to calculate marginal effect variances in order to, by default, support additional model classes.
+
+# margins 0.3.19
 
 * Added support for objects of class "betareg" from **betareg**. (#90)
 

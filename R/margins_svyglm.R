@@ -6,7 +6,7 @@ function(model,
          design,
          variables = NULL,
          at = NULL, 
-         type = c("response", "link", "terms"),
+         type = c("response", "link"),
          vcov = stats::vcov(model),
          vce = c("delta", "simulation", "bootstrap", "none"),
          iterations = 50L, # if vce == "bootstrap" or "simulation"

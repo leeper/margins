@@ -5,7 +5,7 @@ function(model,
          data = find_data(model, parent.frame()), 
          variables = NULL,
          at = NULL, 
-         type = c("response", "link", "terms"),
+         type = c("response", "link"),
          vcov = stats::vcov(model, phi = FALSE),
          vce = c("delta", "simulation", "bootstrap", "none"),
          iterations = 50L, # if vce == "bootstrap" or "simulation"

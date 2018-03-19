@@ -3,6 +3,19 @@ tol <- 0.0001
 
 library("datasets")
 
+context("Test 'AER' methods")
+if (require("AER", quietly = TRUE)) {
+    data("CigarettesSW", package = "AER")
+    CigarettesSW$rprice <- with(CigarettesSW, price/cpi)
+    CigarettesSW$rincome <- with(CigarettesSW, income/population/cpi)
+    CigarettesSW$tdiff <- with(CigarettesSW, (taxs - tax)/cpi)
+    m <- AER::ivreg(log(packs) ~ log(rprice) + log(rincome) | log(rincome) + tdiff, data = CigarettesSW, subset = year == "1995")
+    test_that("Test margins() for 'ivreg'", {
+        expect_true(inherits(marginal_effects(m), "data.frame"))
+        expect_true(inherits(margins(m), "margins"))
+    })
+}
+
 context("Test 'betareg' methods")
 if (requireNamespace("betareg")) {
     data("GasolineYield", package = "betareg")

@@ -20,23 +20,23 @@
 margins(model, ...)
 
 \method{margins}{betareg}(model, data = find_data(model, parent.frame()),
-  variables = NULL, at = NULL, type = c("response", "link", "terms"),
+  variables = NULL, at = NULL, type = c("response", "link"),
   vcov = stats::vcov(model, phi = FALSE), vce = c("delta", "simulation",
   "bootstrap", "none"), iterations = 50L, unit_ses = FALSE, eps = 1e-07,
   ...)
 
 \method{margins}{default}(model, data = find_data(model, parent.frame()),
-  variables = NULL, at = NULL, type = c("response", "link", "terms"),
-  vcov = stats::vcov(model), vce = c("none", "delta", "simulation",
-  "bootstrap"), iterations = 50L, unit_ses = FALSE, eps = 1e-07, ...)
+  variables = NULL, at = NULL, type = c("response", "link"),
+  vcov = stats::vcov(model), vce = c("delta", "simulation", "bootstrap",
+  "none"), iterations = 50L, unit_ses = FALSE, eps = 1e-07, ...)
 
 \method{margins}{glm}(model, data = find_data(model, parent.frame()),
-  variables = NULL, at = NULL, type = c("response", "link", "terms"),
+  variables = NULL, at = NULL, type = c("response", "link"),
   vcov = stats::vcov(model), vce = c("delta", "simulation", "bootstrap",
   "none"), iterations = 50L, unit_ses = FALSE, eps = 1e-07, ...)
 
 \method{margins}{lm}(model, data = find_data(model, parent.frame()),
-  variables = NULL, at = NULL, type = c("response", "link", "terms"),
+  variables = NULL, at = NULL, type = c("response", "link"),
   vcov = stats::vcov(model), vce = c("delta", "simulation", "bootstrap",
   "none"), iterations = 50L, unit_ses = FALSE, eps = 1e-07, ...)
 
@@ -50,10 +50,9 @@ margins(model, ...)
   variables = NULL, at = NULL, vce = "none", eps = 1e-07, ...)
 
 \method{margins}{svyglm}(model, data = find_data(model, parent.frame()),
-  design, variables = NULL, at = NULL, type = c("response", "link",
-  "terms"), vcov = stats::vcov(model), vce = c("delta", "simulation",
-  "bootstrap", "none"), iterations = 50L, unit_ses = FALSE, eps = 1e-07,
-  ...)
+  design, variables = NULL, at = NULL, type = c("response", "link"),
+  vcov = stats::vcov(model), vce = c("delta", "simulation", "bootstrap",
+  "none"), iterations = 50L, unit_ses = FALSE, eps = 1e-07, ...)
 }
 \arguments{
 \item{model}{A model object. See Details for supported model classes.}
@@ -97,12 +96,15 @@ See \code{\link{dydx}} for details on estimation of marginal effects.
 
 Methods are currently implemented for the following object classes:
 \itemize{
-  \item \dQuote{lm}, see \code{\link[stats]{lm}}
+  \item \dQuote{betareg}, see \code{\link[betareg]{betareg}}
   \item \dQuote{glm}, see \code{\link[stats]{glm}}, \code{\link[MASS]{glm.nb}}
-  \item \dQuote{svyglm}, see \code{\link[survey]{svyglm}}
+  \item \dQuote{ivreg}, see \code{\link[AER]{ivreg}}
+  \item \dQuote{lm}, see \code{\link[stats]{lm}}
   \item \dQuote{loess}, see \code{\link[stats]{loess}}
+  \item \dQuote{merMod}, see \code{\link[lme4]{lmer}}
   \item \dQuote{nnet}, see \code{\link[nnet]{nnet}}
   \item \dQuote{polr}, see \code{\link[MASS]{polr}}
+  \item \dQuote{svyglm}, see \code{\link[survey]{svyglm}}
 }
 
 The \code{margins} method for objects of class \dQuote{lm} or \dQuote{glm} simply constructs a list of data frames (using \code{\link{build_datalist}}), calculates marginal effects for each data frame (via \code{\link{marginal_effects}} and, in turn, \code{\link[prediction]{prediction}}), and row-binds the results together. Alternatively, you can use \code{\link{marginal_effects}} to retrieve a data frame of marginal effects without constructing a \dQuote{margins} object. That can be efficient for plotting, etc., given the time-consuming nature of variance estimation.

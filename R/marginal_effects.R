@@ -13,11 +13,15 @@
 #' 
 #' Methods are currently implemented for the following object classes:
 #' \itemize{
-#'   \item \dQuote{lm}, see \code{\link[stats]{lm}}
+#'   \item \dQuote{betareg}, see \code{\link[betareg]{betareg}}
 #'   \item \dQuote{glm}, see \code{\link[stats]{glm}}, \code{\link[MASS]{glm.nb}}
+#'   \item \dQuote{ivreg}, see \code{\link[AER]{ivreg}}
+#'   \item \dQuote{lm}, see \code{\link[stats]{lm}}
 #'   \item \dQuote{loess}, see \code{\link[stats]{loess}}
+#'   \item \dQuote{merMod}, see \code{\link[lme4]{lmer}}
 #'   \item \dQuote{nnet}, see \code{\link[nnet]{nnet}}
 #'   \item \dQuote{polr}, see \code{\link[MASS]{polr}}
+#'   \item \dQuote{svyglm}, see \code{\link[survey]{svyglm}}
 #' }
 #'
 #' A methods is also provided for the object classes \dQuote{margins} to return a simplified data frame from complete \dQuote{margins} objects.
