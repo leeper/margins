@@ -192,12 +192,12 @@ The most computationally expensive part of `margins()` is variance estimation. I
 [![codecov.io](http://codecov.io/github/leeper/margins/coverage.svg?branch=master)](http://codecov.io/github/leeper/margins?branch=master)
 [![Project Status: Active - The project has reached a stable, usable state and is being actively developed.](http://www.repostatus.org/badges/latest/active.svg)](http://www.repostatus.org/#active)
 
-The development version of this package can be installed directly from GitHub using `ghit`:
+The development version of this package can be installed directly from GitHub using `remotes`:
 
 ```R
-if (!require("ghit")) {
-    install.packages("ghit")
-    library("ghit")
+if (!require("remotes")) {
+    install.packages("remotes")
+    library("remotes")
 }
 install_github("leeper/prediction")
 install_github("leeper/margins")

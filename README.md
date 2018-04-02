@@ -296,12 +296,12 @@ Requirements and Installation
 
 [![CRAN](http://www.r-pkg.org/badges/version/margins)](https://cran.r-project.org/package=margins) ![Downloads](http://cranlogs.r-pkg.org/badges/margins) [![Build Status](https://travis-ci.org/leeper/margins.svg?branch=master)](https://travis-ci.org/leeper/margins) [![Build status](https://ci.appveyor.com/api/projects/status/t6nxndmvvcw3gw7f/branch/master?svg=true)](https://ci.appveyor.com/project/leeper/margins/branch/master) [![codecov.io](http://codecov.io/github/leeper/margins/coverage.svg?branch=master)](http://codecov.io/github/leeper/margins?branch=master) [![Project Status: Active - The project has reached a stable, usable state and is being actively developed.](http://www.repostatus.org/badges/latest/active.svg)](http://www.repostatus.org/#active)
 
-The development version of this package can be installed directly from GitHub using `ghit`:
+The development version of this package can be installed directly from GitHub using `remotes`:
 
 ``` r
-if (!require("ghit")) {
-    install.packages("ghit")
-    library("ghit")
+if (!require("remotes")) {
+    install.packages("remotes")
+    library("remotes")
 }
 install_github("leeper/prediction")
 install_github("leeper/margins")
