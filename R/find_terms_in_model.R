@@ -34,8 +34,8 @@ find_terms_in_model.default <- function(model, variables = NULL) {
     
     # drop instruments, if applicable
     if (inherits(model, "ivreg")) {
-        regressors <- clean_terms(attr(m$terms$regressors, "term.labels"))
-        instruments <- clean_terms(attr(m$terms$instruments, "term.labels"))
+        regressors <- clean_terms(attr(model$terms$regressors, "term.labels"))
+        instruments <- clean_terms(attr(model$terms$instruments, "term.labels"))
         instruments <- instruments[!instruments %in% regressors]
         classes <- classes[!names(classes) %in% instruments]
     }
