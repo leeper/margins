@@ -1,6 +1,19 @@
 language: r
 sudo: false
 cache: packages
+matrix:
+  include:
+    - os: linux
+      r: oldrel
+    - os: linux
+      r: release
+    - os: linux
+      r: devel
+    - os: linux
+      dist: trusty
+      env: R_CODECOV=true
+    - os: osx
+      osx_image: xcode8.3
 r_github_packages:
 - leeper/prediction
 r_packages:
@@ -17,4 +30,4 @@ r_packages:
 - survey
 - stargazer
 after_success:
-- Rscript -e 'library("covr");codecov()'
+- R -q -e 'library("covr");codecov()'

@@ -1,4 +1,4 @@
-.github/*
+^\.github.?
 ^\.travis\.yml$
 ^appveyor\.yml$
 ^travis-tool\.sh$
@@ -15,6 +15,7 @@
 ^cache/.+$
 ^docs$
 ^docs/.+$
+^revdep.?
 ^ignore$
 ^inst/doc/.+\.log$
 ^inst/doc/.+\.Rmd$
