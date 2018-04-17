@@ -9,7 +9,6 @@ README.html
 /vignettes/*.log
 /vignettes/*.pdf
 /vignettes/*.out
-/vignettes/*.sty
 /vignettes/*.tex
 /vignettes/*.md
 /vignettes/figure/

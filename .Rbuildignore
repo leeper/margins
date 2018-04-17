@@ -28,6 +28,5 @@
 ^vignettes/.+\.log$
 ^vignettes/.+\.out$
 ^vignettes/.+\.pdf$
-^vignettes/.+\.sty$
 ^vignettes/.+\.tex$
 ^data-raw$
