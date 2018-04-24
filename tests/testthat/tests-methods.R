@@ -19,7 +19,7 @@ if (require("AER", quietly = TRUE)) {
 context("Test 'betareg' methods")
 if (requireNamespace("betareg")) {
     data("GasolineYield", package = "betareg")
-    m <- betareg(yield ~ batch + temp, data = GasolineYield)
+    m <- betareg::betareg(yield ~ batch + temp, data = GasolineYield)
     test_that("Test marginal_effects() for 'betareg'", {
         expect_true(inherits(marginal_effects(m), "data.frame"))
     })
