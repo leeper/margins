@@ -41,7 +41,7 @@ margins(model, ...)
   "none"), iterations = 50L, unit_ses = FALSE, eps = 1e-07, ...)
 
 \method{margins}{loess}(model, data, variables = NULL, at = NULL,
-  eps = 1e-07, ...)
+  vce = "none", eps = 1e-07, ...)
 
 \method{margins}{nnet}(model, data = find_data(model, parent.frame()),
   variables = NULL, at = NULL, vce = "none", eps = 1e-07, ...)

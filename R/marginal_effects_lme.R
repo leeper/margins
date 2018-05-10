@@ -1,7 +1,7 @@
 #' @rdname marginal_effects
 #' @importFrom prediction find_data
 #' @export
-marginal_effects.merMod <- 
+marginal_effects.lme <- 
 function(model, 
          data = find_data(model), 
          variables = NULL,
@@ -52,4 +52,4 @@ function(model,
 
 #' @rdname marginal_effects
 #' @export
-marginal_effects.lmerMod <- marginal_effects.merMod
+marginal_effects.nlme <- marginal_effects.lme

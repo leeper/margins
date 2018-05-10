@@ -36,20 +36,6 @@ test_that("reset_coefs() works for 'glm' objects", {
     expect_true(isTRUE(all.equal(predict(mod2, newdata = dat), coef(mod2)[1L] + dat$x + 2*dat$z, check.attributes = FALSE)), label = "predictions correct from reset 'glm' object")
 })
 
-if (requireNamespace("survey")) {
-    test_that("reset_coefs() works for 'svyglm' objects", {
-        design <- survey::svydesign(data = dat, id = ~ 0, weights = ~1)
-        # base object
-        mod1 <- survey::svyglm(y ~ x + z, design = design, family = binomial())
-        # modified object
-        mod2 <- reset_coefs(mod1, c(x = 1, z = 2))
-        # expect coefs to have been changed
-        expect_true(!isTRUE(all.equal(coef(mod1), coef(mod2))), label = "coefficients reset in 'svyglm' object")
-        # expect prediction from modified object to be correct
-        expect_true(!isTRUE(all.equal(predict(mod1, newdata = dat), predict(mod2, newdata = dat))), label = "predictions differ from original 'svyglm' object")
-        expect_true(isTRUE(all.equal(predict(mod2, newdata = dat)[1:20], coef(mod2)[1L] + dat$x + 2*dat$z, check.attributes = FALSE)), label = "predictions correct from reset 'svyglm' object")
-    })
-}
 if (requireNamespace("betareg")) {
     test_that("reset_coefs() works for 'betareg' objects", {
         data("GasolineYield", package = "betareg")
@@ -65,3 +51,24 @@ if (requireNamespace("betareg")) {
                     label = "predictions correct from reset 'betareg' object")
     })
 }
+
+if (requireNamespace("survey")) {
+    test_that("reset_coefs() works for 'svyglm' objects", {
+        design <- survey::svydesign(data = dat, id = ~ 0, weights = ~1)
+        # base object
+        mod1 <- survey::svyglm(y ~ x + z, design = design, family = binomial())
+        # modified object
+        mod2 <- reset_coefs(mod1, c(x = 1, z = 2))
+        # expect coefs to have been changed
+        expect_true(!isTRUE(all.equal(coef(mod1), coef(mod2))), label = "coefficients reset in 'svyglm' object")
+        # expect prediction from modified object to be correct
+        expect_true(!isTRUE(all.equal(predict(mod1, newdata = dat), predict(mod2, newdata = dat))), label = "predictions differ from original 'svyglm' object")
+        expect_true(isTRUE(all.equal(predict(mod2, newdata = dat)[1:20], coef(mod2)[1L] + dat$x + 2*dat$z, check.attributes = FALSE)), label = "predictions correct from reset 'svyglm' object")
+    })
+}
+
+#if (requireNamespace("lme4")) {
+#}
+
+#if (requireNamespace("nlme")) {
+#}

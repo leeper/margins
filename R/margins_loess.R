@@ -5,6 +5,7 @@ function(model,
          data, 
          variables = NULL,
          at = NULL, 
+         vce = "none", 
          eps = 1e-7,
          ...){
     

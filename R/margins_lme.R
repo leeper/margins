@@ -1,6 +1,6 @@
 # @rdname margins
 # @export
-margins.merMod <- function(model, 
+margins.lme <- function(model, 
          data = find_data(model), 
          variables = NULL,
          at = NULL, 
@@ -33,4 +33,4 @@ margins.merMod <- function(model,
 
 # @rdname margins
 # @export
-margins.lmerMod <- margins.merMod
+margins.nlme <- margins.lme

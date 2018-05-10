@@ -30,3 +30,10 @@ reset_coefs.betareg <- function(model, coefs) {
     model[["coefficients"]]$mean[names(coefs)] <- coefs
     model
 }
+
+
+# reset_coefs.merMod
+# reset_coefs.lmerMod
+
+# reset_coefs.lme
+# reset_coefs.nlme
