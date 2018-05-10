@@ -1,3 +1,7 @@
+# margins 0.3.21
+
+* Modified the internals of `gradient_factory()` to be more robust to an expanded set of model classes through the introduction of an internal function `reset_coefs()`. A test suite for this function has been added.
+
 # margins 0.3.20
 
 * Added support for objects of class "ivreg" from **AER**.
