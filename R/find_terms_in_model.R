@@ -82,7 +82,7 @@ find_terms_in_model.merMod <- function(model, variables = NULL) {
     varslist <- find_terms_in_model.default(model, variables)
     
     # sanitize `varlist` to remove random effects terms
-    fixed <- as.character(formula(model, fixed.only = TRUE))[-c(1:2)]
+    fixed <- all.vars(formula(model, fixed.only = TRUE))[-1L]
     varslist[] <- lapply(varslist, function(vartype) vartype[vartype %in% fixed])
     varslist
 }
