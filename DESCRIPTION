@@ -38,7 +38,6 @@ Enhances:
     AER,
     betareg,
     lme4,
-    nlme,
     nnet,
     ordinal,
     survey
