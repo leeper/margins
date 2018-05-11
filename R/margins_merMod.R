@@ -13,6 +13,10 @@ function(model,
          eps = 1e-7,
          ...) {
     
+    # match.arg()
+    type <- match.arg(type)
+    vce <- match.arg(vce)
+    
     # setup data
     data_list <- build_datalist(data, at = at)
     at_specification <- attr(data_list, "at_specification")
