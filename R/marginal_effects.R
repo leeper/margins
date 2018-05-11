@@ -1,5 +1,5 @@
 #' @rdname marginal_effects
-#' @title Differentiate a Model Object with Respect to All Variables
+#' @title Differentiate a Model Object with Respect to All (or Specified) Variables
 #' @description Extract marginal effects from a model object, conditional on data, using \code{\link{dydx}}.
 #' @param data A data.frame over which to calculate marginal effects. This is optional, but may be required when the underlying modelling function sets \code{model = FALSE}.
 #' @param variables A character vector with the names of variables for which to compute the marginal effects. The default (\code{NULL}) returns marginal effects for all variables.
@@ -9,7 +9,7 @@
 #' @param as.data.frame A logical indicating whether to return a data frame (the default) or a matrix.
 #' @param varslist A list structure used internally by \code{\link{margins}}. Users should not set this.
 #' @param \dots Arguments passed to methods, and onward to \code{\link{dydx}} methods and possibly further to \code{\link[prediction]{prediction}} methods. This can be useful, for example, for setting \code{type} (predicted value type), \code{eps} (precision), or \code{category} (category for multi-category outcome models), etc.
-#' @details This function extracts unit-specific marginal effects from an estimated model with respect to \emph{all} variables specified in \code{data} and returns a data.frame. (Note that this is not each \emph{coefficient}.) See \code{\link{dydx}} for computational details, or to extract the marginal effect for only one variable. Note that for factor and logical class variables, discrete changes in the outcome are reported rather than instantaneous marginal effects.
+#' @details Users likely want to use the fully featured \code{\link{margins}} function rather than \code{marginal_effects}, which merely performs estimation of the marginal effects but simply returns a data frame. \code{\link{margins}}, by contrast, does some convenient packaging around these results and supports additional functionality, like variance estimation and counterfactual estimation procedures. The methods for this function provide lower-level functionality that extracts unit-specific marginal effects from an estimated model with respect to \emph{all} variables specified in \code{data} (or the subset specified in \code{variables}) and returns a data frame. See \code{\link{dydx}} for computational details. Note that for factor and logical class variables, discrete changes in the outcome are reported rather than instantaneous marginal effects.
 #' 
 #' Methods are currently implemented for the following object classes:
 #' \itemize{
@@ -18,13 +18,13 @@
 #'   \item \dQuote{ivreg}, see \code{\link[AER]{ivreg}}
 #'   \item \dQuote{lm}, see \code{\link[stats]{lm}}
 #'   \item \dQuote{loess}, see \code{\link[stats]{loess}}
-#'   \item \dQuote{merMod}, see \code{\link[lme4]{lmer}}
+#'   \item \dQuote{merMod}, see \code{\link[lme4]{lmer}}, \code{\link[lme4]{glmer}}
 #'   \item \dQuote{nnet}, see \code{\link[nnet]{nnet}}
 #'   \item \dQuote{polr}, see \code{\link[MASS]{polr}}
 #'   \item \dQuote{svyglm}, see \code{\link[survey]{svyglm}}
 #' }
 #'
-#' A methods is also provided for the object classes \dQuote{margins} to return a simplified data frame from complete \dQuote{margins} objects.
+#' A method is also provided for the object classes \dQuote{margins} to return a simplified data frame from complete \dQuote{margins} objects.
 #' 
 #' @return An data frame with number of rows equal to \code{nrow(data)}, where each row is an observation and each column is the marginal effect of a variable used in the model formula.
 #' @examples

@@ -68,7 +68,8 @@ if (requireNamespace("betareg")) {
         # expect prediction from modified object to be correct
         expect_true(!isTRUE(all.equal(predict(mod1, newdata = GasolineYield), predict(mod2, newdata = GasolineYield))),
                     label = "predictions differ from original 'betareg' object")
-        expect_true(isTRUE(all.equal(predict(mod2, newdata = GasolineYield, type = "link"), coef(mod2)[1L] + 0.05*GasolineYield$temp, check.attributes = FALSE)),
+        expect_true(isTRUE(all.equal(predict(mod2, newdata = GasolineYield, type = "link"),
+                                     coef(mod2)[1L] + 0.05*GasolineYield$temp, check.attributes = FALSE)),
                     label = "predictions correct from reset 'betareg' object")
     })
 }
@@ -83,18 +84,34 @@ if (requireNamespace("survey")) {
         # expect coefs to have been changed
         expect_true(!isTRUE(all.equal(coef(mod1), coef(mod2))), label = "coefficients reset in 'svyglm' object")
         # expect prediction from modified object to be correct
-        expect_true(!isTRUE(all.equal(predict(mod1, newdata = dat), predict(mod2, newdata = dat))), label = "predictions differ from original 'svyglm' object")
-        expect_true(isTRUE(all.equal(predict(mod2, newdata = dat)[1:20], coef(mod2)[1L] + dat$x + 2*dat$z, check.attributes = FALSE)), label = "predictions correct from reset 'svyglm' object")
+        expect_true(!isTRUE(all.equal(predict(mod1, newdata = dat), predict(mod2, newdata = dat))),
+                    label = "predictions differ from original 'svyglm' object")
+        expect_true(isTRUE(all.equal(predict(mod2, newdata = dat)[1:20],
+                                     coef(mod2)[1L] + dat$x + 2*dat$z, check.attributes = FALSE)),
+                    label = "predictions correct from reset 'svyglm' object")
     })
 }
 
-#if (requireNamespace("lme4")) {
-#}
+if (requireNamespace("lme4")) {
+    test_that("reset_coefs() works for 'lmerMod' objects", {
+        data("ChickWeight", package = "datasets")
+        # base object
+        mod1 <- lme4::lmer(weight ~ Diet + (1|Chick), data = ChickWeight)
+        # modified object
+        mod2 <- reset_coefs(mod1, c(Diet2 = 2, Diet3 = 3, Diet4 = 4))
+        # expect coefs to have been changed
+        expect_true(!isTRUE(all.equal(lme4::fixef(mod1), lme4::fixef(mod2))), label = "coefficients reset in 'merMod' object")
+        # expect prediction from modified object to be correct
+        expect_true(!isTRUE(all.equal(predict(mod1, newdata = ChickWeight), predict(mod2, newdata = ChickWeight))),
+                    label = "predictions differ from original 'merMod' object")
+        p <- lme4::fixef(mod2)[1L] + ifelse(ChickWeight$Diet == 2, 2, ifelse(ChickWeight$Diet == 3, 3, ifelse(ChickWeight$Diet == 4, 4, 0)))
+        expect_true(isTRUE(all.equal(predict(mod2, newdata = ChickWeight, re.form = NA),
+                                     p, check.attributes = FALSE)),
+                    label = "predictions correct from reset 'merMod' object")
+    })
+}
 
 #if (requireNamespace("MASS")) {
-#}
-
-#if (requireNamespace("nlme")) {
 #}
 
 #if (requireNamespace("nnet")) {
@@ -102,4 +119,3 @@ if (requireNamespace("survey")) {
 
 #if (requireNamespace("ordinal")) {
 #}
-

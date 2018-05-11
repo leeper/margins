@@ -21,9 +21,11 @@ r_packages:
 - rmarkdown
 - testthat
 - covr
+- AER
 - betareg
 - ggplot2
 - gapminder
+- lme4
 - nnet
 - ordinal
 - sandwich

@@ -31,9 +31,14 @@ reset_coefs.betareg <- function(model, coefs) {
     model
 }
 
+reset_coefs.merMod <- function(model, coefs) {
+    # in 'merMod', predictions work the slot called "beta", which is unnamed
+    # `fixef(model)` returns the same thing named
+    requireNamespace("methods")
+    beta <- methods::slot(model, "beta")
+    beta[match(names(coefs), names(lme4::fixef(model)))] <- as.numeric(coefs)
+    methods::slot(model, "beta") <- beta
+    model
+}
 
-# reset_coefs.merMod
-# reset_coefs.lmerMod
-
-# reset_coefs.lme
-# reset_coefs.nlme
+reset_coefs.lmerMod <- reset_coefs.merMod

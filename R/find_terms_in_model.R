@@ -12,14 +12,22 @@ find_terms_in_model.default <- function(model, variables = NULL) {
     # identify classes of terms in `model`
     if (!is.null(attributes(terms(model))[["dataClasses"]])) {
         ## first look in the `terms(model)`
-        classes <- attributes(terms(model))[["dataClasses"]][-1]
-    } else if (!is.null(attributes(terms(model$model))[["dataClasses"]])) {
+        classes <- attributes(terms(model))[["dataClasses"]][-1L]
+    } else if ("model" %in% names(model) && !is.null(attributes(terms(model$model))[["dataClasses"]])) {
         ## then look in the `terms(model$model)`
-        classes <- attributes(terms(model$model))[["dataClasses"]][-1]
+        classes <- attributes(terms(model$model))[["dataClasses"]][-1L]
     } else {
-        ## probably should try something else before giving up but we'll leave it like this for now
-        ## ^ famous last words
-        stop("No variable classes found in model.")
+        ## then get desperate and use `find_data()`
+        ## this is used for "merMod" objects
+        att <- attributes(terms(find_data(model)))
+        if ("dataClasses" %in% names(att)) {
+            classes <- att[["dataClasses"]][-1L]
+            rm(att)
+        } else {
+            ## probably should try something else before giving up but we'll leave it like this for now
+            ## ^ famous last words
+            stop("No variable classes found in model.")
+        }
     }
     
     # drop specially named "(weights)" variables
@@ -64,6 +72,22 @@ find_terms_in_model.default <- function(model, variables = NULL) {
     }
     return(vars)
 }
+
+find_terms_in_model.merMod <- function(model, variables = NULL) {
+    
+    # require lme4 package in order to identify random effects terms
+    requireNamespace("lme4")
+    
+    # call default method
+    varslist <- find_terms_in_model.default(model, variables)
+    
+    # sanitize `varlist` to remove random effects terms
+    fixed <- as.character(formula(model, fixed.only = TRUE))[-c(1:2)]
+    varslist[] <- lapply(varslist, function(vartype) vartype[vartype %in% fixed])
+    varslist
+}
+
+find_terms_in_model.lmerMod <- find_terms_in_model.merMod
 
 # call gsub_bracket on all common formula operations
 clean_terms <- function(terms) {

@@ -30,6 +30,56 @@ if (requireNamespace("betareg")) {
     })
 }
 
+context("Test 'lme4' methods")
+if (requireNamespace("lme4")) {
+    data("ChickWeight", package = "datasets")
+    
+    # linear mixed effects models (random intercepts)
+    m <- lme4::lmer(weight ~ Diet + (1|Chick), data = ChickWeight)
+    test_that("Test marginal_effects() for 'lmerMod' (single grouping)", {
+        expect_true(inherits(marginal_effects(m), "data.frame"))
+        expect_true(inherits(marginal_effects(m), "data.frame"))
+    })
+    test_that("Test margins() for 'lmerMod' (single grouping)", {
+        expect_true(inherits(margins(m), "margins"))
+        expect_true(inherits(margins(m), "margins"))
+    })
+    # lmer with multiple random intercepts
+    m <- lme4::lmer(weight ~ Diet + (1|Time) + (1|Chick), data = ChickWeight)
+    test_that("Test marginal_effects() for 'lmerMod' (multiple grouping)", {
+        expect_true(inherits(marginal_effects(m), "data.frame"))
+        expect_true(inherits(marginal_effects(m), "data.frame"))
+    })
+    test_that("Test margins() for 'lmerMod' (multiple grouping)", {
+        expect_true(inherits(margins(m), "margins"))
+        expect_true(inherits(margins(m), "margins"))
+    })
+    
+    # lmer with random slopes
+    m <- lme4::lmer(weight ~ Diet + (1+Time|Chick), data = ChickWeight)
+    test_that("Test marginal_effects() for 'lmerMod' (random slopes)", {
+        expect_true(inherits(marginal_effects(m), "data.frame"))
+        expect_true(inherits(marginal_effects(m), "data.frame"))
+    })
+    test_that("Test margins() for 'lmerMod' (random slopes)", {
+        expect_true(inherits(margins(m), "margins"))
+        expect_true(inherits(margins(m), "margins"))
+    })
+    
+    # generalized linear mixed effects models
+    ChickWeight$high <- cut(ChickWeight$weight, 2)
+    m <- lme4::glmer(high ~ Diet + (1|Chick), data = ChickWeight, binomial)
+    test_that("Test marginal_effects() for 'merMod'", {
+        expect_true(inherits(marginal_effects(m), "data.frame"))
+        expect_true(inherits(marginal_effects(m), "data.frame"))
+    })
+    test_that("Test margins() for 'merMod'", {
+        expect_true(inherits(margins(m), "margins"))
+        expect_true(inherits(margins(m), "margins"))
+    })
+    
+}
+
 context("Test 'MASS' methods")
 if (requireNamespace("MASS")) {
     data("housing", package = "MASS")

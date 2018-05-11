@@ -54,9 +54,16 @@ function(data,
                                 varslist = varslist,
                                 ...)
         # get jacobian
-        jacobian <- jacobian(FUN, coef(model)[names(coef(model)) %in% c("(Intercept)", colnames(vcov))], weights = weights, eps = eps)
-        # sandwich
-        vc <- jacobian %*% vcov %*% t(jacobian)
+        if (inherits(model, "merMod")) {
+            requireNamespace("lme4")
+            jacobian <- jacobian(FUN, lme4::fixef(model)[names(lme4::fixef(model)) %in% c("(Intercept)", colnames(vcov))], weights = weights, eps = eps)
+            # sandwich
+            vc <- as.matrix(jacobian %*% vcov %*% t(jacobian))
+        } else {
+            jacobian <- jacobian(FUN, coef(model)[names(coef(model)) %in% c("(Intercept)", colnames(vcov))], weights = weights, eps = eps)
+            # sandwich
+            vc <- jacobian %*% vcov %*% t(jacobian)
+        }
         # extract variances from diagonal
         variances <- diag(vc)
         

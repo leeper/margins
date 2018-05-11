@@ -1,3 +1,7 @@
+# margins 0.3.22
+
+* Expanded support for objects of class "merMod" from **lme4**, including support for variance estimation and an expanded test suite. (#56)
+
 # margins 0.3.21
 
 * Modified the internals of `gradient_factory()` to be more robust to an expanded set of model classes through the introduction of an internal function `reset_coefs()`. A test suite for this function has been added.
