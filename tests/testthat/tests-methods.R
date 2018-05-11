@@ -1,3 +1,5 @@
+# Test `marginal_effects()` and `margins()` methods on supported model classes
+
 # set comparison tolerance
 tol <- 0.0001
 

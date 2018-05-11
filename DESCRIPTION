@@ -5,7 +5,7 @@ Description: An R port of Stata's 'margins' command, which can be used to
     calculate marginal (or partial) effects from model objects.
 License: MIT + file LICENSE
 Version: 0.3.21
-Date: 2018-05-10
+Date: 2018-05-11
 Authors@R: c(person("Thomas J.", "Leeper",
                     role = c("aut", "cre"), 
                     email = "thosjleeper@gmail.com",
@@ -24,6 +24,7 @@ Imports:
     prediction (>= 0.2.8),
     data.table,
     graphics,
+    grDevices,
     MASS
 Suggests:
     knitr,
@@ -31,12 +32,14 @@ Suggests:
     testthat,
     ggplot2,
     gapminder,
-    nnet,
     sandwich,
     stargazer
 Enhances:
     AER,
     betareg,
+    lme4,
+    nlme,
+    nnet,
     ordinal,
     survey
 ByteCompile: true

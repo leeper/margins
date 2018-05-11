@@ -1,3 +1,4 @@
+# Test `reset_coefs()` methods on supported model classes
 context("Test internal function for resetting coefficients")
 
 # Simulated dataset
@@ -36,6 +37,25 @@ test_that("reset_coefs() works for 'glm' objects", {
     expect_true(isTRUE(all.equal(predict(mod2, newdata = dat), coef(mod2)[1L] + dat$x + 2*dat$z, check.attributes = FALSE)), label = "predictions correct from reset 'glm' object")
 })
 
+if (requireNamespace("AER", quietly = TRUE)) {
+    test_that("reset_coefs() works for 'ivreg' objects", {
+        data("CigarettesSW", package = "AER")
+        CigarettesSW$rprice <- with(CigarettesSW, price/cpi)
+        CigarettesSW$tdiff <- with(CigarettesSW, (taxs - tax)/cpi)
+        # base object
+        mod1 <- AER::ivreg(log(packs) ~ rprice | tdiff, data = CigarettesSW, subset = year == "1995")
+        # modified object
+        mod2 <- reset_coefs(mod1, c(rprice = 0.1))
+        # expect coefs to have been changed
+        expect_true(!isTRUE(all.equal(coef(mod1), coef(mod2))), label = "coefficients reset in 'ivreg' object")
+        # expect prediction from modified object to be correct
+        expect_true(!isTRUE(all.equal(predict(mod1, newdata = CigarettesSW), predict(mod2, newdata = CigarettesSW))),
+                    label = "predictions differ from original 'ivreg' object")
+        expect_true(isTRUE(all.equal(predict(mod2, newdata = CigarettesSW), coef(mod2)[1L] + 0.1*CigarettesSW$rprice, check.attributes = FALSE)),
+                    label = "predictions correct from reset 'ivreg' object")
+    })
+}
+
 if (requireNamespace("betareg")) {
     test_that("reset_coefs() works for 'betareg' objects", {
         data("GasolineYield", package = "betareg")
@@ -45,6 +65,7 @@ if (requireNamespace("betareg")) {
         mod2 <- reset_coefs(mod1, c(temp = 0.05))
         # expect coefs to have been changed
         expect_true(!isTRUE(all.equal(coef(mod1), coef(mod2))), label = "coefficients reset in 'betareg' object")
+        # expect prediction from modified object to be correct
         expect_true(!isTRUE(all.equal(predict(mod1, newdata = GasolineYield), predict(mod2, newdata = GasolineYield))),
                     label = "predictions differ from original 'betareg' object")
         expect_true(isTRUE(all.equal(predict(mod2, newdata = GasolineYield, type = "link"), coef(mod2)[1L] + 0.05*GasolineYield$temp, check.attributes = FALSE)),
@@ -70,5 +91,15 @@ if (requireNamespace("survey")) {
 #if (requireNamespace("lme4")) {
 #}
 
+#if (requireNamespace("MASS")) {
+#}
+
 #if (requireNamespace("nlme")) {
 #}
+
+#if (requireNamespace("nnet")) {
+#}
+
+#if (requireNamespace("ordinal")) {
+#}
+
