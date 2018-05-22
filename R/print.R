@@ -8,7 +8,7 @@ function(x, digits = 4, order = NULL, ...) {
     }
     
     # check for `at` specification
-    at_names <- names(attr(x, "at"))
+    at_names <- setdiff(names(attr(x, "at")), "index")
     if (is.null(at_names)) {
         if (isTRUE(is_weighted)) {
             message("Average marginal effects (survey-weighted)")

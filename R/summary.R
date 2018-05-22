@@ -6,10 +6,10 @@ function(object, level = 0.95, by_factor = TRUE, ...) {
     is_weighted <- attr(object, "weighted")
     
     # check for `at` specification
-    at_names <- names(attr(object, "at"))
+    at_names <- setdiff(names(attr(object, "at")), "index")
     if (is.null(at_names)) {
         out <- summarize_one(object, level = level, is_weighted = is_weighted, ...)
-        out <- out[order(out[["factor"]]), ]
+        out <- out[order(out[["factor"]]), , drop = FALSE]
     } else {
         at_split <- split(object, object[at_names])
         out <- list()

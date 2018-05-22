@@ -1,3 +1,7 @@
+# margins 0.3.23
+
+* Fix a small issue in `print()` and `summary()` methods related to the release of prediction 0.3.6.
+
 # margins 0.3.22
 
 * Expanded support for objects of class "merMod" from **lme4**, including support for variance estimation and an expanded test suite. (#56)
