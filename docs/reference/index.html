@@ -25,7 +25,12 @@
 <link href="../pkgdown.css" rel="stylesheet">
 <script src="../jquery.sticky-kit.min.js"></script>
 <script src="../pkgdown.js"></script>
+
+
+
 <meta property="og:title" content="Function reference" />
+
+
 <!-- mathjax -->
 <script src='https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML'></script>
 
@@ -48,8 +53,12 @@
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand" href="../index.html">margins</a>
+      <span class="navbar-brand">
+        <a class="navbar-link" href="../index.html">margins</a>
+        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.3.23</span>
+      </span>
     </div>
+
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
         <li>
@@ -89,6 +98,7 @@
   </a>
 </li>
       </ul>
+      
     </div><!--/.nav-collapse -->
   </div><!--/.container -->
 </div><!--/.navbar -->
@@ -96,76 +106,71 @@
       
       </header>
 
-      <div class="row">
-  <div class="col-md-9">
+<div class="row">
+  <div class="contents col-md-9">
     <div class="page-header">
-      <h1>
-        Reference
-        <small>version&nbsp;0.3.20</small>
-      </h1>
+      <h1>Reference</h1>
     </div>
 
-    <div class="contents">
-      <table class="ref-index">
+    <table class="ref-index">
 
-      <colgroup>
-        <col class="alias" />
-        <col class="title" />
-      </colgroup>
+    <colgroup>
+      <col class="alias" />
+      <col class="title" />
+    </colgroup>
 
-      <tbody>
-        <tr>
-          <th colspan="2">
-            <h2 id="section-all-functions" class="hasAnchor"><a href="#section-all-functions" class="anchor"></a>All functions</h2>
-            <p class="section-desc"></p>
-          </th>
-        </tr>
-        <tr>
-          <!--  -->
-          <td>
-            <p><code><a href="alexseev.html">alexseev</a></code> </p>
-          </td>
-          <td><p>Example Data</p></td>
-        </tr><tr>
-          <!--  -->
-          <td>
-            <p><code><a href="cplot.html">cplot()</a></code> </p>
-          </td>
-          <td><p>Conditional predicted value and average marginal effect plots for models</p></td>
-        </tr><tr>
-          <!--  -->
-          <td>
-            <p><code><a href="dydx.html">dydx()</a></code> </p>
-          </td>
-          <td><p>Marginal Effect of a Given Variable</p></td>
-        </tr><tr>
-          <!--  -->
-          <td>
-            <p><code><a href="marginal_effects.html">marginal_effects()</a></code> </p>
-          </td>
-          <td><p>Differentiate a Model Object with Respect to All Variables</p></td>
-        </tr><tr>
-          <!--  -->
-          <td>
-            <p><code><a href="margins.html">margins()</a></code> </p>
-          </td>
-          <td><p>Marginal Effects Estimation</p></td>
-        </tr><tr>
-          <!--  -->
-          <td>
-            <p><code><a href="persp.html">image(<i>&lt;lm&gt;</i>)</a></code> <code><a href="persp.html">image(<i>&lt;glm&gt;</i>)</a></code> <code><a href="persp.html">image(<i>&lt;loess&gt;</i>)</a></code> <code><a href="persp.html">persp(<i>&lt;lm&gt;</i>)</a></code> <code><a href="persp.html">persp(<i>&lt;glm&gt;</i>)</a></code> <code><a href="persp.html">persp(<i>&lt;loess&gt;</i>)</a></code> </p>
-          </td>
-          <td><p>Perspective and heatmap/contour plots for models</p></td>
-        </tr><tr>
-          <!--  -->
-          <td>
-            <p><code><a href="plot.margins.html">plot(<i>&lt;margins&gt;</i>)</a></code> </p>
-          </td>
-          <td><p>Plot Marginal Effects Estimates</p></td>
-        </tr>
-      </tbody>
-      </table>
-    </div>
+    <tbody>
+      <tr>
+        <th colspan="2">
+          <h2 id="section-all-functions" class="hasAnchor"><a href="#section-all-functions" class="anchor"></a>All functions</h2>
+          <p class="section-desc"></p>
+        </th>
+      </tr>
+      <tr>
+        <!--  -->
+        <td>
+          <p><code><a href="alexseev.html">alexseev</a></code> </p>
+        </td>
+        <td><p>Example Data</p></td>
+      </tr><tr>
+        <!--  -->
+        <td>
+          <p><code><a href="cplot.html">cplot()</a></code> </p>
+        </td>
+        <td><p>Conditional predicted value and average marginal effect plots for models</p></td>
+      </tr><tr>
+        <!--  -->
+        <td>
+          <p><code><a href="dydx.html">dydx()</a></code> </p>
+        </td>
+        <td><p>Marginal Effect of a Given Variable</p></td>
+      </tr><tr>
+        <!--  -->
+        <td>
+          <p><code><a href="marginal_effects.html">marginal_effects()</a></code> </p>
+        </td>
+        <td><p>Differentiate a Model Object with Respect to All (or Specified) Variables</p></td>
+      </tr><tr>
+        <!--  -->
+        <td>
+          <p><code><a href="margins.html">margins()</a></code> </p>
+        </td>
+        <td><p>Marginal Effects Estimation</p></td>
+      </tr><tr>
+        <!--  -->
+        <td>
+          <p><code><a href="persp.html">image(<i>&lt;lm&gt;</i>)</a></code> <code><a href="persp.html">image(<i>&lt;glm&gt;</i>)</a></code> <code><a href="persp.html">image(<i>&lt;loess&gt;</i>)</a></code> <code><a href="persp.html">persp(<i>&lt;lm&gt;</i>)</a></code> <code><a href="persp.html">persp(<i>&lt;glm&gt;</i>)</a></code> <code><a href="persp.html">persp(<i>&lt;loess&gt;</i>)</a></code> </p>
+        </td>
+        <td><p>Perspective and heatmap/contour plots for models</p></td>
+      </tr><tr>
+        <!--  -->
+        <td>
+          <p><code><a href="plot.margins.html">plot(<i>&lt;margins&gt;</i>)</a></code> </p>
+        </td>
+        <td><p>Plot Marginal Effects Estimates</p></td>
+      </tr>
+    </tbody>
+    </table>
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
@@ -187,6 +192,8 @@
 
       </footer>
    </div>
+
+  
 
   </body>
 </html>

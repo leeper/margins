@@ -25,7 +25,12 @@
 <link href="../pkgdown.css" rel="stylesheet">
 <script src="../jquery.sticky-kit.min.js"></script>
 <script src="../pkgdown.js"></script>
+
+
+
 <meta property="og:title" content="Changelog" />
+
+
 <!-- mathjax -->
 <script src='https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML'></script>
 
@@ -48,8 +53,12 @@
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand" href="../index.html">margins</a>
+      <span class="navbar-brand">
+        <a class="navbar-link" href="../index.html">margins</a>
+        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.3.23</span>
+      </span>
     </div>
+
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
         <li>
@@ -89,6 +98,7 @@
   </a>
 </li>
       </ul>
+      
     </div><!--/.nav-collapse -->
   </div><!--/.container -->
 </div><!--/.navbar -->
@@ -96,26 +106,58 @@
       
       </header>
 
-      <div class="row">
-
-  <div class="col-md-9">
+<div class="row">
+  <div class="col-md-9 contents">
     <div class="page-header">
-      <h1>Change log <small></small></h1>
-      <small>Source: <a href='https:/github.com/leeper/margins/blob/master/NEWS.md'><code>NEWS.md</code></a></small>
+      <h1>Changelog <small></small></h1>
+      <small>Source: <a href='https://github.com/leeper/margins/blob/master/NEWS.md'><code>NEWS.md</code></a></small>
     </div>
 
-    <div class="contents">
-    <div id="margins-0-3-18" class="section level1">
+    <div id="margins-0-3-23" class="section level1">
 <h1 class="page-header">
-<a href="#margins-0-3-18" class="anchor"></a>margins 0.3.18<small> Unreleased </small>
+<a href="#margins-0-3-23" class="anchor"></a>margins 0.3.23<small> Unreleased </small>
+</h1>
+<ul>
+<li>Fix a small issue in <code>print()</code> and <code>summary()</code> methods related to the release of prediction 0.3.6.</li>
+</ul>
+</div>
+    <div id="margins-0-3-22" class="section level1">
+<h1 class="page-header">
+<a href="#margins-0-3-22" class="anchor"></a>margins 0.3.22<small> Unreleased </small>
+</h1>
+<ul>
+<li>Expanded support for objects of class “merMod” from <strong>lme4</strong>, including support for variance estimation and an expanded test suite. (<a href='https://github.com/leeper/margins/issues/56'>#56</a>)</li>
+</ul>
+</div>
+    <div id="margins-0-3-21" class="section level1">
+<h1 class="page-header">
+<a href="#margins-0-3-21" class="anchor"></a>margins 0.3.21<small> Unreleased </small>
+</h1>
+<ul>
+<li>Modified the internals of <code>gradient_factory()</code> to be more robust to an expanded set of model classes through the introduction of an internal function <code>reset_coefs()</code>. A test suite for this function has been added.</li>
+</ul>
+</div>
+    <div id="margins-0-3-20" class="section level1">
+<h1 class="page-header">
+<a href="#margins-0-3-20" class="anchor"></a>margins 0.3.20<small> 2018-04-24 </small>
+</h1>
+<ul>
+<li>Added support for objects of class “ivreg” from <strong>AER</strong>.</li>
+<li>
+<code><a href="../reference/margins.html">margins.default()</a></code> now attempts to calculate marginal effect variances in order to, by default, support additional model classes.</li>
+</ul>
+</div>
+    <div id="margins-0-3-19" class="section level1">
+<h1 class="page-header">
+<a href="#margins-0-3-19" class="anchor"></a>margins 0.3.19<small> Unreleased </small>
 </h1>
 <ul>
 <li>Added support for objects of class “betareg” from <strong>betareg</strong>. (<a href='https://github.com/leeper/margins/issues/90'>#90</a>)</li>
 </ul>
 </div>
-    <div id="margins-0-3-18-1" class="section level1">
+    <div id="margins-0-3-18" class="section level1">
 <h1 class="page-header">
-<a href="#margins-0-3-18-1" class="anchor"></a>margins 0.3.18<small> Unreleased </small>
+<a href="#margins-0-3-18" class="anchor"></a>margins 0.3.18<small> Unreleased </small>
 </h1>
 <ul>
 <li>
@@ -231,7 +273,7 @@
 <a href="#margins-0-3-6" class="anchor"></a>margins 0.3.6<small> Unreleased </small>
 </h1>
 <ul>
-<li>Export <code>margins.merMod()</code>. (<a href='https://github.com/leeper/margins/issues/56'>#56</a>)</li>
+<li>Export <code><a href="../reference/margins.html">margins.merMod()</a></code>. (<a href='https://github.com/leeper/margins/issues/56'>#56</a>)</li>
 </ul>
 </div>
     <div id="margins-0-3-5" class="section level1">
@@ -255,7 +297,7 @@
 <a href="#margins-0-3-3" class="anchor"></a>margins 0.3.3<small> Unreleased </small>
 </h1>
 <ul>
-<li>Fixed “margins” object structure in <code>margins.merMod()</code>.</li>
+<li>Fixed “margins” object structure in <code><a href="../reference/margins.html">margins.merMod()</a></code>.</li>
 <li>Switched <code>print()</code> and <code>summary()</code> methods to using <code>weighted.mean()</code> instead of <code>mean()</code>. (<a href='https://github.com/leeper/margins/issues/45'>#45</a>)</li>
 </ul>
 </div>
@@ -291,7 +333,7 @@
 <li>
 <code><a href="../reference/plot.margins.html">plot.margins()</a></code> now displays marginal effects across each level of <code>at</code>. (<a href='https://github.com/leeper/margins/issues/58'>#58</a>)</li>
 <li>
-<code>build_margins()</code> and thus <code><a href="../reference/margins.html">margins()</a></code> no longer returns the original data twice (a bug introduced by change in behavior of <code><a href="http://www.rdocumentation.org/packages/prediction/topics/prediction">prediction()</a></code>). (<a href='https://github.com/leeper/margins/issues/57'>#57</a>)</li>
+<code>build_margins()</code> and thus <code><a href="../reference/margins.html">margins()</a></code> no longer returns the original data twice (a bug introduced by change in behavior of <code>prediction()</code>). (<a href='https://github.com/leeper/margins/issues/57'>#57</a>)</li>
 <li>All methods for objects of class <code>"marginslist"</code> have been removed. (<a href='https://github.com/leeper/margins/issues/58'>#58</a>)</li>
 <li>The <code>at</code> argument in <code><a href="../reference/plot.margins.html">plot.margins()</a></code> has been renamed to <code>pos</code>, to avoid ambiguity with <code>at</code> as used elsewhere in the package.</li>
 <li>
@@ -335,7 +377,7 @@
 </h1>
 <ul>
 <li>The <code>extract_marginal_effects()</code> function has been removed and replaced by <code><a href="../reference/marginal_effects.html">marginal_effects()</a></code> methods for objects of classes <code>"margins"</code> and <code>"marginslist"</code>.</li>
-<li>Added a dependency on <strong>prediction</strong> v.0.1.3 and, implicitly, an enhances suggestion of <strong>survey</strong> v3.31-5 to resolve an underlying <code><a href="http://www.rdocumentation.org/packages/prediction/topics/prediction">prediction()</a></code> issue for models of class <code>"svyglm"</code>. (<a href='https://github.com/leeper/margins/issues/47'>#47</a>, h/t Carl Ganz)</li>
+<li>Added a dependency on <strong>prediction</strong> v.0.1.3 and, implicitly, an enhances suggestion of <strong>survey</strong> v3.31-5 to resolve an underlying <code>prediction()</code> issue for models of class <code>"svyglm"</code>. (<a href='https://github.com/leeper/margins/issues/47'>#47</a>, h/t Carl Ganz)</li>
 </ul>
 </div>
     <div id="margins-0-2-20" class="section level1">
@@ -362,7 +404,7 @@
 <a href="#margins-0-2-20-2" class="anchor"></a>margins 0.2.20<small> Unreleased </small>
 </h1>
 <ul>
-<li>Factored the <code><a href="http://www.rdocumentation.org/packages/prediction/topics/prediction">prediction()</a></code> generic and methods into a separate package, <strong>prediction</strong>, to ease maintainence.</li>
+<li>Factored the <code>prediction()</code> generic and methods into a separate package, <strong>prediction</strong>, to ease maintainence.</li>
 <li>Added a <code>print.summary.margins()</code> method to separate construction of the summary data frame the printing thereof.</li>
 <li>The “Technical Details” vignette now describes the package functionality and computational approach in near-complete detail.</li>
 </ul>
@@ -392,7 +434,7 @@
 </h1>
 <ul>
 <li>Fixes to handling of factors and ordered variables converted within formulae. (<a href='https://github.com/leeper/margins/issues/38'>#38</a>)</li>
-<li>Reconfigured the <code>data</code> argument in <code><a href="../reference/margins.html">margins()</a></code> and <code><a href="http://www.rdocumentation.org/packages/prediction/topics/prediction">prediction()</a></code> to be clearer about what is happening when it is set to missing.</li>
+<li>Reconfigured the <code>data</code> argument in <code><a href="../reference/margins.html">margins()</a></code> and <code>prediction()</code> to be clearer about what is happening when it is set to missing.</li>
 </ul>
 </div>
     <div id="margins-0-2-16" class="section level1">
@@ -401,7 +443,7 @@
 </h1>
 <ul>
 <li>Switched to using a more reliable “central difference” numerical differentiation and updated the calculation of the step size to follow <code>marfx</code> (<a href='https://github.com/leeper/margins/issues/31'>#31</a>, h/t Jeffrey Arnold)</li>
-<li>Added some functionality <code><a href="http://www.rdocumentation.org/packages/prediction/topics/prediction">prediction()</a></code> methods to, hopefully, reduce memory footprint of model objects. (<a href='https://github.com/leeper/margins/issues/26'>#26</a>)</li>
+<li>Added some functionality <code>prediction()</code> methods to, hopefully, reduce memory footprint of model objects. (<a href='https://github.com/leeper/margins/issues/26'>#26</a>)</li>
 <li>Changed the capitalization of the <code>variances</code> field in “margins” objects (to lower case), for consistency.</li>
 <li>Fixed some small errors in documentation and improved width of examples.</li>
 </ul>
@@ -436,7 +478,7 @@
 <a href="#margins-0-2-11" class="anchor"></a>margins 0.2.11<small> Unreleased </small>
 </h1>
 <ul>
-<li>Added a <code><a href="http://www.rdocumentation.org/packages/prediction/topics/prediction">prediction()</a></code> method for “gls” objects (from <code>MASS::gls()</code>). (<a href='https://github.com/leeper/margins/issues/3'>#3</a>)</li>
+<li>Added a <code>prediction()</code> method for “gls” objects (from <code>MASS::gls()</code>). (<a href='https://github.com/leeper/margins/issues/3'>#3</a>)</li>
 </ul>
 </div>
     <div id="margins-0-2-10" class="section level1">
@@ -452,8 +494,8 @@
 <a href="#margins-0-2-8" class="anchor"></a>margins 0.2.8<small> Unreleased </small>
 </h1>
 <ul>
-<li>Added a <code><a href="http://www.rdocumentation.org/packages/prediction/topics/prediction">prediction()</a></code> method for “ivreg” objects (from <code>AER::ivreg()</code>). (<a href='https://github.com/leeper/margins/issues/3'>#3</a>)</li>
-<li>Added a <code><a href="http://www.rdocumentation.org/packages/prediction/topics/prediction">prediction()</a></code> method for “survreg” objects (from <code><a href="http://www.rdocumentation.org/packages/survival/topics/survreg">survival::survreg()</a></code>). (<a href='https://github.com/leeper/margins/issues/3'>#3</a>)</li>
+<li>Added a <code>prediction()</code> method for “ivreg” objects (from <code><a href="http://www.rdocumentation.org/packages/AER/topics/ivreg">AER::ivreg()</a></code>). (<a href='https://github.com/leeper/margins/issues/3'>#3</a>)</li>
+<li>Added a <code>prediction()</code> method for “survreg” objects (from <code><a href="http://www.rdocumentation.org/packages/survival/topics/survreg">survival::survreg()</a></code>). (<a href='https://github.com/leeper/margins/issues/3'>#3</a>)</li>
 </ul>
 </div>
     <div id="margins-0-2-7" class="section level1">
@@ -461,8 +503,8 @@
 <a href="#margins-0-2-7" class="anchor"></a>margins 0.2.7<small> Unreleased </small>
 </h1>
 <ul>
-<li>Added a <code><a href="http://www.rdocumentation.org/packages/prediction/topics/prediction">prediction()</a></code> method for “polr” objects (from <code><a href="http://www.rdocumentation.org/packages/MASS/topics/polr">MASS::polr()</a></code>). (<a href='https://github.com/leeper/margins/issues/3'>#3</a>)</li>
-<li>Added a <code><a href="http://www.rdocumentation.org/packages/prediction/topics/prediction">prediction()</a></code> method for “coxph” objects (from <code><a href="http://www.rdocumentation.org/packages/survival/topics/coxph">survival::coxph()</a></code>). (<a href='https://github.com/leeper/margins/issues/3'>#3</a>)</li>
+<li>Added a <code>prediction()</code> method for “polr” objects (from <code><a href="http://www.rdocumentation.org/packages/MASS/topics/polr">MASS::polr()</a></code>). (<a href='https://github.com/leeper/margins/issues/3'>#3</a>)</li>
+<li>Added a <code>prediction()</code> method for “coxph” objects (from <code><a href="http://www.rdocumentation.org/packages/survival/topics/coxph">survival::coxph()</a></code>). (<a href='https://github.com/leeper/margins/issues/3'>#3</a>)</li>
 </ul>
 </div>
     <div id="margins-0-2-7-1" class="section level1">
@@ -471,11 +513,11 @@
 </h1>
 <ul>
 <li>
-<code><a href="../reference/marginal_effects.html">marginal_effects()</a></code> and <code><a href="http://www.rdocumentation.org/packages/prediction/topics/prediction">prediction()</a></code> are now S3 generics, with methods for “lm” and “glm” objects, improving extensability. (<a href='https://github.com/leeper/margins/issues/39'>#39</a>, <a href='https://github.com/leeper/margins/issues/40'>#40</a>)</li>
+<code><a href="../reference/marginal_effects.html">marginal_effects()</a></code> and <code>prediction()</code> are now S3 generics, with methods for “lm” and “glm” objects, improving extensability. (<a href='https://github.com/leeper/margins/issues/39'>#39</a>, <a href='https://github.com/leeper/margins/issues/40'>#40</a>)</li>
 <li>
-<code><a href="http://www.rdocumentation.org/packages/prediction/topics/prediction">prediction()</a></code> returns a new class (“prediction”) and gains a <code>print()</code> method.</li>
-<li>Added preliminary support for “loess” objects, including methods for <code><a href="http://www.rdocumentation.org/packages/prediction/topics/prediction">prediction()</a></code>, <code><a href="../reference/marginal_effects.html">marginal_effects()</a></code>, <code><a href="../reference/cplot.html">cplot()</a></code>, and <code>persp()</code>. No effect variances are currently calculated. (<a href='https://github.com/leeper/margins/issues/3'>#3</a>)</li>
-<li>Added a <code><a href="http://www.rdocumentation.org/packages/prediction/topics/prediction">prediction()</a></code> method for “nls” objects. (<a href='https://github.com/leeper/margins/issues/3'>#3</a>)</li>
+<code>prediction()</code> returns a new class (“prediction”) and gains a <code>print()</code> method.</li>
+<li>Added preliminary support for “loess” objects, including methods for <code>prediction()</code>, <code><a href="../reference/marginal_effects.html">marginal_effects()</a></code>, <code><a href="../reference/cplot.html">cplot()</a></code>, and <code>persp()</code>. No effect variances are currently calculated. (<a href='https://github.com/leeper/margins/issues/3'>#3</a>)</li>
+<li>Added a <code>prediction()</code> method for “nls” objects. (<a href='https://github.com/leeper/margins/issues/3'>#3</a>)</li>
 <li>Internal function <code>get_effect_variances()</code> gains a “none” option for the <code>vce</code> argument, to skip calculation of ME variances.</li>
 </ul>
 </div>
@@ -566,15 +608,18 @@
 <li>Initial package released.</li>
 </ul>
 </div>
-    </div>
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <div id="tocnav">
       <h2>Contents</h2>
       <ul class="nav nav-pills nav-stacked">
+        <li><a href="#margins-0-3-23">0.3.23</a></li>
+        <li><a href="#margins-0-3-22">0.3.22</a></li>
+        <li><a href="#margins-0-3-21">0.3.21</a></li>
+        <li><a href="#margins-0-3-20">0.3.20</a></li>
+        <li><a href="#margins-0-3-19">0.3.19</a></li>
         <li><a href="#margins-0-3-18">0.3.18</a></li>
-        <li><a href="#margins-0-3-18-1">0.3.18</a></li>
         <li><a href="#margins-0-3-17">0.3.17</a></li>
         <li><a href="#margins-0-3-16">0.3.16</a></li>
         <li><a href="#margins-0-3-15">0.3.15</a></li>
@@ -637,6 +682,8 @@
 
       </footer>
    </div>
+
+  
 
   </body>
 </html>

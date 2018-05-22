@@ -18,7 +18,7 @@
 <![endif]-->
 </head>
 <body>
-    <div class="container template-vignette">
+    <div class="container template-article">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
     <div class="navbar-header">
@@ -27,8 +27,12 @@
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand" href="../index.html">margins</a>
+      <span class="navbar-brand">
+        <a class="navbar-link" href="../index.html">margins</a>
+        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.3.23</span>
+      </span>
     </div>
+
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
 <li>
@@ -76,19 +80,19 @@
 
       
       </header><div class="row">
-  <div class="col-md-9">
+  <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1>An Introduction to ‘margins’</h1>
             
-            <h4 class="date">2018-03-18</h4>
+            <h4 class="date">2018-05-22</h4>
       
-      <small>Source: <a href="https:/github.com/leeper/margins/blob/master/vignettes/Introduction.Rmd"><code>vignettes/Introduction.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/leeper/margins/blob/master/vignettes/Introduction.Rmd"><code>vignettes/Introduction.Rmd</code></a></small>
+      <div class="hidden name"><code>Introduction.Rmd</code></div>
 
     </div>
 
     
     
-<div class="contents">
 <p><strong>margins</strong> is an effort to port Stata’s (closed source) <a href="http://www.stata.com/help.cgi?margins"><code>margins</code></a> command to R as an S3 generic method for calculating the marginal effects (or “partial effects”) of covariates included in model objects (like those of classes “lm” and “glm”). A plot method for the new “margins” class additionally ports the <code>marginsplot</code> command, and various additional functions support interpretation and visualization of such models.</p>
 <p>Stata’s <code>margins</code> command is very simple and intuitive to use:</p>
 <pre><code>. import delimited mtcars.csv
@@ -121,7 +125,7 @@ x &lt;-<span class="st"> </span><span class="kw">lm</span>(mpg <span class="op">
 ##      wt -3.1198 0.6613 -4.7176 0.0000 -4.4160 -1.8236</code></pre>
 <p>With the exception of differences in rounding, the above results match identically what Stata’s <code>margins</code> command produces. Using the <code>plot()</code> method also yields an aesthetically similar result to Stata’s <code>marginsplot</code>:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">plot</span>(m)</code></pre></div>
-<p><img src="Introduction_files/figure-html/marginsplot-1.png" width="672"></p>
+<p><img src="Introduction_files/figure-html/marginsplot-1.png" width="700"></p>
 <div id="using-optional-arguments-in-margins" class="section level2">
 <h2 class="hasAnchor">
 <a href="#using-optional-arguments-in-margins" class="anchor"></a>Using Optional Arguments in <code>margins</code>
@@ -137,7 +141,7 @@ x &lt;-<span class="st"> </span><span class="kw">lm</span>(mpg <span class="op">
 </ul>
 <p>The <code>at</code> argument has been translated into <code><a href="../reference/margins.html">margins()</a></code> in a very similar manner. It can be used by specifying a list of variable names and specified values for those variables at which to calculate marginal effects, such as <code><a href="../reference/margins.html">margins(x, at = list(hp=150))</a></code>. When using <code>at</code>, <code><a href="../reference/margins.html">margins()</a></code> constructs modified datasets - using <code>build_datalist()</code> - containing the specified values and calculates marginal effects on each modified dataset, <code>rbind</code>-ing them back into a single “margins” object.</p>
 <p>Stata’s <code>atmeans</code> argument is not implemented in <code><a href="../reference/margins.html">margins()</a></code> for various reasons, including because it is possible to achieve the effect manually through an operation like <code>data$var &lt;- mean(data$var, na.rm = TRUE)</code> and passing the modified data frame to <code><a href="../reference/margins.html">margins(x, data = data)</a></code>.</p>
-<p>At present, <code><a href="../reference/margins.html">margins()</a></code> does not implement the <code>over</code> option. The reason for this is also simple: R already makes data subsetting operations quite simple using simple <code>[</code> extraction. If, for example, one wanted to calculate marginal effects on subsets of a data frame, those subsets can be passed directly to <code><a href="../reference/margins.html">margins()</a></code> via the <code>data</code> argument (as in a call to <code><a href="http://www.rdocumentation.org/packages/prediction/topics/prediction">prediction()</a></code>).</p>
+<p>At present, <code><a href="../reference/margins.html">margins()</a></code> does not implement the <code>over</code> option. The reason for this is also simple: R already makes data subsetting operations quite simple using simple <code>[</code> extraction. If, for example, one wanted to calculate marginal effects on subsets of a data frame, those subsets can be passed directly to <code><a href="../reference/margins.html">margins()</a></code> via the <code>data</code> argument (as in a call to <code>prediction()</code>).</p>
 <p>The rest of this vignette shows how to use <code>at</code> and <code>data</code> to obtain various kinds of marginal effects, and how to use plotting functions to visualize those inferences.</p>
 <div id="average-marginal-effects-and-average-partial-effects" class="section level3">
 <h3 class="hasAnchor">
@@ -157,7 +161,7 @@ x &lt;-<span class="st"> </span><span class="kw">lm</span>(mpg <span class="op">
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">summary</span>(<span class="kw"><a href="../reference/margins.html">margins</a></span>(x, <span class="dt">variables =</span> <span class="st">"hp"</span>))</code></pre></div>
 <pre><code>##  factor     AME     SE       z      p   lower   upper
 ##      hp -0.0253 0.0105 -2.4046 0.0162 -0.0459 -0.0047</code></pre>
-<p>In an ordinary least squares regression, there is really only one way of examining marginal effects (that is, on the scale of the outcome variable). In a generalized linear model (e.g., logit), however, it is possible to examine true “marginal effects” (i.e., the marginal contribution of each variable on the scale of the linear predictor) or “partial effects” (i.e., the contribution of each variable on the outcome scale, conditional on the other variables involved in the link function transformation of the linear predictor). The latter are the default in <code><a href="../reference/margins.html">margins()</a></code>, which implicitly sets the argument <code><a href="../reference/margins.html">margins(x, type = "response")</a></code> and passes that through to <code><a href="http://www.rdocumentation.org/packages/prediction/topics/prediction">prediction()</a></code> methods. To obtain the former, simply set <code><a href="../reference/margins.html">margins(x, type = "link")</a></code>. There’s some debate about which of these is preferred and even what to call the two different quantities of interest. Regardless of all of that, here’s how you obtain either:</p>
+<p>In an ordinary least squares regression, there is really only one way of examining marginal effects (that is, on the scale of the outcome variable). In a generalized linear model (e.g., logit), however, it is possible to examine true “marginal effects” (i.e., the marginal contribution of each variable on the scale of the linear predictor) or “partial effects” (i.e., the contribution of each variable on the outcome scale, conditional on the other variables involved in the link function transformation of the linear predictor). The latter are the default in <code><a href="../reference/margins.html">margins()</a></code>, which implicitly sets the argument <code><a href="../reference/margins.html">margins(x, type = "response")</a></code> and passes that through to <code>prediction()</code> methods. To obtain the former, simply set <code><a href="../reference/margins.html">margins(x, type = "link")</a></code>. There’s some debate about which of these is preferred and even what to call the two different quantities of interest. Regardless of all of that, here’s how you obtain either:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">x &lt;-<span class="st"> </span><span class="kw">glm</span>(am <span class="op">~</span><span class="st"> </span>cyl <span class="op">+</span><span class="st"> </span>hp <span class="op">*</span><span class="st"> </span>wt, <span class="dt">data =</span> mtcars, <span class="dt">family =</span> binomial)</code></pre></div>
 <pre><code>## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="../reference/margins.html">margins</a></span>(x, <span class="dt">type =</span> <span class="st">"response"</span>)</code></pre></div>
@@ -234,9 +238,30 @@ x &lt;-<span class="st"> </span><span class="kw">lm</span>(mpg <span class="op">
 ##   5.424 -0.6764</code></pre>
 <p>The marginal effects in the first column of results reveal that the average marginal effect of <code>wt</code> is large and negative except when <code>wt</code> is very large, in which case it has an effect not distinguishable from zero. We can easily plot these results using the <code><a href="../reference/cplot.html">cplot()</a></code> function to see the effect visually in terms of either predicted fuel economy or the marginal effect of <code>wt</code>:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="../reference/cplot.html">cplot</a></span>(x, <span class="st">"wt"</span>, <span class="dt">what =</span> <span class="st">"prediction"</span>, <span class="dt">main =</span> <span class="st">"Predicted Fuel Economy, Given Weight"</span>)</code></pre></div>
-<p><img src="Introduction_files/figure-html/unnamed-chunk-11-1.png" width="672"></p>
+<pre><code>##       xvals    yvals    upper    lower
+## 1  1.513000 32.36718 35.03500 29.69936
+## 2  1.675958 30.79531 33.07715 28.51348
+## 3  1.838917 29.28565 31.23015 27.34115
+## 4  2.001875 27.83818 29.49769 26.17868
+## 5  2.164833 26.45291 27.88384 25.02199
+## 6  2.327792 25.12984 26.39172 23.86796
+## 7  2.490750 23.86897 25.02106 22.71687
+## 8  2.653708 22.67029 23.76564 21.57494
+## 9  2.816667 21.53381 22.61340 20.45422
+## 10 2.979625 20.45953 21.54975 19.36930
+## 11 3.142583 19.44744 20.56171 18.33318
+## 12 3.305542 18.49755 19.64011 17.35500
+## 13 3.468500 17.60986 18.78010 16.43963
+## 14 3.631458 16.78437 17.98078 15.58796
+## 15 3.794417 16.02108 17.24475 14.79740
+## 16 3.957375 15.31998 16.57774 14.06221
+## 17 4.120333 14.68108 15.98801 13.37414
+## 18 4.283292 14.10437 15.48533 12.72342
+## 19 4.446250 13.58987 15.07937 12.10037
+## 20 4.609208 13.13756 14.77796 11.49716</code></pre>
+<p><img src="Introduction_files/figure-html/unnamed-chunk-11-1.png" width="700"></p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="../reference/cplot.html">cplot</a></span>(x, <span class="st">"wt"</span>, <span class="dt">what =</span> <span class="st">"effect"</span>, <span class="dt">main =</span> <span class="st">"Average Marginal Effect of Weight"</span>)</code></pre></div>
-<p><img src="Introduction_files/figure-html/unnamed-chunk-11-2.png" width="672"></p>
+<p><img src="Introduction_files/figure-html/unnamed-chunk-11-2.png" width="700"></p>
 <p>A really nice feature of Stata’s margins command is that it handles factor variables gracefully. This functionality is difficult to emulate in R, but the <code><a href="../reference/margins.html">margins()</a></code> function does its best. Here we see the marginal effects of a simple regression that includes a factor variable:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">x &lt;-<span class="st"> </span><span class="kw">lm</span>(mpg <span class="op">~</span><span class="st"> </span><span class="kw">factor</span>(cyl) <span class="op">*</span><span class="st"> </span>hp <span class="op">+</span><span class="st"> </span>wt, <span class="dt">data =</span> mtcars)
 <span class="kw"><a href="../reference/margins.html">margins</a></span>(x)</code></pre></div>
@@ -297,9 +322,51 @@ x &lt;-<span class="st"> </span><span class="kw">lm</span>(mpg <span class="op">
 <p>For example, we can use <code><a href="../reference/cplot.html">cplot()</a></code> to quickly display the predicted fuel economy of a vehicle from a model:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">x &lt;-<span class="st"> </span><span class="kw">lm</span>(mpg <span class="op">~</span><span class="st"> </span>cyl <span class="op">+</span><span class="st"> </span>wt <span class="op">*</span><span class="st"> </span>am, <span class="dt">data =</span> mtcars)
 <span class="kw"><a href="../reference/cplot.html">cplot</a></span>(x, <span class="st">"cyl"</span>)</code></pre></div>
-<p><img src="Introduction_files/figure-html/unnamed-chunk-15-1.png" width="672"></p>
+<p><img src="Introduction_files/figure-html/unnamed-chunk-15-1.png" width="700"></p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="../reference/cplot.html">cplot</a></span>(x, <span class="st">"wt"</span>)</code></pre></div>
-<p><img src="Introduction_files/figure-html/unnamed-chunk-15-2.png" width="672"></p>
+<p><img src="Introduction_files/figure-html/unnamed-chunk-15-2.png" width="700"></p>
+<pre><code>##       xvals    yvals    upper    lower
+## 1  4.000000 21.30004 23.47379 19.12629
+## 2  4.166667 21.10314 23.17171 19.03458
+## 3  4.333333 20.90625 22.87186 18.94064
+## 4  4.500000 20.70936 22.57461 18.84410
+## 5  4.666667 20.51246 22.28039 18.74454
+## 6  4.833333 20.31557 21.98973 18.64141
+## 7  5.000000 20.11867 21.70327 18.53408
+## 8  5.166667 19.92178 21.42175 18.42180
+## 9  5.333333 19.72488 21.14607 18.30369
+## 10 5.500000 19.52799 20.87725 18.17873
+## 11 5.666667 19.33110 20.61643 18.04576
+## 12 5.833333 19.13420 20.36487 17.90354
+## 13 6.000000 18.93731 20.12384 17.75078
+## 14 6.166667 18.74041 19.89455 17.58628
+## 15 6.333333 18.54352 19.67801 17.40902
+## 16 6.500000 18.34662 19.47489 17.21836
+## 17 6.666667 18.14973 19.28541 17.01405
+## 18 6.833333 17.95284 19.10930 16.79637
+## 19 7.000000 17.75594 18.94587 16.56602
+## 20 7.166667 17.55905 18.79408 16.32402
+##       xvals    yvals    upper    lower
+## 1  1.513000 25.65915 28.41557 22.90273
+## 2  1.675958 24.99524 27.50747 22.48300
+## 3  1.838917 24.33132 26.60508 22.05756
+## 4  2.001875 23.66741 25.71041 21.62440
+## 5  2.164833 23.00349 24.82639 21.18059
+## 6  2.327792 22.33958 23.95737 20.72178
+## 7  2.490750 21.67566 23.10981 20.24152
+## 8  2.653708 21.01175 22.29295 19.73054
+## 9  2.816667 20.34783 21.51891 19.17676
+## 10 2.979625 19.68392 20.80041 18.56743
+## 11 3.142583 19.02000 20.14557 17.89444
+## 12 3.305542 18.35609 19.55294 17.15924
+## 13 3.468500 17.69217 19.01248 16.37187
+## 14 3.631458 17.02826 18.51122 15.54530
+## 15 3.794417 16.36435 18.03777 14.69092
+## 16 3.957375 15.70043 17.58371 13.81715
+## 17 4.120333 15.03652 17.14326 12.92977
+## 18 4.283292 14.37260 16.71251 12.03269
+## 19 4.446250 13.70869 16.28884 11.12853
+## 20 4.609208 13.04477 15.87044 10.21910</code></pre>
 <p>The slopes of the predicted value lines are the marginal effect of <code>wt</code> when <code>am == 0</code> and <code>am == 1</code>. We can obtain these slopes using <code><a href="../reference/margins.html">margins()</a></code> and specifying the <code>at</code> argument:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="../reference/margins.html">margins</a></span>(x, <span class="dt">at =</span> <span class="kw">list</span>(<span class="dt">am =</span> <span class="dv">0</span><span class="op">:</span><span class="dv">1</span>))</code></pre></div>
 <pre><code>## Average marginal effects at specified values</code></pre>
@@ -309,13 +376,13 @@ x &lt;-<span class="st"> </span><span class="kw">lm</span>(mpg <span class="op">
 ##       1 -1.181 -6.566 -1.566</code></pre>
 <p>Another plotting function - the <code>persp()</code> method for “lm” objects - gives even more functionality:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">persp</span>(x, <span class="st">"cyl"</span>, <span class="st">"wt"</span>)</code></pre></div>
-<p><img src="Introduction_files/figure-html/unnamed-chunk-17-1.png" width="672"></p>
+<p><img src="Introduction_files/figure-html/unnamed-chunk-17-1.png" width="700"></p>
 <p>This three-dimensional representation can be easily rotated using the <code>theta</code> and <code>phi</code> arguments. If multiple values are specified for each, facetting is automatically provided:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">persp</span>(x, <span class="st">"cyl"</span>, <span class="st">"wt"</span>, <span class="dt">theta =</span> <span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">90</span>))</code></pre></div>
-<p><img src="Introduction_files/figure-html/unnamed-chunk-18-1.png" width="672"></p>
+<p><img src="Introduction_files/figure-html/unnamed-chunk-18-1.png" width="700"></p>
 <p>Because these three-dimensional representations can be challenging to interpret given the distortion of displaying a three-dimensional surface in two dimensions, the <code>image()</code> method provides a “flat” alternative to convey the same information using the same semantics:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">image</span>(x, <span class="st">"cyl"</span>, <span class="st">"wt"</span>)</code></pre></div>
-<p><img src="Introduction_files/figure-html/unnamed-chunk-19-1.png" width="672"></p>
+<p><img src="Introduction_files/figure-html/unnamed-chunk-19-1.png" width="700"></p>
 <hr>
 </div>
 </div>
@@ -421,7 +488,7 @@ m1 &lt;-<span class="st"> </span><span class="kw"><a href="../reference/margins.
 ##  -0.03051 -4.132</code></pre>
 <p>On average across the cases in the dataset, the effect of horsepower is slightly negative. On average, the effect of weight is also negative. Both decrease fuel economy. But what is the marginal effect of each variable across the range of values we actually observe in the data. To get a handle on this, we can use the <code>persp()</code> method provided by margins.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">persp</span>(x2, <span class="st">"wt"</span>, <span class="st">"hp"</span>, <span class="dt">theta =</span> <span class="kw">c</span>(<span class="dv">45</span>, <span class="dv">135</span>, <span class="dv">225</span>, <span class="dv">315</span>), <span class="dt">what =</span> <span class="st">"effect"</span>)</code></pre></div>
-<p><img src="Introduction_files/figure-html/unnamed-chunk-27-1.png" width="672"></p>
+<p><img src="Introduction_files/figure-html/unnamed-chunk-27-1.png" width="700"></p>
 <p>To make sense of this set of plots (actually, the same plot seen from four different angles), it will also be helpful to have the original regression results close at-hand:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">summary</span>(x2)</code></pre></div>
 <pre><code>## 
@@ -448,7 +515,7 @@ m1 &lt;-<span class="st"> </span><span class="kw"><a href="../reference/margins.
 <p>For example, if we take the partial derivative of the regression equation with respect to <code>wt</code> (i.e., the marginal effect of weight), the equation is: <code>d_mpg/d_wt = (-8.22) + (0.03 * hp)</code>. This means that the marginal effect of weight is large and negative when horsepower is zero (which never occurs in the <code>mtcars</code> dataset) and decreases in magnitude and becoming more positive as horsepower increases. We can see this in the above graph that the marginal effect of weight is constant across levels of <code>weight</code> because <code>wt</code> does not enter into the partial derivative. Across levels, of horsepower, however, the marginal effect becomes more positive. This is clear looking at the “front” or “back” edges of the surface, which are straight-linear increases. The slope of those edges is 0.03 (the coefficient on the interaction term).</p>
 <p>If we then take the partial derivative with respect to <code>hp</code> (to obtain the marginal effect of horsepower), the equation is: <code>d_mpg/d_hp = (-0.12) + (0.03 * wt)</code>. When <code>wt</code> is zero, this partial derivative (or marginal effect) is -0.12 miles/gallon. The observed range of <code>wt</code>, however, is only: 1.513, 5.424. We can see these results in the analogous graph of the marginal effects of horsepower (below). The “front” and “back” edges of the graph are now flat (reflecting how the marginal effect of horsepower is constant across levels of horsepower), while the “front-left” and “right-back” edges of the surface are lines with slope 0.03, reflecting the coefficient on the interaction term.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">persp</span>(x2, <span class="st">"hp"</span>, <span class="st">"wt"</span>, <span class="dt">theta =</span> <span class="kw">c</span>(<span class="dv">45</span>, <span class="dv">135</span>, <span class="dv">225</span>, <span class="dv">315</span>), <span class="dt">what =</span> <span class="st">"effect"</span>)</code></pre></div>
-<p><img src="Introduction_files/figure-html/unnamed-chunk-29-1.png" width="672"></p>
+<p><img src="Introduction_files/figure-html/unnamed-chunk-29-1.png" width="700"></p>
 <p>An alternative way of plotting these results is to take “slices” of the three-dimensional surface and present them in a two-dimensional graph, similar to what we did above with the indicator-by-continuous approach. That strategy would be especially appropriate for a categorical-by-continuous interaction where the categories of the first variable did not necessarily have a logical ordering sufficient to draw a three-dimensional surface.</p>
 </div>
 <div id="ggplot2-examples" class="section level3">
@@ -456,8 +523,29 @@ m1 &lt;-<span class="st"> </span><span class="kw"><a href="../reference/margins.
 <a href="#ggplot2-examples" class="anchor"></a>ggplot2 examples</h3>
 <p>It should be noted that <code><a href="../reference/cplot.html">cplot()</a></code> returns a fairly tidy data frmae, making it possible to use ggplot2 as an alternative plotting package to display the kinds of relationships of typical interest. For example, returning to our earlier example:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">x1 &lt;-<span class="st"> </span><span class="kw">lm</span>(mpg <span class="op">~</span><span class="st"> </span>drat <span class="op">*</span><span class="st"> </span>wt <span class="op">*</span><span class="st"> </span>am, <span class="dt">data =</span> mtcars)
-cdat &lt;-<span class="st"> </span><span class="kw"><a href="../reference/cplot.html">cplot</a></span>(x1, <span class="st">"wt"</span>, <span class="dt">draw =</span> <span class="ot">FALSE</span>)
-<span class="kw">head</span>(cdat)</code></pre></div>
+cdat &lt;-<span class="st"> </span><span class="kw"><a href="../reference/cplot.html">cplot</a></span>(x1, <span class="st">"wt"</span>, <span class="dt">draw =</span> <span class="ot">FALSE</span>)</code></pre></div>
+<pre><code>##       xvals    yvals    upper     lower
+## 1  1.513000 28.66765 33.04903 24.286273
+## 2  1.675958 27.71126 31.71243 23.710103
+## 3  1.838917 26.75488 30.38319 23.126563
+## 4  2.001875 25.79849 29.06385 22.533126
+## 5  2.164833 24.84210 27.75810 21.926095
+## 6  2.327792 23.88571 26.47147 21.299955
+## 7  2.490750 22.92932 25.21225 20.646397
+## 8  2.653708 21.97293 23.99282 19.953051
+## 9  2.816667 21.01655 22.83057 19.202525
+## 10 2.979625 20.06016 21.74656 18.373748
+## 11 3.142583 19.10377 20.75901 17.448522
+## 12 3.305542 18.14738 19.87315 16.421613
+## 13 3.468500 17.19099 19.07759 15.304391
+## 14 3.631458 16.23460 18.35187 14.117337
+## 15 3.794417 15.27821 17.67591 12.880521
+## 16 3.957375 14.32183 17.03432 11.609334
+## 17 4.120333 13.36544 16.41648 10.314396
+## 18 4.283292 12.40905 15.81532  9.002781
+## 19 4.446250 11.45266 15.22612  7.679197
+## 20 4.609208 10.49627 14.64572  6.346819</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">head</span>(cdat)</code></pre></div>
 <pre><code>##      xvals    yvals    upper    lower
 ## 1 1.513000 28.66765 33.04903 24.28627
 ## 2 1.675958 27.71126 31.71243 23.71010
@@ -534,14 +622,35 @@ cdat &lt;-<span class="st"> </span><span class="kw"><a href="../reference/cplot.
 ##  0.009283 0.01064</code></pre>
 <p>These marginal effects reflect, on average across all of the cases in our data, how much more likely a woman is to have diabetes. Because this is an <em>instantaneous</em> effect, it can be a little hard to conceptualize. I find it helpful to take a look at a predicted probability plot to understand what is going on. Let’s take a look, for example, at the effect of age on the probability of having diabetes:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="../reference/cplot.html">cplot</a></span>(g1, <span class="st">"age"</span>)</code></pre></div>
-<p><img src="Introduction_files/figure-html/unnamed-chunk-36-1.png" width="672"></p>
+<pre><code>##    xvals     yvals     upper     lower
+## 1   21.0 0.1884779 0.2489698 0.1279860
+## 2   23.5 0.2121299 0.2710552 0.1532047
+## 3   26.0 0.2378800 0.2950225 0.1807374
+## 4   28.5 0.2657016 0.3214139 0.2099893
+## 5   31.0 0.2955155 0.3509421 0.2400889
+## 6   33.5 0.3271841 0.3843232 0.2700450
+## 7   36.0 0.3605098 0.4219464 0.2990731
+## 8   38.5 0.3952358 0.4636015 0.3268701
+## 9   41.0 0.4310522 0.5085084 0.3535959
+## 10  43.5 0.4676046 0.5555658 0.3796435
+## 11  46.0 0.5045082 0.6035841 0.4054323
+## 12  48.5 0.5413627 0.6514177 0.4313076
+## 13  51.0 0.5777701 0.6980299 0.4575102
+## 14  53.5 0.6133515 0.7425297 0.4841733
+## 15  56.0 0.6477626 0.7841952 0.5113299
+## 16  58.5 0.6807053 0.8224871 0.5389236
+## 17  61.0 0.7119373 0.8570511 0.5668234
+## 18  63.5 0.7412754 0.8877090 0.5948417
+## 19  66.0 0.7685967 0.9144398 0.6227536
+## 20  68.5 0.7938353 0.9373541 0.6503165</code></pre>
+<p><img src="Introduction_files/figure-html/unnamed-chunk-36-1.png" width="700"></p>
 <p>The above graph shows that as age increase, the probability of having diabetes increases. When a woman is 20 years old, the probability is about .20 whereas when a woman is 80, the probability is about 0.80. In essence, the marginal effect of <code>age</code> reported above is the slope of this predicted probability plot at the mean age of women in the dataset (which is 31.3162651). Clearly, this quantity is useful (it’s the impact of age for the average-aged woman) but the logit curve shows that the marginal effect of <code>age</code> differs considerably across ages and, as we know from above with linear models, also depends on the other variable in the interaction (skin thickness). To really understand what is going on, we need to graph the data. Let’s look at the perspective plot like the one we drew for the OLS model, above:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">persp</span>(g1, <span class="dt">theta =</span> <span class="kw">c</span>(<span class="dv">45</span>, <span class="dv">135</span>, <span class="dv">225</span>, <span class="dv">315</span>), <span class="dt">what =</span> <span class="st">"prediction"</span>)</code></pre></div>
-<p><img src="Introduction_files/figure-html/unnamed-chunk-37-1.png" width="672"></p>
+<p><img src="Introduction_files/figure-html/unnamed-chunk-37-1.png" width="700"></p>
 <p>This graph is much more complicated than the analogous graph for an OLS model, this is because of the conversion between the log-odds scale of the linear predictors and the distribution of the data. What we can see is that the average marginal effect of age (across all of the women in our dataset) is highest when a woman is middle age and skin thickness is low. In these conditions, the marginal change in the probability of diabetes is about 3%, but the AME of age is nearly zero at higher and lower ages. Indeed, as skin thickness increases, the marginal effect of age flattens out and actually becomes negative (such that increasing age actually decreases the probability of diabetes for women with thick arms).</p>
 <p>Now let’s examine the average marginal effects of skin thickness across levels of age and skin thickness:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">persp</span>(g1, <span class="dt">theta =</span> <span class="kw">c</span>(<span class="dv">45</span>, <span class="dv">135</span>, <span class="dv">225</span>, <span class="dv">315</span>), <span class="dt">what =</span> <span class="st">"effect"</span>)</code></pre></div>
-<p><img src="Introduction_files/figure-html/unnamed-chunk-38-1.png" width="672"></p>
+<p><img src="Introduction_files/figure-html/unnamed-chunk-38-1.png" width="700"></p>
 <p>This graphs is somewhat flatter, indicating that the average marginal effects of skin thickness vary less than those for age. Yet, the AME of skin thickness is as high as 2% when age is low and skin thickness is high. Interestingly, however, this effect actually becomes negative as age increases. The marginal effect of skin thickness is radically different for young and old women.</p>
 <p>For either of these cases, it would also be appropriate to draw two-dimensional plots of “slides” of these surfaces and incorporate measures of uncertainty. It is extremely difficult to convey standard errors or confidence intervals in a three-dimensional plot, so those could be quite valuable.</p>
 <p>It is also worth comparing the above graphs to those that would result from a model without the interaction term between <code>age</code> and <code>skin</code>. It looks quite different (note, however, that it is also drawn from a higher perspective to better see the shape of the surface):</p>
@@ -560,7 +669,6 @@ cdat &lt;-<span class="st"> </span><span class="kw"><a href="../reference/cplot.
 <p>Norton, Edward C., Hua Wang, and Chunrong Ai. 2004. “Computing interaction effects and standard errors in logit and probit models.” <em>The Stata Journal</em> 4(2): 154-167.</p>
 <p>Stata Corporation. “margins”. Software Documentation. Available from: <a href="http://www.stata.com/manuals13/rmargins.pdf" class="uri">http://www.stata.com/manuals13/rmargins.pdf</a>.</p>
 <p>Williams, Richard. 2012. “Using the margins command to estimate and interpret adjusted predictions and marginal effects.” <em>Stata Journal</em> 12: 308-331.</p>
-</div>
 </div>
   </div>
 
@@ -590,6 +698,8 @@ cdat &lt;-<span class="st"> </span><span class="kw"><a href="../reference/cplot.
 
       </footer>
 </div>
+
+  
 
   </body>
 </html>

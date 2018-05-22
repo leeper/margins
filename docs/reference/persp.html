@@ -25,10 +25,15 @@
 <link href="../pkgdown.css" rel="stylesheet">
 <script src="../jquery.sticky-kit.min.js"></script>
 <script src="../pkgdown.js"></script>
+
+
+
 <meta property="og:title" content="Perspective and heatmap/contour plots for models — image.lm" />
 
 <meta property="og:description" content="Draw one or more perspectives plots reflecting predictions or marginal effects from a model, or the same using a flat heatmap or &#8220;filled contour&#8221; (image) representation. Currently methods exist for &#8220;lm&#8221;, &#8220;glm&#8221;, and &#8220;loess&#8221; models." />
 <meta name="twitter:card" content="summary" />
+
+
 <!-- mathjax -->
 <script src='https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML'></script>
 
@@ -51,8 +56,12 @@
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand" href="../index.html">margins</a>
+      <span class="navbar-brand">
+        <a class="navbar-link" href="../index.html">margins</a>
+        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.3.23</span>
+      </span>
     </div>
+
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
         <li>
@@ -92,6 +101,7 @@
   </a>
 </li>
       </ul>
+      
     </div><!--/.nav-collapse -->
   </div><!--/.container -->
 </div><!--/.navbar -->
@@ -99,16 +109,19 @@
       
       </header>
 
-      <div class="row">
+<div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Perspective and heatmap/contour plots for models</h1>
-    <small>Source: <a href='https:/github.com/leeper/margins/blob/master/R/image.R'><code>R/image.R</code></a>, <a href='https:/github.com/leeper/margins/blob/master/R/persp.R'><code>R/persp.R</code></a></small>
+    <small class="dont-index">Source: <a href='https://github.com/leeper/margins/blob/master/R/image.R'><code>R/image.R</code></a>, <a href='https://github.com/leeper/margins/blob/master/R/persp.R'><code>R/persp.R</code></a></small>
+    <div class="hidden name"><code>persp.Rd</code></div>
     </div>
 
+    <div class="ref-description">
     
     <p>Draw one or more perspectives plots reflecting predictions or marginal effects from a model, or the same using a flat heatmap or &#8220;filled contour&#8221; (<code><a href='http://www.rdocumentation.org/packages/graphics/topics/image'>image</a></code>) representation. Currently methods exist for &#8220;lm&#8221;, &#8220;glm&#8221;, and &#8220;loess&#8221; models.</p>
     
+    </div>
 
     <pre class="usage"><span class='co'># S3 method for lm</span>
 <span class='fu'>image</span>(<span class='no'>x</span>, <span class='kw'>xvar</span> <span class='kw'>=</span> <span class='fu'>attributes</span>(<span class='fu'>terms</span>(<span class='no'>x</span>))<span class='kw'>[[</span><span class='st'>"term.labels"</span>]][<span class='fl'>1</span>],
@@ -170,7 +183,7 @@
   <span class='st'>"prediction"</span>) <span class='st'>"Predicted value"</span> <span class='kw'>else</span> <span class='fu'>paste0</span>(<span class='st'>"Marginal effect of "</span>, <span class='no'>dx</span>),
   <span class='kw'>ticktype</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='st'>"detailed"</span>, <span class='st'>"simple"</span>), <span class='no'>...</span>)</pre>
     
-    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a> Arguments</h2>
+    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
@@ -293,7 +306,7 @@
     
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
-    <p><code><a href='plot.margins.html'>plot.margins</a></code>, <code><a href='cplot.html'>cplot</a></code></p>
+    <div class='dont-index'><p><code><a href='plot.margins.html'>plot.margins</a></code>, <code><a href='cplot.html'>cplot</a></code></p></div>
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
@@ -347,6 +360,8 @@
 
       </footer>
    </div>
+
+  
 
   </body>
 </html>

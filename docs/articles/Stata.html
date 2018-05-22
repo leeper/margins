@@ -18,7 +18,7 @@
 <![endif]-->
 </head>
 <body>
-    <div class="container template-vignette">
+    <div class="container template-article">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
     <div class="navbar-header">
@@ -27,8 +27,12 @@
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand" href="../index.html">margins</a>
+      <span class="navbar-brand">
+        <a class="navbar-link" href="../index.html">margins</a>
+        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.3.23</span>
+      </span>
     </div>
+
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
 <li>
@@ -76,19 +80,19 @@
 
       
       </header><div class="row">
-  <div class="col-md-9">
+  <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1>Comparison with Stata’s ‘margins’ command</h1>
             
-            <h4 class="date">2018-03-18</h4>
+            <h4 class="date">2018-05-22</h4>
       
-      <small>Source: <a href="https:/github.com/leeper/margins/blob/master/vignettes/Stata.Rmd"><code>vignettes/Stata.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/leeper/margins/blob/master/vignettes/Stata.Rmd"><code>vignettes/Stata.Rmd</code></a></small>
+      <div class="hidden name"><code>Stata.Rmd</code></div>
 
     </div>
 
     
     
-<div class="contents">
 <p><strong>margins</strong> is intended as a port of (some of) the features of Stata’s <code>margins</code> command. This vignette compares output from Stata’s <code>margins</code> command for linear models against the output of <strong>margins</strong>.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(<span class="st">"margins"</span>)
 <span class="kw">options</span>(<span class="dt">width =</span> <span class="dv">100</span>)</code></pre></div>
@@ -562,7 +566,6 @@ dy/dx w.r.t. : cyl hp wt
 ##      wt  0.2075 0.4860  0.4271 0.6693 -0.7449 1.1600</code></pre>
 </div>
 </div>
-</div>
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
@@ -597,6 +600,8 @@ dy/dx w.r.t. : cyl hp wt
 
       </footer>
 </div>
+
+  
 
   </body>
 </html>
