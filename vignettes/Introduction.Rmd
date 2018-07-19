@@ -104,8 +104,8 @@ In an ordinary least squares regression, there is really only one way of examini
 
 ```{r}
 x <- glm(am ~ cyl + hp * wt, data = mtcars, family = binomial)
-margins(x, type = "response")
-margins(x, type = "link") # the default
+margins(x, type = "response") # the default
+margins(x, type = "link")
 ```
 
 Note that some other packages available for R, as well as Stata's `margins` and `mfx` packages enable calculation of so-called "marginal effects at means" (i.e., the marginal effect for a single observation that has covariate values equal to the means of the sample as a whole). The substantive interpretation of these is fairly ambiguous. While it was once common practice to estimate MEMs - rather than AMEs or MERs - this is now considered somewhat inappropriate because it focuses on cases that may not exist (e.g., the average of a 0/1 variable is not going to reflect a case that can actually exist in reality) and we are often interested in the effect of a variable at multiple possible values of covariates, rather than an arbitrarily selected case that is deemed "typical" in this way. As such, `margins()` defaults to reporting AMEs, unless modified by the `at` argument to calculate average "marginal effects for representative cases" (MERs). MEMs could be obtained by manually specifying `at` for every variable in a way that respects the variables classes and inherent meaning of the data, but that functionality is not demonstrated here.
