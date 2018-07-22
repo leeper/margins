@@ -1,3 +1,7 @@
+# margins 0.3.24
+
+* Fix a bug in `persp()` related to attempting to take the mean of a factor variable. (#93, h/t Jared Knowles)
+
 # margins 0.3.23
 
 * Fix a small issue in `print()` and `summary()` methods related to the release of prediction 0.3.6.

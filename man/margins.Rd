@@ -30,8 +30,8 @@ margins(model, ...)
   ...)
 
 \method{margins}{clm}(model, data = find_data(model, parent.frame()),
-  variables = NULL, at = NULL, type = NULL, vce = "none", eps = 1e-07,
-  ...)
+  variables = NULL, at = NULL, type = c("response", "link"),
+  vce = "none", eps = 1e-07, ...)
 
 \method{margins}{default}(model, data = find_data(model, parent.frame()),
   variables = NULL, at = NULL, type = c("response", "link"),

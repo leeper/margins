@@ -3,13 +3,12 @@ calculate_surface <- function(x, xvar, yvar, dx, nx, ny, type, vcov = stats::vco
     # internal function to calculate surface for `persp()` and `image()`
     
     dat <- x[["model"]]
-    dat[] <- lapply(dat, as.numeric) # this probably isn't a good idea
     
     xvals <- seq_range(dat[[xvar]], nx)
     yvals <- seq_range(dat[[yvar]], ny)
     
     if (what == "prediction") {
-        datmeans <- structure(lapply(colMeans(dat[, !names(dat) %in% c(xvar, yvar), drop = FALSE]), rep, length(xvals) * length(yvals)),
+        datmeans <- structure(lapply(lapply(dat[, !names(dat) %in% c(xvar, yvar), drop = FALSE], mean_or_mode), rep, length(xvals) * length(yvals)),
                               class = "data.frame", row.names = seq_len(length(xvals) * length(yvals)))
         outcome <- outer(xvals, yvals, FUN = function(a, b) {
             datmeans[, xvar] <- a
