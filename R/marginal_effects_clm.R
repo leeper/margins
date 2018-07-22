@@ -1,17 +1,19 @@
 #' @rdname marginal_effects
 #' @importFrom prediction find_data
 #' @export
-marginal_effects.glm <- 
+marginal_effects.clm <- 
 function(model, 
          data = find_data(model, parent.frame()), 
          variables = NULL,
-         type = c("response", "link"), 
+         type = NULL,
          eps = 1e-7, 
          varslist = NULL,
          as.data.frame = TRUE,
          ...) {
     
-    type <- match.arg(type)
+    if (!is.null(type)) {
+        warning(sprintf("'type' is ignored for models of class '%s'", class(model)))
+    }
     
     # identify classes of terms in `model`
     if (is.null(varslist)) {
@@ -20,13 +22,13 @@ function(model,
     
     # estimate numerical derivatives with respect to each variable (for numeric terms in the model)
     # add discrete differences for logical terms
-    out1 <- lapply(c(varslist$nnames, varslist$lnames), dydx, data = data, model = model, type = type, eps = eps, as.data.frame = as.data.frame, ...)
+    out1 <- lapply(c(varslist$nnames, varslist$lnames), dydx, data = data, model = model, type = NULL, eps = eps, as.data.frame = as.data.frame, ...)
     
     # add discrete differences for factor terms
     ## exact number depends on number of factor levels
     out2 <- list()
     for (i in seq_along(varslist$fnames)) {
-        out2[[i]] <- dydx.factor(data = data, model = model, varslist$fnames[i], type = type, fwrap = FALSE, as.data.frame = as.data.frame, ...)
+        out2[[i]] <- dydx.factor(data = data, model = model, varslist$fnames[i], fwrap = FALSE, type = NULL, as.data.frame = as.data.frame, ...)
     }
     
     out <- c(out1, out2)

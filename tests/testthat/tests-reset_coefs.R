@@ -117,5 +117,20 @@ if (requireNamespace("lme4")) {
 #if (requireNamespace("nnet")) {
 #}
 
-#if (requireNamespace("ordinal")) {
-#}
+# if (requireNamespace("ordinal")) {
+    # test_that("reset_coefs() works for 'clm' objects", {
+        # data("wine", package = "ordinal")
+        # # base object
+        # mod1 <- ordinal::clm(rating ~ temp + contact, data = wine)
+        # # modified object
+        # mod2 <- reset_coefs(mod1, c(tempwarm = 3, contactyes = 2))
+        # # expect coefs to have been changed
+        # expect_true(!isTRUE(all.equal(coef(mod1), coef(mod2))), label = "coefficients reset in 'clm' object")
+        # # expect prediction from modified object to be correct
+        # expect_true(!isTRUE(all.equal(predict(mod1, newdata = wine), predict(mod2, newdata = wine))),
+                    # label = "predictions differ from original 'clm' object")
+        # expect_true(isTRUE(all.equal(predict(mod2, newdata = wine)$fit,
+                                     # 3*(as.integer(wine$temp)-1L) + 2*(as.integer(wine$contact)-1L), check.attributes = FALSE)),
+                    # label = "predictions correct from reset 'clm' object")
+    # })
+# }
