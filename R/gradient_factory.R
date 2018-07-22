@@ -16,12 +16,20 @@ gradient_factory.default <- function(data, model, variables = NULL, type = "resp
         model <- reset_coefs(model, coefs)
         if (is.null(weights)) {
             # build matrix of unit-specific marginal effects
-            me_tmp <- marginal_effects(model = model, data = data, variables = variables, type = type, eps = eps, as.data.frame = FALSE, varslist = varslist, ...)
+            if (is.null(type)) {
+                me_tmp <- marginal_effects(model = model, data = data, variables = variables, eps = eps, as.data.frame = FALSE, varslist = varslist, ...)
+            } else {
+                me_tmp <- marginal_effects(model = model, data = data, variables = variables, type = type, eps = eps, as.data.frame = FALSE, varslist = varslist, ...)
+            }
             # apply colMeans to get average marginal effects
             means <- stats::setNames(.colMeans(me_tmp, nrow(me_tmp), ncol(me_tmp), na.rm = TRUE), colnames(me_tmp))
         } else {
             # build matrix of unit-specific marginal effects
-            me_tmp <- marginal_effects(model = model, data = data, variables = variables, type = type, eps = eps, as.data.frame = FALSE, varslist = varslist, ...)
+            if (is.null(type)) {
+                me_tmp <- marginal_effects(model = model, data = data, variables = variables, eps = eps, as.data.frame = FALSE, varslist = varslist, ...)
+            } else {
+                me_tmp <- marginal_effects(model = model, data = data, variables = variables, type = type, eps = eps, as.data.frame = FALSE, varslist = varslist, ...)
+            }
             # apply colMeans to get average marginal effects
             means <- apply(me_tmp, 2L, stats::weighted.mean, w = weights, na.rm = TRUE)
         }

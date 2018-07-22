@@ -13,8 +13,15 @@ function(data,
          ...) {
     
     # march.arg() for arguments
-    type <- match.arg(type)
+    if (!is.null(type)) {
+        type <- match.arg(type)
+    }
     vce <- match.arg(vce)
+    
+    # deploy appropriate vce procedure
+    if (vce == "none") {
+        return(list(variances = NULL, vcov = NULL, jacobian = NULL))
+    }
     
     # setup vcov
     if (is.function(vcov)) {
@@ -26,12 +33,7 @@ function(data,
         varslist <- find_terms_in_model(model, variables = variables)
     }
     
-    # deploy appropriate vce procedure
-    if (vce == "none") {
-        
-        return(list(variances = NULL, vcov = NULL, jacobian = NULL))
-        
-    } else if (vce == "delta") {
+    if (vce == "delta") {
         
         # default method
         
@@ -60,7 +62,13 @@ function(data,
             # sandwich
             vc <- as.matrix(jacobian %*% vcov %*% t(jacobian))
         } else {
+            # check that vcov() only contains coefficients from model
+            if (nrow(vcov) != length(coef(model))) {
+                vcov <- vcov[intersect(rownames(vcov), names(coef(model))), intersect(rownames(vcov), names(coef(model)))]
+            }
+            
             jacobian <- jacobian(FUN, coef(model)[names(coef(model)) %in% c("(Intercept)", colnames(vcov))], weights = weights, eps = eps)
+            
             # sandwich
             vc <- jacobian %*% vcov %*% t(jacobian)
         }
@@ -73,6 +81,11 @@ function(data,
         tmpmodel <- model
         tmpmodel[["model"]] <- NULL # remove data from model for memory
         
+        # check that vcov() only contains coefficients from model
+        if (nrow(vcov) != length(coef(model))) {
+            vcov <- vcov[intersect(rownames(vcov), names(coef(model))), intersect(rownames(vcov), names(coef(model)))]
+        }
+            
         # simulate from multivariate normal
         coefmat <- MASS::mvrnorm(iterations, coef(model), vcov)
         
@@ -80,9 +93,17 @@ function(data,
         effectmat <- apply(coefmat, 1, function(coefrow) {
             tmpmodel[["coefficients"]] <- coefrow
             if (is.null(weights)) {
-                means <- colMeans(marginal_effects(model = tmpmodel, data = data, variables = variables, type = type, eps = eps, varslist = varslist, ...), na.rm = TRUE)
+                if (is.null(type)) {
+                    means <- colMeans(marginal_effects(model = tmpmodel, data = data, variables = variables, eps = eps, varslist = varslist, ...), na.rm = TRUE)
+                } else {
+                    means <- colMeans(marginal_effects(model = tmpmodel, data = data, variables = variables, type = type, eps = eps, varslist = varslist, ...), na.rm = TRUE)
+                }
             } else {
-                me_tmp <- marginal_effects(model = tmpmodel, data = data, variables = variables, type = type, eps = eps, varslist = varslist, ...)
+                if (is.null(type)) {
+                    me_tmp <- marginal_effects(model = tmpmodel, data = data, variables = variables, eps = eps, varslist = varslist, ...)
+                } else {
+                    me_tmp <- marginal_effects(model = tmpmodel, data = data, variables = variables, type = type, eps = eps, varslist = varslist, ...)
+                }
                 means <- unlist(stats::setNames(lapply(me_tmp, stats::weighted.mean, w = weights, na.rm = TRUE), names(me_tmp)))
             }
             if (!is.matrix(means)) {
@@ -104,15 +125,28 @@ function(data,
             tmpmodel[["call"]][["data"]] <- data[samp,]
             tmpmodel <- eval(tmpmodel[["call"]])
             if (is.null(weights)) {
-                means <- colMeans(marginal_effects(model = tmpmodel,
-                                                   data = data[samp,],
-                                                   variables = variables,
-                                                   type = type,
-                                                   eps = eps,
-                                                   varslist = varslist,
-                                                   ...), na.rm = TRUE)
+                if (is.null(type)) {
+                    means <- colMeans(marginal_effects(model = tmpmodel,
+                                                       data = data[samp,],
+                                                       variables = variables,
+                                                       eps = eps,
+                                                       varslist = varslist,
+                                                       ...), na.rm = TRUE)
+                } else {
+                    means <- colMeans(marginal_effects(model = tmpmodel,
+                                                       data = data[samp,],
+                                                       variables = variables,
+                                                       type = type,
+                                                       eps = eps,
+                                                       varslist = varslist,
+                                                       ...), na.rm = TRUE)
+                }
             } else {
-                me_tmp <- marginal_effects(model = tmpmodel, data = data[samp,], variables = variables, type = type, eps = eps, varslist = varslist, ...)
+                if (is.null(type)) {
+                    me_tmp <- marginal_effects(model = tmpmodel, data = data[samp,], variables = variables, eps = eps, varslist = varslist, ...)
+                } else {
+                    me_tmp <- marginal_effects(model = tmpmodel, data = data[samp,], variables = variables, type = type, eps = eps, varslist = varslist, ...)
+                }
                 means <- unlist(stats::setNames(lapply(me_tmp, stats::weighted.mean, w = weights, na.rm = TRUE), names(me_tmp)))
             }
             means

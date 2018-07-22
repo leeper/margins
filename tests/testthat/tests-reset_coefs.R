@@ -111,26 +111,76 @@ if (requireNamespace("lme4")) {
     })
 }
 
-#if (requireNamespace("MASS")) {
-#}
+if (requireNamespace("MASS")) {
+#    # "polr" objects
+#    test_that("reset_coefs() works for 'polr' objects", {
+#        data("housing", package = "MASS")
+#        # base object
+#        mod1 <- MASS::polr(Sat ~ Infl + Type + Cont, weights = Freq, data = housing)
+#        # modified object
+#        mod2 <- reset_coefs(mod1, c(rprice = 0.1))
+#        # expect coefs to have been changed
+#        expect_true(!isTRUE(all.equal(coef(mod1), coef(mod2))), label = "coefficients reset in 'polr' object")
+#        # expect prediction from modified object to be correct
+#        expect_true(!isTRUE(all.equal(predict(mod1, newdata = housing), predict(mod2, newdata = housing))),
+#                    label = "predictions differ from original 'polr' object")
+#        expect_true(isTRUE(all.equal(predict(mod2, newdata = housing), coef(mod2)[1L] + 0.1*housing$rprice, check.attributes = FALSE)),
+#                    label = "predictions correct from reset 'polr' object")
+#    })
+}
 
-#if (requireNamespace("nnet")) {
-#}
+if (requireNamespace("nnet")) {
+    # TODO
+#    # "multinom" objects
+#    test_that("reset_coefs() works for 'multinom' objects", {
+#        data("housing", package = "MASS")
+#        # base object
+#        mod1 <- nnet::multinom(Sat ~ Infl + Type + Cont, weights = Freq, data = housing)
+#        # modified object
+#        mod2 <- reset_coefs(mod1, c(Infl = 2))
+#        # expect coefs to have been changed
+#        expect_true(!isTRUE(all.equal(coef(mod1), coef(mod2))), label = "coefficients reset in 'multinom' object")
+#        # expect prediction from modified object to be correct
+#        expect_true(!isTRUE(all.equal(predict(mod1, newdata = housing), predict(mod2, newdata = housing))),
+#                    label = "predictions differ from original 'multinom' object")
+#        expect_true(isTRUE(all.equal(predict(mod2, newdata = housing), coef(mod2)[1L] + 3*housing$rprice, check.attributes = FALSE)),
+#                    label = "predictions correct from reset 'multinom' object")
+#    })
+#    # "nnet" objects
+#    test_that("reset_coefs() works for 'nnet' objects", {
+#        data("iris3", package = "datasets")
+#        ird <- data.frame(rbind(iris3[,,1], iris3[,,2], iris3[,,3]),
+#                          species = factor(c(rep("s",50), rep("c", 50), rep("v", 50))))
+#        # base object
+#        mod1 <- nnet::nnet(species ~ ., data = ird, size = 2, rang = 0.1,
+#                        decay = 5e-4, maxit = 200, trace = FALSE)
+#        # modified object
+#        mod2 <- reset_coefs(mod1, c(rprice = 0.1))
+#        # expect coefs to have been changed
+#        expect_true(!isTRUE(all.equal(coef(mod1), coef(mod2))), label = "coefficients reset in 'nnet' object")
+#        # expect prediction from modified object to be correct
+#        expect_true(!isTRUE(all.equal(predict(mod1, newdata = ird), predict(mod2, newdata = ird))),
+#                    label = "predictions differ from original 'nnet' object")
+#        expect_true(isTRUE(all.equal(predict(mod2, newdata = ird), coef(mod2)[1L] + 0.1*ird$rprice, check.attributes = FALSE)),
+#                    label = "predictions correct from reset 'nnet' object")
+#    })
+}
 
-# if (requireNamespace("ordinal")) {
-    # test_that("reset_coefs() works for 'clm' objects", {
-        # data("wine", package = "ordinal")
-        # # base object
-        # mod1 <- ordinal::clm(rating ~ temp + contact, data = wine)
-        # # modified object
-        # mod2 <- reset_coefs(mod1, c(tempwarm = 3, contactyes = 2))
-        # # expect coefs to have been changed
-        # expect_true(!isTRUE(all.equal(coef(mod1), coef(mod2))), label = "coefficients reset in 'clm' object")
-        # # expect prediction from modified object to be correct
-        # expect_true(!isTRUE(all.equal(predict(mod1, newdata = wine), predict(mod2, newdata = wine))),
-                    # label = "predictions differ from original 'clm' object")
-        # expect_true(isTRUE(all.equal(predict(mod2, newdata = wine)$fit,
-                                     # 3*(as.integer(wine$temp)-1L) + 2*(as.integer(wine$contact)-1L), check.attributes = FALSE)),
-                    # label = "predictions correct from reset 'clm' object")
-    # })
-# }
+if (requireNamespace("ordinal")) {
+    # TODO
+#    test_that("reset_coefs() works for 'clm' objects", {
+#        data("wine", package = "ordinal")
+#        # base object
+#        mod1 <- ordinal::clm(rating ~ temp + contact, data = wine)
+#        # modified object
+#        mod2 <- reset_coefs(mod1, c(tempwarm = 3, contactyes = 2))
+#        # expect coefs to have been changed
+#        expect_true(!isTRUE(all.equal(coef(mod1), coef(mod2))), label = "coefficients reset in 'clm' object")
+#        # expect prediction from modified object to be correct
+#        expect_true(!isTRUE(all.equal(predict(mod1, newdata = wine), predict(mod2, newdata = wine))),
+#                    label = "predictions differ from original 'clm' object")
+#        expect_true(isTRUE(all.equal(predict(mod2, newdata = wine)$fit,
+#                                     3*(as.integer(wine$temp)-1L) + 2*(as.integer(wine$contact)-1L), check.attributes = FALSE)),
+#                    label = "predictions correct from reset 'clm' object")
+#    })
+}

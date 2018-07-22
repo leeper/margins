@@ -19,6 +19,7 @@
 #'   \item \dQuote{lm}, see \code{\link[stats]{lm}}
 #'   \item \dQuote{loess}, see \code{\link[stats]{loess}}
 #'   \item \dQuote{merMod}, see \code{\link[lme4]{lmer}}, \code{\link[lme4]{glmer}}
+#'   \item \dQuote{multinom}, see \code{\link[nnet]{multinom}}
 #'   \item \dQuote{nnet}, see \code{\link[nnet]{nnet}}
 #'   \item \dQuote{polr}, see \code{\link[MASS]{polr}}
 #'   \item \dQuote{svyglm}, see \code{\link[survey]{svyglm}}

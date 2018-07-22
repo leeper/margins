@@ -96,6 +96,7 @@ if (requireNamespace("MASS")) {
 
 context("Test 'nnet' methods")
 if (requireNamespace("nnet")) {
+    # "nnet" objects
     data("iris3", package = "datasets")
     ird <- data.frame(rbind(iris3[,,1], iris3[,,2], iris3[,,3]),
                       species = factor(c(rep("s",50), rep("c", 50), rep("v", 50))))
@@ -109,11 +110,23 @@ if (requireNamespace("nnet")) {
         expect_true(inherits(margins(m), "margins"))
         expect_true(inherits(margins(m, category = "c"), "margins"))
     })
+    
+    # "multinom" objects
+    data("housing", package = "MASS")
+    m <- nnet::multinom(Sat ~ Infl + Type + Cont, weights = Freq, data = housing)
+    test_that("Test marginal_effects() for 'polr'", {
+        expect_true(inherits(marginal_effects(m), "data.frame"))
+        expect_true(inherits(marginal_effects(m, category = "Low"), "data.frame"))
+    })
+#    test_that("Test margins() for 'polr'", {
+#        expect_true(inherits(margins(m), "margins"))
+#        expect_true(inherits(margins(m, category = "Low"), "margins"))
+#    })
 }
 
 context("Test 'ordinal' methods")
 if (requireNamespace("ordinal")) {
-    test_that("Test marignal_effects() for 'clm'", {
+    test_that("Test marginal_effects() for 'clm'", {
         data("wine", package = "ordinal")
         m <- ordinal::clm(rating ~ temp * contact, data = wine)
         expect_true(inherits(marginal_effects(m), "data.frame"))

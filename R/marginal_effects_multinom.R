@@ -1,7 +1,7 @@
 #' @rdname marginal_effects
 #' @importFrom prediction find_data
 #' @export
-marginal_effects.nnet <- 
+marginal_effects.multinom <- 
 function(model, 
          data = find_data(model, parent.frame()), 
          variables = NULL,

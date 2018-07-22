@@ -31,10 +31,8 @@ find_terms_in_model.default <- function(model, variables = NULL) {
     }
     
     # drop specially named "(weights)" variables
-    wts <- weights(model)
-    if (!is.null(wts)) {
-        classes <- classes[!names(classes) %in% "(weights)"]
-    }
+    classes <- classes[!names(classes) %in% "(weights)"]
+    
     # handle character variables as factors
     classes[classes == "character"] <- "factor"
     ## cleanup names of terms

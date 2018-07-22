@@ -2,8 +2,8 @@
 % Please edit documentation in R/marginal_effects.R, R/marginal_effects_clm.R,
 %   R/marginal_effects_default.R, R/marginal_effects_glm.R,
 %   R/marginal_effects_lm.R, R/marginal_effects_loess.R,
-%   R/marginal_effects_merMod.R, R/marginal_effects_nnet.R,
-%   R/marginal_effects_polr.R
+%   R/marginal_effects_merMod.R, R/marginal_effects_multinom.R,
+%   R/marginal_effects_nnet.R, R/marginal_effects_polr.R
 \name{marginal_effects}
 \alias{marginal_effects}
 \alias{marginal_effects.margins}
@@ -14,6 +14,7 @@
 \alias{marginal_effects.loess}
 \alias{marginal_effects.merMod}
 \alias{marginal_effects.lmerMod}
+\alias{marginal_effects.multinom}
 \alias{marginal_effects.nnet}
 \alias{marginal_effects.polr}
 \title{Differentiate a Model Object with Respect to All (or Specified) Variables}
@@ -50,13 +51,17 @@ marginal_effects(model, data, variables = NULL, ...)
   variables = NULL, type = c("response", "link"), eps = 1e-07,
   as.data.frame = TRUE, varslist = NULL, ...)
 
+\method{marginal_effects}{multinom}(model, data = find_data(model,
+  parent.frame()), variables = NULL, type = NULL, eps = 1e-07,
+  varslist = NULL, as.data.frame = TRUE, ...)
+
 \method{marginal_effects}{nnet}(model, data = find_data(model,
-  parent.frame()), variables = NULL, eps = 1e-07, varslist = NULL,
-  as.data.frame = TRUE, ...)
+  parent.frame()), variables = NULL, type = NULL, eps = 1e-07,
+  varslist = NULL, as.data.frame = TRUE, ...)
 
 \method{marginal_effects}{polr}(model, data = find_data(model,
-  parent.frame()), variables = NULL, eps = 1e-07, varslist = NULL,
-  as.data.frame = TRUE, ...)
+  parent.frame()), variables = NULL, type = NULL, eps = 1e-07,
+  varslist = NULL, as.data.frame = TRUE, ...)
 }
 \arguments{
 \item{model}{A model object, perhaps returned by \code{\link[stats]{lm}} or \code{\link[stats]{glm}}}
@@ -92,6 +97,7 @@ Methods are currently implemented for the following object classes:
   \item \dQuote{lm}, see \code{\link[stats]{lm}}
   \item \dQuote{loess}, see \code{\link[stats]{loess}}
   \item \dQuote{merMod}, see \code{\link[lme4]{lmer}}, \code{\link[lme4]{glmer}}
+  \item \dQuote{multinom}, see \code{\link[nnet]{multinom}}
   \item \dQuote{nnet}, see \code{\link[nnet]{nnet}}
   \item \dQuote{polr}, see \code{\link[MASS]{polr}}
   \item \dQuote{svyglm}, see \code{\link[survey]{svyglm}}

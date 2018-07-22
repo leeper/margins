@@ -1,7 +1,7 @@
 #' @rdname margins
 #' @importFrom prediction find_data
 #' @export
-margins.polr <- 
+margins.multinom <- 
 function(model, 
          data = find_data(model, parent.frame()), 
          variables = NULL,
@@ -53,7 +53,7 @@ function(model,
         
         # check that vcov() only contains coefficients from model
         if (nrow(vcov) != length(coef(model))) {
-            vcov <- vcov[names(coef(model)), names(coef(model))]
+            vcov <- vcov[colnames(coef(model)), colnames(coef(model))]
         }
         
         # sandwich
