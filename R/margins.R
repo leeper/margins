@@ -18,7 +18,11 @@
 #' @param unit_ses If \code{vce = "delta"}, a logical specifying whether to calculate and return unit-specific marginal effect variances. This calculation is time consuming and the information is often not needed, so this is set to \code{FALSE} by default.
 #' @param eps A numeric value specifying the \dQuote{step} to use when calculating numerical derivatives.
 #' @param \dots Arguments passed to methods, and onward to \code{\link{dydx}} methods and possibly further to \code{\link[prediction]{prediction}} methods. This can be useful, for example, for setting \code{type} (predicted value type), \code{eps} (precision), or \code{category} (category for multi-category outcome models), etc.
-#' @details Methods for this generic return a \dQuote{margins} object, which is a data frame consisting of the original data, predicted values and standard errors thereof, estimated marginal effects from the model \code{model} (for all variables used in the model, or the subset specified by \code{variables}), along with attributes describing various features of the marginal effects estimates. The default print method is concise; a more useful \code{summary} method provides additional details.
+#' @details Methods for this generic return a \dQuote{margins} object, which is a data frame consisting of the original data, predicted values and standard errors thereof, estimated marginal effects from the model \code{model} (for all variables used in the model, or the subset specified by \code{variables}), along with attributes describing various features of the marginal effects estimates.
+#' 
+#' The default print method is concise; a more useful \code{summary} method provides additional details.
+#' 
+#' \code{margins_summary} is sugar that provides a more convenient way of obtaining the nested call: \code{summary(margins(...))}.
 #' 
 #' Methods are currently implemented for the following object classes:
 #' \itemize{
@@ -75,6 +79,7 @@
 #' 
 #' # summary() method
 #' summary(margins(x, at = list(hp = c(95, 150))))
+#' margins_summary(x, at = list(hp = c(95, 150)))
 #' ## control row order of summary() output
 #' summary(margins(x, at = list(hp = c(95, 150))), by_factor = FALSE)
 #' 
@@ -110,6 +115,11 @@
 #'   margins(m, category = "v") # explicit category
 #' }
 #'
+#' # using margins_summary() for concise grouped operations
+#' list_data <- split(mtcars, mtcars$gear)
+#' list_mod <- lapply(list_data, function(x) lm(mpg ~ cyl + wt, data = x))
+#' mapply(margins_summary, model = list_mod, data = list_data, SIMPLIFY = FALSE)
+#' 
 #' @seealso \code{\link{marginal_effects}}, \code{\link{dydx}}, \code{\link[prediction]{prediction}}
 #' @keywords models package
 #' @import stats

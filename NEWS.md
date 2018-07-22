@@ -1,5 +1,6 @@
 # margins 0.3.24
 
+* Added new function `margins_summary()` which provides a single-function expression of `summary(margins(...))`. (#94, h/t Mike DeCrescenzo)
 * Fix a bug in `persp()` related to attempting to take the mean of a factor variable. (#93, h/t Jared Knowles)
 
 # margins 0.3.23

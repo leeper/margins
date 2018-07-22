@@ -2,7 +2,7 @@
 % Please edit documentation in R/margins.R, R/margins_betareg.R,
 %   R/margins_clm.R, R/margins_default.R, R/margins_glm.R, R/margins_lm.R,
 %   R/margins_loess.R, R/margins_merMod.R, R/margins_nnet.R, R/margins_polr.R,
-%   R/margins_svyglm.R
+%   R/margins_summary.R, R/margins_svyglm.R
 \docType{package}
 \name{margins}
 \alias{margins}
@@ -18,6 +18,7 @@
 \alias{margins.lmerMod}
 \alias{margins.nnet}
 \alias{margins.polr}
+\alias{margins_summary}
 \alias{margins.svyglm}
 \title{Marginal Effects Estimation}
 \usage{
@@ -67,6 +68,8 @@ margins(model, ...)
 \method{margins}{polr}(model, data = find_data(model, parent.frame()),
   variables = NULL, at = NULL, vce = "none", eps = 1e-07, ...)
 
+margins_summary(model, ..., level = 0.95, by_factor = TRUE)
+
 \method{margins}{svyglm}(model, data = find_data(model, parent.frame()),
   design, variables = NULL, at = NULL, type = c("response", "link"),
   vcov = stats::vcov(model), vce = c("delta", "simulation", "bootstrap",
@@ -95,6 +98,10 @@ margins(model, ...)
 
 \item{eps}{A numeric value specifying the \dQuote{step} to use when calculating numerical derivatives.}
 
+\item{level}{A numeric value specifying the confidence level for calculating p-values and confidence intervals.}
+
+\item{by_factor}{A logical specifying whether to order the output by factor (the default, \code{TRUE}).}
+
 \item{design}{Only for models estimated using \code{\link[survey]{svyglm}}, the \dQuote{survey.design} object used to estimate the model. This is required.}
 }
 \value{
@@ -106,7 +113,11 @@ This package is an R port of Stata's \samp{margins} command, implemented as an S
 The package also provides a low-level function, \code{\link{marginal_effects}}, to estimate those quantities and return a data frame of unit-specific effects and another even lower-level function, \code{\link{dydx}}, to provide variable-specific derivatives from models. Some of the underlying architecture for the package is provided by the low-level function \code{\link[prediction]{prediction}}, which provides a consistent data frame interface to \code{\link[stats]{predict}} for a large number of model types. If a \code{prediction} method exists for a model class, \code{margin} should work for the model class but only those classes listed here have been tested and specifically supported.
 }
 \details{
-Methods for this generic return a \dQuote{margins} object, which is a data frame consisting of the original data, predicted values and standard errors thereof, estimated marginal effects from the model \code{model} (for all variables used in the model, or the subset specified by \code{variables}), along with attributes describing various features of the marginal effects estimates. The default print method is concise; a more useful \code{summary} method provides additional details.
+Methods for this generic return a \dQuote{margins} object, which is a data frame consisting of the original data, predicted values and standard errors thereof, estimated marginal effects from the model \code{model} (for all variables used in the model, or the subset specified by \code{variables}), along with attributes describing various features of the marginal effects estimates.
+
+The default print method is concise; a more useful \code{summary} method provides additional details.
+
+\code{margins_summary} is sugar that provides a more convenient way of obtaining the nested call: \code{summary(margins(...))}.
 
 Methods are currently implemented for the following object classes:
 \itemize{
@@ -157,6 +168,7 @@ margins(x, change = "sd")
 
 # summary() method
 summary(margins(x, at = list(hp = c(95, 150))))
+margins_summary(x, at = list(hp = c(95, 150)))
 ## control row order of summary() output
 summary(margins(x, at = list(hp = c(95, 150))), by_factor = FALSE)
 
@@ -191,6 +203,11 @@ if (requireNamespace("nnet")) {
   margins(m) # default
   margins(m, category = "v") # explicit category
 }
+
+# using margins_summary() for concise grouped operations
+list_data <- split(mtcars, mtcars$gear)
+list_mod <- lapply(list_data, function(x) lm(mpg ~ cyl + wt, data = x))
+mapply(margins_summary, model = list_mod, data = list_data, SIMPLIFY = FALSE)
 
 }
 \references{

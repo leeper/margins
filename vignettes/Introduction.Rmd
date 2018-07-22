@@ -45,13 +45,18 @@ x <- lm(mpg ~ cyl * hp + wt, data = mtcars)
 summary(m)
 ```
 
-With the exception of differences in rounding, the above results match identically what Stata's `margins` command produces. Using the `plot()` method also yields an aesthetically similar result to Stata's `marginsplot`:
+With the exception of differences in rounding, the above results match identically what Stata's `margins` command produces. A slightly more concise expression relies on the syntactic sugar provided by `margins_summary()`:
+
+```{r margins_summary}
+margins_summary(x)
+```
+Using the `plot()` method also yields an aesthetically similar result to Stata's `marginsplot`:
 
 ```{r marginsplot}
 plot(m)
 ```
 
-## Using Optional Arguments in `margins`
+## Using Optional Arguments in `margins()`
 
 **margins** is intended as a port of (some of) the features of Stata's `margins` command, which includes numerous options for calculating marginal effects at the mean values of a dataset (i.e., the marginal effects at the mean), an average of the marginal effects at each value of a dataset (i.e., the average marginal effect), marginal effects at representative values, and any of those operations on various subsets of a dataset. (The functionality of Stata's command to produce *predictive* margins is not ported, as this is easily obtained from the [prediction](https://cran.r-project.org/package=prediction) package.) In particular, Stata provides the following options:
 

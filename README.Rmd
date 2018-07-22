@@ -49,7 +49,11 @@ mod1 <- lm(mpg ~ cyl * hp + wt, data = mtcars)
 summary(marg1)
 ```
 
-With the exception of differences in rounding, the above results match identically what Stata's `margins` command produces.
+With the exception of differences in rounding, the above results match identically what Stata's `margins` command produces. A slightly more concise expression relies on the syntactic sugar provided by `margins_summary()`:
+
+```{r margins_summary}
+margins_summary(mod1)
+```
 
 If you are only interested in obtaining the marginal effects (without corresponding variances or the overhead of creating a "margins" object), you can call `marginal_effects(x)` directly. Furthermore, the `dydx()` function enables the calculation of the marginal effect of a single named variable:
 
