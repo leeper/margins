@@ -8,8 +8,8 @@
 <title>Marginal Effects for Model Objects • margins</title>
 <!-- jquery --><script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script><!-- Bootstrap --><link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script><!-- Font Awesome icons --><link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-T8Gy5hrqNKT+hzMclPo118YTQO6cYprQmhrYwIiQ/3axmI1hQomh7Ud2hPOy8SP1" crossorigin="anonymous">
-<!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.7.1/clipboard.min.js" integrity="sha384-cV+rhyOuRHc9Ub/91rihWcGmMmCXDeksTtCihMupQHSsi8GIIRDG0ThDc3HGQFJ3" crossorigin="anonymous"></script><!-- pkgdown --><link href="pkgdown.css" rel="stylesheet">
-<script src="jquery.sticky-kit.min.js"></script><script src="pkgdown.js"></script><meta property="og:title" content="Marginal Effects for Model Objects">
+<!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.7.1/clipboard.min.js" integrity="sha384-cV+rhyOuRHc9Ub/91rihWcGmMmCXDeksTtCihMupQHSsi8GIIRDG0ThDc3HGQFJ3" crossorigin="anonymous"></script><!-- sticky kit --><script src="https://cdnjs.cloudflare.com/ajax/libs/sticky-kit/1.1.3/sticky-kit.min.js" integrity="sha256-c4Rlo1ZozqTPE2RLuvbusY3+SU1pQaJC0TjuhygMipw=" crossorigin="anonymous"></script><!-- pkgdown --><link href="pkgdown.css" rel="stylesheet">
+<script src="pkgdown.js"></script><meta property="og:title" content="Marginal Effects for Model Objects">
 <meta property="og:description" content="An R port of Stata's 'margins' command, which can be used to
     calculate marginal (or partial) effects from model objects.">
 <meta name="twitter:card" content="summary">
@@ -30,7 +30,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">margins</a>
-        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.3.23</span>
+        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.3.25</span>
       </span>
     </div>
 
@@ -130,7 +130,12 @@ mod1 &lt;-<span class="st"> </span><span class="kw">lm</span>(mpg <span class="o
 ##     cyl  0.0381 0.5999  0.0636 0.9493 -1.1376  1.2139
 ##      hp -0.0463 0.0145 -3.1909 0.0014 -0.0748 -0.0179
 ##      wt -3.1198 0.6613 -4.7176 0.0000 -4.4160 -1.8236</code></pre>
-<p>With the exception of differences in rounding, the above results match identically what Stata’s <code>margins</code> command produces.</p>
+<p>With the exception of differences in rounding, the above results match identically what Stata’s <code>margins</code> command produces. A slightly more concise expression relies on the syntactic sugar provided by <code><a href="reference/margins.html">margins_summary()</a></code>:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="reference/margins.html">margins_summary</a></span>(mod1)</code></pre></div>
+<pre><code>##  factor     AME     SE       z      p   lower   upper
+##     cyl  0.0381 0.5999  0.0636 0.9493 -1.1376  1.2139
+##      hp -0.0463 0.0145 -3.1909 0.0014 -0.0748 -0.0179
+##      wt -3.1198 0.6613 -4.7176 0.0000 -4.4160 -1.8236</code></pre>
 <p>If you are only interested in obtaining the marginal effects (without corresponding variances or the overhead of creating a “margins” object), you can call <code><a href="reference/marginal_effects.html">marginal_effects(x)</a></code> directly. Furthermore, the <code><a href="reference/dydx.html">dydx()</a></code> function enables the calculation of the marginal effect of a single named variable:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># all marginal effects, as a data.frame</span>
 <span class="kw">head</span>(<span class="kw"><a href="reference/marginal_effects.html">marginal_effects</a></span>(mod1))</code></pre></div>
@@ -219,7 +224,7 @@ mod3 &lt;-<span class="st"> </span><span class="kw">glm</span>(highbp <span clas
 ##     bmi  0.0261 0.0009  28.4995 0.0000  0.0243  0.0279
 ##     sex -0.0911 0.0085 -10.7063 0.0000 -0.1077 -0.0744</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">plot</span>(marg3)</code></pre></div>
-<p><img src="https://i.imgur.com/rJ9qwFo.png" width="672"></p>
+<p><img src="https://i.imgur.com/jXILaQ2.png" width="672"></p>
 <p>In addition to the estimation procedures and <code>plot()</code> generic, <strong>margins</strong> offers several plotting methods for model objects. First, there is a new generic <code><a href="reference/cplot.html">cplot()</a></code> that displays predictions or marginal effects (from an “lm” or “glm” model) of a variable conditional across values of third variable (or itself). For example, here is a graph of predicted probabilities from a logit model:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">mod4 &lt;-<span class="st"> </span><span class="kw">glm</span>(am <span class="op">~</span><span class="st"> </span>wt<span class="op">*</span>drat, <span class="dt">data =</span> mtcars, <span class="dt">family =</span> binomial)
 <span class="kw"><a href="reference/cplot.html">cplot</a></span>(mod4, <span class="dt">x =</span> <span class="st">"wt"</span>, <span class="dt">se.type =</span> <span class="st">"shade"</span>)</code></pre></div>
@@ -244,17 +249,17 @@ mod3 &lt;-<span class="st"> </span><span class="kw">glm</span>(highbp <span clas
 ## 18 4.283292 0.016461806 0.07467832 -0.04175471
 ## 19 4.446250 0.011201450 0.05550126 -0.03309836
 ## 20 4.609208 0.007609032 0.04093572 -0.02571766</code></pre>
-<p><img src="https://i.imgur.com/7gnBzwo.png" width="672"></p>
+<p><img src="https://i.imgur.com/1IkHyiv.png" width="672"></p>
 <p>And fitted values with a factor independent variable:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="reference/cplot.html">cplot</a></span>(<span class="kw">lm</span>(Sepal.Length <span class="op">~</span><span class="st"> </span>Species, <span class="dt">data =</span> iris))</code></pre></div>
 <pre><code>##        xvals yvals   upper   lower
 ## 1     setosa 5.006 5.14869 4.86331
 ## 2 versicolor 5.936 6.07869 5.79331
 ## 3  virginica 6.588 6.73069 6.44531</code></pre>
-<p><img src="https://i.imgur.com/TqTGTvX.png" width="672"></p>
+<p><img src="https://i.imgur.com/w5NOIlC.png" width="672"></p>
 <p>and a graph of the effect of <code>drat</code> across levels of <code>wt</code>:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="reference/cplot.html">cplot</a></span>(mod4, <span class="dt">x =</span> <span class="st">"wt"</span>, <span class="dt">dx =</span> <span class="st">"drat"</span>, <span class="dt">what =</span> <span class="st">"effect"</span>, <span class="dt">se.type =</span> <span class="st">"shade"</span>)</code></pre></div>
-<p><img src="https://i.imgur.com/1bZ0EX8.png" width="672"></p>
+<p><img src="https://i.imgur.com/Dw7lWMy.png" width="672"></p>
 <p><code><a href="reference/cplot.html">cplot()</a></code> also returns a data frame of values, so that it can be used just for calculating quantities of interest before plotting them with another graphics package, such as <strong>ggplot2</strong>:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(<span class="st">"ggplot2"</span>)
 dat &lt;-<span class="st"> </span><span class="kw"><a href="reference/cplot.html">cplot</a></span>(mod4, <span class="dt">x =</span> <span class="st">"wt"</span>, <span class="dt">dx =</span> <span class="st">"drat"</span>, <span class="dt">what =</span> <span class="st">"effect"</span>, <span class="dt">draw =</span> <span class="ot">FALSE</span>)
@@ -273,16 +278,16 @@ dat &lt;-<span class="st"> </span><span class="kw"><a href="reference/cplot.html
 <span class="st">  </span><span class="kw">ylab</span>(<span class="st">"Average Marginal Effect of Rear Axle Ratio"</span>) <span class="op">+</span>
 <span class="st">  </span><span class="kw">ggtitle</span>(<span class="st">"Predicting Automatic/Manual Transmission from Vehicle Characteristics"</span>) <span class="op">+</span>
 <span class="st">  </span><span class="kw">theme_bw</span>()</code></pre></div>
-<p><img src="https://i.imgur.com/K29vTAp.png" width="672"></p>
+<p><img src="https://i.imgur.com/lZgEPqB.png" width="672"></p>
 <p>Second, the package implements methods for “lm” and “glm” class objects for the <code>persp()</code> generic plotting function. This enables three-dimensional representations of predicted outcomes:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">persp</span>(mod1, <span class="dt">xvar =</span> <span class="st">"cyl"</span>, <span class="dt">yvar =</span> <span class="st">"hp"</span>)</code></pre></div>
-<p><img src="https://i.imgur.com/CwXTWnm.png" width="672"></p>
+<p><img src="https://i.imgur.com/ZXi6V1q.png" width="672"></p>
 <p>and marginal effects:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">persp</span>(mod1, <span class="dt">xvar =</span> <span class="st">"cyl"</span>, <span class="dt">yvar =</span> <span class="st">"hp"</span>, <span class="dt">what =</span> <span class="st">"effect"</span>, <span class="dt">nx =</span> <span class="dv">10</span>)</code></pre></div>
-<p><img src="https://i.imgur.com/K5IvTcL.png" width="672"></p>
+<p><img src="https://i.imgur.com/rrJpOV1.png" width="672"></p>
 <p>And if three-dimensional plots aren’t your thing, there are also analogous methods for the <code>image()</code> generic, to produce heatmap-style representations:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">image</span>(mod1, <span class="dt">xvar =</span> <span class="st">"cyl"</span>, <span class="dt">yvar =</span> <span class="st">"hp"</span>, <span class="dt">main =</span> <span class="st">"Predicted Fuel Efficiency,</span><span class="ch">\n</span><span class="st">by Cylinders and Horsepower"</span>)</code></pre></div>
-<p><img src="https://i.imgur.com/yX4OWrM.png" width="480"></p>
+<p><img src="https://i.imgur.com/ZSdPvu9.png" width="480"></p>
 <p>The numerous package vignettes and help files contain extensive documentation and examples of all package functionality.</p>
 </div>
 <div id="performance" class="section level3">
@@ -292,12 +297,12 @@ dat &lt;-<span class="st"> </span><span class="kw"><a href="reference/cplot.html
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(<span class="st">"microbenchmark"</span>)
 <span class="kw">microbenchmark</span>(<span class="kw"><a href="reference/marginal_effects.html">marginal_effects</a></span>(mod1))</code></pre></div>
 <pre><code>## Unit: milliseconds
-##                    expr      min       lq     mean   median      uq     max neval
-##  marginal_effects(mod1) 4.131673 4.643902 5.675486 5.256868 6.20093 11.5074   100</code></pre>
+##                    expr      min      lq    mean   median       uq      max neval
+##  marginal_effects(mod1) 3.466794 3.51564 3.77105 3.561827 3.945188 8.024563   100</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">microbenchmark</span>(<span class="kw"><a href="reference/margins.html">margins</a></span>(mod1))</code></pre></div>
 <pre><code>## Unit: milliseconds
-##           expr      min       lq     mean   median       uq      max neval
-##  margins(mod1) 32.62725 42.80285 60.27534 58.37503 74.78273 123.3838   100</code></pre>
+##           expr     min       lq     mean   median       uq      max neval
+##  margins(mod1) 24.8693 25.88596 29.06411 26.53846 30.01798 48.01167   100</code></pre>
 <p>The most computationally expensive part of <code><a href="reference/margins.html">margins()</a></code> is variance estimation. If you don’t need variances, use <code><a href="reference/marginal_effects.html">marginal_effects()</a></code> directly or specify <code><a href="reference/margins.html">margins(..., vce = "none")</a></code>.</p>
 </div>
 </div>

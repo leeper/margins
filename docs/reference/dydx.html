@@ -21,17 +21,20 @@
 <!-- clipboard.js -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.7.1/clipboard.min.js" integrity="sha384-cV+rhyOuRHc9Ub/91rihWcGmMmCXDeksTtCihMupQHSsi8GIIRDG0ThDc3HGQFJ3" crossorigin="anonymous"></script>
 
+<!-- sticky kit -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sticky-kit/1.1.3/sticky-kit.min.js" integrity="sha256-c4Rlo1ZozqTPE2RLuvbusY3+SU1pQaJC0TjuhygMipw=" crossorigin="anonymous"></script>
+
 <!-- pkgdown -->
 <link href="../pkgdown.css" rel="stylesheet">
-<script src="../jquery.sticky-kit.min.js"></script>
 <script src="../pkgdown.js"></script>
 
 
 
 <meta property="og:title" content="Marginal Effect of a Given Variable — dydx" />
 
-<meta property="og:description" content="Differentiate an Estimated Model Function with Respect to One Variable, or calculate a discrete difference (&#8220;first difference&#8221;) as appropriate." />
+<meta property="og:description" content="Differentiate an Estimated Model Function with Respect to One Variable, or calculate a discrete difference (&amp;#8220;first difference&amp;#8221;) as appropriate." />
 <meta name="twitter:card" content="summary" />
+
 
 
 <!-- mathjax -->
@@ -58,7 +61,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">margins</a>
-        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.3.23</span>
+        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.3.25</span>
       </span>
     </div>
 
@@ -212,17 +215,53 @@ $$\frac{f(x + \frac{1}{2}h) - f(x - \frac{1}{2}h)}{dh}$$, where (\(h = \max(|x|,
     <pre class="examples"><div class='input'><span class='fu'>require</span>(<span class='st'>"datasets"</span>)
 <span class='no'>x</span> <span class='kw'>&lt;-</span> <span class='fu'>lm</span>(<span class='no'>mpg</span> ~ <span class='no'>cyl</span> * <span class='no'>hp</span> + <span class='no'>wt</span>, <span class='kw'>data</span> <span class='kw'>=</span> <span class='fu'>head</span>(<span class='no'>mtcars</span>))
 <span class='co'># marginal effect (numerical derivative)</span>
-<span class='fu'>dydx</span>(<span class='fu'>head</span>(<span class='no'>mtcars</span>), <span class='no'>x</span>, <span class='st'>"hp"</span>)</div><div class='output co'>#&gt; <span class='error'>Error in prediction(model = model, data = data.table::rbindlist(list(d0,     d1)), type = type, calculate_se = FALSE, ...): could not find function "prediction"</span></div><div class='input'>
+<span class='fu'>dydx</span>(<span class='fu'>head</span>(<span class='no'>mtcars</span>), <span class='no'>x</span>, <span class='st'>"hp"</span>)</div><div class='output co'>#&gt;     dydx_hp
+#&gt; 1 0.6845469
+#&gt; 2 0.6845469
+#&gt; 3 1.0942088
+#&gt; 4 0.6845469
+#&gt; 5 0.2748850
+#&gt; 6 0.6845469</div><div class='input'>
 <span class='co'># other discrete differences</span>
 <span class='co'>## change from min(mtcars$hp) to max(mtcars$hp)</span>
-<span class='fu'>dydx</span>(<span class='fu'>head</span>(<span class='no'>mtcars</span>), <span class='no'>x</span>, <span class='st'>"hp"</span>, <span class='kw'>change</span> <span class='kw'>=</span> <span class='st'>"minmax"</span>)</div><div class='output co'>#&gt; <span class='error'>Error in prediction(model = model, data = data.table::rbindlist(list(d0,     d1)), type = type, calculate_se = FALSE, ...): could not find function "prediction"</span></div><div class='input'><span class='co'>## change from 1st quartile to 3rd quartile</span>
-<span class='fu'>dydx</span>(<span class='fu'>head</span>(<span class='no'>mtcars</span>), <span class='no'>x</span>, <span class='st'>"hp"</span>, <span class='kw'>change</span> <span class='kw'>=</span> <span class='st'>"iqr"</span>)</div><div class='output co'>#&gt; <span class='error'>Error in prediction(model = model, data = data.table::rbindlist(list(d0,     d1)), type = type, calculate_se = FALSE, ...): could not find function "prediction"</span></div><div class='input'><span class='co'>## change from mean(mtcars$hp) +/- sd(mtcars$hp)</span>
-<span class='fu'>dydx</span>(<span class='fu'>head</span>(<span class='no'>mtcars</span>), <span class='no'>x</span>, <span class='st'>"hp"</span>, <span class='kw'>change</span> <span class='kw'>=</span> <span class='st'>"sd"</span>)</div><div class='output co'>#&gt; <span class='error'>Error in prediction(model = model, data = data.table::rbindlist(list(d0,     d1)), type = type, calculate_se = FALSE, ...): could not find function "prediction"</span></div><div class='input'><span class='co'>## change between arbitrary values of mtcars$hp</span>
-<span class='fu'>dydx</span>(<span class='fu'>head</span>(<span class='no'>mtcars</span>), <span class='no'>x</span>, <span class='st'>"hp"</span>, <span class='kw'>change</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='fl'>75</span>,<span class='fl'>150</span>))</div><div class='output co'>#&gt; <span class='error'>Error in prediction(model = model, data = data.table::rbindlist(list(d0,     d1)), type = type, calculate_se = FALSE, ...): could not find function "prediction"</span></div><div class='input'>
+<span class='fu'>dydx</span>(<span class='fu'>head</span>(<span class='no'>mtcars</span>), <span class='no'>x</span>, <span class='st'>"hp"</span>, <span class='kw'>change</span> <span class='kw'>=</span> <span class='st'>"minmax"</span>)</div><div class='output co'>#&gt;    dydx_hp
+#&gt; 1 56.13285
+#&gt; 2 56.13285
+#&gt; 3 89.72512
+#&gt; 4 56.13285
+#&gt; 5 22.54057
+#&gt; 6 56.13285</div><div class='input'><span class='co'>## change from 1st quartile to 3rd quartile</span>
+<span class='fu'>dydx</span>(<span class='fu'>head</span>(<span class='no'>mtcars</span>), <span class='no'>x</span>, <span class='st'>"hp"</span>, <span class='kw'>change</span> <span class='kw'>=</span> <span class='st'>"iqr"</span>)</div><div class='output co'>#&gt;    dydx_hp
+#&gt; 1 3.422734
+#&gt; 2 3.422734
+#&gt; 3 5.471044
+#&gt; 4 3.422734
+#&gt; 5 1.374425
+#&gt; 6 3.422734</div><div class='input'><span class='co'>## change from mean(mtcars$hp) +/- sd(mtcars$hp)</span>
+<span class='fu'>dydx</span>(<span class='fu'>head</span>(<span class='no'>mtcars</span>), <span class='no'>x</span>, <span class='st'>"hp"</span>, <span class='kw'>change</span> <span class='kw'>=</span> <span class='st'>"sd"</span>)</div><div class='output co'>#&gt;    dydx_hp
+#&gt; 1 39.82549
+#&gt; 2 39.82549
+#&gt; 3 63.65876
+#&gt; 4 39.82549
+#&gt; 5 15.99223
+#&gt; 6 39.82549</div><div class='input'><span class='co'>## change between arbitrary values of mtcars$hp</span>
+<span class='fu'>dydx</span>(<span class='fu'>head</span>(<span class='no'>mtcars</span>), <span class='no'>x</span>, <span class='st'>"hp"</span>, <span class='kw'>change</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='fl'>75</span>,<span class='fl'>150</span>))</div><div class='output co'>#&gt;    dydx_hp
+#&gt; 1 51.34102
+#&gt; 2 51.34102
+#&gt; 3 82.06566
+#&gt; 4 51.34102
+#&gt; 5 20.61638
+#&gt; 6 51.34102</div><div class='input'>
 <span class='co'># factor variables</span>
 <span class='no'>mtcars</span><span class='kw'>[[</span><span class='st'>"cyl"</span>]] <span class='kw'>&lt;-</span> <span class='fu'>factor</span>(<span class='no'>mtcars</span>$<span class='no'>cyl</span>)
 <span class='no'>x</span> <span class='kw'>&lt;-</span> <span class='fu'>lm</span>(<span class='no'>mpg</span> ~ <span class='no'>cyl</span>, <span class='kw'>data</span> <span class='kw'>=</span> <span class='fu'>head</span>(<span class='no'>mtcars</span>))
-<span class='fu'>dydx</span>(<span class='fu'>head</span>(<span class='no'>mtcars</span>), <span class='no'>x</span>, <span class='st'>"cyl"</span>)</div><div class='output co'>#&gt; <span class='error'>Error in prediction(model = model, data = d0, type = type, calculate_se = FALSE,     ...): could not find function "prediction"</span></div><div class='input'>
+<span class='fu'>dydx</span>(<span class='fu'>head</span>(<span class='no'>mtcars</span>), <span class='no'>x</span>, <span class='st'>"cyl"</span>)</div><div class='output co'>#&gt;   dydx_cyl6 dydx_cyl8
+#&gt; 1    -2.425      -4.1
+#&gt; 2    -2.425      -4.1
+#&gt; 3    -2.425      -4.1
+#&gt; 4    -2.425      -4.1
+#&gt; 5    -2.425      -4.1
+#&gt; 6    -2.425      -4.1</div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">

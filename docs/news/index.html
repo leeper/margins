@@ -21,14 +21,17 @@
 <!-- clipboard.js -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.7.1/clipboard.min.js" integrity="sha384-cV+rhyOuRHc9Ub/91rihWcGmMmCXDeksTtCihMupQHSsi8GIIRDG0ThDc3HGQFJ3" crossorigin="anonymous"></script>
 
+<!-- sticky kit -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sticky-kit/1.1.3/sticky-kit.min.js" integrity="sha256-c4Rlo1ZozqTPE2RLuvbusY3+SU1pQaJC0TjuhygMipw=" crossorigin="anonymous"></script>
+
 <!-- pkgdown -->
 <link href="../pkgdown.css" rel="stylesheet">
-<script src="../jquery.sticky-kit.min.js"></script>
 <script src="../pkgdown.js"></script>
 
 
 
 <meta property="og:title" content="Changelog" />
+
 
 
 <!-- mathjax -->
@@ -55,7 +58,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">margins</a>
-        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.3.23</span>
+        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.3.25</span>
       </span>
     </div>
 
@@ -113,9 +116,27 @@
       <small>Source: <a href='https://github.com/leeper/margins/blob/master/NEWS.md'><code>NEWS.md</code></a></small>
     </div>
 
+    <div id="margins-0-3-25" class="section level1">
+<h1 class="page-header">
+<a href="#margins-0-3-25" class="anchor"></a>margins 0.3.25<small> Unreleased </small>
+</h1>
+<ul>
+<li>Setup a <code><a href="../reference/cplot.html">cplot.default()</a></code> method and modified documentation of <code><a href="../reference/cplot.html">cplot()</a></code>, <code>image()</code>, and <code>persp()</code> methods slightly. (<a href='https://github.com/leeper/margins/issues/84'>#84</a>, h/t Luke Sonnet)</li>
+</ul>
+</div>
+    <div id="margins-0-3-24" class="section level1">
+<h1 class="page-header">
+<a href="#margins-0-3-24" class="anchor"></a>margins 0.3.24<small> Unreleased </small>
+</h1>
+<ul>
+<li>Added new function <code><a href="../reference/margins.html">margins_summary()</a></code> which provides a single-function expression of <code>summary(margins(...))</code>. (<a href='https://github.com/leeper/margins/issues/94'>#94</a>, h/t Mike DeCrescenzo)</li>
+<li>Added variances of marginal effects to “polr” objects from <strong>MASS</strong>. (<a href='https://github.com/leeper/margins/issues/98'>#98</a>, <a href='http://github.com/eijoac'>@eijoac</a>)</li>
+<li>Fix a bug in <code>persp()</code> related to attempting to take the mean of a factor variable. (<a href='https://github.com/leeper/margins/issues/93'>#93</a>, h/t Jared Knowles)</li>
+</ul>
+</div>
     <div id="margins-0-3-23" class="section level1">
 <h1 class="page-header">
-<a href="#margins-0-3-23" class="anchor"></a>margins 0.3.23<small> Unreleased </small>
+<a href="#margins-0-3-23" class="anchor"></a>margins 0.3.23<small> 2018-05-22 </small>
 </h1>
 <ul>
 <li>Fix a small issue in <code>print()</code> and <code>summary()</code> methods related to the release of prediction 0.3.6.</li>
@@ -180,6 +201,21 @@
 <h1 class="page-header">
 <a href="#margins-0-3-16" class="anchor"></a>margins 0.3.16<small> Unreleased </small>
 </h1>
+<blockquote>
+<blockquote>
+<blockquote>
+<blockquote>
+<blockquote>
+<blockquote>
+<blockquote>
+<p>master</p>
+</blockquote>
+</blockquote>
+</blockquote>
+</blockquote>
+</blockquote>
+</blockquote>
+</blockquote>
 <ul>
 <li>Fixed a bug in <code><a href="../reference/cplot.html">cplot()</a></code> when <code>xvar</code> was of class “ordered”. (<a href='https://github.com/leeper/margins/issues/77'>#77</a>, h/t Francisco Llaneras)</li>
 <li>Fixed a bug in <code><a href="../reference/plot.margins.html">plot.margins()</a></code> when <code>at</code> contained only one variable. (<a href='https://github.com/leeper/margins/issues/78'>#78</a>, h/t <a href='http://github.com/cyberbryce'>@cyberbryce</a>)</li>
@@ -333,7 +369,7 @@
 <li>
 <code><a href="../reference/plot.margins.html">plot.margins()</a></code> now displays marginal effects across each level of <code>at</code>. (<a href='https://github.com/leeper/margins/issues/58'>#58</a>)</li>
 <li>
-<code>build_margins()</code> and thus <code><a href="../reference/margins.html">margins()</a></code> no longer returns the original data twice (a bug introduced by change in behavior of <code>prediction()</code>). (<a href='https://github.com/leeper/margins/issues/57'>#57</a>)</li>
+<code>build_margins()</code> and thus <code><a href="../reference/margins.html">margins()</a></code> no longer returns the original data twice (a bug introduced by change in behavior of <code><a href="http://www.rdocumentation.org/packages/prediction/topics/prediction">prediction()</a></code>). (<a href='https://github.com/leeper/margins/issues/57'>#57</a>)</li>
 <li>All methods for objects of class <code>"marginslist"</code> have been removed. (<a href='https://github.com/leeper/margins/issues/58'>#58</a>)</li>
 <li>The <code>at</code> argument in <code><a href="../reference/plot.margins.html">plot.margins()</a></code> has been renamed to <code>pos</code>, to avoid ambiguity with <code>at</code> as used elsewhere in the package.</li>
 <li>
@@ -377,7 +413,7 @@
 </h1>
 <ul>
 <li>The <code>extract_marginal_effects()</code> function has been removed and replaced by <code><a href="../reference/marginal_effects.html">marginal_effects()</a></code> methods for objects of classes <code>"margins"</code> and <code>"marginslist"</code>.</li>
-<li>Added a dependency on <strong>prediction</strong> v.0.1.3 and, implicitly, an enhances suggestion of <strong>survey</strong> v3.31-5 to resolve an underlying <code>prediction()</code> issue for models of class <code>"svyglm"</code>. (<a href='https://github.com/leeper/margins/issues/47'>#47</a>, h/t Carl Ganz)</li>
+<li>Added a dependency on <strong>prediction</strong> v.0.1.3 and, implicitly, an enhances suggestion of <strong>survey</strong> v3.31-5 to resolve an underlying <code><a href="http://www.rdocumentation.org/packages/prediction/topics/prediction">prediction()</a></code> issue for models of class <code>"svyglm"</code>. (<a href='https://github.com/leeper/margins/issues/47'>#47</a>, h/t Carl Ganz)</li>
 </ul>
 </div>
     <div id="margins-0-2-20" class="section level1">
@@ -404,7 +440,7 @@
 <a href="#margins-0-2-20-2" class="anchor"></a>margins 0.2.20<small> Unreleased </small>
 </h1>
 <ul>
-<li>Factored the <code>prediction()</code> generic and methods into a separate package, <strong>prediction</strong>, to ease maintainence.</li>
+<li>Factored the <code><a href="http://www.rdocumentation.org/packages/prediction/topics/prediction">prediction()</a></code> generic and methods into a separate package, <strong>prediction</strong>, to ease maintainence.</li>
 <li>Added a <code>print.summary.margins()</code> method to separate construction of the summary data frame the printing thereof.</li>
 <li>The “Technical Details” vignette now describes the package functionality and computational approach in near-complete detail.</li>
 </ul>
@@ -434,7 +470,7 @@
 </h1>
 <ul>
 <li>Fixes to handling of factors and ordered variables converted within formulae. (<a href='https://github.com/leeper/margins/issues/38'>#38</a>)</li>
-<li>Reconfigured the <code>data</code> argument in <code><a href="../reference/margins.html">margins()</a></code> and <code>prediction()</code> to be clearer about what is happening when it is set to missing.</li>
+<li>Reconfigured the <code>data</code> argument in <code><a href="../reference/margins.html">margins()</a></code> and <code><a href="http://www.rdocumentation.org/packages/prediction/topics/prediction">prediction()</a></code> to be clearer about what is happening when it is set to missing.</li>
 </ul>
 </div>
     <div id="margins-0-2-16" class="section level1">
@@ -443,7 +479,7 @@
 </h1>
 <ul>
 <li>Switched to using a more reliable “central difference” numerical differentiation and updated the calculation of the step size to follow <code>marfx</code> (<a href='https://github.com/leeper/margins/issues/31'>#31</a>, h/t Jeffrey Arnold)</li>
-<li>Added some functionality <code>prediction()</code> methods to, hopefully, reduce memory footprint of model objects. (<a href='https://github.com/leeper/margins/issues/26'>#26</a>)</li>
+<li>Added some functionality <code><a href="http://www.rdocumentation.org/packages/prediction/topics/prediction">prediction()</a></code> methods to, hopefully, reduce memory footprint of model objects. (<a href='https://github.com/leeper/margins/issues/26'>#26</a>)</li>
 <li>Changed the capitalization of the <code>variances</code> field in “margins” objects (to lower case), for consistency.</li>
 <li>Fixed some small errors in documentation and improved width of examples.</li>
 </ul>
@@ -478,7 +514,7 @@
 <a href="#margins-0-2-11" class="anchor"></a>margins 0.2.11<small> Unreleased </small>
 </h1>
 <ul>
-<li>Added a <code>prediction()</code> method for “gls” objects (from <code>MASS::gls()</code>). (<a href='https://github.com/leeper/margins/issues/3'>#3</a>)</li>
+<li>Added a <code><a href="http://www.rdocumentation.org/packages/prediction/topics/prediction">prediction()</a></code> method for “gls” objects (from <code>MASS::gls()</code>). (<a href='https://github.com/leeper/margins/issues/3'>#3</a>)</li>
 </ul>
 </div>
     <div id="margins-0-2-10" class="section level1">
@@ -494,8 +530,8 @@
 <a href="#margins-0-2-8" class="anchor"></a>margins 0.2.8<small> Unreleased </small>
 </h1>
 <ul>
-<li>Added a <code>prediction()</code> method for “ivreg” objects (from <code><a href="http://www.rdocumentation.org/packages/AER/topics/ivreg">AER::ivreg()</a></code>). (<a href='https://github.com/leeper/margins/issues/3'>#3</a>)</li>
-<li>Added a <code>prediction()</code> method for “survreg” objects (from <code><a href="http://www.rdocumentation.org/packages/survival/topics/survreg">survival::survreg()</a></code>). (<a href='https://github.com/leeper/margins/issues/3'>#3</a>)</li>
+<li>Added a <code><a href="http://www.rdocumentation.org/packages/prediction/topics/prediction">prediction()</a></code> method for “ivreg” objects (from <code><a href="http://www.rdocumentation.org/packages/AER/topics/ivreg">AER::ivreg()</a></code>). (<a href='https://github.com/leeper/margins/issues/3'>#3</a>)</li>
+<li>Added a <code><a href="http://www.rdocumentation.org/packages/prediction/topics/prediction">prediction()</a></code> method for “survreg” objects (from <code><a href="http://www.rdocumentation.org/packages/survival/topics/survreg">survival::survreg()</a></code>). (<a href='https://github.com/leeper/margins/issues/3'>#3</a>)</li>
 </ul>
 </div>
     <div id="margins-0-2-7" class="section level1">
@@ -503,8 +539,8 @@
 <a href="#margins-0-2-7" class="anchor"></a>margins 0.2.7<small> Unreleased </small>
 </h1>
 <ul>
-<li>Added a <code>prediction()</code> method for “polr” objects (from <code><a href="http://www.rdocumentation.org/packages/MASS/topics/polr">MASS::polr()</a></code>). (<a href='https://github.com/leeper/margins/issues/3'>#3</a>)</li>
-<li>Added a <code>prediction()</code> method for “coxph” objects (from <code><a href="http://www.rdocumentation.org/packages/survival/topics/coxph">survival::coxph()</a></code>). (<a href='https://github.com/leeper/margins/issues/3'>#3</a>)</li>
+<li>Added a <code><a href="http://www.rdocumentation.org/packages/prediction/topics/prediction">prediction()</a></code> method for “polr” objects (from <code><a href="http://www.rdocumentation.org/packages/MASS/topics/polr">MASS::polr()</a></code>). (<a href='https://github.com/leeper/margins/issues/3'>#3</a>)</li>
+<li>Added a <code><a href="http://www.rdocumentation.org/packages/prediction/topics/prediction">prediction()</a></code> method for “coxph” objects (from <code><a href="http://www.rdocumentation.org/packages/survival/topics/coxph">survival::coxph()</a></code>). (<a href='https://github.com/leeper/margins/issues/3'>#3</a>)</li>
 </ul>
 </div>
     <div id="margins-0-2-7-1" class="section level1">
@@ -513,11 +549,11 @@
 </h1>
 <ul>
 <li>
-<code><a href="../reference/marginal_effects.html">marginal_effects()</a></code> and <code>prediction()</code> are now S3 generics, with methods for “lm” and “glm” objects, improving extensability. (<a href='https://github.com/leeper/margins/issues/39'>#39</a>, <a href='https://github.com/leeper/margins/issues/40'>#40</a>)</li>
+<code><a href="../reference/marginal_effects.html">marginal_effects()</a></code> and <code><a href="http://www.rdocumentation.org/packages/prediction/topics/prediction">prediction()</a></code> are now S3 generics, with methods for “lm” and “glm” objects, improving extensability. (<a href='https://github.com/leeper/margins/issues/39'>#39</a>, <a href='https://github.com/leeper/margins/issues/40'>#40</a>)</li>
 <li>
-<code>prediction()</code> returns a new class (“prediction”) and gains a <code>print()</code> method.</li>
-<li>Added preliminary support for “loess” objects, including methods for <code>prediction()</code>, <code><a href="../reference/marginal_effects.html">marginal_effects()</a></code>, <code><a href="../reference/cplot.html">cplot()</a></code>, and <code>persp()</code>. No effect variances are currently calculated. (<a href='https://github.com/leeper/margins/issues/3'>#3</a>)</li>
-<li>Added a <code>prediction()</code> method for “nls” objects. (<a href='https://github.com/leeper/margins/issues/3'>#3</a>)</li>
+<code><a href="http://www.rdocumentation.org/packages/prediction/topics/prediction">prediction()</a></code> returns a new class (“prediction”) and gains a <code>print()</code> method.</li>
+<li>Added preliminary support for “loess” objects, including methods for <code><a href="http://www.rdocumentation.org/packages/prediction/topics/prediction">prediction()</a></code>, <code><a href="../reference/marginal_effects.html">marginal_effects()</a></code>, <code><a href="../reference/cplot.html">cplot()</a></code>, and <code>persp()</code>. No effect variances are currently calculated. (<a href='https://github.com/leeper/margins/issues/3'>#3</a>)</li>
+<li>Added a <code><a href="http://www.rdocumentation.org/packages/prediction/topics/prediction">prediction()</a></code> method for “nls” objects. (<a href='https://github.com/leeper/margins/issues/3'>#3</a>)</li>
 <li>Internal function <code>get_effect_variances()</code> gains a “none” option for the <code>vce</code> argument, to skip calculation of ME variances.</li>
 </ul>
 </div>
@@ -614,6 +650,8 @@
     <div id="tocnav">
       <h2>Contents</h2>
       <ul class="nav nav-pills nav-stacked">
+        <li><a href="#margins-0-3-25">0.3.25</a></li>
+        <li><a href="#margins-0-3-24">0.3.24</a></li>
         <li><a href="#margins-0-3-23">0.3.23</a></li>
         <li><a href="#margins-0-3-22">0.3.22</a></li>
         <li><a href="#margins-0-3-21">0.3.21</a></li>

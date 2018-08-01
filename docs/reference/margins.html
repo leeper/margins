@@ -21,18 +21,21 @@
 <!-- clipboard.js -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.7.1/clipboard.min.js" integrity="sha384-cV+rhyOuRHc9Ub/91rihWcGmMmCXDeksTtCihMupQHSsi8GIIRDG0ThDc3HGQFJ3" crossorigin="anonymous"></script>
 
+<!-- sticky kit -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sticky-kit/1.1.3/sticky-kit.min.js" integrity="sha256-c4Rlo1ZozqTPE2RLuvbusY3+SU1pQaJC0TjuhygMipw=" crossorigin="anonymous"></script>
+
 <!-- pkgdown -->
 <link href="../pkgdown.css" rel="stylesheet">
-<script src="../jquery.sticky-kit.min.js"></script>
 <script src="../pkgdown.js"></script>
 
 
 
 <meta property="og:title" content="Marginal Effects Estimation — margins" />
 
-<meta property="og:description" content="This package is an R port of Stata's margins command, implemented as an S3 generic margins() for model objects, like those of class &#8220;lm&#8221; and &#8220;glm&#8221;. margins() is an S3 generic function for building a &#8220;margins&#8221; object from a model object. Methods are currently implemented for several model classes (see Details, below).
+<meta property="og:description" content="This package is an R port of Stata's margins command, implemented as an S3 generic margins() for model objects, like those of class &amp;#8220;lm&amp;#8221; and &amp;#8220;glm&amp;#8221;. margins() is an S3 generic function for building a &amp;#8220;margins&amp;#8221; object from a model object. Methods are currently implemented for several model classes (see Details, below).
 The package also provides a low-level function, marginal_effects, to estimate those quantities and return a data frame of unit-specific effects and another even lower-level function, dydx, to provide variable-specific derivatives from models. Some of the underlying architecture for the package is provided by the low-level function prediction, which provides a consistent data frame interface to predict for a large number of model types. If a prediction method exists for a model class, margin should work for the model class but only those classes listed here have been tested and specifically supported." />
 <meta name="twitter:card" content="summary" />
+
 
 
 <!-- mathjax -->
@@ -59,7 +62,7 @@ The package also provides a low-level function, marginal_effects, to estimate th
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">margins</a>
-        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.3.23</span>
+        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.3.25</span>
       </span>
     </div>
 
@@ -114,7 +117,7 @@ The package also provides a low-level function, marginal_effects, to estimate th
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Marginal Effects Estimation</h1>
-    <small class="dont-index">Source: <a href='https://github.com/leeper/margins/blob/master/R/margins.R'><code>R/margins.R</code></a>, <a href='https://github.com/leeper/margins/blob/master/R/margins_betareg.R'><code>R/margins_betareg.R</code></a>, <a href='https://github.com/leeper/margins/blob/master/R/margins_default.R'><code>R/margins_default.R</code></a>, and 8 more</small>
+    <small class="dont-index">Source: <a href='https://github.com/leeper/margins/blob/master/R/margins.R'><code>R/margins.R</code></a>, <a href='https://github.com/leeper/margins/blob/master/R/margins_betareg.R'><code>R/margins_betareg.R</code></a>, <a href='https://github.com/leeper/margins/blob/master/R/margins_clm.R'><code>R/margins_clm.R</code></a>, and 11 more</small>
     <div class="hidden name"><code>margins.Rd</code></div>
     </div>
 
@@ -128,26 +131,31 @@ The package also provides a low-level function, marginal_effects, to estimate th
     <pre class="usage"><span class='fu'>margins</span>(<span class='no'>model</span>, <span class='no'>...</span>)
 
 <span class='co'># S3 method for betareg</span>
-<span class='fu'>margins</span>(<span class='no'>model</span>, <span class='kw'>data</span> <span class='kw'>=</span> <span class='fu'>find_data</span>(<span class='no'>model</span>, <span class='fu'>parent.frame</span>()),
+<span class='fu'>margins</span>(<span class='no'>model</span>, <span class='kw'>data</span> <span class='kw'>=</span> <span class='fu'><a href='http://www.rdocumentation.org/packages/prediction/topics/find_data'>find_data</a></span>(<span class='no'>model</span>, <span class='fu'>parent.frame</span>()),
   <span class='kw'>variables</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>at</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>type</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='st'>"response"</span>, <span class='st'>"link"</span>),
   <span class='kw'>vcov</span> <span class='kw'>=</span> <span class='kw pkg'>stats</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/stats/topics/vcov'>vcov</a></span>(<span class='no'>model</span>, <span class='kw'>phi</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>), <span class='kw'>vce</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='st'>"delta"</span>, <span class='st'>"simulation"</span>,
   <span class='st'>"bootstrap"</span>, <span class='st'>"none"</span>), <span class='kw'>iterations</span> <span class='kw'>=</span> <span class='fl'>50L</span>, <span class='kw'>unit_ses</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>eps</span> <span class='kw'>=</span> <span class='fl'>1e-07</span>,
   <span class='no'>...</span>)
 
+<span class='co'># S3 method for clm</span>
+<span class='fu'>margins</span>(<span class='no'>model</span>, <span class='kw'>data</span> <span class='kw'>=</span> <span class='fu'><a href='http://www.rdocumentation.org/packages/prediction/topics/find_data'>find_data</a></span>(<span class='no'>model</span>, <span class='fu'>parent.frame</span>()),
+  <span class='kw'>variables</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>at</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>type</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='st'>"response"</span>, <span class='st'>"link"</span>),
+  <span class='kw'>vce</span> <span class='kw'>=</span> <span class='st'>"none"</span>, <span class='kw'>eps</span> <span class='kw'>=</span> <span class='fl'>1e-07</span>, <span class='no'>...</span>)
+
 <span class='co'># S3 method for default</span>
-<span class='fu'>margins</span>(<span class='no'>model</span>, <span class='kw'>data</span> <span class='kw'>=</span> <span class='fu'>find_data</span>(<span class='no'>model</span>, <span class='fu'>parent.frame</span>()),
+<span class='fu'>margins</span>(<span class='no'>model</span>, <span class='kw'>data</span> <span class='kw'>=</span> <span class='fu'><a href='http://www.rdocumentation.org/packages/prediction/topics/find_data'>find_data</a></span>(<span class='no'>model</span>, <span class='fu'>parent.frame</span>()),
   <span class='kw'>variables</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>at</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>type</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='st'>"response"</span>, <span class='st'>"link"</span>),
   <span class='kw'>vcov</span> <span class='kw'>=</span> <span class='kw pkg'>stats</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/stats/topics/vcov'>vcov</a></span>(<span class='no'>model</span>), <span class='kw'>vce</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='st'>"delta"</span>, <span class='st'>"simulation"</span>, <span class='st'>"bootstrap"</span>,
   <span class='st'>"none"</span>), <span class='kw'>iterations</span> <span class='kw'>=</span> <span class='fl'>50L</span>, <span class='kw'>unit_ses</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>eps</span> <span class='kw'>=</span> <span class='fl'>1e-07</span>, <span class='no'>...</span>)
 
 <span class='co'># S3 method for glm</span>
-<span class='fu'>margins</span>(<span class='no'>model</span>, <span class='kw'>data</span> <span class='kw'>=</span> <span class='fu'>find_data</span>(<span class='no'>model</span>, <span class='fu'>parent.frame</span>()),
+<span class='fu'>margins</span>(<span class='no'>model</span>, <span class='kw'>data</span> <span class='kw'>=</span> <span class='fu'><a href='http://www.rdocumentation.org/packages/prediction/topics/find_data'>find_data</a></span>(<span class='no'>model</span>, <span class='fu'>parent.frame</span>()),
   <span class='kw'>variables</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>at</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>type</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='st'>"response"</span>, <span class='st'>"link"</span>),
   <span class='kw'>vcov</span> <span class='kw'>=</span> <span class='kw pkg'>stats</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/stats/topics/vcov'>vcov</a></span>(<span class='no'>model</span>), <span class='kw'>vce</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='st'>"delta"</span>, <span class='st'>"simulation"</span>, <span class='st'>"bootstrap"</span>,
   <span class='st'>"none"</span>), <span class='kw'>iterations</span> <span class='kw'>=</span> <span class='fl'>50L</span>, <span class='kw'>unit_ses</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>eps</span> <span class='kw'>=</span> <span class='fl'>1e-07</span>, <span class='no'>...</span>)
 
 <span class='co'># S3 method for lm</span>
-<span class='fu'>margins</span>(<span class='no'>model</span>, <span class='kw'>data</span> <span class='kw'>=</span> <span class='fu'>find_data</span>(<span class='no'>model</span>, <span class='fu'>parent.frame</span>()),
+<span class='fu'>margins</span>(<span class='no'>model</span>, <span class='kw'>data</span> <span class='kw'>=</span> <span class='fu'><a href='http://www.rdocumentation.org/packages/prediction/topics/find_data'>find_data</a></span>(<span class='no'>model</span>, <span class='fu'>parent.frame</span>()),
   <span class='kw'>variables</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>at</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>type</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='st'>"response"</span>, <span class='st'>"link"</span>),
   <span class='kw'>vcov</span> <span class='kw'>=</span> <span class='kw pkg'>stats</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/stats/topics/vcov'>vcov</a></span>(<span class='no'>model</span>), <span class='kw'>vce</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='st'>"delta"</span>, <span class='st'>"simulation"</span>, <span class='st'>"bootstrap"</span>,
   <span class='st'>"none"</span>), <span class='kw'>iterations</span> <span class='kw'>=</span> <span class='fl'>50L</span>, <span class='kw'>unit_ses</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>eps</span> <span class='kw'>=</span> <span class='fl'>1e-07</span>, <span class='no'>...</span>)
@@ -157,27 +165,37 @@ The package also provides a low-level function, marginal_effects, to estimate th
   <span class='kw'>vce</span> <span class='kw'>=</span> <span class='st'>"none"</span>, <span class='kw'>eps</span> <span class='kw'>=</span> <span class='fl'>1e-07</span>, <span class='no'>...</span>)
 
 <span class='co'># S3 method for merMod</span>
-<span class='fu'>margins</span>(<span class='no'>model</span>, <span class='kw'>data</span> <span class='kw'>=</span> <span class='fu'>find_data</span>(<span class='no'>model</span>), <span class='kw'>variables</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+<span class='fu'>margins</span>(<span class='no'>model</span>, <span class='kw'>data</span> <span class='kw'>=</span> <span class='fu'><a href='http://www.rdocumentation.org/packages/prediction/topics/find_data'>find_data</a></span>(<span class='no'>model</span>), <span class='kw'>variables</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
   <span class='kw'>at</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>type</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='st'>"response"</span>, <span class='st'>"link"</span>), <span class='kw'>vcov</span> <span class='kw'>=</span> <span class='kw pkg'>stats</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/stats/topics/vcov'>vcov</a></span>(<span class='no'>model</span>),
   <span class='kw'>vce</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='st'>"delta"</span>, <span class='st'>"simulation"</span>, <span class='st'>"bootstrap"</span>, <span class='st'>"none"</span>), <span class='kw'>iterations</span> <span class='kw'>=</span> <span class='fl'>50L</span>,
   <span class='kw'>unit_ses</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>eps</span> <span class='kw'>=</span> <span class='fl'>1e-07</span>, <span class='no'>...</span>)
 
 <span class='co'># S3 method for lmerMod</span>
-<span class='fu'>margins</span>(<span class='no'>model</span>, <span class='kw'>data</span> <span class='kw'>=</span> <span class='fu'>find_data</span>(<span class='no'>model</span>), <span class='kw'>variables</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+<span class='fu'>margins</span>(<span class='no'>model</span>, <span class='kw'>data</span> <span class='kw'>=</span> <span class='fu'><a href='http://www.rdocumentation.org/packages/prediction/topics/find_data'>find_data</a></span>(<span class='no'>model</span>), <span class='kw'>variables</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
   <span class='kw'>at</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>type</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='st'>"response"</span>, <span class='st'>"link"</span>), <span class='kw'>vcov</span> <span class='kw'>=</span> <span class='kw pkg'>stats</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/stats/topics/vcov'>vcov</a></span>(<span class='no'>model</span>),
   <span class='kw'>vce</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='st'>"delta"</span>, <span class='st'>"simulation"</span>, <span class='st'>"bootstrap"</span>, <span class='st'>"none"</span>), <span class='kw'>iterations</span> <span class='kw'>=</span> <span class='fl'>50L</span>,
   <span class='kw'>unit_ses</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>eps</span> <span class='kw'>=</span> <span class='fl'>1e-07</span>, <span class='no'>...</span>)
 
+<span class='co'># S3 method for multinom</span>
+<span class='fu'>margins</span>(<span class='no'>model</span>, <span class='kw'>data</span> <span class='kw'>=</span> <span class='fu'><a href='http://www.rdocumentation.org/packages/prediction/topics/find_data'>find_data</a></span>(<span class='no'>model</span>, <span class='fu'>parent.frame</span>()),
+  <span class='kw'>variables</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>at</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>type</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>vcov</span> <span class='kw'>=</span> <span class='kw pkg'>stats</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/stats/topics/vcov'>vcov</a></span>(<span class='no'>model</span>),
+  <span class='kw'>vce</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='st'>"delta"</span>, <span class='st'>"simulation"</span>, <span class='st'>"bootstrap"</span>, <span class='st'>"none"</span>), <span class='kw'>iterations</span> <span class='kw'>=</span> <span class='fl'>50L</span>,
+  <span class='kw'>unit_ses</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>eps</span> <span class='kw'>=</span> <span class='fl'>1e-07</span>, <span class='no'>...</span>)
+
 <span class='co'># S3 method for nnet</span>
-<span class='fu'>margins</span>(<span class='no'>model</span>, <span class='kw'>data</span> <span class='kw'>=</span> <span class='fu'>find_data</span>(<span class='no'>model</span>, <span class='fu'>parent.frame</span>()),
+<span class='fu'>margins</span>(<span class='no'>model</span>, <span class='kw'>data</span> <span class='kw'>=</span> <span class='fu'><a href='http://www.rdocumentation.org/packages/prediction/topics/find_data'>find_data</a></span>(<span class='no'>model</span>, <span class='fu'>parent.frame</span>()),
   <span class='kw'>variables</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>at</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>vce</span> <span class='kw'>=</span> <span class='st'>"none"</span>, <span class='kw'>eps</span> <span class='kw'>=</span> <span class='fl'>1e-07</span>, <span class='no'>...</span>)
 
 <span class='co'># S3 method for polr</span>
-<span class='fu'>margins</span>(<span class='no'>model</span>, <span class='kw'>data</span> <span class='kw'>=</span> <span class='fu'>find_data</span>(<span class='no'>model</span>, <span class='fu'>parent.frame</span>()),
-  <span class='kw'>variables</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>at</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>vce</span> <span class='kw'>=</span> <span class='st'>"none"</span>, <span class='kw'>eps</span> <span class='kw'>=</span> <span class='fl'>1e-07</span>, <span class='no'>...</span>)
+<span class='fu'>margins</span>(<span class='no'>model</span>, <span class='kw'>data</span> <span class='kw'>=</span> <span class='fu'><a href='http://www.rdocumentation.org/packages/prediction/topics/find_data'>find_data</a></span>(<span class='no'>model</span>, <span class='fu'>parent.frame</span>()),
+  <span class='kw'>variables</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>at</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>type</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>vcov</span> <span class='kw'>=</span> <span class='kw pkg'>stats</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/stats/topics/vcov'>vcov</a></span>(<span class='no'>model</span>),
+  <span class='kw'>vce</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='st'>"delta"</span>, <span class='st'>"simulation"</span>, <span class='st'>"bootstrap"</span>, <span class='st'>"none"</span>), <span class='kw'>iterations</span> <span class='kw'>=</span> <span class='fl'>50L</span>,
+  <span class='kw'>unit_ses</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>eps</span> <span class='kw'>=</span> <span class='fl'>1e-07</span>, <span class='no'>...</span>)
+
+<span class='fu'>margins_summary</span>(<span class='no'>model</span>, <span class='no'>...</span>, <span class='kw'>level</span> <span class='kw'>=</span> <span class='fl'>0.95</span>, <span class='kw'>by_factor</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)
 
 <span class='co'># S3 method for svyglm</span>
-<span class='fu'>margins</span>(<span class='no'>model</span>, <span class='kw'>data</span> <span class='kw'>=</span> <span class='fu'>find_data</span>(<span class='no'>model</span>, <span class='fu'>parent.frame</span>()),
+<span class='fu'>margins</span>(<span class='no'>model</span>, <span class='kw'>data</span> <span class='kw'>=</span> <span class='fu'><a href='http://www.rdocumentation.org/packages/prediction/topics/find_data'>find_data</a></span>(<span class='no'>model</span>, <span class='fu'>parent.frame</span>()),
   <span class='no'>design</span>, <span class='kw'>variables</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>at</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>type</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='st'>"response"</span>, <span class='st'>"link"</span>),
   <span class='kw'>vcov</span> <span class='kw'>=</span> <span class='kw pkg'>stats</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/stats/topics/vcov'>vcov</a></span>(<span class='no'>model</span>), <span class='kw'>vce</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='st'>"delta"</span>, <span class='st'>"simulation"</span>, <span class='st'>"bootstrap"</span>,
   <span class='st'>"none"</span>), <span class='kw'>iterations</span> <span class='kw'>=</span> <span class='fl'>50L</span>, <span class='kw'>unit_ses</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>eps</span> <span class='kw'>=</span> <span class='fl'>1e-07</span>, <span class='no'>...</span>)</pre>
@@ -230,6 +248,14 @@ The package also provides a low-level function, marginal_effects, to estimate th
       <td><p>A numeric value specifying the &#8220;step&#8221; to use when calculating numerical derivatives.</p></td>
     </tr>
     <tr>
+      <th>level</th>
+      <td><p>A numeric value specifying the confidence level for calculating p-values and confidence intervals.</p></td>
+    </tr>
+    <tr>
+      <th>by_factor</th>
+      <td><p>A logical specifying whether to order the output by factor (the default, <code>TRUE</code>).</p></td>
+    </tr>
+    <tr>
       <th>design</th>
       <td><p>Only for models estimated using <code><a href='http://www.rdocumentation.org/packages/survey/topics/svyglm'>svyglm</a></code>, the &#8220;survey.design&#8221; object used to estimate the model. This is required.</p></td>
     </tr>
@@ -241,7 +267,9 @@ The package also provides a low-level function, marginal_effects, to estimate th
     
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p>Methods for this generic return a &#8220;margins&#8221; object, which is a data frame consisting of the original data, predicted values and standard errors thereof, estimated marginal effects from the model <code>model</code> (for all variables used in the model, or the subset specified by <code>variables</code>), along with attributes describing various features of the marginal effects estimates. The default print method is concise; a more useful <code>summary</code> method provides additional details.</p>
+    <p>Methods for this generic return a &#8220;margins&#8221; object, which is a data frame consisting of the original data, predicted values and standard errors thereof, estimated marginal effects from the model <code>model</code> (for all variables used in the model, or the subset specified by <code>variables</code>), along with attributes describing various features of the marginal effects estimates.</p>
+<p>The default print method is concise; a more useful <code>summary</code> method provides additional details.</p>
+<p><code>margins_summary</code> is sugar that provides a more convenient way of obtaining the nested call: <code>summary(margins(...))</code>.</p>
 <p>Methods are currently implemented for the following object classes:</p><ul>
 <li><p>&#8220;betareg&#8221;, see <code><a href='http://www.rdocumentation.org/packages/betareg/topics/betareg'>betareg</a></code></p></li>
 <li><p>&#8220;glm&#8221;, see <code><a href='http://www.rdocumentation.org/packages/stats/topics/glm'>glm</a></code>, <code><a href='http://www.rdocumentation.org/packages/MASS/topics/glm.nb'>glm.nb</a></code></p></li>
@@ -271,25 +299,53 @@ The package also provides a low-level function, marginal_effects, to estimate th
     <pre class="examples"><div class='input'><span class='co'># basic example using linear model</span>
 <span class='fu'>require</span>(<span class='st'>"datasets"</span>)
 <span class='no'>x</span> <span class='kw'>&lt;-</span> <span class='fu'>lm</span>(<span class='no'>mpg</span> ~ <span class='no'>cyl</span> * <span class='no'>hp</span> + <span class='no'>wt</span>, <span class='kw'>data</span> <span class='kw'>=</span> <span class='fu'>head</span>(<span class='no'>mtcars</span>))
-<span class='fu'>margins</span>(<span class='no'>x</span>)</div><div class='output co'>#&gt; <span class='error'>Error in build_datalist(data, at = at): could not find function "build_datalist"</span></div><div class='input'>
+<span class='fu'>margins</span>(<span class='no'>x</span>)</div><div class='output co'>#&gt; <span class='message'>Average marginal effects</span></div><div class='output co'>#&gt; <span class='message'>lm(formula = mpg ~ cyl * hp + wt, data = head(mtcars))</span></div><div class='output co'>#&gt;     cyl     hp     wt
+#&gt;  -11.81 0.6845 0.6995</div><div class='input'>
 # obtain unit-specific standard errors
 </div><span class='co'># NOT RUN {</span>
   <span class='fu'>margins</span>(<span class='no'>x</span>, <span class='kw'>unit_ses</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)
 <span class='co'># }</span><div class='input'>
 <span class='co'># use of 'variables' argument to estimate only some MEs</span>
-<span class='fu'>summary</span>(<span class='fu'>margins</span>(<span class='no'>x</span>, <span class='kw'>variables</span> <span class='kw'>=</span> <span class='st'>"hp"</span>))</div><div class='output co'>#&gt; <span class='error'>Error in build_datalist(data, at = at): could not find function "build_datalist"</span></div><div class='input'>
+<span class='fu'>summary</span>(<span class='fu'>margins</span>(<span class='no'>x</span>, <span class='kw'>variables</span> <span class='kw'>=</span> <span class='st'>"hp"</span>))</div><div class='output co'>#&gt;  factor    AME     SE       z      p  lower  upper
+#&gt;      hp 0.6845 0.0489 13.9991 0.0000 0.5887 0.7804</div><div class='input'>
 <span class='co'># use of 'at' argument</span>
 <span class='co'>## modifying original data values</span>
-<span class='fu'>margins</span>(<span class='no'>x</span>, <span class='kw'>at</span> <span class='kw'>=</span> <span class='fu'>list</span>(<span class='kw'>hp</span> <span class='kw'>=</span> <span class='fl'>150</span>))</div><div class='output co'>#&gt; <span class='error'>Error in build_datalist(data, at = at): could not find function "build_datalist"</span></div><div class='input'><span class='co'>## AMEs at various data values</span>
-<span class='fu'>margins</span>(<span class='no'>x</span>, <span class='kw'>at</span> <span class='kw'>=</span> <span class='fu'>list</span>(<span class='kw'>hp</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='fl'>95</span>, <span class='fl'>150</span>), <span class='kw'>cyl</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='fl'>4</span>,<span class='fl'>6</span>)))</div><div class='output co'>#&gt; <span class='error'>Error in build_datalist(data, at = at): could not find function "build_datalist"</span></div><div class='input'>
+<span class='fu'>margins</span>(<span class='no'>x</span>, <span class='kw'>at</span> <span class='kw'>=</span> <span class='fu'>list</span>(<span class='kw'>hp</span> <span class='kw'>=</span> <span class='fl'>150</span>))</div><div class='output co'>#&gt; <span class='message'>Average marginal effects at specified values</span></div><div class='output co'>#&gt; <span class='message'>lm(formula = mpg ~ cyl * hp + wt, data = head(mtcars))</span></div><div class='output co'>#&gt;  at(hp)    cyl     hp     wt
+#&gt;     150 -18.53 0.6845 0.6995</div><div class='input'><span class='co'>## AMEs at various data values</span>
+<span class='fu'>margins</span>(<span class='no'>x</span>, <span class='kw'>at</span> <span class='kw'>=</span> <span class='fu'>list</span>(<span class='kw'>hp</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='fl'>95</span>, <span class='fl'>150</span>), <span class='kw'>cyl</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='fl'>4</span>,<span class='fl'>6</span>)))</div><div class='output co'>#&gt; <span class='message'>Average marginal effects at specified values</span></div><div class='output co'>#&gt; <span class='message'>lm(formula = mpg ~ cyl * hp + wt, data = head(mtcars))</span></div><div class='output co'>#&gt;  at(hp) at(cyl)     cyl     hp     wt
+#&gt;      95       4  -7.266 1.0942 0.6995
+#&gt;     150       4 -18.531 1.0942 0.6995
+#&gt;      95       6  -7.266 0.6845 0.6995
+#&gt;     150       6 -18.531 0.6845 0.6995</div><div class='input'>
 <span class='co'># use of 'data' argument to obtain AMEs for a subset of data</span>
-<span class='fu'>margins</span>(<span class='no'>x</span>, <span class='kw'>data</span> <span class='kw'>=</span> <span class='no'>mtcars</span>[<span class='no'>mtcars</span><span class='kw'>[[</span><span class='st'>"cyl"</span>]] <span class='kw'>==</span> <span class='fl'>4</span>,])</div><div class='output co'>#&gt; <span class='error'>Error in build_datalist(data, at = at): could not find function "build_datalist"</span></div><div class='input'><span class='fu'>margins</span>(<span class='no'>x</span>, <span class='kw'>data</span> <span class='kw'>=</span> <span class='no'>mtcars</span>[<span class='no'>mtcars</span><span class='kw'>[[</span><span class='st'>"cyl"</span>]] <span class='kw'>==</span> <span class='fl'>6</span>,])</div><div class='output co'>#&gt; <span class='error'>Error in build_datalist(data, at = at): could not find function "build_datalist"</span></div><div class='input'>
+<span class='fu'>margins</span>(<span class='no'>x</span>, <span class='kw'>data</span> <span class='kw'>=</span> <span class='no'>mtcars</span>[<span class='no'>mtcars</span><span class='kw'>[[</span><span class='st'>"cyl"</span>]] <span class='kw'>==</span> <span class='fl'>4</span>,])</div><div class='output co'>#&gt; <span class='message'>Average marginal effects</span></div><div class='output co'>#&gt; <span class='message'>lm(formula = mpg ~ cyl * hp + wt, data = head(mtcars))</span></div><div class='output co'>#&gt;     cyl    hp     wt
+#&gt;  -4.733 1.094 0.6995</div><div class='input'><span class='fu'>margins</span>(<span class='no'>x</span>, <span class='kw'>data</span> <span class='kw'>=</span> <span class='no'>mtcars</span>[<span class='no'>mtcars</span><span class='kw'>[[</span><span class='st'>"cyl"</span>]] <span class='kw'>==</span> <span class='fl'>6</span>,])</div><div class='output co'>#&gt; <span class='message'>Average marginal effects</span></div><div class='output co'>#&gt; <span class='message'>lm(formula = mpg ~ cyl * hp + wt, data = head(mtcars))</span></div><div class='output co'>#&gt;     cyl     hp     wt
+#&gt;  -12.85 0.6845 0.6995</div><div class='input'>
 <span class='co'># return discrete differences for continuous terms</span>
 <span class='co'>## passes 'change' through '...' to dydx()</span>
-<span class='fu'>margins</span>(<span class='no'>x</span>, <span class='kw'>change</span> <span class='kw'>=</span> <span class='st'>"sd"</span>)</div><div class='output co'>#&gt; <span class='error'>Error in build_datalist(data, at = at): could not find function "build_datalist"</span></div><div class='input'>
+<span class='fu'>margins</span>(<span class='no'>x</span>, <span class='kw'>change</span> <span class='kw'>=</span> <span class='st'>"sd"</span>)</div><div class='output co'>#&gt; <span class='message'>Average marginal effects</span></div><div class='output co'>#&gt; <span class='message'>lm(formula = mpg ~ cyl * hp + wt, data = head(mtcars))</span></div><div class='output co'>#&gt;     cyl    hp     wt
+#&gt;  -29.87 39.83 0.6481</div><div class='input'>
 <span class='co'># summary() method</span>
-<span class='fu'>summary</span>(<span class='fu'>margins</span>(<span class='no'>x</span>, <span class='kw'>at</span> <span class='kw'>=</span> <span class='fu'>list</span>(<span class='kw'>hp</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='fl'>95</span>, <span class='fl'>150</span>))))</div><div class='output co'>#&gt; <span class='error'>Error in build_datalist(data, at = at): could not find function "build_datalist"</span></div><div class='input'><span class='co'>## control row order of summary() output</span>
-<span class='fu'>summary</span>(<span class='fu'>margins</span>(<span class='no'>x</span>, <span class='kw'>at</span> <span class='kw'>=</span> <span class='fu'>list</span>(<span class='kw'>hp</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='fl'>95</span>, <span class='fl'>150</span>))), <span class='kw'>by_factor</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)</div><div class='output co'>#&gt; <span class='error'>Error in build_datalist(data, at = at): could not find function "build_datalist"</span></div><div class='input'>
+<span class='fu'>summary</span>(<span class='fu'>margins</span>(<span class='no'>x</span>, <span class='kw'>at</span> <span class='kw'>=</span> <span class='fu'>list</span>(<span class='kw'>hp</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='fl'>95</span>, <span class='fl'>150</span>))))</div><div class='output co'>#&gt;  factor       hp      AME     SE        z      p    lower    upper
+#&gt;     cyl  95.0000  -7.2657 0.5156 -14.0925 0.0000  -8.2762  -6.2552
+#&gt;     cyl 150.0000 -18.5314 1.3065 -14.1836 0.0000 -21.0921 -15.9706
+#&gt;      hp  95.0000   0.6845 0.0489  13.9989 0.0000   0.5887   0.7804
+#&gt;      hp 150.0000   0.6845 0.0489  13.9986 0.0000   0.5887   0.7804
+#&gt;      wt  95.0000   0.6995 0.3304   2.1169 0.0343   0.0519   1.3472
+#&gt;      wt 150.0000   0.6995 0.3301   2.1193 0.0341   0.0526   1.3464</div><div class='input'><span class='fu'>margins_summary</span>(<span class='no'>x</span>, <span class='kw'>at</span> <span class='kw'>=</span> <span class='fu'>list</span>(<span class='kw'>hp</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='fl'>95</span>, <span class='fl'>150</span>)))</div><div class='output co'>#&gt;  factor       hp      AME     SE        z      p    lower    upper
+#&gt;     cyl  95.0000  -7.2657 0.5156 -14.0925 0.0000  -8.2762  -6.2552
+#&gt;     cyl 150.0000 -18.5314 1.3065 -14.1836 0.0000 -21.0921 -15.9706
+#&gt;      hp  95.0000   0.6845 0.0489  13.9989 0.0000   0.5887   0.7804
+#&gt;      hp 150.0000   0.6845 0.0489  13.9986 0.0000   0.5887   0.7804
+#&gt;      wt  95.0000   0.6995 0.3304   2.1169 0.0343   0.0519   1.3472
+#&gt;      wt 150.0000   0.6995 0.3301   2.1193 0.0341   0.0526   1.3464</div><div class='input'><span class='co'>## control row order of summary() output</span>
+<span class='fu'>summary</span>(<span class='fu'>margins</span>(<span class='no'>x</span>, <span class='kw'>at</span> <span class='kw'>=</span> <span class='fu'>list</span>(<span class='kw'>hp</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='fl'>95</span>, <span class='fl'>150</span>))), <span class='kw'>by_factor</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)</div><div class='output co'>#&gt;  factor       hp      AME     SE        z      p    lower    upper
+#&gt;     cyl  95.0000  -7.2657 0.5156 -14.0925 0.0000  -8.2762  -6.2552
+#&gt;      hp  95.0000   0.6845 0.0489  13.9989 0.0000   0.5887   0.7804
+#&gt;      wt  95.0000   0.6995 0.3304   2.1169 0.0343   0.0519   1.3472
+#&gt;     cyl 150.0000 -18.5314 1.3065 -14.1836 0.0000 -21.0921 -15.9706
+#&gt;      hp 150.0000   0.6845 0.0489  13.9986 0.0000   0.5887   0.7804
+#&gt;      wt 150.0000   0.6995 0.3301   2.1193 0.0341   0.0526   1.3464</div><div class='input'>
 # alternative 'vce' estimation
 </div><span class='co'># NOT RUN {</span>
   <span class='co'># bootstrap</span>
@@ -303,10 +359,13 @@ The package also provides a low-level function, marginal_effects, to estimate th
   <span class='fu'>summary</span>(<span class='fu'>margins</span>(<span class='no'>x2</span>))
   <span class='co'>## heteroskedasticity-consistent covariance matrix</span>
   <span class='fu'>summary</span>(<span class='fu'>margins</span>(<span class='no'>x2</span>, <span class='kw'>vcov</span> <span class='kw'>=</span> <span class='fu'><a href='http://www.rdocumentation.org/packages/sandwich/topics/vcovHC'>vcovHC</a></span>(<span class='no'>x2</span>)))
-}</div><div class='output co'>#&gt; <span class='message'>Loading required package: sandwich</span></div><div class='output co'>#&gt; <span class='error'>Error in build_datalist(data, at = at): could not find function "build_datalist"</span></div><div class='input'>
+}</div><div class='output co'>#&gt; <span class='message'>Loading required package: sandwich</span></div><div class='output co'>#&gt;       factor    AME     SE      z      p  lower  upper
+#&gt;  Sepal.Width 0.7224 0.3332 2.1681 0.0301 0.0694 1.3754</div><div class='input'>
 <span class='co'># generalized linear model</span>
 <span class='no'>x</span> <span class='kw'>&lt;-</span> <span class='fu'>glm</span>(<span class='no'>am</span> ~ <span class='no'>hp</span>, <span class='kw'>data</span> <span class='kw'>=</span> <span class='fu'>head</span>(<span class='no'>mtcars</span>), <span class='kw'>family</span> <span class='kw'>=</span> <span class='no'>binomial</span>)
-<span class='fu'>margins</span>(<span class='no'>x</span>, <span class='kw'>type</span> <span class='kw'>=</span> <span class='st'>"response"</span>)</div><div class='output co'>#&gt; <span class='error'>Error in build_datalist(data, at = at): could not find function "build_datalist"</span></div><div class='input'><span class='fu'>margins</span>(<span class='no'>x</span>, <span class='kw'>type</span> <span class='kw'>=</span> <span class='st'>"link"</span>)</div><div class='output co'>#&gt; <span class='error'>Error in build_datalist(data, at = at): could not find function "build_datalist"</span></div><div class='input'>
+<span class='fu'>margins</span>(<span class='no'>x</span>, <span class='kw'>type</span> <span class='kw'>=</span> <span class='st'>"response"</span>)</div><div class='output co'>#&gt; <span class='message'>Average marginal effects</span></div><div class='output co'>#&gt; <span class='message'>glm(formula = am ~ hp, family = binomial, data = head(mtcars))</span></div><div class='output co'>#&gt;       hp
+#&gt;  -0.0168</div><div class='input'><span class='fu'>margins</span>(<span class='no'>x</span>, <span class='kw'>type</span> <span class='kw'>=</span> <span class='st'>"link"</span>)</div><div class='output co'>#&gt; <span class='message'>Average marginal effects</span></div><div class='output co'>#&gt; <span class='message'>glm(formula = am ~ hp, family = binomial, data = head(mtcars))</span></div><div class='output co'>#&gt;        hp
+#&gt;  -0.08928</div><div class='input'>
 <span class='co'># multi-category outcome</span>
 <span class='kw'>if</span> (<span class='fu'>requireNamespace</span>(<span class='st'>"nnet"</span>)) {
   <span class='fu'>data</span>(<span class='st'>"iris3"</span>, <span class='kw'>package</span> <span class='kw'>=</span> <span class='st'>"datasets"</span>)
@@ -316,7 +375,26 @@ The package also provides a low-level function, marginal_effects, to estimate th
                   <span class='kw'>decay</span> <span class='kw'>=</span> <span class='fl'>5e-4</span>, <span class='kw'>maxit</span> <span class='kw'>=</span> <span class='fl'>200</span>, <span class='kw'>trace</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)
   <span class='fu'>margins</span>(<span class='no'>m</span>) <span class='co'># default</span>
   <span class='fu'>margins</span>(<span class='no'>m</span>, <span class='kw'>category</span> <span class='kw'>=</span> <span class='st'>"v"</span>) <span class='co'># explicit category</span>
-}</div><div class='output co'>#&gt; <span class='error'>Error in build_datalist(data, at = at): could not find function "build_datalist"</span></div><div class='input'>
+}</div><div class='output co'>#&gt; <span class='message'>Average marginal effects</span></div><div class='output co'>#&gt; <span class='message'>nnet.formula(formula = species ~ ., data = ird, size = 2, rang = 0.1,     decay = 5e-04, maxit = 200, trace = FALSE)</span></div><div class='output co'>#&gt;  Sepal.L. Sepal.W. Petal.L. Petal.W.
+#&gt;  -0.02979 -0.08066   0.1131   0.2193</div><div class='input'>
+<span class='co'># using margins_summary() for concise grouped operations</span>
+<span class='no'>list_data</span> <span class='kw'>&lt;-</span> <span class='fu'>split</span>(<span class='no'>mtcars</span>, <span class='no'>mtcars</span>$<span class='no'>gear</span>)
+<span class='no'>list_mod</span> <span class='kw'>&lt;-</span> <span class='fu'>lapply</span>(<span class='no'>list_data</span>, <span class='kw'>function</span>(<span class='no'>x</span>) <span class='fu'>lm</span>(<span class='no'>mpg</span> ~ <span class='no'>cyl</span> + <span class='no'>wt</span>, <span class='kw'>data</span> <span class='kw'>=</span> <span class='no'>x</span>))
+<span class='fu'>mapply</span>(<span class='no'>margins_summary</span>, <span class='kw'>model</span> <span class='kw'>=</span> <span class='no'>list_mod</span>, <span class='kw'>data</span> <span class='kw'>=</span> <span class='no'>list_data</span>, <span class='kw'>SIMPLIFY</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)</div><div class='output co'>#&gt; $`3`
+#&gt;  factor     AME     SE       z      p   lower   upper
+#&gt;     cyl -0.8380 0.5773 -1.4515 0.1466 -1.9695  0.2936
+#&gt;      wt -2.4727 0.8228 -3.0051 0.0027 -4.0855 -0.8600
+#&gt; 
+#&gt; $`4`
+#&gt;  factor     AME     SE       z      p   lower   upper
+#&gt;     cyl -1.6405 1.0927 -1.5013 0.1333 -3.7822  0.5012
+#&gt;      wt -5.4414 1.7008 -3.1994 0.0014 -8.7749 -2.1080
+#&gt; 
+#&gt; $`5`
+#&gt;  factor     AME     SE       z      p    lower   upper
+#&gt;     cyl -0.8501 0.8180 -1.0392 0.2987  -2.4534  0.7532
+#&gt;      wt -6.0898 1.9978 -3.0482 0.0023 -10.0055 -2.1741
+#&gt; </div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
