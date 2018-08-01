@@ -1,9 +1,11 @@
+# test various edge cases
+context("Edge case tests")
+
 # set comparison tolerance
 tol <- 0.0001
 
 library("datasets")
 
-context("Edge case tests")
 test_that("margins() works with multicollinearity", {
     x <- lm(mpg ~ wt + I(wt*2), data = mtcars)
     suppressWarnings(m <- margins(x))
@@ -28,3 +30,8 @@ test_that("margins() works with missing factor levels", {
     expect_true(nrow(summary(m)) == 4L)
 })
 
+test_that("margins() errors correctly when there are no RHS variables", {
+    x <- lm(mpg ~ 1, data = mtcars)
+    expect_error(marginal_effects(x))
+    expect_error(margins(x))
+})

@@ -1,4 +1,3 @@
-/ignore/*
 README.html
 /inst/standarderrors.pdf
 /inst/doc/*.log
@@ -9,9 +8,13 @@ README.html
 /vignettes/*.log
 /vignettes/*.pdf
 /vignettes/*.out
-/vignettes/*.sty
 /vignettes/*.tex
 /vignettes/*.md
 /vignettes/figure/
 /vignettes/*.bib.bak
-/figure/*
+figure/
+figure/*
+ignore/
+ignore/*
+revdep/
+revdep/*

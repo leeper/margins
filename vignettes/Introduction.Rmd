@@ -45,13 +45,18 @@ x <- lm(mpg ~ cyl * hp + wt, data = mtcars)
 summary(m)
 ```
 
-With the exception of differences in rounding, the above results match identically what Stata's `margins` command produces. Using the `plot()` method also yields an aesthetically similar result to Stata's `marginsplot`:
+With the exception of differences in rounding, the above results match identically what Stata's `margins` command produces. A slightly more concise expression relies on the syntactic sugar provided by `margins_summary()`:
+
+```{r margins_summary}
+margins_summary(x)
+```
+Using the `plot()` method also yields an aesthetically similar result to Stata's `marginsplot`:
 
 ```{r marginsplot}
 plot(m)
 ```
 
-## Using Optional Arguments in `margins`
+## Using Optional Arguments in `margins()`
 
 **margins** is intended as a port of (some of) the features of Stata's `margins` command, which includes numerous options for calculating marginal effects at the mean values of a dataset (i.e., the marginal effects at the mean), an average of the marginal effects at each value of a dataset (i.e., the average marginal effect), marginal effects at representative values, and any of those operations on various subsets of a dataset. (The functionality of Stata's command to produce *predictive* margins is not ported, as this is easily obtained from the [prediction](https://cran.r-project.org/package=prediction) package.) In particular, Stata provides the following options:
 
@@ -104,8 +109,8 @@ In an ordinary least squares regression, there is really only one way of examini
 
 ```{r}
 x <- glm(am ~ cyl + hp * wt, data = mtcars, family = binomial)
-margins(x, type = "response")
-margins(x, type = "link") # the default
+margins(x, type = "response") # the default
+margins(x, type = "link")
 ```
 
 Note that some other packages available for R, as well as Stata's `margins` and `mfx` packages enable calculation of so-called "marginal effects at means" (i.e., the marginal effect for a single observation that has covariate values equal to the means of the sample as a whole). The substantive interpretation of these is fairly ambiguous. While it was once common practice to estimate MEMs - rather than AMEs or MERs - this is now considered somewhat inappropriate because it focuses on cases that may not exist (e.g., the average of a 0/1 variable is not going to reflect a case that can actually exist in reality) and we are often interested in the effect of a variable at multiple possible values of covariates, rather than an arbitrarily selected case that is deemed "typical" in this way. As such, `margins()` defaults to reporting AMEs, unless modified by the `at` argument to calculate average "marginal effects for representative cases" (MERs). MEMs could be obtained by manually specifying `at` for every variable in a way that respects the variables classes and inherent meaning of the data, but that functionality is not demonstrated here.

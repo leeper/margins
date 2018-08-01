@@ -1,29 +1,69 @@
-# @rdname margins
-# @export
-margins.merMod <- function(model, 
-         data = find_data(model), 
+#' @rdname margins
+#' @export
+margins.merMod <-
+function(model,
+         data = find_data(model),
          variables = NULL,
-         at = NULL, 
-         ...){
+         at = NULL,
+         type = c("response", "link"),
+         vcov = stats::vcov(model),
+         vce = c("delta", "simulation", "bootstrap", "none"),
+         iterations = 50L, # if vce == "bootstrap" or "simulation"
+         unit_ses = FALSE,
+         eps = 1e-7,
+         ...) {
+    
+    # match.arg()
+    type <- match.arg(type)
+    vce <- match.arg(vce)
     
     # setup data
     data_list <- build_datalist(data, at = at)
+    at_specification <- attr(data_list, "at_specification")
+    
+    # identify classes of terms in `model`
+    varslist <- find_terms_in_model(model, variables = variables)
     
     # calculate marginal effects
-    out <- lapply(data_list, function(thisdata) {
-        m <- build_margins(model = model, variables = variables, data = thisdata, vce = "none", ...)
-        attr(m, "at") <- attributes(thisdata)[["at"]]
-        m
-    })
+    out <- list()
+    for (i in seq_along(data_list)) {
+        out[[i]] <- build_margins(model = model, 
+                                  data = data_list[[i]], 
+                                  variables = variables,
+                                  type = type, 
+                                  vcov = vcov, 
+                                  vce = vce, 
+                                  iterations = iterations, 
+                                  unit_ses = unit_ses, 
+                                  eps = eps,
+                                  varslist = varslist,
+                                  ...)
+        out[[i]][["_at_number"]] <- i
+    }
+    
+    if (vce == "delta") {
+        jac <- do.call("rbind", lapply(out, attr, "jacobian"))
+        rownames(jac) <- paste0(rownames(jac), ".", rep(seq_len(length(out)), each = length(unique(rownames(jac)))))
+        vc <- jac %*% vcov %*% t(jac)
+    } else {
+        jac <- NULL
+        vc <- NULL
+    }
     
     # return value
     structure(do.call("rbind", out), 
               class = c("margins", "data.frame"),
-              at = if (is.null(at)) at else names(at),
-              type = NULL,
+              at = if (is.null(at)) NULL else at_specification,
+              type = type,
               call = if ("call" %in% names(model)) model[["call"]] else NULL,
               model_class = class(model),
-              vce = "none", 
+              vce = vce,
+              vcov = vc,
+              jacobian = jac,
               weighted = FALSE,
-              iterations = NULL)
+              iterations = if (vce == "bootstrap") iterations else NULL)
 }
+
+#' @rdname margins
+#' @export
+margins.lmerMod <- margins.merMod

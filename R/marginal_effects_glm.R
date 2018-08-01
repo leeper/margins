@@ -7,8 +7,8 @@ function(model,
          variables = NULL,
          type = c("response", "link"), 
          eps = 1e-7, 
-         as.data.frame = TRUE,
          varslist = NULL,
+         as.data.frame = TRUE,
          ...) {
     
     type <- match.arg(type)
@@ -30,7 +30,6 @@ function(model,
     }
     
     out <- c(out1, out2)
-    
     if (isTRUE(as.data.frame)) {
         out <- do.call("cbind.data.frame", out[vapply(out, function(x) length(x) > 0, FUN.VALUE = logical(1))])
     } else {

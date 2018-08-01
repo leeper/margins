@@ -6,7 +6,7 @@ function(model,
          design,
          variables = NULL,
          at = NULL, 
-         type = c("response", "link", "terms"),
+         type = c("response", "link"),
          vcov = stats::vcov(model),
          vce = c("delta", "simulation", "bootstrap", "none"),
          iterations = 50L, # if vce == "bootstrap" or "simulation"
@@ -36,6 +36,7 @@ function(model,
     if (is.null(names(data_list))) {
         names(data_list) <- NA_character_
     }
+    at_specification <- attr(data_list, "at_specification")
     
     # identify classes of terms in `model`
     varslist <- find_terms_in_model(model, variables = variables)
@@ -59,15 +60,26 @@ function(model,
                                   eps = eps,
                                   varslist = varslist,
                                   ...)
+        out[[i]][["_at_number"]] <- i
+    }
+    if (vce == "delta") {
+        jac <- do.call("rbind", lapply(out, attr, "jacobian"))
+        rownames(jac) <- paste0(rownames(jac), ".", rep(seq_len(length(out)), each = length(unique(rownames(jac)))))
+        vc <- jac %*% vcov %*% t(jac)
+    } else {
+        jac <- NULL
+        vc <- NULL
     }
     
     # return value
     structure(do.call("rbind", out), 
               class = c("margins", "data.frame"), 
-              at = if (is.null(at)) at else names(at),
+              at = if (is.null(at)) NULL else at_specification,
               type = type,
               call = if ("call" %in% names(model)) model[["call"]] else NULL,
               vce = vce,
+              vcov = vc,
+              jacobian = jac,
               weighted = if (is.null(wts)) FALSE else TRUE,
               iterations = if (vce == "bootstrap") iterations else NULL)
 }

@@ -37,9 +37,9 @@ function(plotdat,
          ...) {
     if (is.null(xlim)) {
         if (isTRUE(x_is_factor)) {
-            xlim <- c(0.75, length(xvals) + 0.25)
+            xlim <- c(0.75, nrow(plotdat) + 0.25)
         } else {
-            xlim <- range(data[[xvar]], na.rm = TRUE)
+            xlim <- range(plotdat[["xvals"]], na.rm = TRUE)
         }
     }
     
@@ -60,14 +60,14 @@ function(plotdat,
             plot(NA, xlab = xlab, ylab = ylab, xaxt = "n", 
                  xaxs = xaxs, yaxs = yaxs, las = las, xlim = xlim, ylim = ylim, ...)
         }
-        axis(1, at = seq_along(xvals), labels = xvals, las = las)
+        axis(1, at = seq_along(plotdat[["xvals"]]), labels = plotdat[["xvals"]], las = las)
     } else {
         if (isTRUE(y_is_factor)) {
             plot(NA, xlab = xlab, ylab = ylab, yaxt = "n",
                  xaxs = xaxs, yaxs = yaxs, las = las, xlim = xlim, ylim = ylim, ...)
             axis(2, at = seq_len(nlevels(plotdat[["yvals"]])), labels = levels(plotdat[["yvals"]]), las = las)
         } else {
-            plot(NA, xlab = xlab, ylab = ylab, 
+            plot(NA, xlab = xlab, ylab = ylab,
                  xaxs = xaxs, yaxs = yaxs, las = las, xlim = xlim, ylim = ylim, ...)
         }
         if (isTRUE(scatter)) {

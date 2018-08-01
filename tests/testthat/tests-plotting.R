@@ -1,3 +1,4 @@
+# test that plotting methods execute correctly
 context("Plotting")
 test_that("persp() method for 'lm' works", {
     x <- lm(mpg ~ wt * hp, data = mtcars)

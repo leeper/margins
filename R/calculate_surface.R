@@ -9,8 +9,13 @@ calculate_surface <- function(x, xvar, yvar, dx, nx, ny, type, vcov = stats::vco
     yvals <- seq_range(dat[[yvar]], ny)
     
     if (what == "prediction") {
-        suppressMessages(utils::capture.output(vals <- summary(prediction(model = x, at = stats::setNames(list(xvals, yvals), c(xvar, yvar)), type = type))))
-        outcome <- matrix(vals[["value"]], nrow = nx, ncol = ny)
+        datmeans <- structure(lapply(lapply(dat[, !names(dat) %in% c(xvar, yvar), drop = FALSE], mean_or_mode), rep, length(xvals) * length(yvals)),
+                              class = "data.frame", row.names = seq_len(length(xvals) * length(yvals)))
+        outcome <- outer(xvals, yvals, FUN = function(a, b) {
+            datmeans[, xvar] <- a
+            datmeans[, yvar] <- b
+            prediction(model = x, data = datmeans, type = type)[["fitted"]]
+        })
     } else if (what == "effect") {
         mar <- summary(margins(x, at = setNames(list(xvals, yvals), c(xvar, yvar)), vce = "none", type = type))
         vals <- mar[mar[["factor"]] == dx, "AME"]

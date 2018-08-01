@@ -1,4 +1,4 @@
-# formulae from Matt Golder's examples
+# tests based on formulae from Matt Golder's OLS examples, for numerical accuracy and precision
 
 # example data for tests
 set.seed(1)

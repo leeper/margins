@@ -5,6 +5,7 @@ marginal_effects.nnet <-
 function(model, 
          data = find_data(model, parent.frame()), 
          variables = NULL,
+         type = NULL,
          eps = 1e-7, 
          varslist = NULL,
          as.data.frame = TRUE,

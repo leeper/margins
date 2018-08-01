@@ -1,3 +1,5 @@
+# tests core functinality and data structures
+
 # set comparison tolerance
 tol <- 0.0001
 
@@ -40,11 +42,14 @@ test_that("Test build_datalist()", {
 
 
 context("Test `at` behavior")
-test_that("`at` behavior works", {
+test_that("`at` behavior works and warnings/errors occur as expected", {
     x <- lm(mpg ~ cyl * hp + wt, data = head(mtcars))
     expect_true(inherits(margins(x, at = list(cyl = c(4,6))), "margins"), label = "factor works")
-    #expect_error(margins(x, at = list(cyl = 2)), label = "factor error")
-    expect_warning(margins(x, at = list(wt = 6)), label = "extrapolation warning")
+    expect_warning(margins(x, at = list(wt = 6)), label = "extrapolation warning with 'at' as expected")
+    m <- mtcars
+    m[["cyl"]] <- factor(m[["cyl"]])
+    x <- lm(mpg ~ cyl * hp + wt, data = head(m))
+    expect_error(margins(x, at = list(cyl = 2)), label = "illegal factor error with 'at' occurs as expected")
 })
 
 test_that("factor variables work", {
@@ -80,7 +85,8 @@ context("print(), summary(), and confint() methods")
 test_that("print()/summary() for 'margins' object", {
     x <- lm(mpg ~ wt * hp, data = head(mtcars))
     m <- margins(x)
-    expect_true(inherits(print(m), "margins"), label = "print() method for margins")
+    expect_true(inherits(print(m), "margins"), label = "print() method for margins w/o 'at' specification")
+    expect_true(inherits(print(margins(x, at = list(wt = 3))), "margins"), label = "print() method for margins w 'at' specification")
     expect_true(inherits(summary(m), "data.frame"), label = "summary() method for margins")
     expect_true(inherits(print(summary(m)), "data.frame"), label = "print() method for summary.margins")
 })
@@ -94,8 +100,13 @@ test_that("confint() for 'margins' object", {
 context("Variance tests")
 test_that("minimum test of variance calculations", {
     x <- lm(mpg ~ wt * hp, data = mtcars)
-    expect_true(inherits(margins(x, vce = "delta"), "margins"))
-    expect_true(inherits(margins(x, vce = "simulation", iter = 5L), "margins"))
-    expect_true(inherits(margins(x, vce = "bootstrap", iter = 5L), "margins"))
+    expect_true(inherits(margins(x, vce = "delta"), "margins"), label = "margins(vce ='delta') works")
+    expect_true(inherits(margins(x, vce = "simulation", iter = 5L), "margins"), label = "margins(vce ='simulation') works")
+    expect_true(inherits(margins(x, vce = "bootstrap", iter = 5L), "margins"), label = "margins(vce ='bootstrap') works")
 })
-
+test_that("vcov.margins() method words", {
+    m <- margins(x <- lm(mpg ~ wt * hp, data = mtcars))
+    expect_true(inherits(vcov(m), "matrix"), label = "vcov() method words")
+    expect_true(identical(dim(vcov(m)), c(2L, 2L)), label = "vcov.margins() has correct dimensions")
+    
+})

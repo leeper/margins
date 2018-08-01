@@ -104,7 +104,7 @@ function(object,
             y_is_factor <- FALSE
         }
       
-        setup_cplot(plotdat = out[[1L]], data = data, xvals = xvals, xvar = xvar, yvar = yvar,
+        setup_cplot(plotdat = out[[1L]], data = data, xvar = xvar, yvar = yvar,
                     xlim = xlim, ylim = ylim, x_is_factor = x_is_factor, y_is_factor = y_is_factor,
                     xlab = xlab, ylab = ylab, xaxs = xaxs, yaxs = yaxs, las = las,
                     scatter = scatter, scatter.pch = scatter.pch, scatter.col = scatter.col)
