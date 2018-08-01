@@ -1,6 +1,6 @@
 # margins 0.3.25
 
-* Setup a `cplot.default()` method and modified documentation of `cplot()`, `image()`, and `persp()` methods slightly.
+* Setup a `cplot.default()` method and modified documentation of `cplot()`, `image()`, and `persp()` methods slightly. (#84, h/t Luke Sonnet)
 
 # margins 0.3.24
 

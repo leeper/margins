@@ -2,6 +2,7 @@
 
 S3method(confint,margins)
 S3method(cplot,clm)
+S3method(cplot,default)
 S3method(cplot,glm)
 S3method(cplot,lm)
 S3method(cplot,loess)
@@ -76,4 +77,5 @@ importFrom(prediction,mean_or_mode)
 importFrom(prediction,prediction)
 importFrom(prediction,seq_range)
 importFrom(stats,stepfun)
+importFrom(utils,capture.output)
 importFrom(utils,head)

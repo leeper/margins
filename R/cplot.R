@@ -202,15 +202,15 @@ function(object,
     type <- match.arg(type)
     a <- (1 - level)/2
     fac <- qnorm(c(a, 1 - a))
-
+    
     # setup `outdat` data
     if (what == "prediction") {
         # generates predictions as mean/mode of all variables rather than average prediction!
-        tmpdat <- lapply(dat[, names(dat) != xvar, drop = FALSE], mean_or_mode)
+        tmpdat <- lapply(dat[, names(dat) != xvar, drop = FALSE], prediction::mean_or_mode)
         tmpdat <- structure(lapply(tmpdat, rep, length.out = length(xvals)),
                             class = "data.frame", row.names = seq_len(length(xvals)))
         tmpdat[[xvar]] <- xvals
-        outdat <- prediction(model = object, data = tmpdat, at = stats::setNames(list(xvals), xvar), type = type, level = level)
+        outdat <- prediction(model = object, data = tmpdat, type = type, level = level)
         out <- structure(list(xvals = xvals,
                               yvals = outdat[["fitted"]],
                               upper = outdat[["fitted"]] + (fac[2] * outdat[["se.fitted"]]),
@@ -234,9 +234,9 @@ function(object,
                     scatter = scatter, scatter.pch = scatter.pch, scatter.col = scatter.col, ...)
     }
     if (isTRUE(draw) || draw == "add") {
-        draw_one(xvals = out[["xvals"]], 
-                 yvals = out[["yvals"]], 
-                 upper = out[["upper"]], 
+        draw_one(xvals = out[["xvals"]],
+                 yvals = out[["yvals"]],
+                 upper = out[["upper"]],
                  lower = out[["lower"]],
                  x_is_factor = x_is_factor,
                  col = col, lty = lty, lwd = lwd,

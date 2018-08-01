@@ -18,23 +18,25 @@ check_factors <- function(object, data, xvar, dx) {
 
 # function to setup plot
 setup_cplot <- 
-function(plotdat,
-         data,
-         xvals,
-         xvar,
-         yvar, 
-         xlim, ylim, 
-         x_is_factor,
-         y_is_factor = FALSE,
-         xlab,
-         ylab,
-         xaxs,
-         yaxs,
-         las,
-         scatter,
-         scatter.pch,
-         scatter.col,
-         ...) {
+function(
+  plotdat,
+  data,
+  xvar,
+  yvar,
+  xlim,
+  ylim,
+  x_is_factor,
+  y_is_factor = FALSE,
+  xlab,
+  ylab,
+  xaxs,
+  yaxs,
+  las,
+  scatter,
+  scatter.pch,
+  scatter.col,
+  ...
+) {
     if (is.null(xlim)) {
         if (isTRUE(x_is_factor)) {
             xlim <- c(0.75, nrow(plotdat) + 0.25)
@@ -77,23 +79,28 @@ function(plotdat,
 }
 
 # function to draw one set of lines
-draw_one <- 
-function(xvals, yvals, upper, lower, 
-         x_is_factor,
-         y_is_factor = FALSE,
-         col,
-         lty,
-         lwd,
-         se.type,
-         factor.lty = 0L,
-         factor.pch, 
-         factor.fill, 
-         factor.col, 
-         factor.cex,
-         se.lwd,
-         se.fill,
-         se.col,
-         se.lty) {
+draw_one <-
+function(
+  xvals,
+  yvals,
+  upper,
+  lower,
+  x_is_factor,
+  y_is_factor = FALSE,
+  col,
+  lty,
+  lwd,
+  se.type,
+  factor.lty = 0L,
+  factor.pch, 
+  factor.fill, 
+  factor.col, 
+  factor.cex,
+  se.lwd,
+  se.fill,
+  se.col,
+  se.lty
+) {
     if (isTRUE(x_is_factor)) {
         xvals <- seq_along(xvals)
         # uncertainty
