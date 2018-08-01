@@ -224,7 +224,7 @@ mod3 &lt;-<span class="st"> </span><span class="kw">glm</span>(highbp <span clas
 ##     bmi  0.0261 0.0009  28.4995 0.0000  0.0243  0.0279
 ##     sex -0.0911 0.0085 -10.7063 0.0000 -0.1077 -0.0744</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">plot</span>(marg3)</code></pre></div>
-<p><img src="https://i.imgur.com/jXILaQ2.png" width="672"></p>
+<p><img src="https://i.imgur.com/NVICxAw.png" width="672"></p>
 <p>In addition to the estimation procedures and <code>plot()</code> generic, <strong>margins</strong> offers several plotting methods for model objects. First, there is a new generic <code><a href="reference/cplot.html">cplot()</a></code> that displays predictions or marginal effects (from an “lm” or “glm” model) of a variable conditional across values of third variable (or itself). For example, here is a graph of predicted probabilities from a logit model:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">mod4 &lt;-<span class="st"> </span><span class="kw">glm</span>(am <span class="op">~</span><span class="st"> </span>wt<span class="op">*</span>drat, <span class="dt">data =</span> mtcars, <span class="dt">family =</span> binomial)
 <span class="kw"><a href="reference/cplot.html">cplot</a></span>(mod4, <span class="dt">x =</span> <span class="st">"wt"</span>, <span class="dt">se.type =</span> <span class="st">"shade"</span>)</code></pre></div>
@@ -249,17 +249,17 @@ mod3 &lt;-<span class="st"> </span><span class="kw">glm</span>(highbp <span clas
 ## 18 4.283292 0.016461806 0.07467832 -0.04175471
 ## 19 4.446250 0.011201450 0.05550126 -0.03309836
 ## 20 4.609208 0.007609032 0.04093572 -0.02571766</code></pre>
-<p><img src="https://i.imgur.com/1IkHyiv.png" width="672"></p>
+<p><img src="https://i.imgur.com/ebIqHPS.png" width="672"></p>
 <p>And fitted values with a factor independent variable:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="reference/cplot.html">cplot</a></span>(<span class="kw">lm</span>(Sepal.Length <span class="op">~</span><span class="st"> </span>Species, <span class="dt">data =</span> iris))</code></pre></div>
 <pre><code>##        xvals yvals   upper   lower
 ## 1     setosa 5.006 5.14869 4.86331
 ## 2 versicolor 5.936 6.07869 5.79331
 ## 3  virginica 6.588 6.73069 6.44531</code></pre>
-<p><img src="https://i.imgur.com/w5NOIlC.png" width="672"></p>
+<p><img src="https://i.imgur.com/lxioevf.png" width="672"></p>
 <p>and a graph of the effect of <code>drat</code> across levels of <code>wt</code>:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="reference/cplot.html">cplot</a></span>(mod4, <span class="dt">x =</span> <span class="st">"wt"</span>, <span class="dt">dx =</span> <span class="st">"drat"</span>, <span class="dt">what =</span> <span class="st">"effect"</span>, <span class="dt">se.type =</span> <span class="st">"shade"</span>)</code></pre></div>
-<p><img src="https://i.imgur.com/Dw7lWMy.png" width="672"></p>
+<p><img src="https://i.imgur.com/sQZ23py.png" width="672"></p>
 <p><code><a href="reference/cplot.html">cplot()</a></code> also returns a data frame of values, so that it can be used just for calculating quantities of interest before plotting them with another graphics package, such as <strong>ggplot2</strong>:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(<span class="st">"ggplot2"</span>)
 dat &lt;-<span class="st"> </span><span class="kw"><a href="reference/cplot.html">cplot</a></span>(mod4, <span class="dt">x =</span> <span class="st">"wt"</span>, <span class="dt">dx =</span> <span class="st">"drat"</span>, <span class="dt">what =</span> <span class="st">"effect"</span>, <span class="dt">draw =</span> <span class="ot">FALSE</span>)
@@ -278,16 +278,16 @@ dat &lt;-<span class="st"> </span><span class="kw"><a href="reference/cplot.html
 <span class="st">  </span><span class="kw">ylab</span>(<span class="st">"Average Marginal Effect of Rear Axle Ratio"</span>) <span class="op">+</span>
 <span class="st">  </span><span class="kw">ggtitle</span>(<span class="st">"Predicting Automatic/Manual Transmission from Vehicle Characteristics"</span>) <span class="op">+</span>
 <span class="st">  </span><span class="kw">theme_bw</span>()</code></pre></div>
-<p><img src="https://i.imgur.com/lZgEPqB.png" width="672"></p>
+<p><img src="https://i.imgur.com/XKKNG81.png" width="672"></p>
 <p>Second, the package implements methods for “lm” and “glm” class objects for the <code>persp()</code> generic plotting function. This enables three-dimensional representations of predicted outcomes:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">persp</span>(mod1, <span class="dt">xvar =</span> <span class="st">"cyl"</span>, <span class="dt">yvar =</span> <span class="st">"hp"</span>)</code></pre></div>
-<p><img src="https://i.imgur.com/ZXi6V1q.png" width="672"></p>
+<p><img src="https://i.imgur.com/q9w4QYU.png" width="672"></p>
 <p>and marginal effects:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">persp</span>(mod1, <span class="dt">xvar =</span> <span class="st">"cyl"</span>, <span class="dt">yvar =</span> <span class="st">"hp"</span>, <span class="dt">what =</span> <span class="st">"effect"</span>, <span class="dt">nx =</span> <span class="dv">10</span>)</code></pre></div>
-<p><img src="https://i.imgur.com/rrJpOV1.png" width="672"></p>
+<p><img src="https://i.imgur.com/cUFdFfg.png" width="672"></p>
 <p>And if three-dimensional plots aren’t your thing, there are also analogous methods for the <code>image()</code> generic, to produce heatmap-style representations:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">image</span>(mod1, <span class="dt">xvar =</span> <span class="st">"cyl"</span>, <span class="dt">yvar =</span> <span class="st">"hp"</span>, <span class="dt">main =</span> <span class="st">"Predicted Fuel Efficiency,</span><span class="ch">\n</span><span class="st">by Cylinders and Horsepower"</span>)</code></pre></div>
-<p><img src="https://i.imgur.com/ZSdPvu9.png" width="480"></p>
+<p><img src="https://i.imgur.com/MJ006nw.png" width="480"></p>
 <p>The numerous package vignettes and help files contain extensive documentation and examples of all package functionality.</p>
 </div>
 <div id="performance" class="section level3">
@@ -297,12 +297,12 @@ dat &lt;-<span class="st"> </span><span class="kw"><a href="reference/cplot.html
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(<span class="st">"microbenchmark"</span>)
 <span class="kw">microbenchmark</span>(<span class="kw"><a href="reference/marginal_effects.html">marginal_effects</a></span>(mod1))</code></pre></div>
 <pre><code>## Unit: milliseconds
-##                    expr      min      lq    mean   median       uq      max neval
-##  marginal_effects(mod1) 3.466794 3.51564 3.77105 3.561827 3.945188 8.024563   100</code></pre>
+##                    expr      min       lq     mean  median       uq      max neval
+##  marginal_effects(mod1) 3.503286 3.562207 4.123854 3.68822 4.220973 10.30839   100</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">microbenchmark</span>(<span class="kw"><a href="reference/margins.html">margins</a></span>(mod1))</code></pre></div>
 <pre><code>## Unit: milliseconds
-##           expr     min       lq     mean   median       uq      max neval
-##  margins(mod1) 24.8693 25.88596 29.06411 26.53846 30.01798 48.01167   100</code></pre>
+##           expr      min       lq     mean   median       uq      max neval
+##  margins(mod1) 24.69938 26.79162 34.76896 31.22376 39.06624 71.58016   100</code></pre>
 <p>The most computationally expensive part of <code><a href="reference/margins.html">margins()</a></code> is variance estimation. If you don’t need variances, use <code><a href="reference/marginal_effects.html">marginal_effects()</a></code> directly or specify <code><a href="reference/margins.html">margins(..., vce = "none")</a></code>.</p>
 </div>
 </div>

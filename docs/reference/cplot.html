@@ -420,6 +420,7 @@
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
     <p>Note that when <code>what = "prediction"</code>, the plots show predictions holding values of the data at their mean or mode, whereas when <code>what = "effect"</code> average marginal effects (i.e., at observed values) are shown.</p>
+<p>When examining generalized linear models (e.g., logistic regression models), confidence intervals for predictions can fall outside of the response scale (again, for logistic regression this means confidence intervals can exceed the (0,1) bounds). This is consistent with the behavior of <code><a href='http://www.rdocumentation.org/packages/stats/topics/predict'>predict</a></code> but may not be desired. The examples (below) show ways of constraining confidence intervals to these bounds.</p>
 <p>The overall aesthetic is somewhat similar to to the output produced by the <code>marginalModelPlot()</code> function in the <b><a href='https://cran.r-project.org/package=car'>car</a></b> package.</p>
     
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
@@ -460,9 +461,19 @@
          <span class='fu'><a href='http://www.rdocumentation.org/packages/ggplot2/topics/geom_path'>geom_line</a></span>(<span class='fu'><a href='http://www.rdocumentation.org/packages/ggplot2/topics/aes'>aes</a></span>(<span class='kw'>y</span> <span class='kw'>=</span> <span class='no'>effect</span> + <span class='fl'>1.96</span>*<span class='no'>se.effect</span>)) +
          <span class='fu'><a href='http://www.rdocumentation.org/packages/ggplot2/topics/geom_path'>geom_line</a></span>(<span class='fu'><a href='http://www.rdocumentation.org/packages/ggplot2/topics/aes'>aes</a></span>(<span class='kw'>y</span> <span class='kw'>=</span> <span class='no'>effect</span> - <span class='fl'>1.96</span>*<span class='no'>se.effect</span>))
 }
+
 <span class='co'># a non-linear model</span>
 <span class='no'>m</span> <span class='kw'>&lt;-</span> <span class='fu'>glm</span>(<span class='no'>am</span> ~ <span class='no'>wt</span>*<span class='no'>drat</span>, <span class='kw'>data</span> <span class='kw'>=</span> <span class='no'>mtcars</span>, <span class='kw'>family</span> <span class='kw'>=</span> <span class='no'>binomial</span>)
-<span class='fu'>cplot</span>(<span class='no'>m</span>, <span class='kw'>x</span> <span class='kw'>=</span> <span class='st'>"wt"</span>) <span class='co'># prediction</span>
+<span class='fu'>cplot</span>(<span class='no'>m</span>, <span class='kw'>x</span> <span class='kw'>=</span> <span class='st'>"wt"</span>) <span class='co'># prediction (response scale)</span>
+<span class='fu'>cplot</span>(<span class='no'>m</span>, <span class='kw'>x</span> <span class='kw'>=</span> <span class='st'>"wt"</span>) <span class='co'># prediction (link scale)</span>
+<span class='kw'>if</span> (<span class='fu'>require</span>(<span class='st'>"ggplot2"</span>)) {
+  <span class='co'># prediction (response scale, constrained to [0,1])</span>
+  <span class='no'>cplotdat</span> <span class='kw'>&lt;-</span> <span class='fu'>cplot</span>(<span class='no'>m</span>, <span class='kw'>x</span> <span class='kw'>=</span> <span class='st'>"wt"</span>, <span class='kw'>type</span> <span class='kw'>=</span> <span class='st'>"link"</span>, <span class='kw'>draw</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)
+  <span class='fu'><a href='http://www.rdocumentation.org/packages/ggplot2/topics/ggplot'>ggplot</a></span>(<span class='no'>cplotdat</span>, <span class='fu'><a href='http://www.rdocumentation.org/packages/ggplot2/topics/aes'>aes</a></span>(<span class='kw'>x</span> <span class='kw'>=</span> <span class='no'>xvals</span>, <span class='kw'>y</span> <span class='kw'>=</span> <span class='fu'>plogis</span>(<span class='no'>yvals</span>))) +
+         <span class='fu'><a href='http://www.rdocumentation.org/packages/ggplot2/topics/geom_path'>geom_line</a></span>(<span class='kw'>lwd</span> <span class='kw'>=</span> <span class='fl'>1.5</span>) +
+         <span class='fu'><a href='http://www.rdocumentation.org/packages/ggplot2/topics/geom_path'>geom_line</a></span>(<span class='fu'><a href='http://www.rdocumentation.org/packages/ggplot2/topics/aes'>aes</a></span>(<span class='kw'>y</span> <span class='kw'>=</span> <span class='fu'>plogis</span>(<span class='no'>upper</span>))) +
+         <span class='fu'><a href='http://www.rdocumentation.org/packages/ggplot2/topics/geom_path'>geom_line</a></span>(<span class='fu'><a href='http://www.rdocumentation.org/packages/ggplot2/topics/aes'>aes</a></span>(<span class='kw'>y</span> <span class='kw'>=</span> <span class='fu'>plotis</span>(<span class='no'>lower</span>)))
+}
 
 <span class='co'># effects on linear predictor and outcome</span>
 <span class='fu'>cplot</span>(<span class='no'>m</span>, <span class='kw'>x</span> <span class='kw'>=</span> <span class='st'>"drat"</span>, <span class='kw'>dx</span> <span class='kw'>=</span> <span class='st'>"wt"</span>, <span class='kw'>what</span> <span class='kw'>=</span> <span class='st'>"effect"</span>, <span class='kw'>type</span> <span class='kw'>=</span> <span class='st'>"link"</span>)

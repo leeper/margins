@@ -44,6 +44,8 @@
 #' @param \dots Additional arguments passed to \code{\link[graphics]{plot}}. 
 #' @details Note that when \code{what = "prediction"}, the plots show predictions holding values of the data at their mean or mode, whereas when \code{what = "effect"} average marginal effects (i.e., at observed values) are shown.
 #' 
+#' When examining generalized linear models (e.g., logistic regression models), confidence intervals for predictions can fall outside of the response scale (again, for logistic regression this means confidence intervals can exceed the (0,1) bounds). This is consistent with the behavior of \code{\link[stats]{predict}} but may not be desired. The examples (below) show ways of constraining confidence intervals to these bounds.
+#' 
 #' The overall aesthetic is somewhat similar to to the output produced by the \code{marginalModelPlot()} function in the \bold{\href{https://cran.r-project.org/package=car}{car}} package.
 #' 
 #' @return A tidy data frame containing the data used to draw the plot. Use \code{draw = FALSE} to simply generate the data structure for use elsewhere.
@@ -80,9 +82,19 @@
 #'          geom_line(aes(y = effect + 1.96*se.effect)) + 
 #'          geom_line(aes(y = effect - 1.96*se.effect))
 #' }
+#' 
 #' # a non-linear model
 #' m <- glm(am ~ wt*drat, data = mtcars, family = binomial)
-#' cplot(m, x = "wt") # prediction
+#' cplot(m, x = "wt") # prediction (response scale)
+#' cplot(m, x = "wt") # prediction (link scale)
+#' if (require("ggplot2")) {
+#'   # prediction (response scale, constrained to [0,1])
+#'   cplotdat <- cplot(m, x = "wt", type = "link", draw = FALSE)
+#'   ggplot(cplotdat, aes(x = xvals, y = plogis(yvals))) + 
+#'          geom_line(lwd = 1.5) + 
+#'          geom_line(aes(y = plogis(upper))) + 
+#'          geom_line(aes(y = plotis(lower)))
+#' }
 #' 
 #' # effects on linear predictor and outcome
 #' cplot(m, x = "drat", dx = "wt", what = "effect", type = "link")
@@ -216,7 +228,6 @@ function(object,
                               upper = outdat[["fitted"]] + (fac[2] * outdat[["se.fitted"]]),
                               lower = outdat[["fitted"]] + (fac[1] * outdat[["se.fitted"]])),
                          class = "data.frame", row.names = seq_along(outdat[["fitted"]]))
-        print(head(out, 20))
     } else if (what == "effect") {
         if (is.factor(dat[[dx]]) && nlevels(data[[dx]]) > 2L) {
             stop("Displaying effect of a factor variable with > 2 levels is not currently supported!")
