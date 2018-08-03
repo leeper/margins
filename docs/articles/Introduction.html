@@ -84,7 +84,7 @@
     <div class="page-header toc-ignore">
       <h1>An Introduction to ‘margins’</h1>
             
-            <h4 class="date">2018-07-31</h4>
+            <h4 class="date">2018-08-03</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/leeper/margins/blob/master/vignettes/Introduction.Rmd"><code>vignettes/Introduction.Rmd</code></a></small>
       <div class="hidden name"><code>Introduction.Rmd</code></div>
@@ -244,27 +244,6 @@ x &lt;-<span class="st"> </span><span class="kw">lm</span>(mpg <span class="op">
 ##   5.424 -0.6764</code></pre>
 <p>The marginal effects in the first column of results reveal that the average marginal effect of <code>wt</code> is large and negative except when <code>wt</code> is very large, in which case it has an effect not distinguishable from zero. We can easily plot these results using the <code><a href="../reference/cplot.html">cplot()</a></code> function to see the effect visually in terms of either predicted fuel economy or the marginal effect of <code>wt</code>:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="../reference/cplot.html">cplot</a></span>(x, <span class="st">"wt"</span>, <span class="dt">what =</span> <span class="st">"prediction"</span>, <span class="dt">main =</span> <span class="st">"Predicted Fuel Economy, Given Weight"</span>)</code></pre></div>
-<pre><code>##       xvals    yvals    upper    lower
-## 1  1.513000 32.36718 35.03500 29.69936
-## 2  1.675958 30.79531 33.07715 28.51348
-## 3  1.838917 29.28565 31.23015 27.34115
-## 4  2.001875 27.83818 29.49769 26.17868
-## 5  2.164833 26.45291 27.88384 25.02199
-## 6  2.327792 25.12984 26.39172 23.86796
-## 7  2.490750 23.86897 25.02106 22.71687
-## 8  2.653708 22.67029 23.76564 21.57494
-## 9  2.816667 21.53381 22.61340 20.45422
-## 10 2.979625 20.45953 21.54975 19.36930
-## 11 3.142583 19.44744 20.56171 18.33318
-## 12 3.305542 18.49755 19.64011 17.35500
-## 13 3.468500 17.60986 18.78010 16.43963
-## 14 3.631458 16.78437 17.98078 15.58796
-## 15 3.794417 16.02108 17.24475 14.79740
-## 16 3.957375 15.31998 16.57774 14.06221
-## 17 4.120333 14.68108 15.98801 13.37414
-## 18 4.283292 14.10437 15.48533 12.72342
-## 19 4.446250 13.58987 15.07937 12.10037
-## 20 4.609208 13.13756 14.77796 11.49716</code></pre>
 <p><img src="Introduction_files/figure-html/unnamed-chunk-11-1.png" width="700"></p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="../reference/cplot.html">cplot</a></span>(x, <span class="st">"wt"</span>, <span class="dt">what =</span> <span class="st">"effect"</span>, <span class="dt">main =</span> <span class="st">"Average Marginal Effect of Weight"</span>)</code></pre></div>
 <p><img src="Introduction_files/figure-html/unnamed-chunk-11-2.png" width="700"></p>
@@ -331,48 +310,6 @@ x &lt;-<span class="st"> </span><span class="kw">lm</span>(mpg <span class="op">
 <p><img src="Introduction_files/figure-html/unnamed-chunk-15-1.png" width="700"></p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="../reference/cplot.html">cplot</a></span>(x, <span class="st">"wt"</span>)</code></pre></div>
 <p><img src="Introduction_files/figure-html/unnamed-chunk-15-2.png" width="700"></p>
-<pre><code>##       xvals    yvals    upper    lower
-## 1  4.000000 21.30004 23.47379 19.12629
-## 2  4.166667 21.10314 23.17171 19.03458
-## 3  4.333333 20.90625 22.87186 18.94064
-## 4  4.500000 20.70936 22.57461 18.84410
-## 5  4.666667 20.51246 22.28039 18.74454
-## 6  4.833333 20.31557 21.98973 18.64141
-## 7  5.000000 20.11867 21.70327 18.53408
-## 8  5.166667 19.92178 21.42175 18.42180
-## 9  5.333333 19.72488 21.14607 18.30369
-## 10 5.500000 19.52799 20.87725 18.17873
-## 11 5.666667 19.33110 20.61643 18.04576
-## 12 5.833333 19.13420 20.36487 17.90354
-## 13 6.000000 18.93731 20.12384 17.75078
-## 14 6.166667 18.74041 19.89455 17.58628
-## 15 6.333333 18.54352 19.67801 17.40902
-## 16 6.500000 18.34662 19.47489 17.21836
-## 17 6.666667 18.14973 19.28541 17.01405
-## 18 6.833333 17.95284 19.10930 16.79637
-## 19 7.000000 17.75594 18.94587 16.56602
-## 20 7.166667 17.55905 18.79408 16.32402
-##       xvals    yvals    upper    lower
-## 1  1.513000 25.65915 28.41557 22.90273
-## 2  1.675958 24.99524 27.50747 22.48300
-## 3  1.838917 24.33132 26.60508 22.05756
-## 4  2.001875 23.66741 25.71041 21.62440
-## 5  2.164833 23.00349 24.82639 21.18059
-## 6  2.327792 22.33958 23.95737 20.72178
-## 7  2.490750 21.67566 23.10981 20.24152
-## 8  2.653708 21.01175 22.29295 19.73054
-## 9  2.816667 20.34783 21.51891 19.17676
-## 10 2.979625 19.68392 20.80041 18.56743
-## 11 3.142583 19.02000 20.14557 17.89444
-## 12 3.305542 18.35609 19.55294 17.15924
-## 13 3.468500 17.69217 19.01248 16.37187
-## 14 3.631458 17.02826 18.51122 15.54530
-## 15 3.794417 16.36435 18.03777 14.69092
-## 16 3.957375 15.70043 17.58371 13.81715
-## 17 4.120333 15.03652 17.14326 12.92977
-## 18 4.283292 14.37260 16.71251 12.03269
-## 19 4.446250 13.70869 16.28884 11.12853
-## 20 4.609208 13.04477 15.87044 10.21910</code></pre>
 <p>The slopes of the predicted value lines are the marginal effect of <code>wt</code> when <code>am == 0</code> and <code>am == 1</code>. We can obtain these slopes using <code><a href="../reference/margins.html">margins()</a></code> and specifying the <code>at</code> argument:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="../reference/margins.html">margins</a></span>(x, <span class="dt">at =</span> <span class="kw">list</span>(<span class="dt">am =</span> <span class="dv">0</span><span class="op">:</span><span class="dv">1</span>))</code></pre></div>
 <pre><code>## Average marginal effects at specified values</code></pre>
@@ -529,29 +466,8 @@ m1 &lt;-<span class="st"> </span><span class="kw"><a href="../reference/margins.
 <a href="#ggplot2-examples" class="anchor"></a>ggplot2 examples</h3>
 <p>It should be noted that <code><a href="../reference/cplot.html">cplot()</a></code> returns a fairly tidy data frmae, making it possible to use ggplot2 as an alternative plotting package to display the kinds of relationships of typical interest. For example, returning to our earlier example:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">x1 &lt;-<span class="st"> </span><span class="kw">lm</span>(mpg <span class="op">~</span><span class="st"> </span>drat <span class="op">*</span><span class="st"> </span>wt <span class="op">*</span><span class="st"> </span>am, <span class="dt">data =</span> mtcars)
-cdat &lt;-<span class="st"> </span><span class="kw"><a href="../reference/cplot.html">cplot</a></span>(x1, <span class="st">"wt"</span>, <span class="dt">draw =</span> <span class="ot">FALSE</span>)</code></pre></div>
-<pre><code>##       xvals    yvals    upper     lower
-## 1  1.513000 28.66765 33.04903 24.286273
-## 2  1.675958 27.71126 31.71243 23.710103
-## 3  1.838917 26.75488 30.38319 23.126563
-## 4  2.001875 25.79849 29.06385 22.533126
-## 5  2.164833 24.84210 27.75810 21.926095
-## 6  2.327792 23.88571 26.47147 21.299955
-## 7  2.490750 22.92932 25.21225 20.646397
-## 8  2.653708 21.97293 23.99282 19.953051
-## 9  2.816667 21.01655 22.83057 19.202525
-## 10 2.979625 20.06016 21.74656 18.373748
-## 11 3.142583 19.10377 20.75901 17.448522
-## 12 3.305542 18.14738 19.87315 16.421613
-## 13 3.468500 17.19099 19.07759 15.304391
-## 14 3.631458 16.23460 18.35187 14.117337
-## 15 3.794417 15.27821 17.67591 12.880521
-## 16 3.957375 14.32183 17.03432 11.609334
-## 17 4.120333 13.36544 16.41648 10.314396
-## 18 4.283292 12.40905 15.81532  9.002781
-## 19 4.446250 11.45266 15.22612  7.679197
-## 20 4.609208 10.49627 14.64572  6.346819</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">head</span>(cdat)</code></pre></div>
+cdat &lt;-<span class="st"> </span><span class="kw"><a href="../reference/cplot.html">cplot</a></span>(x1, <span class="st">"wt"</span>, <span class="dt">draw =</span> <span class="ot">FALSE</span>)
+<span class="kw">head</span>(cdat)</code></pre></div>
 <pre><code>##      xvals    yvals    upper    lower
 ## 1 1.513000 28.66765 33.04903 24.28627
 ## 2 1.675958 27.71126 31.71243 23.71010
@@ -628,27 +544,6 @@ cdat &lt;-<span class="st"> </span><span class="kw"><a href="../reference/cplot.
 ##  0.009283 0.01064</code></pre>
 <p>These marginal effects reflect, on average across all of the cases in our data, how much more likely a woman is to have diabetes. Because this is an <em>instantaneous</em> effect, it can be a little hard to conceptualize. I find it helpful to take a look at a predicted probability plot to understand what is going on. Let’s take a look, for example, at the effect of age on the probability of having diabetes:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="../reference/cplot.html">cplot</a></span>(g1, <span class="st">"age"</span>)</code></pre></div>
-<pre><code>##    xvals     yvals     upper     lower
-## 1   21.0 0.1884779 0.2489698 0.1279860
-## 2   23.5 0.2121299 0.2710552 0.1532047
-## 3   26.0 0.2378800 0.2950225 0.1807374
-## 4   28.5 0.2657016 0.3214139 0.2099893
-## 5   31.0 0.2955155 0.3509421 0.2400889
-## 6   33.5 0.3271841 0.3843232 0.2700450
-## 7   36.0 0.3605098 0.4219464 0.2990731
-## 8   38.5 0.3952358 0.4636015 0.3268701
-## 9   41.0 0.4310522 0.5085084 0.3535959
-## 10  43.5 0.4676046 0.5555658 0.3796435
-## 11  46.0 0.5045082 0.6035841 0.4054323
-## 12  48.5 0.5413627 0.6514177 0.4313076
-## 13  51.0 0.5777701 0.6980299 0.4575102
-## 14  53.5 0.6133515 0.7425297 0.4841733
-## 15  56.0 0.6477626 0.7841952 0.5113299
-## 16  58.5 0.6807053 0.8224871 0.5389236
-## 17  61.0 0.7119373 0.8570511 0.5668234
-## 18  63.5 0.7412754 0.8877090 0.5948417
-## 19  66.0 0.7685967 0.9144398 0.6227536
-## 20  68.5 0.7938353 0.9373541 0.6503165</code></pre>
 <p><img src="Introduction_files/figure-html/unnamed-chunk-36-1.png" width="700"></p>
 <p>The above graph shows that as age increase, the probability of having diabetes increases. When a woman is 20 years old, the probability is about .20 whereas when a woman is 80, the probability is about 0.80. In essence, the marginal effect of <code>age</code> reported above is the slope of this predicted probability plot at the mean age of women in the dataset (which is 31.3162651). Clearly, this quantity is useful (it’s the impact of age for the average-aged woman) but the logit curve shows that the marginal effect of <code>age</code> differs considerably across ages and, as we know from above with linear models, also depends on the other variable in the interaction (skin thickness). To really understand what is going on, we need to graph the data. Let’s look at the perspective plot like the one we drew for the OLS model, above:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">persp</span>(g1, <span class="dt">theta =</span> <span class="kw">c</span>(<span class="dv">45</span>, <span class="dv">135</span>, <span class="dv">225</span>, <span class="dv">315</span>), <span class="dt">what =</span> <span class="st">"prediction"</span>)</code></pre></div>

@@ -75,13 +75,12 @@ With the exception of differences in rounding, the above results match identical
 margins_summary(mod1)
 ```
 
-<<<<<<< HEAD
-![plot of chunk marginsplot](https://i.imgur.com/GQk5B7V.png)
-=======
 ```
-## Error in margins_summary(mod1): could not find function "margins_summary"
+##  factor     AME     SE       z      p   lower   upper
+##     cyl  0.0381 0.5999  0.0636 0.9493 -1.1376  1.2139
+##      hp -0.0463 0.0145 -3.1909 0.0014 -0.0748 -0.0179
+##      wt -3.1198 0.6613 -4.7176 0.0000 -4.4160 -1.8236
 ```
->>>>>>> master
 
 If you are only interested in obtaining the marginal effects (without corresponding variances or the overhead of creating a "margins" object), you can call `marginal_effects(x)` directly. Furthermore, the `dydx()` function enables the calculation of the marginal effect of a single named variable:
 
@@ -151,16 +150,10 @@ summary(margins(mod2))
 ```
 
 ```
-<<<<<<< HEAD
-## Unit: milliseconds
-##                 expr      min       lq     mean   median       uq      max neval
-##  marginal_effects(x) 3.453476 4.164129 5.317117 4.458158 5.739764 12.56632   100
-=======
 ##     factor     AME     SE       z      p   lower   upper
 ##        age  0.0096 0.0008 12.3763 0.0000  0.0081  0.0112
 ##      group -0.0479 0.0129 -3.7044 0.0002 -0.0733 -0.0226
 ##  treatment  0.0432 0.0147  2.9320 0.0034  0.0143  0.0720
->>>>>>> master
 ```
 
 ```r
@@ -169,18 +162,12 @@ summary(margins(mod2, at = list(age = c(20, 30, 40, 50, 60)), variables = "treat
 ```
 
 ```
-<<<<<<< HEAD
-## Unit: milliseconds
-##        expr      min       lq     mean   median       uq      max neval
-##  margins(x) 24.06029 27.20567 29.29177 29.22093 30.38584 44.71196   100
-=======
 ##     factor     age     AME     SE       z      p   lower  upper
 ##  treatment 20.0000 -0.0009 0.0043 -0.2061 0.8367 -0.0093 0.0075
 ##  treatment 30.0000  0.0034 0.0107  0.3199 0.7490 -0.0176 0.0245
 ##  treatment 40.0000  0.0301 0.0170  1.7736 0.0761 -0.0032 0.0634
 ##  treatment 50.0000  0.0990 0.0217  4.5666 0.0000  0.0565 0.1415
 ##  treatment 60.0000  0.1896 0.0384  4.9341 0.0000  0.1143 0.2649
->>>>>>> master
 ```
 
 This functionality removes the need to modify data before performing such calculations, which can be quite unwieldy when many specifications are desired.
@@ -212,10 +199,6 @@ summary(margins(mod2, data = subset(margex, sex == 1)))
 ##  treatment  0.0482 0.0231  2.0909 0.0365  0.0030 0.0934
 ```
 
-<<<<<<< HEAD
-![plot of chunk cplot1](https://i.imgur.com/6vMeadd.png)
-=======
->>>>>>> master
 
 ### Plotting and Visualization
 
@@ -236,9 +219,6 @@ mod3 <- glm(highbp ~ sex * agegrp * bmi, data = nhanes2, family = binomial)
 summary(marg3 <- margins(mod3))
 ```
 
-<<<<<<< HEAD
-![plot of chunk cplot2](https://i.imgur.com/odVY6r6.png)
-=======
 ```
 ##  factor     AME     SE        z      p   lower   upper
 ##  agegrp  0.0846 0.0021  39.4392 0.0000  0.0804  0.0888
@@ -250,7 +230,7 @@ summary(marg3 <- margins(mod3))
 plot(marg3)
 ```
 
-![plot of chunk marginsplot](https://i.imgur.com/o4A595R.png)
+![plot of chunk marginsplot](https://i.imgur.com/1Y5HSNo.png)
 
 In addition to the estimation procedures and `plot()` generic, **margins** offers several plotting methods for model objects. First, there is a new generic `cplot()` that displays predictions or marginal effects (from an "lm" or "glm" model) of a variable conditional across values of third variable (or itself). For example, here is a graph of predicted probabilities from a logit model:
 
@@ -260,31 +240,7 @@ mod4 <- glm(am ~ wt*drat, data = mtcars, family = binomial)
 cplot(mod4, x = "wt", se.type = "shade")
 ```
 
-```
-##       xvals       yvals      upper       lower
-## 1  1.513000 0.927274748 1.25767803  0.59687146
-## 2  1.675958 0.896156250 1.31282164  0.47949086
-## 3  1.838917 0.853821492 1.36083558  0.34680740
-## 4  2.001875 0.798115859 1.38729030  0.20894142
-## 5  2.164833 0.727945940 1.37431347  0.08157841
-## 6  2.327792 0.644257693 1.30643930 -0.01792391
-## 7  2.490750 0.550714595 1.17940279 -0.07797360
-## 8  2.653708 0.453441410 1.00638808 -0.09950526
-## 9  2.816667 0.359598025 0.81514131 -0.09594526
-## 10 2.979625 0.275390447 0.63577343 -0.08499254
-## 11 3.142583 0.204601856 0.48756886 -0.07836515
-## 12 3.305542 0.148285654 0.37415646 -0.07758515
-## 13 3.468500 0.105415989 0.28892829 -0.07809631
-## 14 3.631458 0.073865178 0.22356331 -0.07583296
-## 15 3.794417 0.051216829 0.17224934 -0.06981569
-## 16 3.957375 0.035248556 0.13162443 -0.06112732
-## 17 4.120333 0.024132208 0.09961556 -0.05135115
-## 18 4.283292 0.016461806 0.07467832 -0.04175471
-## 19 4.446250 0.011201450 0.05550126 -0.03309836
-## 20 4.609208 0.007609032 0.04093572 -0.02571766
-```
-
-![plot of chunk cplot1](https://i.imgur.com/1luz17W.png)
+![plot of chunk cplot1](https://i.imgur.com/dCpFEjI.png)
 
 And fitted values with a factor independent variable:
 
@@ -293,15 +249,7 @@ And fitted values with a factor independent variable:
 cplot(lm(Sepal.Length ~ Species, data = iris))
 ```
 
-```
-##        xvals yvals   upper   lower
-## 1     setosa 5.006 5.14869 4.86331
-## 2 versicolor 5.936 6.07869 5.79331
-## 3  virginica 6.588 6.73069 6.44531
-```
-
-![plot of chunk cplot2](https://i.imgur.com/Qdacm9f.png)
->>>>>>> master
+![plot of chunk cplot2](https://i.imgur.com/i6hyv6c.png)
 
 and a graph of the effect of `drat` across levels of `wt`:
 
@@ -310,7 +258,7 @@ and a graph of the effect of `drat` across levels of `wt`:
 cplot(mod4, x = "wt", dx = "drat", what = "effect", se.type = "shade")
 ```
 
-![plot of chunk cplot3](https://i.imgur.com/hP7FW7G.png)
+![plot of chunk cplot3](https://i.imgur.com/tqiRngk.png)
 
 `cplot()` also returns a data frame of values, so that it can be used just for calculating quantities of interest before plotting them with another graphics package, such as **ggplot2**:
 
@@ -341,11 +289,7 @@ ggplot(dat, aes(x = xvals)) +
   theme_bw()
 ```
 
-<<<<<<< HEAD
-![plot of chunk cplot3](https://i.imgur.com/oW7qI2p.png)
-=======
-![plot of chunk cplot_ggplot2](https://i.imgur.com/1UGv1VO.png)
->>>>>>> master
+![plot of chunk cplot_ggplot2](https://i.imgur.com/NAhV48H.png)
 
 Second, the package implements methods for "lm" and "glm" class objects for the `persp()` generic plotting function. This enables three-dimensional representations of predicted outcomes:
 
@@ -354,13 +298,7 @@ Second, the package implements methods for "lm" and "glm" class objects for the 
 persp(mod1, xvar = "cyl", yvar = "hp")
 ```
 
-<<<<<<< HEAD
-```
-## Error in x[["model"]]: subscript out of bounds
-```
-=======
-![plot of chunk persp1](https://i.imgur.com/GuNIiXQ.png)
->>>>>>> master
+![plot of chunk persp1](https://i.imgur.com/mugTL6q.png)
 
 and marginal effects:
 
@@ -369,13 +307,7 @@ and marginal effects:
 persp(mod1, xvar = "cyl", yvar = "hp", what = "effect", nx = 10)
 ```
 
-<<<<<<< HEAD
-```
-## Error in x[["model"]]: subscript out of bounds
-```
-=======
-![plot of chunk persp2](https://i.imgur.com/obu0suv.png)
->>>>>>> master
+![plot of chunk persp2](https://i.imgur.com/zJFxIIO.png)
 
 And if three-dimensional plots aren't your thing, there are also analogous methods for the `image()` generic, to produce heatmap-style representations:
 
@@ -384,14 +316,7 @@ And if three-dimensional plots aren't your thing, there are also analogous metho
 image(mod1, xvar = "cyl", yvar = "hp", main = "Predicted Fuel Efficiency,\nby Cylinders and Horsepower")
 ```
 
-<<<<<<< HEAD
-```
-## Error in x[["model"]]: subscript out of bounds
-```
-
-=======
-![plot of chunk image11](https://i.imgur.com/kbeyHXf.png)
->>>>>>> master
+![plot of chunk image11](https://i.imgur.com/5Ul0rYL.png)
 
 The numerous package vignettes and help files contain extensive documentation and examples of all package functionality.
 
@@ -407,8 +332,8 @@ microbenchmark(marginal_effects(mod1))
 
 ```
 ## Unit: milliseconds
-##                    expr     min       lq     mean   median       uq      max neval
-##  marginal_effects(mod1) 3.57209 3.779832 4.773957 4.127651 5.312518 10.57524   100
+##                    expr      min       lq     mean   median       uq      max neval
+##  marginal_effects(mod1) 3.495304 3.552513 4.179817 3.615995 4.029958 18.26225   100
 ```
 
 ```r
@@ -417,8 +342,8 @@ microbenchmark(margins(mod1))
 
 ```
 ## Unit: milliseconds
-##           expr      min       lq     mean  median       uq      max neval
-##  margins(mod1) 25.74626 27.13336 30.22905 27.8252 32.59014 47.10392   100
+##           expr      min       lq     mean   median       uq      max neval
+##  margins(mod1) 25.45736 26.65364 32.20219 27.56538 32.02679 109.5952   100
 ```
 
 The most computationally expensive part of `margins()` is variance estimation. If you don't need variances, use `marginal_effects()` directly or specify `margins(..., vce = "none")`.
