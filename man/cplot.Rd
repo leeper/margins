@@ -132,7 +132,7 @@ cplot(object, ...)
 
 \item{dx}{If \code{what = "effect"}, the variable whose conditional marginal effect should be displayed. By default it is \code{x} (so the plot displays the marginal effect of \code{x} across values of \code{x}); ignored otherwise. If \code{dx} is a factor with more than 2 levels, an error will be issued.}
 
-\item{what}{A character string specifying whether to draw a \dQuote{prediction} (fitted values from the model, calculated using \code{\link[stats]{predict}}) or an \dQuote{effect} (average marginal effect of \code{dx} conditional on \code{x}, using \code{\link{margins}}). Methods for classes other than \dQuote{lm} or \dQuote{glm} may provided additional options (e.g., \code{cplot.polr()} provides \dQuote{stackedprediction} and \dQuote{class} alternatives).}
+\item{what}{A character string specifying whether to draw a \dQuote{prediction} (average predicted values from the model, calculated using \code{\link[prediction]{prediction}}) or an \dQuote{effect} (average marginal effect of \code{dx} conditional on \code{x}, using \code{\link{margins}}). Methods for classes other than \dQuote{lm} or \dQuote{glm} may provided additional options (e.g., \code{cplot.polr()} provides \dQuote{stackedprediction} and \dQuote{class} alternatives).}
 
 \item{data}{A data frame to override the default value offered in \code{object[["model"]]}.}
 
@@ -213,7 +213,7 @@ A tidy data frame containing the data used to draw the plot. Use \code{draw = FA
 Draw one or more conditional effects plots reflecting predictions or marginal effects from a model, conditional on a covariate. Currently methods exist for \dQuote{lm}, \dQuote{glm}, \dQuote{loess} class models.
 }
 \details{
-Note that when \code{what = "prediction"}, the plots show predictions holding values of the data at their mean or mode, whereas when \code{what = "effect"} average marginal effects (i.e., at observed values) are shown.
+Note that when \code{what = "prediction"}, the plots show average predictions (except for models of class \dQuote{polr} and \dQuote{clm}, which show predictions at mean or modal covariate values), whereas when \code{what = "effect"} average marginal effects (i.e., at observed values) are shown.
 
 When examining generalized linear models (e.g., logistic regression models), confidence intervals for predictions can fall outside of the response scale (again, for logistic regression this means confidence intervals can exceed the (0,1) bounds). This is consistent with the behavior of \code{\link[stats]{predict}} but may not be desired. The examples (below) show ways of constraining confidence intervals to these bounds.
 

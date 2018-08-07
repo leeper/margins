@@ -1,3 +1,7 @@
+# margins 0.3.26
+
+* `cplot.default()` (and thus `cplot()` methods for "lm", "glm", and "loess") now display average predictions, taking advantage of new functionality in **prediction**. 
+
 # margins 0.3.25
 
 * Setup a `cplot.default()` method and modified documentation of `cplot()`, `image()`, and `persp()` methods slightly. (#84, h/t Luke Sonnet)

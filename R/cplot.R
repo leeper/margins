@@ -4,7 +4,7 @@
 #' @param object A model object.
 #' @param x A character string specifying the name of variable to use as the x-axis dimension in the plot.
 #' @param dx If \code{what = "effect"}, the variable whose conditional marginal effect should be displayed. By default it is \code{x} (so the plot displays the marginal effect of \code{x} across values of \code{x}); ignored otherwise. If \code{dx} is a factor with more than 2 levels, an error will be issued.
-#' @param what A character string specifying whether to draw a \dQuote{prediction} (fitted values from the model, calculated using \code{\link[stats]{predict}}) or an \dQuote{effect} (average marginal effect of \code{dx} conditional on \code{x}, using \code{\link{margins}}). Methods for classes other than \dQuote{lm} or \dQuote{glm} may provided additional options (e.g., \code{cplot.polr()} provides \dQuote{stackedprediction} and \dQuote{class} alternatives).
+#' @param what A character string specifying whether to draw a \dQuote{prediction} (average predicted values from the model, calculated using \code{\link[prediction]{prediction}}) or an \dQuote{effect} (average marginal effect of \code{dx} conditional on \code{x}, using \code{\link{margins}}). Methods for classes other than \dQuote{lm} or \dQuote{glm} may provided additional options (e.g., \code{cplot.polr()} provides \dQuote{stackedprediction} and \dQuote{class} alternatives).
 #' @param data A data frame to override the default value offered in \code{object[["model"]]}.
 #' @param type A character string specifying whether to calculate predictions on the response scale (default) or link (only relevant for non-linear models).
 #' @param vcov A matrix containing the variance-covariance matrix for estimated model coefficients, or a function to perform the estimation with \code{model} as its only argument.
@@ -42,7 +42,7 @@
 #' @param rug.col A character string specifying \code{col} to \code{\link[graphics]{rug}}.
 #' @param rug.size A numeric value specifying \code{ticksize} to \code{\link[graphics]{rug}}.
 #' @param \dots Additional arguments passed to \code{\link[graphics]{plot}}. 
-#' @details Note that when \code{what = "prediction"}, the plots show predictions holding values of the data at their mean or mode, whereas when \code{what = "effect"} average marginal effects (i.e., at observed values) are shown.
+#' @details Note that when \code{what = "prediction"}, the plots show average predictions (except for models of class \dQuote{polr} and \dQuote{clm}, which show predictions at mean or modal covariate values), whereas when \code{what = "effect"} average marginal effects (i.e., at observed values) are shown.
 #' 
 #' When examining generalized linear models (e.g., logistic regression models), confidence intervals for predictions can fall outside of the response scale (again, for logistic regression this means confidence intervals can exceed the (0,1) bounds). This is consistent with the behavior of \code{\link[stats]{predict}} but may not be desired. The examples (below) show ways of constraining confidence intervals to these bounds.
 #' 
@@ -218,16 +218,9 @@ function(object,
     # setup `outdat` data
     if (what == "prediction") {
         # generates predictions as mean/mode of all variables rather than average prediction!
-        tmpdat <- lapply(dat[, names(dat) != xvar, drop = FALSE], prediction::mean_or_mode)
-        tmpdat <- structure(lapply(tmpdat, rep, length.out = length(xvals)),
-                            class = "data.frame", row.names = seq_len(length(xvals)))
-        tmpdat[[xvar]] <- xvals
-        outdat <- prediction(model = object, data = tmpdat, type = type, level = level)
-        out <- structure(list(xvals = xvals,
-                              yvals = outdat[["fitted"]],
-                              upper = outdat[["fitted"]] + (fac[2] * outdat[["se.fitted"]]),
-                              lower = outdat[["fitted"]] + (fac[1] * outdat[["se.fitted"]])),
-                         class = "data.frame", row.names = seq_along(outdat[["fitted"]]))
+        pred <- prediction(model = object, data = data, at = setNames(list(xvals), xvar), type = type, vcov = vcov)
+        out <- summary(pred)[ , c(paste0("at(", x, ")"), "Prediction", "upper", "lower"), drop = FALSE]
+        out <- setNames(out, c("xvals", "yvals", "upper", "lower"))
     } else if (what == "effect") {
         if (is.factor(dat[[dx]]) && nlevels(data[[dx]]) > 2L) {
             stop("Displaying effect of a factor variable with > 2 levels is not currently supported!")
