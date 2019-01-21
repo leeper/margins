@@ -311,7 +311,7 @@ x2 <- lm(mpg ~ hp * wt, data = mtcars)
 margins(x2)
 ```
 
-On average across the cases in the dataset, the effect of horsepower is slightly negative. On average, the effect of weight is also negative. Both decrease fuel economy. But what is the marginal effect of each variable across the range of values we actually observe in the data. To get a handle on this, we can use the `persp()` method provided by margins.
+On average across the cases in the dataset, the effect of horsepower is slightly negative. On average, the effect of weight is also negative. Both decrease fuel economy. But what is the marginal effect of each variable across the range of values we actually observe in the data? To get a handle on this, we can use the `persp()` method provided by margins.
 
 ```{r}
 persp(x2, "wt", "hp", theta = c(45, 135, 225, 315), what = "effect")
@@ -325,7 +325,7 @@ summary(x2)
 
 If we express the regression results as an equation: `mpg = 49.81 + (-0.12 * hp) + (-8.22 * wt) + (0.03 * hp*wt)`, it will be easy to see how the three-dimensional surface above reflects various partial derivatives of the regression equation.
 
-For example, if we take the partial derivative of the regression equation with respect to `wt` (i.e., the marginal effect of weight), the equation is: `d_mpg/d_wt = (-8.22) + (0.03 * hp)`. This means that the marginal effect of weight is large and negative when horsepower is zero (which never occurs in the `mtcars` dataset) and decreases in magnitude and becoming more positive as horsepower increases. We can see this in the above graph that the marginal effect of weight is constant across levels of `weight` because `wt` does not enter into the partial derivative. Across levels, of horsepower, however, the marginal effect becomes more positive. This is clear looking at the "front" or "back" edges of the surface, which are straight-linear increases. The slope of those edges is 0.03 (the coefficient on the interaction term).
+For example, if we take the partial derivative of the regression equation with respect to `wt` (i.e., the marginal effect of weight), the equation is: `d_mpg/d_wt = (-8.22) + (0.03 * hp)`. This means that the marginal effect of weight is large and negative when horsepower is zero (which never occurs in the `mtcars` dataset) and decreases in magnitude and becoming more positive as horsepower increases. We can see this in the above graph that the marginal effect of weight is constant across levels of `weight` because `wt` does not enter into the partial derivative. Across levels of horsepower, however, the marginal effect becomes more positive. This is clear looking at the "front" or "back" edges of the surface, which are straight-linear increases. The slope of those edges is 0.03 (the coefficient on the interaction term).
 
 If we then take the partial derivative with respect to `hp` (to obtain the marginal effect of horsepower), the equation is: `d_mpg/d_hp = (-0.12) + (0.03 * wt)`. When `wt` is zero, this partial derivative (or marginal effect) is -0.12 miles/gallon. The observed range of `wt`, however, is only: `r range(mtcars$wt)`. We can see these results in the analogous graph of the marginal effects of horsepower (below). The "front" and "back" edges of the graph are now flat (reflecting how the marginal effect of horsepower is constant across levels of horsepower), while the "front-left" and "right-back" edges of the surface are lines with slope 0.03, reflecting the coefficient on the interaction term.
 
@@ -338,7 +338,7 @@ An alternative way of plotting these results is to take "slices" of the three-di
 
 ### ggplot2 examples
 
-It should be noted that `cplot()` returns a fairly tidy data frmae, making it possible to use ggplot2 as an alternative plotting package to display the kinds of relationships of typical interest. For example, returning to our earlier example:
+It should be noted that `cplot()` returns a fairly tidy data frame, making it possible to use ggplot2 as an alternative plotting package to display the kinds of relationships of typical interest. For example, returning to our earlier example:
 
 ```{r}
 x1 <- lm(mpg ~ drat * wt * am, data = mtcars)
