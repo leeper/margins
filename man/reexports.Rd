@@ -4,7 +4,6 @@
 \name{reexports}
 \alias{reexports}
 \alias{prediction}
-\alias{reexports}
 \alias{find_data}
 \title{Objects exported from other packages}
 \keyword{internal}

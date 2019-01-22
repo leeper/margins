@@ -44,25 +44,28 @@
   yvar = attributes(terms(x))[["term.labels"]][2], dx = xvar,
   what = c("prediction", "effect"), type = c("response", "link"),
   vcov = stats::vcov(x), nx = 25L, ny = nx, theta = 45, phi = 10,
-  shade = 0.75, xlab = xvar, ylab = yvar, zlab = if (match.arg(what) ==
-  "prediction") "Predicted value" else paste0("Marginal effect of ", dx),
-  ticktype = c("detailed", "simple"), ...)
+  shade = 0.75, xlab = xvar, ylab = yvar, zlab = if
+  (match.arg(what) == "prediction") "Predicted value" else
+  paste0("Marginal effect of ", dx), ticktype = c("detailed", "simple"),
+  ...)
 
 \method{persp}{glm}(x, xvar = attributes(terms(x))[["term.labels"]][1],
   yvar = attributes(terms(x))[["term.labels"]][2], dx = xvar,
   what = c("prediction", "effect"), type = c("response", "link"),
   vcov = stats::vcov(x), nx = 25L, ny = nx, theta = 45, phi = 10,
-  shade = 0.75, xlab = xvar, ylab = yvar, zlab = if (match.arg(what) ==
-  "prediction") "Predicted value" else paste0("Marginal effect of ", dx),
-  ticktype = c("detailed", "simple"), ...)
+  shade = 0.75, xlab = xvar, ylab = yvar, zlab = if
+  (match.arg(what) == "prediction") "Predicted value" else
+  paste0("Marginal effect of ", dx), ticktype = c("detailed", "simple"),
+  ...)
 
 \method{persp}{loess}(x, xvar = attributes(terms(x))[["term.labels"]][1],
   yvar = attributes(terms(x))[["term.labels"]][2], dx = xvar,
   what = c("prediction", "effect"), type = c("response", "link"),
   vcov = stats::vcov(x), nx = 25L, ny = nx, theta = 45, phi = 10,
-  shade = 0.75, xlab = xvar, ylab = yvar, zlab = if (match.arg(what) ==
-  "prediction") "Predicted value" else paste0("Marginal effect of ", dx),
-  ticktype = c("detailed", "simple"), ...)
+  shade = 0.75, xlab = xvar, ylab = yvar, zlab = if
+  (match.arg(what) == "prediction") "Predicted value" else
+  paste0("Marginal effect of ", dx), ticktype = c("detailed", "simple"),
+  ...)
 }
 \arguments{
 \item{x}{A model object.}

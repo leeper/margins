@@ -10,18 +10,18 @@
 \usage{
 dydx(data, model, variable, ...)
 
-\method{dydx}{default}(data, model, variable, type = c("response", "link"),
-  change = c("dydx", "minmax", "iqr", "sd"), eps = 1e-07,
+\method{dydx}{default}(data, model, variable, type = c("response",
+  "link"), change = c("dydx", "minmax", "iqr", "sd"), eps = 1e-07,
   as.data.frame = TRUE, ...)
 
-\method{dydx}{factor}(data, model, variable, type = c("response", "link"),
-  fwrap = FALSE, as.data.frame = TRUE, ...)
+\method{dydx}{factor}(data, model, variable, type = c("response",
+  "link"), fwrap = FALSE, as.data.frame = TRUE, ...)
 
-\method{dydx}{ordered}(data, model, variable, type = c("response", "link"),
-  fwrap = FALSE, as.data.frame = TRUE, ...)
+\method{dydx}{ordered}(data, model, variable, type = c("response",
+  "link"), fwrap = FALSE, as.data.frame = TRUE, ...)
 
-\method{dydx}{logical}(data, model, variable, type = c("response", "link"),
-  as.data.frame = TRUE, ...)
+\method{dydx}{logical}(data, model, variable, type = c("response",
+  "link"), as.data.frame = TRUE, ...)
 }
 \arguments{
 \item{data}{The dataset on which to to calculate \eqn{\hat{y}}.}

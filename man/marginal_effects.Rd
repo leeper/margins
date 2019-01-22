@@ -23,21 +23,21 @@ marginal_effects(model, data, variables = NULL, ...)
 
 \method{marginal_effects}{margins}(model, data, variables = NULL, ...)
 
-\method{marginal_effects}{clm}(model, data = find_data(model, parent.frame()),
-  variables = NULL, type = NULL, eps = 1e-07, varslist = NULL,
-  as.data.frame = TRUE, ...)
+\method{marginal_effects}{clm}(model, data = find_data(model,
+  parent.frame()), variables = NULL, type = NULL, eps = 1e-07,
+  varslist = NULL, as.data.frame = TRUE, ...)
 
 \method{marginal_effects}{default}(model, data = find_data(model,
   parent.frame()), variables = NULL, type = c("response", "link"),
   eps = 1e-07, as.data.frame = TRUE, varslist = NULL, ...)
 
-\method{marginal_effects}{glm}(model, data = find_data(model, parent.frame()),
-  variables = NULL, type = c("response", "link"), eps = 1e-07,
-  varslist = NULL, as.data.frame = TRUE, ...)
+\method{marginal_effects}{glm}(model, data = find_data(model,
+  parent.frame()), variables = NULL, type = c("response", "link"),
+  eps = 1e-07, varslist = NULL, as.data.frame = TRUE, ...)
 
-\method{marginal_effects}{lm}(model, data = find_data(model, parent.frame()),
-  variables = NULL, type = c("response", "link"), eps = 1e-07,
-  varslist = NULL, as.data.frame = TRUE, ...)
+\method{marginal_effects}{lm}(model, data = find_data(model,
+  parent.frame()), variables = NULL, type = c("response", "link"),
+  eps = 1e-07, varslist = NULL, as.data.frame = TRUE, ...)
 
 \method{marginal_effects}{loess}(model, data = find_data(model,
   parent.frame()), variables = NULL, type = c("response", "link"),
