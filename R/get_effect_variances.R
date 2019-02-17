@@ -111,6 +111,13 @@ function(data,
             }
             return(means)
         })
+        # When length(variables) == 1, effectmat is a vector
+        if (!is.matrix(effectmat)) {
+            # Coerce to 1 row matrix
+            effectmat <- matrix(effectmat, nrow = 1)
+            # Rownames are lost in these cases
+            rownames(effectmat) <- paste0("dydx_", variables)
+        }
         # calculate the variance of the simulated AMEs
         vc <- var(t(effectmat))
         variances <- diag(vc)
