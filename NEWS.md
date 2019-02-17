@@ -2,6 +2,8 @@
 
 * Setup a `cplot.default()` method and modified documentation of `cplot()`, `image()`, and `persp()` methods slightly. (#84, h/t Luke Sonnet)
 * Improve the documentation the behavior of `cplot()` for generalized linear models, which can generate unexpected confidence intervals (albeit ones consistent with base R's behavior). (#92)
+* Fix bug that caused spurious `NA`s and errors in `margins()` when `vce` was
+`"bootstrap"` or `"simulation"` and `variables` had a length of 1. (#112)
 
 # margins 0.3.24
 
