@@ -156,34 +156,28 @@
 #' }
 #' @seealso \code{\link{plot.margins}}, \code{\link{persp.lm}}
 #' @keywords graphics
+#' @importFrom ggplot2 ggplot geom_line geom_ribbon geom_pointrange xlab ylab theme_minimal
 #' @importFrom utils head
 #' @importFrom graphics par plot lines rug polygon segments points
 #' @importFrom prediction prediction find_data seq_range mean_or_mode
 #' @export
-cplot <- function(object, ...) {
-    UseMethod("cplot")
-}
-
-#' @rdname cplot
-#' @export
-cplot.default <- 
-function(object, 
-         x = NULL,
-         dx = NULL, 
-         data = NULL,
-         at = NULL,
-         vcov = stats::vcov(object),
-         what = c("prediction", "effect"), 
-         type = c("response", "link"), 
-         xvals = NULL,
-         level = 0.95,
-         draw = TRUE,
-         colour = 'black',
-         linetype = 1,
-         size = 0.5,
-         n = 25,
-         ...) {
-    
+cplot <- function(object, 
+                  x = NULL,
+                  dx = NULL, 
+                  data = NULL,
+                  what = c("prediction", "effect", "classprediction", "stackedprediction"), 
+                  type = c("response", "link"), 
+                  vcov = stats::vcov(object),
+                  level = 0.95,
+                  draw = TRUE,
+                  colour = 'black',
+                  linetype = 1,
+                  size = 0.5,
+                  xvals = NULL,
+                  n = 25,
+                  at = NULL,
+                  ...) {
+                
     # input checks
 
     # default values
@@ -202,50 +196,124 @@ function(object,
         ylabel <- 'Predicted value'
     } else if (what == 'effect') {
         ylabel <- paste0('Marginal effect of ', dx)
+    } else if (what == 'stackedprediction') {
+        ylabel <- 'Predicted value'
+    } else if (what == 'classprediction') {
+        ylabel <- 'Predicted class'
     }
+
     xlabel <- xvar
     type <- match.arg(type)
 
     # prepare data for plotting
-    out <- cplot_data.default(object = object, 
-                              data = data, 
-                              xvar = xvar, 
-                              dx = dx, 
-                              what = what, 
-                              type = type, 
-                              xvals = xvals,
-                              vcov = vcov,
-                              at = at,
-                              n = n,
-                              level = level)
+    out <- cplot_extract(object = object, 
+                         data = data, 
+                         xvar = xvar, 
+                         dx = dx, 
+                         what = what, 
+                         type = type, 
+                         xvals = xvals,
+                         vcov = vcov,
+                         at = at,
+                         n = n,
+                         level = level)
 
     # plot
     if (isTRUE(draw)) {
-        out <- cplot_plot.default(data = out,
-                                  xlabel = xlabel,
-                                  ylabel = ylabel,
-                                  size = size,
-                                  colour = colour,
-                                  linetype = linetype,
-                                  ...)
-    } 
+
+        # save for future queries (e.g., levels)
+        outdat <- out 
+
+        out <- ggplot(outdat, aes(x = xvals, y = yvals))
+
+        # x is numeric -> geom_line + geom_ribbon
+        if (is.numeric(outdat$xvals)) {
+
+
+            # confidence intervals are available
+            if (all(c('lower', 'upper') %in% names(outdat))) {
+
+                # geom_ribbon for confidence intervals (user-supplied alpha fill)
+                extra_args <- list(...)
+                if (all(c('alpha', 'fill') %in% names(extra_args))) {
+                    out <- out +
+                           geom_ribbon(aes(ymin = lower, ymax = upper), 
+                                       ...) 
+                } else if ('alpha' %in% names(extra_args)) {
+                    out <- out +
+                           geom_ribbon(aes(ymin = lower, ymax = upper), 
+                                       fill = 'grey', ...) 
+                } else if ('fill' %in% names(extra_args)) {
+                    out <- out +
+                           geom_ribbon(aes(ymin = lower, ymax = upper), 
+                                       alpha = .3, ...) 
+                } else {
+                    out <- out +
+                           geom_ribbon(aes(ymin = lower, ymax = upper), 
+                                       alpha = .3, fill = 'grey', ...) 
+                }
+
+            }
+
+            # geom_line for estimates
+            out  <- out +
+                    geom_line(size = size, colour = colour, linetype = linetype)
+
+        # x is not numeric -> geom_pointrange or geom_point
+        } else {
+
+            # confidence intervals are available
+            if (all(c('lower', 'upper') %in% names(outdat))) {
+                out <- out +
+                       geom_pointrange(aes(ymin = lower, ymax = upper),
+                                       size = size, colour = colour, linetype = linetype, ...)
+            } else {
+                out <- out +
+                       geom_point(size = size, colour = colour, ...)
+            }
+
+        }
+
+        # finish plot 
+        out <- out +
+               xlab(xlabel) + 
+               ylab(ylabel) +
+               theme_minimal()
+
+        # facet_wrap if `level` is in the extracted data
+        if ('level' %in% names(outdat)) {
+            out <- out +
+                   facet_wrap(~ level)
+        }
+
+    }
 
     # output
     return(out)
-
 }
 
-cplot_data.default <- function(object, 
-                               data, 
-                               dx, 
-                               level, 
-                               xvar, 
-                               at,
-                               n,
-                               type, 
-                               xvals,
-                               vcov,
-                               what) {
+#' Generic extracts model information for use by `cplot`
+#'
+#' @export
+cplot_extract <- function(object, ...) {
+    UseMethod("cplot_extract")
+}
+
+#' Internal function to extract data for `cplot`
+#'
+#' @inheritParams cplot
+cplot_extract.default <- function(object, 
+                                  data, 
+                                  dx, 
+                                  level, 
+                                  xvar, 
+                                  at,
+                                  n,
+                                  type, 
+                                  xvals,
+                                  vcov,
+                                  what,
+                                  ...) {
 
     # handle factors and subset data
     data <- force(data)
@@ -272,8 +340,8 @@ cplot_data.default <- function(object,
     a <- (1 - level)/2
     fac <- qnorm(c(a, 1 - a))
     
-    # setup `outdat` data
     if (what == "prediction") {
+
         # generates predictions as mean/mode of all variables rather than average prediction!
         tmpdat <- lapply(dat[, names(dat) != xvar, drop = FALSE], prediction::mean_or_mode)
         tmpdat <- structure(lapply(tmpdat, rep, length.out = length(xvals)),
@@ -294,54 +362,5 @@ cplot_data.default <- function(object,
         out <- setNames(out[out[["factor"]] == dx, , drop = FALSE], c("xvals", "yvals", "upper", "lower", "factor"))
     }
 
-    return(out)
-}
-
-#' @importFrom ggplot2 ggplot geom_line geom_ribbon geom_pointrange xlab ylab theme_minimal
-cplot_plot.default <- function(data,
-                               xlabel,
-                               ylabel,
-                               size,
-                               colour,
-                               linetype,
-                               ...) {
-
-    # x is a continuous conditioning variable
-    if (is.numeric(data$xvals)) {
-        out <- ggplot(data, aes(x = xvals, y = yvals, ymin = lower, ymax = upper))
-
-        # ribbon with user-supplied fill and alpha
-        extra_args <- list(...)
-        if (all(c('alpha', 'fill') %in% names(extra_args))) {
-            out <- out +
-                   geom_ribbon(...) 
-        } else if ('alpha' %in% names(extra_args)) {
-            out <- out +
-                   geom_ribbon(fill = 'grey', ...) 
-        } else if ('fill' %in% names(extra_args)) {
-            out <- out +
-                   geom_ribbon(alpha = .3, ...) 
-        } else {
-            out <- out +
-                   geom_ribbon(alpha = .3, fill = 'grey', ...) 
-        }
-
-        # finish plot 
-        out <- out +
-               geom_line(size = size, colour = colour, linetype = linetype) +
-               xlab(xlabel) + 
-               ylab(ylabel) +
-               theme_minimal()
-
-    # x is a factor
-    } else {
-        out <- ggplot(data, aes(x = xvals, y = yvals, ymin = lower, ymax = upper)) +
-               geom_pointrange(size = size, colour = colour, linetype = linetype, ...) +
-               xlab(xlabel) + 
-               ylab(ylabel) +
-               theme_minimal()
-    }
-
-    # output
     return(out)
 }

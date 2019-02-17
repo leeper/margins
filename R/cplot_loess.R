@@ -1,3 +1,3 @@
 #' @rdname cplot
 #' @export
-cplot.loess <- cplot.default
+cplot_extract.loess <- cplot_extract.default

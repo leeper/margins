@@ -3,30 +3,26 @@
 %   R/cplot_lm.R, R/cplot_loess.R, R/cplot_polr.R
 \name{cplot}
 \alias{cplot}
-\alias{cplot.default}
 \alias{cplot.clm}
-\alias{cplot.glm}
-\alias{cplot.lm}
-\alias{cplot.loess}
-\alias{cplot.polr}
-\alias{cplot.multinom}
+\alias{cplot_extract.glm}
+\alias{cplot_extract.lm}
+\alias{cplot_extract.loess}
+\alias{cplot_extract.multinom}
 \title{Conditional predicted value and average marginal effect plots for models}
 \usage{
-cplot(object, ...)
+cplot(object, x = NULL, dx = NULL, data = NULL,
+  what = c("prediction", "effect", "classprediction",
+  "stackedprediction"), type = c("response", "link"),
+  vcov = stats::vcov(object), level = 0.95, draw = TRUE,
+  colour = "black", linetype = 1, size = 0.5, xvals = NULL,
+  n = 25, at = NULL, ...)
 
-\method{cplot}{default}(object, x = NULL, dx = NULL, data = NULL,
-  at = NULL, vcov = stats::vcov(object), what = c("prediction",
-  "effect"), type = c("response", "link"), xvals = NULL,
-  level = 0.95, draw = TRUE, colour = "black", linetype = 1,
-  size = 0.5, n = 25, ...)
-
-\method{cplot}{clm}(object,
-  x = attributes(terms(object))[["term.labels"]][1L], dx = x,
-  what = c("prediction", "classprediction", "stackedprediction",
-  "effect"), data = prediction::find_data(object), type = c("response",
-  "link"), vcov = stats::vcov(object), at, n = 25L,
-  xvals = seq_range(data[[x]], n = n), level = 0.95, draw = TRUE,
-  xlab = x, ylab = if (match.arg(what) == "effect")
+cplot.clm(object, x = attributes(terms(object))[["term.labels"]][1L],
+  dx = x, what = c("prediction", "classprediction",
+  "stackedprediction", "effect"), data = prediction::find_data(object),
+  type = c("response", "link"), vcov = stats::vcov(object), at,
+  n = 25L, xvals = seq_range(data[[x]], n = n), level = 0.95,
+  draw = TRUE, xlab = x, ylab = if (match.arg(what) == "effect")
   paste0("Marginal effect of ", dx) else paste0("Predicted value"),
   xlim = NULL, ylim = if (match.arg(what) \%in\% c("prediction",
   "stackedprediction")) c(0, 1.04) else NULL, lwd = 1L, col = "black",
@@ -37,65 +33,21 @@ cplot(object, ...)
   scatter.cex = 0.5, rug = TRUE, rug.col = col, rug.size = -0.02,
   ...)
 
-\method{cplot}{glm}(object, x = NULL, dx = NULL, data = NULL,
-  at = NULL, vcov = stats::vcov(object), what = c("prediction",
-  "effect"), type = c("response", "link"), xvals = NULL,
-  level = 0.95, draw = TRUE, colour = "black", linetype = 1,
-  size = 0.5, n = 25, ...)
+\method{cplot_extract}{glm}(object, data, dx, level, xvar, at, n, type,
+  xvals, vcov, what, ...)
 
-\method{cplot}{lm}(object, x = NULL, dx = NULL, data = NULL,
-  at = NULL, vcov = stats::vcov(object), what = c("prediction",
-  "effect"), type = c("response", "link"), xvals = NULL,
-  level = 0.95, draw = TRUE, colour = "black", linetype = 1,
-  size = 0.5, n = 25, ...)
+\method{cplot_extract}{lm}(object, data, dx, level, xvar, at, n, type,
+  xvals, vcov, what, ...)
 
-\method{cplot}{loess}(object, x = NULL, dx = NULL, data = NULL,
-  at = NULL, vcov = stats::vcov(object), what = c("prediction",
-  "effect"), type = c("response", "link"), xvals = NULL,
-  level = 0.95, draw = TRUE, colour = "black", linetype = 1,
-  size = 0.5, n = 25, ...)
+\method{cplot_extract}{loess}(object, data, dx, level, xvar, at, n, type,
+  xvals, vcov, what, ...)
 
-\method{cplot}{polr}(object,
-  x = attributes(terms(object))[["term.labels"]][1L], dx = x,
-  what = c("prediction", "classprediction", "stackedprediction",
-  "effect"), data = prediction::find_data(object), type = c("response",
-  "link"), vcov = stats::vcov(object), at, n = 25L,
-  xvals = seq_range(data[[x]], n = n), level = 0.95, draw = TRUE,
-  xlab = x, ylab = if (match.arg(what) == "effect")
-  paste0("Marginal effect of ", dx) else paste0("Predicted value"),
-  xlim = NULL, ylim = if (match.arg(what) \%in\% c("prediction",
-  "stackedprediction")) c(0, 1.04) else NULL, lwd = 1L, col = "black",
-  lty = 1L, factor.lty = 1L, factor.pch = 19L, factor.col = col,
-  factor.fill = factor.col, factor.cex = 1L, xaxs = "i",
-  yaxs = xaxs, las = 1L, scatter = FALSE, scatter.pch = 19L,
-  scatter.col = factor.col, scatter.bg = scatter.col,
-  scatter.cex = 0.5, rug = TRUE, rug.col = col, rug.size = -0.02,
-  ...)
-
-\method{cplot}{multinom}(object,
-  x = attributes(terms(object))[["term.labels"]][1L], dx = x,
-  what = c("prediction", "classprediction", "stackedprediction",
-  "effect"), data = prediction::find_data(object), type = c("response",
-  "link"), vcov = stats::vcov(object), at, n = 25L,
-  xvals = seq_range(data[[x]], n = n), level = 0.95, draw = TRUE,
-  xlab = x, ylab = if (match.arg(what) == "effect")
-  paste0("Marginal effect of ", dx) else paste0("Predicted value"),
-  xlim = NULL, ylim = if (match.arg(what) \%in\% c("prediction",
-  "stackedprediction")) c(0, 1.04) else NULL, lwd = 1L, col = "black",
-  lty = 1L, factor.lty = 1L, factor.pch = 19L, factor.col = col,
-  factor.fill = factor.col, factor.cex = 1L, xaxs = "i",
-  yaxs = xaxs, las = 1L, scatter = FALSE, scatter.pch = 19L,
-  scatter.col = factor.col, scatter.bg = scatter.col,
-  scatter.cex = 0.5, rug = TRUE, rug.col = col, rug.size = -0.02,
-  ...)
+\method{cplot_extract}{multinom}(object, data, dx, level, xvar, at, n,
+  type, xvals, vcov, what = c("prediction", "classprediction",
+  "stackedprediction", "effect"), ...)
 }
 \arguments{
 \item{object}{A model object.}
-
-\item{\dots}{Additional arguments passed to
-\code{\link[ggplot2]{geom_pointrange}} if `x` is a factor, or
-\code{\link[ggplot2]{geom_ribbon}} if `x` is continuous. For example,
-\code{shape}, \code{fill}, \code{alpha}.}
 
 \item{x}{A character string specifying the name of variable to use as the
 x-axis dimension in the plot.}
@@ -109,12 +61,6 @@ be issued.}
 \item{data}{A data frame to override the default value offered in
 \code{object[["model"]]}.}
 
-\item{at}{Currently ignored.}
-
-\item{vcov}{A matrix containing the variance-covariance matrix for estimated
-model coefficients, or a function to perform the estimation with
-\code{model} as its only argument.}
-
 \item{what}{A character string specifying whether to draw a
 \dQuote{prediction} (fitted values from the model, calculated using
 \code{\link[stats]{predict}}) or an \dQuote{effect} (average marginal effect
@@ -127,10 +73,9 @@ options (e.g., \code{cplot.polr()} provides \dQuote{stackedprediction} and
 on the response scale (default) or link (only relevant for non-linear
 models).}
 
-\item{xvals}{A numeric vector of values at which to calculate predictions or
-marginal effects, if \code{x} is numeric. By default, it is calculated from
-the data using \code{\link{seq_range}}. If \code{x} is a factor, this is
-ignored, as is \code{n}.}
+\item{vcov}{A matrix containing the variance-covariance matrix for estimated
+model coefficients, or a function to perform the estimation with
+\code{model} as its only argument.}
 
 \item{level}{The confidence level required (used to draw uncertainty
 bounds).}
@@ -147,9 +92,21 @@ the resulting data is added to the existing plot.}
 
 \item{size}{}
 
+\item{xvals}{A numeric vector of values at which to calculate predictions or
+marginal effects, if \code{x} is numeric. By default, it is calculated from
+the data using \code{\link{seq_range}}. If \code{x} is a factor, this is
+ignored, as is \code{n}.}
+
 \item{n}{An integer specifying the number of points across \code{x} at which
 to calculate the predicted value or marginal effect, when \code{x} is
 numeric. Ignored otherwise.}
+
+\item{at}{Currently ignored.}
+
+\item{\dots}{Additional arguments passed to
+\code{\link[ggplot2]{geom_pointrange}} if `x` is a factor, or
+\code{\link[ggplot2]{geom_ribbon}} if `x` is continuous. For example,
+\code{shape}, \code{fill}, \code{alpha}.}
 }
 \value{
 A tidy data frame containing the data used to draw the plot. Use

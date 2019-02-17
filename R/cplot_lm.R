@@ -1,3 +1,3 @@
 #' @rdname cplot
 #' @export
-cplot.lm <- cplot.default
+cplot_extract.lm <- cplot_extract.default
