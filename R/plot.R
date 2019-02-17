@@ -5,8 +5,8 @@
 #'   \code{\link{margins}}.
 #' @param level A numeric value between 0 and 1 indicating the confidence level
 #'   to use when drawing error bars.
-#' @param term_map named character vector. Names refer to the original
-#'   term/variable names. Values refer to the term names that will appear in
+#' @param term_map named character vector. Values refer to the original
+#'   term/variable names. Names refer to the term names that will appear in
 #'   the plot. Terms which are omitted from this vector will be omitted from the
 #'   plot.
 #' @param \dots Additional arguments passed to
@@ -26,7 +26,7 @@
 #' 
 #' @seealso \code{\link{margins}}, \code{\link{persp.lm}}
 #' @keywords graphics
-#' @importFrom graphics abline axis plot points segments
+#' @importFrom ggplot2 aes ggplot geom_pointrange theme_minimal xlab ylab
 #' @export
 plot.margins <- 
 function(x, 
@@ -41,9 +41,10 @@ function(x,
     if (is.null(term_map)) {
         summ$factor <- paste0('dydx_', summ$factor)
     } else {
-        # TODO: sanity checks
-        summ <- summ[summ$factor %in% names(term_map),]
-        summ$factor <- term_map[match(summ$factor, names(term_map))]
+        summ <- summ[summ$factor %in% term_map,]
+        if (!is.null(names(term_map))) {
+            summ$factor <- names(term_map)[match(summ$factor, term_map)]
+        }
     }
 
     # main plot command
