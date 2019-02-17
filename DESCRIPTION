@@ -14,6 +14,7 @@ Authors@R: c(person("Thomas J.", "Leeper",
                     role = c("ctb"),
                     email = "jeffrey.arnold@gmail.com"),
              person("Vincent", "Arel-Bundock", 
+                    email = "vincent.arel-bundock@umontreal.ca",
                     role = c("ctb"))
              )
 URL: https://github.com/leeper/margins
@@ -25,17 +26,18 @@ Imports:
     data.table,
     graphics,
     grDevices,
+    ggplot2,
     MASS
 Suggests:
     methods,
     knitr,
     rmarkdown,
     testthat,
-    ggplot2,
     gapminder,
     sandwich,
     stargazer,
-    lme4
+    lme4,
+    vdiffr
 Enhances:
     AER,
     betareg,
