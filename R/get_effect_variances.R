@@ -79,19 +79,31 @@ function(data,
         
         # copy model for quick use in estimation
         tmpmodel <- model
-        tmpmodel[["model"]] <- NULL # remove data from model for memory
+        if (inherits(model, "merMod")) {
+            coefs <- lme4::fixef(model)
+            # Removing data from model for memory, but S4 class requires "frame"
+            # to be data.frame class --- hacky way of "removing" it
+            model@frame <- model@frame[NULL] 
+        } else {
+            coefs <- coef(model)
+            tmpmodel[["model"]] <- NULL # remove data from model for memory
+        }
         
         # check that vcov() only contains coefficients from model
-        if (nrow(vcov) != length(coef(model))) {
+        if (nrow(vcov) != length(coefs)) {
             vcov <- vcov[intersect(rownames(vcov), names(coef(model))), intersect(rownames(vcov), names(coef(model)))]
         }
-            
+        
         # simulate from multivariate normal
-        coefmat <- MASS::mvrnorm(iterations, coef(model), vcov)
+        coefmat <- MASS::mvrnorm(iterations, coefs, vcov)
         
         # estimate AME from from each simulated coefficient vector
         effectmat <- apply(coefmat, 1, function(coefrow) {
-            tmpmodel[["coefficients"]] <- coefrow
+            if (inherits(model, "merMod")) {
+                tmpmodel@beta <- coefrow
+            } else {
+                tmpmodel[["coefficients"]] <- coefrow
+            }
             if (is.null(weights)) {
                 if (is.null(type)) {
                     means <- colMeans(marginal_effects(model = tmpmodel, data = data, variables = variables, eps = eps, varslist = varslist, ...), na.rm = TRUE)

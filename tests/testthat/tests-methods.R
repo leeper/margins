@@ -44,6 +44,10 @@ if (requireNamespace("lme4")) {
         expect_true(inherits(margins(m), "margins"))
         expect_true(inherits(margins(m), "margins"))
     })
+    test_that("Test margins(vce = 'simulation') for 'lmerMod' (single grouping)", {
+        expect_true(inherits(margins(m, vce = "simulation", iterations = 5),
+                             "margins"))  
+    })
     test_that("Test margins(vce = 'bootstrap') for 'lmerMod' (single grouping)", {
         expect_true(inherits(suppressWarnings({
             margins(m, vce = "bootstrap", iterations = 5)
@@ -58,6 +62,10 @@ if (requireNamespace("lme4")) {
     test_that("Test margins() for 'lmerMod' (multiple grouping)", {
         expect_true(inherits(margins(m), "margins"))
         expect_true(inherits(margins(m), "margins"))
+    })
+    test_that("Test margins(vce = 'simulation') for 'lmerMod' (multiple grouping)", {
+        expect_true(inherits(margins(m, vce = "simulation", iterations = 5),
+                             "margins"))  
     })
     test_that("Test margins(vce = 'bootstrap') for 'lmerMod' (multiple grouping)", {
         expect_true(inherits(suppressWarnings({
@@ -75,6 +83,10 @@ if (requireNamespace("lme4")) {
         expect_true(inherits(margins(m), "margins"))
         expect_true(inherits(margins(m), "margins"))
     })
+    test_that("Test margins(vce = 'simulation') for 'lmerMod' (random slopes)", {
+        expect_true(inherits(margins(m, vce = "simulation", iterations = 5),
+                             "margins"))  
+    })
     test_that("Test margins(vce = 'bootstrap') for 'lmerMod' (random slopes)", {
         expect_true(inherits(suppressWarnings({
             margins(m, vce = "bootstrap", iterations = 5)
@@ -91,6 +103,10 @@ if (requireNamespace("lme4")) {
     test_that("Test margins() for 'merMod'", {
         expect_true(inherits(margins(m), "margins"))
         expect_true(inherits(margins(m), "margins"))
+    })
+    test_that("Test margins(vce = 'simulation') for 'merMod'", {
+        expect_true(inherits(margins(m, vce = "simulation", iterations = 5),
+                             "margins"))  
     })
     test_that("Test margins(vce = 'bootstrap') for 'merMod'", {
         expect_true(inherits(suppressWarnings({
