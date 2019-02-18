@@ -48,8 +48,18 @@ function(x,
     }
 
     # main plot command
-    p <- ggplot(summ, aes(x = factor, y = AME, ymin = lower, ymax = upper)) +
-         geom_pointrange(...) +
+    p <- ggplot(summ, aes(x = factor, y = AME, ymin = lower, ymax = upper))
+
+    # confidence intervals available?
+    ci <- !all(is.na(summ$lower)) & !all(is.na(summ$upper))
+    if (ci) {
+        p <- p + geom_pointrange(...)
+    } else {
+        p <- p + geom_point(...)
+    }
+
+    # finish
+    p <- p +
          theme_minimal() +
          ylab("Average Marginal Effect") +
          xlab("")

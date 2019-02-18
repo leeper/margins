@@ -11,7 +11,7 @@ function(object,
          type, 
          xvals,
          vcov, 
-         what = c("prediction", "classprediction", "stackedprediction", "effect"), 
+         what,
          ...) {
     
     # handle factors and subset data
@@ -39,9 +39,6 @@ function(object,
     a <- (1 - level)/2
     fac <- qnorm(c(a, 1 - a))
 
-    if (what == "effect") {
-        stop("Displaying marginal effects is not currently supported for 'polr' models.")
-    }
 
     if (what %in% c("prediction", "classprediction", "stackedprediction")) {
 
@@ -75,7 +72,9 @@ function(object,
             out <- do.call('rbind', out)
         }
 
-    } 
+    } else if (what == "effect") {
+        stop("Displaying marginal effects is not currently supported for 'polr' models.")
+    }
 
     return(out)
 }

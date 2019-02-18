@@ -1,47 +1,19 @@
-#' @rdname cplot
-#' @importFrom stats stepfun
+#' @inheritParams cplot
 #' @export
-cplot.clm <-
+cplot_extract.clm <-
 function(object, 
-         x = attributes(terms(object))[["term.labels"]][1L], #ok
-         dx = x,                                              #ok
-         what = c("prediction", "classprediction", "stackedprediction", "effect"), 
-         data = prediction::find_data(object), #ok
-         type = c("response", "link"), 
-         vcov = stats::vcov(object), # different order to polr
+         data,
+         dx,
+         level,
+         xvar,
          at,
-         n = 25L,
-         xvals = seq_range(data[[x]], n = n),  
-         level = 0.95,
-         draw = TRUE,
-         xlab = x, 
-         ylab = if (match.arg(what) == "effect") paste0("Marginal effect of ", dx) else paste0("Predicted value"),
-         xlim = NULL,
-         ylim = if (match.arg(what) %in% c("prediction", "stackedprediction")) c(0,1.04) else NULL,
-         lwd = 1L,
-         col = "black",
-         lty = 1L,
-         factor.lty = 1L,
-         factor.pch = 19L,
-         factor.col = col,
-         factor.fill = factor.col,
-         factor.cex = 1L,
-         xaxs = "i",
-         yaxs = xaxs,
-         las = 1L,
-         scatter = FALSE,
-         scatter.pch = 19L,
-         scatter.col = factor.col,
-         scatter.bg = scatter.col,
-         scatter.cex = 0.5,
-         rug = TRUE,
-         rug.col = col,
-         rug.size = -0.02,
+         n,
+         type,
+         xvals,
+         vcov,
+         what,
          ...) {
-    
-    xvar <- x
-    yvar <- as.character(attributes(terms(object))[["variables"]][[2]]) #ok
-    
+
     # handle factors and subset data
     f <- check_factors(object = object, data = data, xvar = xvar, dx = dx) #ok
     x_is_factor <- f[["x_is_factor"]]
@@ -49,18 +21,20 @@ function(object,
     dat <- f[["data"]]
     
     # setup x (based on whether factor)
-    if (isTRUE(x_is_factor)) {
-        if (is.factor(dat[["xvar"]])) {
-            xvals <- as.character(levels(dat[[clean_terms(xvar)]]))
+    if (is.null(xvals)) {
+        if (isTRUE(x_is_factor)) {
+            if (is.factor(dat[["xvar"]])) {
+                xvals <- as.character(levels(dat[[clean_terms(xvar)]]))
+            } else {
+                xvals <- as.character(unique(dat[[clean_terms(xvar)]]))
+            }
         } else {
-            xvals <- as.character(unique(dat[[clean_terms(xvar)]]))
-        }
-    } else {
-        xvals <- xvals
-    } 
-    
-    what <- match.arg(what)
-    type <- match.arg(type)
+            xvals <- prediction::seq_range(data[[xvar]], n = n)
+        } 
+    }
+        
+    at <- setNames(list(xvals), xvar)
+
     a <- (1 - level)/2
     fac <- qnorm(c(a, 1 - a))
 
@@ -76,7 +50,6 @@ function(object,
                                   yvals = outdat[["fitted.class"]]),
                              class = "data.frame", 
                              row.names = seq_along(outdat[["fitted.class"]]))
-            out <- list(out)
         } else {
             out <- list()
             preds <- grep("Pr", names(outdat))
@@ -90,59 +63,13 @@ function(object,
                                       class = "data.frame", 
                                       row.names = seq_along(outdat[["fitted"]]))
             }
+            out <- do.call("rbind", out)
         }
     } else if (what == "effect") {
         stop("Displaying marginal effects is not currently supported for 'clm' models!")
     }
     
-    # optionally draw the plot; if FALSE, just the data are returned
-    if (isTRUE(draw)) {
-        if (is.null(ylim) && (what == "classprediction")) {
-            ylim <- c(0.5, nlevels(out[[1]][["yvals"]]) + 0.5)
-            y_is_factor <- TRUE
-        } else {
-            y_is_factor <- FALSE
-        }
-      
-        setup_cplot(plotdat = out[[1L]], data = data, xvar = xvar, yvar = yvar,
-                    xlim = xlim, ylim = ylim, x_is_factor = x_is_factor, y_is_factor = y_is_factor,
-                    xlab = xlab, ylab = ylab, xaxs = xaxs, yaxs = yaxs, las = las,
-                    scatter = scatter, scatter.pch = scatter.pch, scatter.col = scatter.col)
-    }
-    if (isTRUE(draw) || draw == "add") {
-        if (length(lty) != length(out)) {
-            lty <- rep(lty, length(out))
-        }
-        if (length(lwd) != length(out)) {
-            lwd <- rep(lwd, length(out))
-        }
-        if (length(col) != length(out)) {
-            col <- rep(col, length(out))
-        }
-        if (length(factor.col) != length(out)) {
-            factor.col <- rep(factor.col, length(out))
-        }
-        if (length(factor.fill) != length(out)) {
-            factor.fill <- rep(factor.fill, length(out))
-        }
-        for (i in seq_along(out)) {
-            draw_one(xvals = out[[i]][["xvals"]], 
-                     yvals = out[[i]][["yvals"]], 
-                     x_is_factor = x_is_factor,
-                     y_is_factor = y_is_factor,
-                     col = col[i], lty = lty[i], lwd = lwd,
-                     se.type = "none",
-                     factor.lty = factor.lty, factor.pch = factor.pch, 
-                     factor.fill = factor.fill[i], 
-                     factor.col = factor.col[i], factor.cex = factor.cex)
-          
-        }
-        if (isTRUE(rug) && is.numeric(data[[x]])) {
-            draw_rug(data[[x]], rug.size = rug.size, rug.col = rug.col)
-        }
-    }
-    
     # return data used in plot
-    invisible(do.call("rbind", out))
-#    invisible(out)
+    return(out)
+
 }

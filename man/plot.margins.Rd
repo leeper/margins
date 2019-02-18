@@ -13,8 +13,8 @@
 \item{level}{A numeric value between 0 and 1 indicating the confidence level
 to use when drawing error bars.}
 
-\item{term_map}{named character vector. Names refer to the original
-term/variable names. Values refer to the term names that will appear in
+\item{term_map}{named character vector. Values refer to the original
+term/variable names. Names refer to the term names that will appear in
 the plot. Terms which are omitted from this vector will be omitted from the
 plot.}
 
