@@ -14,7 +14,11 @@ Authors@R: c(person("Thomas J.", "Leeper",
                     role = c("ctb"),
                     email = "jeffrey.arnold@gmail.com"),
              person("Vincent", "Arel-Bundock", 
-                    role = c("ctb"))
+                    role = c("ctb")),
+             person("Jacob A.", "Long", 
+                    role = c("ctb"),
+                    email = "long.1377@osu.edu",
+                    comment = c(ORCID = "0000-0002-1582-6214"))
              )
 URL: https://github.com/leeper/margins
 BugReports: https://github.com/leeper/margins/issues
