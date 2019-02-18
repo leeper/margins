@@ -44,6 +44,11 @@ if (requireNamespace("lme4")) {
         expect_true(inherits(margins(m), "margins"))
         expect_true(inherits(margins(m), "margins"))
     })
+    test_that("Test margins(vce = 'bootstrap') for 'lmerMod' (single grouping)", {
+        expect_true(inherits(suppressWarnings({
+            margins(m, vce = "bootstrap", iterations = 5)
+        }), "margins"))  
+    })
     # lmer with multiple random intercepts
     m <- lme4::lmer(weight ~ Diet + (1|Time) + (1|Chick), data = ChickWeight)
     test_that("Test marginal_effects() for 'lmerMod' (multiple grouping)", {
@@ -53,6 +58,11 @@ if (requireNamespace("lme4")) {
     test_that("Test margins() for 'lmerMod' (multiple grouping)", {
         expect_true(inherits(margins(m), "margins"))
         expect_true(inherits(margins(m), "margins"))
+    })
+    test_that("Test margins(vce = 'bootstrap') for 'lmerMod' (multiple grouping)", {
+        expect_true(inherits(suppressWarnings({
+            margins(m, vce = "bootstrap", iterations = 5)
+        }), "margins"))  
     })
     
     # lmer with random slopes
@@ -65,6 +75,11 @@ if (requireNamespace("lme4")) {
         expect_true(inherits(margins(m), "margins"))
         expect_true(inherits(margins(m), "margins"))
     })
+    test_that("Test margins(vce = 'bootstrap') for 'lmerMod' (random slopes)", {
+        expect_true(inherits(suppressWarnings({
+            margins(m, vce = "bootstrap", iterations = 5)
+        }), "margins"))  
+    })
     
     # generalized linear mixed effects models
     ChickWeight$high <- cut(ChickWeight$weight, 2)
@@ -76,6 +91,11 @@ if (requireNamespace("lme4")) {
     test_that("Test margins() for 'merMod'", {
         expect_true(inherits(margins(m), "margins"))
         expect_true(inherits(margins(m), "margins"))
+    })
+    test_that("Test margins(vce = 'bootstrap') for 'merMod'", {
+        expect_true(inherits(suppressWarnings({
+            margins(m, vce = "bootstrap", iterations = 5)
+        }), "margins"))  
     })
     
 }

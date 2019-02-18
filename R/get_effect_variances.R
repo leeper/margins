@@ -121,9 +121,9 @@ function(data,
         # function to calculate AME for one bootstrap subsample
         bootfun <- function() {
             samp <- sample(seq_len(nrow(data)), nrow(data), TRUE)
-            tmpmodel <- model
-            tmpmodel[["call"]][["data"]] <- data[samp,]
-            tmpmodel <- eval(tmpmodel[["call"]])
+            tmp_call <- getCall(model)
+            tmp_call[["data"]] <- data[samp,]
+            tmpmodel <- eval(tmp_call)
             if (is.null(weights)) {
                 if (is.null(type)) {
                     means <- colMeans(marginal_effects(model = tmpmodel,
