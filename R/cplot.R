@@ -1,30 +1,6 @@
 #' @rdname cplot
 #' @title Conditional predicted value and average marginal effect plots for models
 #' @description Draw one or more conditional effects plots reflecting
-#' predictions or marginal effects from a model, conditional on a covariate.
-#' Currently methods exist for \dQuote{lm}, \dQuote{glm}, \dQuote{loess} class
-#' models.
-#' @param object A model object.
-#' @param x A character string specifying the name of variable to use as the
-#'   x-axis dimension in the plot.
-#' @param dx If \code{what = "effect"}, the variable whose conditional marginal
-#'   effect should be displayed. By default it is \code{x} (so the plot displays
-#'   the marginal effect of \code{x} across values of \code{x}); ignored
-#'   otherwise. If \code{dx} is a factor with more than 2 levels, an error will
-#'   be issued.
-#' @param what A character string specifying whether to draw a
-#'   \dQuote{prediction} (fitted values from the model, calculated using
-#'   \code{\link[stats]{predict}}) or an \dQuote{effect} (average marginal effect
-#'   of \code{dx} conditional on \code{x}, using \code{\link{margins}}). Methods
-#'   for classes other than \dQuote{lm} or \dQuote{glm} may provided additional
-#'   options (e.g., \code{cplot.polr()} provides \dQuote{stackedprediction} and
-#'   \dQuote{class} alternatives).
-#' @param data A data frame to override the default value offered in
-#'   \code{object[["model"]]}.
-#' @param type A character string specifying whether to calculate predictions
-#'   on the response scale (default) or link (only relevant for non-linear
-#'   models).
-#' @param vcov A matrix containing the variance-covariance matrix for estimated
 #'   model coefficients, or a function to perform the estimation with
 #'   \code{model} as its only argument.
 #' @param at Currently ignored.
@@ -45,6 +21,7 @@
 #' @param size 
 #' @param colour 
 #' @param linetype 
+#' @param rugplot logical include a rugplot at the bottom of the graph 
 #' @param \dots Additional arguments passed to
 #'   \code{\link[ggplot2]{geom_pointrange}} if `x` is a factor, or
 #'   \code{\link[ggplot2]{geom_ribbon}} if `x` is continuous. For example,
@@ -156,7 +133,7 @@
 #' }
 #' @seealso \code{\link{plot.margins}}, \code{\link{persp.lm}}
 #' @keywords graphics
-#' @importFrom ggplot2 ggplot geom_line geom_ribbon geom_pointrange xlab ylab theme_minimal
+#' @importFrom ggplot2 ggplot geom_line geom_ribbon geom_pointrange geom_rug xlab ylab theme_minimal
 #' @importFrom utils head
 #' @importFrom graphics par plot lines rug polygon segments points
 #' @importFrom prediction prediction find_data seq_range mean_or_mode
@@ -175,6 +152,7 @@ cplot <- function(object,
                   size = 0.5,
                   xvals = NULL,
                   n = 25,
+                  rugplot = TRUE,
                   at = NULL,
                   ...) {
                 
@@ -229,6 +207,16 @@ cplot <- function(object,
         # x is numeric -> geom_line + geom_ribbon
         if (is.numeric(outdat$xvals)) {
 
+            # geom_line for estimates
+            out  <- out +
+                    geom_line(size = size, colour = colour, linetype = linetype)
+
+            # rugplot
+            if (rugplot) {
+                rugdat <- data.frame('x' = data[[xvar]])
+                out <- out +
+                       geom_rug(data = rugdat, aes(x = x), inherit.aes=FALSE)
+            }
 
             # confidence intervals are available
             if (all(c('lower', 'upper') %in% names(outdat))) {
@@ -255,9 +243,6 @@ cplot <- function(object,
 
             }
 
-            # geom_line for estimates
-            out  <- out +
-                    geom_line(size = size, colour = colour, linetype = linetype)
 
         # x is not numeric -> geom_pointrange or geom_point
         } else {

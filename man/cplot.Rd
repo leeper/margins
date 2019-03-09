@@ -14,7 +14,7 @@ cplot(object, x = NULL, dx = NULL, data = NULL,
   "stackedprediction"), type = c("response", "link"),
   vcov = stats::vcov(object), level = 0.95, draw = TRUE,
   colour = "black", linetype = 1, size = 0.5, xvals = NULL,
-  n = 25, at = NULL, ...)
+  n = 25, rugplot = TRUE, at = NULL, ...)
 
 \method{cplot_extract}{glm}(object, data, dx, level, xvar, at, n, type,
   xvals, vcov, what, ...)
@@ -26,39 +26,10 @@ cplot(object, x = NULL, dx = NULL, data = NULL,
   xvals, vcov, what, ...)
 
 \method{cplot_extract}{multinom}(object, data, dx, level, xvar, at, n,
-  type, xvals, vcov, what, ...)
+  type, xvals, vcov, what = c("prediction", "classprediction",
+  "stackedprediction", "effect"), ...)
 }
 \arguments{
-\item{object}{A model object.}
-
-\item{x}{A character string specifying the name of variable to use as the
-x-axis dimension in the plot.}
-
-\item{dx}{If \code{what = "effect"}, the variable whose conditional marginal
-effect should be displayed. By default it is \code{x} (so the plot displays
-the marginal effect of \code{x} across values of \code{x}); ignored
-otherwise. If \code{dx} is a factor with more than 2 levels, an error will
-be issued.}
-
-\item{data}{A data frame to override the default value offered in
-\code{object[["model"]]}.}
-
-\item{what}{A character string specifying whether to draw a
-\dQuote{prediction} (fitted values from the model, calculated using
-\code{\link[stats]{predict}}) or an \dQuote{effect} (average marginal effect
-of \code{dx} conditional on \code{x}, using \code{\link{margins}}). Methods
-for classes other than \dQuote{lm} or \dQuote{glm} may provided additional
-options (e.g., \code{cplot.polr()} provides \dQuote{stackedprediction} and
-\dQuote{class} alternatives).}
-
-\item{type}{A character string specifying whether to calculate predictions
-on the response scale (default) or link (only relevant for non-linear
-models).}
-
-\item{vcov}{A matrix containing the variance-covariance matrix for estimated
-model coefficients, or a function to perform the estimation with
-\code{model} as its only argument.}
-
 \item{level}{The confidence level required (used to draw uncertainty
 bounds).}
 
@@ -83,6 +54,8 @@ ignored, as is \code{n}.}
 to calculate the predicted value or marginal effect, when \code{x} is
 numeric. Ignored otherwise.}
 
+\item{rugplot}{logical include a rugplot at the bottom of the graph}
+
 \item{at}{Currently ignored.}
 
 \item{\dots}{Additional arguments passed to
@@ -96,9 +69,8 @@ A tidy data frame containing the data used to draw the plot. Use
 }
 \description{
 Draw one or more conditional effects plots reflecting
-predictions or marginal effects from a model, conditional on a covariate.
-Currently methods exist for \dQuote{lm}, \dQuote{glm}, \dQuote{loess} class
-models.
+  model coefficients, or a function to perform the estimation with
+  \code{model} as its only argument.
 }
 \details{
 Note that when \code{what = "prediction"}, the plots show

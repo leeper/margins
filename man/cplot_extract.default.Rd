@@ -8,17 +8,6 @@
   xvals, vcov, what, ...)
 }
 \arguments{
-\item{object}{A model object.}
-
-\item{data}{A data frame to override the default value offered in
-\code{object[["model"]]}.}
-
-\item{dx}{If \code{what = "effect"}, the variable whose conditional marginal
-effect should be displayed. By default it is \code{x} (so the plot displays
-the marginal effect of \code{x} across values of \code{x}); ignored
-otherwise. If \code{dx} is a factor with more than 2 levels, an error will
-be issued.}
-
 \item{level}{The confidence level required (used to draw uncertainty
 bounds).}
 
@@ -28,26 +17,10 @@ bounds).}
 to calculate the predicted value or marginal effect, when \code{x} is
 numeric. Ignored otherwise.}
 
-\item{type}{A character string specifying whether to calculate predictions
-on the response scale (default) or link (only relevant for non-linear
-models).}
-
 \item{xvals}{A numeric vector of values at which to calculate predictions or
 marginal effects, if \code{x} is numeric. By default, it is calculated from
 the data using \code{\link{seq_range}}. If \code{x} is a factor, this is
 ignored, as is \code{n}.}
-
-\item{vcov}{A matrix containing the variance-covariance matrix for estimated
-model coefficients, or a function to perform the estimation with
-\code{model} as its only argument.}
-
-\item{what}{A character string specifying whether to draw a
-\dQuote{prediction} (fitted values from the model, calculated using
-\code{\link[stats]{predict}}) or an \dQuote{effect} (average marginal effect
-of \code{dx} conditional on \code{x}, using \code{\link{margins}}). Methods
-for classes other than \dQuote{lm} or \dQuote{glm} may provided additional
-options (e.g., \code{cplot.polr()} provides \dQuote{stackedprediction} and
-\dQuote{class} alternatives).}
 
 \item{...}{Additional arguments passed to
 \code{\link[ggplot2]{geom_pointrange}} if `x` is a factor, or
