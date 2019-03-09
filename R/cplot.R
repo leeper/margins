@@ -332,7 +332,7 @@ cplot_extract.default <- function(object,
         tmpdat <- structure(lapply(tmpdat, rep, length.out = length(xvals)),
                             class = "data.frame", row.names = seq_len(length(xvals)))
         tmpdat[[xvar]] <- xvals
-        outdat <- prediction(model = object, data = tmpdat, type = type, level = level)
+        outdat <- prediction(model = object, data = tmpdat, type = type, level = level, vcov = vcov)
         out <- structure(list(xvals = xvals,
                               yvals = outdat[["fitted"]],
                               upper = outdat[["fitted"]] + (fac[2] * outdat[["se.fitted"]]),
