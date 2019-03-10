@@ -150,8 +150,8 @@ margins(x, at = list(wt = fivenum(mtcars$wt)))
 The marginal effects in the first column of results reveal that the average marginal effect of `wt` is large and negative except when `wt` is very large, in which case it has an effect not distinguishable from zero. We can easily plot these results using the `cplot()` function to see the effect visually in terms of either predicted fuel economy or the marginal effect of `wt`:
 
 ```{r}
-cplot(x, "wt", what = "prediction", main = "Predicted Fuel Economy, Given Weight")
-cplot(x, "wt", what = "effect", main = "Average Marginal Effect of Weight")
+cplot(x, "wt", what = "prediction")
+cplot(x, "wt", what = "effect")
 ```
 
 A really nice feature of Stata's margins command is that it handles factor variables gracefully. This functionality is difficult to emulate in R, but the `margins()` function does its best. Here we see the marginal effects of a simple regression that includes a factor variable:
@@ -273,6 +273,7 @@ nrow(m1)/nrow(mtcars)
 
 As you can see above, the result is a relatively long data frame (basically a stack of `"margins"` objects specific to each of the - 40 - requested combinations of `at` values). We can examine the whole stack using `summary()`, but it's an extremely long output (one row for each estimate times the number of unique combinations of `at` values, so 120 rows in this instance). 
 
+<!--
 An easier way to understand all of this is to use graphing. The `cplot()` function, in particular, is useful here. We can, for example, plot the marginal effect of axle ratio across levels of vehicle weight, separately for automatic vehicles (in red) and manual vehicles (in blue):
 
 ```{r, fig.height=4, fig.width=8}
@@ -303,8 +304,9 @@ cplot(x1b, x = "wt", dx = "wt", what = "effect",
       col = "blue", se.type = "shade", 
       draw = "add")
 ```
+-->
 
-Note, however, that interpreting these kind of continuous-by-continuous interaction terms is slightly more complex because the marginal effect of both constituent variables always depends on the level of the other variable. We'll use the horsepower (`hp`) variable from `mtcars` to understand this type of interaction. We can start by looking at the AMEs:
+Interpreting continuous-by-continuous interaction terms is slightly more complex because the marginal effect of both constituent variables always depends on the level of the other variable. We'll use the horsepower (`hp`) variable from `mtcars` to understand this type of interaction. We can start by looking at the AMEs:
 
 ```{r}
 x2 <- lm(mpg ~ hp * wt, data = mtcars)
