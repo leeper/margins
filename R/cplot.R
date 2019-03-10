@@ -322,7 +322,7 @@ cplot_extract.default <- function(object,
             stop("Displaying effect of a factor variable with > 2 levels is not currently supported!")
         }
         marg <- margins(model = object, data = data, at = at, type = type, vcov = vcov)
-        out <- summary(marg)[ , c(xvar, "AME", "upper", "lower", "factor"), drop = FALSE]
+        out <- summary(marg, level = level)[ , c(xvar, "AME", "upper", "lower", "factor"), drop = FALSE]
         out <- setNames(out[out[["factor"]] == dx, , drop = FALSE], c("xvals", "yvals", "upper", "lower", "factor"))
     }
 
