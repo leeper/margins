@@ -12,7 +12,13 @@ function(object,
          xvals,
          vcov,
          what,
+         zvar,
+         zvals,
          ...) {
+
+    if (!is.null(zvar) | !is.null(zvals)) {
+        stop('The `zvar` and `zvals` arguments are not supported for this type of model.')
+    }
 
     # handle factors and subset data
     f <- check_factors(object = object, data = data, xvar = xvar, dx = dx) #ok
@@ -58,8 +64,8 @@ function(object,
                     outdat[[i]] <- outdat[[i]] + outdat[[i - 1L]]
                 }
                 out[[i - preds[1] + 1]] <- structure(list(xvals = xvals,
-                                              yvals = outdat[[i]],
-                                              level = names(outdat)[i]),
+                                                          yvals = outdat[[i]],
+                                                          zvals = names(outdat)[i]),
                                       class = "data.frame", 
                                       row.names = seq_along(outdat[["fitted"]]))
             }

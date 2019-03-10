@@ -273,38 +273,22 @@ nrow(m1)/nrow(mtcars)
 
 As you can see above, the result is a relatively long data frame (basically a stack of `"margins"` objects specific to each of the - 40 - requested combinations of `at` values). We can examine the whole stack using `summary()`, but it's an extremely long output (one row for each estimate times the number of unique combinations of `at` values, so 120 rows in this instance). 
 
-<!--
-An easier way to understand all of this is to use graphing. The `cplot()` function, in particular, is useful here. We can, for example, plot the marginal effect of axle ratio across levels of vehicle weight, separately for automatic vehicles (in red) and manual vehicles (in blue):
+An easier way to understand all of this is to use graphing. The `cplot()` function, in particular, is useful here. We can, for example, plot the marginal effect of axle ratio across levels of vehicle weight, separately for automatic vehicles (`am=0`) and manual vehicles (`am=1`):
 
 ```{r, fig.height=4, fig.width=8}
-cplot(x1, x = "wt", dx = "drat", what = "effect", 
-      data = mtcars[mtcars[["am"]] == 0,], 
-      col = "red", se.type = "shade",
-      xlim = range(mtcars[["wt"]]), ylim = c(-20, 20), 
-      main = "AME of Axle Ratio on Fuel Economy")
-cplot(x1, x = "wt", dx = "drat", what = "effect", 
-      data = mtcars[mtcars[["am"]] == 1,], 
-      col = "blue", se.type = "shade", 
-      draw = "add")
+cplot(x1, x = 'wt', dx = 'drat', z = 'am', zvals = 0:1, what = 'effect')
 ```
 
+<!--
 `cplot()` only provides AME displays over the observed range of the data (noted by the rug), so we can see that it would be inappropriate to compare the average marginal effect of axle ratio for the two transmission types at extreme values of weight.
+-->
 
 Another use of these types of plots can be to interpret power terms, to see the average marginal effect of a variable across values of itself. Consider the following, for example:
 
-```{r, fig.height=4, fig.width=8}
+```{r}
 x1b <- lm(mpg ~ am * wt + am * I(wt^2), data = mtcars)
-cplot(x1b, x = "wt", dx = "wt", what = "effect", 
-      data = mtcars[mtcars[["am"]] == 0,], 
-      col = "red", se.type = "shade",
-      xlim = range(mtcars[["wt"]]), ylim = c(-20, 20), 
-      main = "AME of Weight on Fuel Economy")
-cplot(x1b, x = "wt", dx = "wt", what = "effect", 
-      data = mtcars[mtcars[["am"]] == 1,], 
-      col = "blue", se.type = "shade", 
-      draw = "add")
+cplot(x1b, x = 'wt', dx = 'wt', z = 'am', zvals = 0:1, what = 'effect')
 ```
--->
 
 Interpreting continuous-by-continuous interaction terms is slightly more complex because the marginal effect of both constituent variables always depends on the level of the other variable. We'll use the horsepower (`hp`) variable from `mtcars` to understand this type of interaction. We can start by looking at the AMEs:
 

@@ -12,7 +12,13 @@ function(object,
          xvals,
          vcov, 
          what = c("prediction", "classprediction", "stackedprediction", "effect"), 
+         zvar,
+         zvals,
          ...) {
+
+    if (!is.null(zvar) | !is.null(zvals)) {                                       
+        stop('The `zvar` and `zvals` arguments are not supported for this type of model.')     
+    }  
     
     # handle factors and subset data
     data <- force(data)
@@ -69,7 +75,7 @@ function(object,
             for (i in grep('^Pr\\(', names(outdat))) {
                 out[[i]] <- data.frame(xvals = xvals,
                                        yvals = outdat[[i]],
-                                       level = names(outdat)[i],
+                                       zvals = names(outdat)[i],
                                        stringsAsFactors = FALSE)
             }
             out <- do.call('rbind', out)

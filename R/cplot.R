@@ -116,7 +116,7 @@
 #' }
 #' @seealso \code{\link{plot.margins}}, \code{\link{persp.lm}}
 #' @keywords graphics
-#' @importFrom ggplot2 ggplot geom_line geom_ribbon geom_pointrange geom_rug xlab ylab theme_minimal
+#' @importFrom ggplot2 ggplot geom_line geom_ribbon geom_pointrange geom_rug xlab ylab theme_minimal theme_classic facet_wrap
 #' @importFrom utils head
 #' @importFrom graphics par plot lines rug polygon segments points
 #' @importFrom prediction prediction find_data seq_range mean_or_mode
@@ -131,6 +131,8 @@ cplot <- function(object,
                   level = 0.95,
                   draw = TRUE,
                   xvals = NULL,
+                  z = NULL,
+                  zvals = NULL,
                   n = 25,
                   rugplot = TRUE,
                   at = NULL,
@@ -142,14 +144,18 @@ cplot <- function(object,
     if (is.null(data)) {
         data <- prediction::find_data(object)
     }
+
     if (is.null(x)) {
         x <- attributes(terms(object))[["term.labels"]][1L]
     }
     xvar <- x
+
     if (is.null(dx)) {
         dx <- x
     }
+
     what <- match.arg(what)
+
     if (what == 'prediction') {
         ylabel <- 'Predicted value'
     } else if (what == 'effect') {
@@ -171,6 +177,8 @@ cplot <- function(object,
                          what = what, 
                          type = type, 
                          xvals = xvals,
+                         zvar = z,
+                         zvals = zvals,
                          vcov = vcov,
                          at = at,
                          n = n,
@@ -245,9 +253,10 @@ cplot <- function(object,
                theme_minimal()
 
         # facet_wrap if `level` is in the extracted data
-        if ('level' %in% names(outdat)) {
+        if ('zvals' %in% names(outdat)) {
             out <- out +
-                   facet_wrap(~ level)
+                   facet_wrap(~ zvals) + 
+                   theme_classic() # minimal facets are hard to read
         }
 
     }
@@ -271,10 +280,12 @@ cplot_extract.default <- function(object,
                                   dx, 
                                   level, 
                                   xvar, 
+                                  zvar,
+                                  xvals,
+                                  zvals,
                                   at,
                                   n,
                                   type, 
-                                  xvals,
                                   vcov,
                                   what,
                                   ...) {
@@ -299,8 +310,14 @@ cplot_extract.default <- function(object,
         } 
     }
 
+    # at argument
     at <- setNames(list(xvals), xvar)
+    z_valid <- !is.null(zvar) & !is.null(zvals)
+    if (z_valid) {
+        at[[zvar]] <- zvals
+    }
    
+    # confidence level
     a <- (1 - level)/2
     fac <- qnorm(c(a, 1 - a))
     
@@ -308,22 +325,45 @@ cplot_extract.default <- function(object,
 
         # generates predictions as mean/mode of all variables rather than average prediction!
         tmpdat <- lapply(dat[, names(dat) != xvar, drop = FALSE], prediction::mean_or_mode)
-        tmpdat <- structure(lapply(tmpdat, rep, length.out = length(xvals)),
-                            class = "data.frame", row.names = seq_len(length(xvals)))
+
+        # data.frame with all combinations of xvals, zvals, and mean/mode values 
         tmpdat[[xvar]] <- xvals
+        if (z_valid) {
+            tmpdat[[zvar]] <- zvals
+        }
+        tmpdat <- expand.grid(tmpdat, stringsAsFactors = FALSE)
+
+        # predicted values
         outdat <- prediction(model = object, data = tmpdat, type = type, level = level, vcov = vcov)
-        out <- structure(list(xvals = xvals,
+
+        # output
+        out <- structure(list(xvals = outdat[[xvar]],
                               yvals = outdat[["fitted"]],
                               upper = outdat[["fitted"]] + (fac[2] * outdat[["se.fitted"]]),
                               lower = outdat[["fitted"]] + (fac[1] * outdat[["se.fitted"]])),
                          class = "data.frame", row.names = seq_along(outdat[["fitted"]]))
+        if (z_valid) {
+            out[['zvals']] <- outdat[[zvar]]
+        }
+
     } else if (what == "effect") {
+
         if (is.factor(dat[[dx]]) && nlevels(data[[dx]]) > 2L) {
             stop("Displaying effect of a factor variable with > 2 levels is not currently supported!")
         }
+
         marg <- margins(model = object, data = data, at = at, type = type, vcov = vcov)
-        out <- summary(marg, level = level)[ , c(xvar, "AME", "upper", "lower", "factor"), drop = FALSE]
-        out <- setNames(out[out[["factor"]] == dx, , drop = FALSE], c("xvals", "yvals", "upper", "lower", "factor"))
+
+        if (!z_valid) {
+            out <- summary(marg, level = level)[ , c(xvar, "AME", "upper", "lower", "factor"), drop = FALSE]
+            out <- setNames(out[out[["factor"]] == dx, , drop = FALSE], 
+                            c("xvals", "yvals", "upper", "lower", "factor"))
+        } else {
+            out <- summary(marg, level = level)[ , c(xvar, zvar, "AME", "upper", "lower", "factor"), drop = FALSE]
+            out <- setNames(out[out[["factor"]] == dx, , drop = FALSE], 
+                            c("xvals", "zvals", "yvals", "upper", "lower", "factor"))
+        }
+
     }
 
     return(out)

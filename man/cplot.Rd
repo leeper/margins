@@ -13,20 +13,21 @@ cplot(object, x = NULL, dx = NULL, data = NULL,
   what = c("prediction", "effect", "classprediction",
   "stackedprediction"), type = c("response", "link"),
   vcov = stats::vcov(object), level = 0.95, draw = TRUE,
-  xvals = NULL, n = 25, rugplot = TRUE, at = NULL, ...)
+  xvals = NULL, z = NULL, zvals = NULL, n = 25, rugplot = TRUE,
+  at = NULL, ...)
 
-\method{cplot_extract}{glm}(object, data, dx, level, xvar, at, n, type,
-  xvals, vcov, what, ...)
+\method{cplot_extract}{glm}(object, data, dx, level, xvar, zvar, xvals,
+  zvals, at, n, type, vcov, what, ...)
 
-\method{cplot_extract}{lm}(object, data, dx, level, xvar, at, n, type,
-  xvals, vcov, what, ...)
+\method{cplot_extract}{lm}(object, data, dx, level, xvar, zvar, xvals,
+  zvals, at, n, type, vcov, what, ...)
 
-\method{cplot_extract}{loess}(object, data, dx, level, xvar, at, n, type,
-  xvals, vcov, what, ...)
+\method{cplot_extract}{loess}(object, data, dx, level, xvar, zvar, xvals,
+  zvals, at, n, type, vcov, what, ...)
 
 \method{cplot_extract}{multinom}(object, data, dx, level, xvar, at, n,
   type, xvals, vcov, what = c("prediction", "classprediction",
-  "stackedprediction", "effect"), ...)
+  "stackedprediction", "effect"), zvar, zvals, ...)
 }
 \arguments{
 \item{level}{The confidence level required (used to draw uncertainty
