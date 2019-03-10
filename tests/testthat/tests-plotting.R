@@ -2,7 +2,9 @@
 context("Plotting")
 
 library(ggplot2)
+library(margins)
 data(mpg)
+data(mtcars)
 
 test_that("persp() method for 'lm' works", {
     x <- lm(mpg ~ wt * hp, data = mtcars)
@@ -21,36 +23,55 @@ test_that("image() method for 'lm' works", {
 
 test_that("cplot() lm models", {
 
-    mod_continuous <- lm(hwy ~ displ + cty * year, data = mpg)
-    mod_factor <- lm(hwy ~ displ + cty * trans, data = mpg)
+    mtcars$cyl <- as.factor(mtcars$cyl)
+    mod_continuous <- lm(hp ~ wt*drat, data = mtcars)
+    mod_factor <- lm(hp ~ cyl*drat, data = mtcars)
 
-    vdiffr::expect_doppelganger('cplot(): continuous factor', 
-        cplot(mod_continuous, x = 'year', dx = 'cty'))
+    vdiffr::expect_doppelganger('cplot(): continuous prediction', 
+        cplot(mod_continuous, x = 'wt', dx = 'drat'))
     
     vdiffr::expect_doppelganger('cplot(): continuous effect', 
-        cplot(mod_continuous, x = 'year', dx = 'cty', what = 'effect'))
+        cplot(mod_continuous, x = 'wt', dx = 'drat', what = 'effect'))
 
     vdiffr::expect_doppelganger('cplot(): factor prediction',
-        cplot(mod_factor, x = 'trans'))
-
-    vdiffr::expect_doppelganger('cplot(): factor effect', 
-        cplot(mod_factor, x = 'trans', what = 'effect'))
+        cplot(mod_factor, x = 'cyl'))
 
     vdiffr::expect_doppelganger('cplot(): continous styling', 
-        cplot(mod_continuous, x = 'year', dx = 'cty', colour = 'pink', 
-              linetype = 4, se_colour = 'green', alpha = .7))
+        cplot(mod_continuous, x = 'wt', dx = 'drat', colour = 'pink', fill='turquoise', alpha=1, linetype = 4, size=4, shape=3))
 
     vdiffr::expect_doppelganger('cplot(): factor styling', 
-        cplot(mod_factor, x = 'trans', shape = 4, colour = 'turquoise'))
+        cplot(mod_factor, x = 'cyl', shape = 4, colour = 'turquoise'))
 
-    vdiffr::expect_doppelganger('cplot(): conf level (expect tiny confidence intervals)', 
-        cplot(mod_continuous, x = 'year', dx = 'cty', level = .1, what = 'effect'))
+    vdiffr::expect_doppelganger('cplot(): level + prediction (expect tiny confidence intervals)', 
+        cplot(mod_continuous, x = 'wt', dx = 'drat', level = .2, what = 'prediction'))
 
-    vc <- vcov(mod_factor) / 10
-    vdiffr::expect_doppelganger('cplot(): vcov (expect tiny confidence intervals)', 
-        cplot(mod_factor, x = 'trans', vcov = vc, what = 'effect'))
+    vdiffr::expect_doppelganger('cplot(): level + effect (expect tiny confidence intervals)', 
+        cplot(mod_continuous, x = 'wt', dx = 'drat', level = .1, what = 'effect'))
+
+	vc <- vcov(mod_continuous) / 100
+    vdiffr::expect_doppelganger('cplot(): vcov + effect (expect tiny confidence intervals)', 
+        cplot(mod_continuous, x = 'wt', dx = 'drat', vcov = vc, what = 'effect'))
+
+	# TODO: this doesn't work yet. vincent thinks this is an upstream prediction-related issue
+	#vc <- vcov(mod_continuous) / 100
+    #vdiffr::expect_doppelganger('cplot(): vcov + prediction (expect tiny confidence intervals)', 
+        #cplot(mod_continuous, x = 'wt', dx = 'drat', vcov = vc, what = 'prediction'))
+
+    #vc <- vcov(mod_continuous) / 100
+    #vdiffr::expect_doppelganger('cplot(): vcov + prediction (expect tiny confidence intervals)', 
+        #cplot(mod_continuous, x = 'wt', dx='drat', vcov = vc, what = 'prediction'))
 
 })
+
+test_that("cplot() glm models", {
+
+    mod <- glm(am ~ wt*drat, data = mtcars, family = binomial)
+
+    vdiffr::expect_doppelganger('cplot(): logit', 
+        cplot(mod, x = 'wt', dx = 'drat'))
+
+})
+
 
 test_that("plot() lm models", {
 
@@ -60,28 +81,13 @@ test_that("plot() lm models", {
     vdiffr::expect_doppelganger('plot(): default', 
         plot(x))
 
-    vdiffr::expect_doppelganger('plot(): horizontal', 
-        plot(x, horizontal = TRUE))
-
-    vdiffr::expect_doppelganger('plot(): xlab + ylab', 
-        plot(x, xlab = 'test xlab', ylab = 'test ylab'))
-
-    vdiffr::expect_doppelganger('plot(): level .999', 
+    vdiffr::expect_doppelganger('plot(): level large conf.int', 
         plot(x, level = .999))
 
-    vdiffr::expect_doppelganger('plot(): pch 2', 
-        plot(x, pch = 2))
+    vdiffr::expect_doppelganger('plot(): level tiny conf.int', 
+        plot(x, level = .1))
 
-    vdiffr::expect_doppelganger('plot(): points.col = green', 
-        plot(x, points.col = 'green'))
-
-    vdiffr::expect_doppelganger('plot(): lwd = 2', 
-        plot(x, lwd = 2))
-
-    vdiffr::expect_doppelganger('plot(): no zero line', 
-        plot(x, zeroline = FALSE))
-
-    vdiffr::expect_doppelganger('plot(): zero line green', 
-        plot(x, zero.col = 'green'))
+    vdiffr::expect_doppelganger('plot(): styling', 
+        plot(x, size=3, colour = 'turquoise', linetype = 'dashed', level = .999))
 
 })
