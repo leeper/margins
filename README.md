@@ -262,9 +262,6 @@ If one desires *subgroup* effects, simply pass a subset of data to the
 summary(margins(mod2, data = subset(margex, sex == 0)))
 ```
 
-    ## Warning in model$family$mu.eta(predictions_link) * model_mat: longer object length is not a multiple
-    ## of shorter object length
-
     ##     factor     AME     SE       z      p   lower   upper
     ##        age  0.0043 0.0007  5.7723 0.0000  0.0028  0.0057
     ##      group -0.0753 0.0105 -7.1745 0.0000 -0.0959 -0.0547
@@ -274,9 +271,6 @@ summary(margins(mod2, data = subset(margex, sex == 0)))
 # effects for wommen
 summary(margins(mod2, data = subset(margex, sex == 1)))
 ```
-
-    ## Warning in model$family$mu.eta(predictions_link) * model_mat: longer object length is not a multiple
-    ## of shorter object length
 
     ##     factor     AME     SE       z      p   lower  upper
     ##        age  0.0150 0.0013 11.5578 0.0000  0.0125 0.0176
@@ -323,7 +317,7 @@ summary(marg3 <- margins(mod3))
 plot(marg3)
 ```
 
-![](https://i.imgur.com/uKVeeIv.png)<!-- -->
+![](https://i.imgur.com/uknSkHL.png)<!-- -->
 
 ### Conditional effects plots
 
@@ -339,10 +333,7 @@ mod4 <- glm(am ~ wt*drat, data = mtcars, family = binomial)
 cplot(mod4, x = "wt", dx = 'drat')
 ```
 
-    ## Warning in model$family$mu.eta(predictions_link) * model_mat: longer object length is not a multiple
-    ## of shorter object length
-
-![](https://i.imgur.com/AhGYxel.png)<!-- -->
+![](https://i.imgur.com/UxoDX19.png)<!-- -->
 
 And fitted values with a factor independent variable:
 
@@ -350,7 +341,7 @@ And fitted values with a factor independent variable:
 cplot(lm(Sepal.Length ~ Species, data = iris))
 ```
 
-![](https://i.imgur.com/fjiNXtQ.png)<!-- -->
+![](https://i.imgur.com/IoSKK0J.png)<!-- -->
 
 and a graph of the effect of `drat` across levels of `wt`:
 
@@ -358,12 +349,36 @@ and a graph of the effect of `drat` across levels of `wt`:
 cplot(mod4, x = "wt", dx = "drat", what = "effect")
 ```
 
-![](https://i.imgur.com/ySjfzuv.png)<!-- -->
+![](https://i.imgur.com/cPvY3ti.png)<!-- -->
 
 ### Customizing the look of your plots
 
 Since `cplot()` and `plot()` return `ggplot2` objects, the look is very
-easy to customize. Here is an example:
+easy to customize. For example, we could flip the marginal effects plot
+on its side, change the colors and line type, rename the variables, and
+add a red line at 0:
+
+``` r
+library(ggplot2)
+mod3 <- glm(highbp ~ sex * agegrp * bmi, data = nhanes2, family = binomial)
+marg3 <- margins(mod3)
+plot(marg3,
+     level = .99,
+     colour = 'turquoise', size = 1.5, linetype = 'dashed',
+     term_map = c('Body Mass Index' = 'bmi','Gender' = 'sex')) + 
+  geom_hline(yintercept = 0, colour = 'red') +
+  xlab('The two variables I care about') +
+  ylab('Average marginal effects with 95% confidence intervals') +
+  coord_flip()
+```
+
+![](https://i.imgur.com/krBdcol.png)<!-- -->
+
+Notice that the `agegrp` does not appear in the plot above because it
+was omitted from the `term_map` argument. This gives you a convenient
+way to omit terms from the plot.
+
+We can apply the same kinds of changes to graphs produced by `cplot()`:
 
 ``` r
 library(ggplot2)
@@ -375,21 +390,21 @@ cplot(mod4, x = "wt", dx = 'drat', what='effect', size=2, colour='blue',
     ggtitle('This is a custom title')
 ```
 
-![](https://i.imgur.com/1OEkOlA.png)<!-- -->
+![](https://i.imgur.com/fWbMOKH.png)<!-- -->
 
-You could also use one of many user-created themes. For instance, here
-is a plot drawn with the [`ggpomological
-theme`](https://github.com/gadenbuie/ggpomological) and the [Homemade
-Apple font](https://fonts.google.com/specimen/Homemade+Apple/):
+You can even use one of many user-created themes that are floating
+around the web. For instance, here is a plot drawn with the
+[`ggpomological theme`](https://github.com/gadenbuie/ggpomological) and
+the [Homemade Apple
+font](https://fonts.google.com/specimen/Homemade+Apple/):
 
 ``` r
 library(ggpomological)
-cplot(mod4, x = "wt", dx = 'drat', what='effect', 
-      alpha=.5, fill='#efe1c6', colour='#6f5438') + 
+cplot(mod4, x = "wt", dx = 'drat', what='effect', alpha=.5, fill='#efe1c6', colour='#6f5438') + 
     theme_pomological_fancy()
 ```
 
-![](https://i.imgur.com/fyj0LH3.png)<!-- -->
+![](https://i.imgur.com/6QAcLjC.png)<!-- -->
 
 If you would like even more control over your plots, `cplot()` can also
 return a data frame of quantities of interest:
@@ -417,7 +432,7 @@ representations of predicted outcomes:
 persp(mod1, xvar = "cyl", yvar = "hp")
 ```
 
-![](https://i.imgur.com/Q4JFL8D.png)<!-- -->
+![](https://i.imgur.com/sKIwiN1.png)<!-- -->
 
 and marginal effects:
 
@@ -425,7 +440,7 @@ and marginal effects:
 persp(mod1, xvar = "cyl", yvar = "hp", what = "effect", nx = 10)
 ```
 
-![](https://i.imgur.com/jlmF82X.png)<!-- -->
+![](https://i.imgur.com/V3HBpV0.png)<!-- -->
 
 And if three-dimensional plots aren’t your thing, there are also
 analogous methods for the `image()` generic, to produce heatmap-style
@@ -435,7 +450,7 @@ representations:
 image(mod1, xvar = "cyl", yvar = "hp", main = "Predicted Fuel Efficiency,\nby Cylinders and Horsepower")
 ```
 
-![](https://i.imgur.com/F9v0ZAE.png)<!-- -->
+![](https://i.imgur.com/uh6UElH.png)<!-- -->
 
 The numerous package vignettes and help files contain extensive
 documentation and examples of all package functionality.
@@ -451,16 +466,16 @@ microbenchmark(marginal_effects(mod1))
 ```
 
     ## Unit: milliseconds
-    ##                    expr      min       lq   mean   median       uq      max neval
-    ##  marginal_effects(mod1) 3.355421 3.481464 3.8896 3.616069 3.968025 8.487453   100
+    ##                    expr      min       lq     mean   median       uq      max neval
+    ##  marginal_effects(mod1) 3.333276 3.421655 3.681013 3.488125 3.661841 8.384896   100
 
 ``` r
 microbenchmark(margins(mod1))
 ```
 
     ## Unit: milliseconds
-    ##           expr      min      lq     mean   median       uq      max neval
-    ##  margins(mod1) 19.69947 21.0826 23.51354 22.76146 25.49112 33.57057   100
+    ##           expr      min       lq     mean   median       uq      max neval
+    ##  margins(mod1) 23.36257 24.62933 27.56169 25.32651 26.13605 181.4924   100
 
 The most computationally expensive part of `margins()` is variance
 estimation. If you don’t need variances, use `marginal_effects()`

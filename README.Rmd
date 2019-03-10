@@ -93,7 +93,7 @@ These functions may be useful for plotting, getting a quick impression of the re
 
 The package also implement's one of the best features of `margins`, which is the `at` specification that allows for the estimation of average marginal effects for counterfactual datasets in which particular variables are held at fixed values:
 
-```{r at_specification}
+```{r at_specification, warning=FALSE}
 # webuse margex
 library("webuse")
 webuse::webuse("margex")
@@ -111,7 +111,7 @@ This functionality removes the need to modify data before performing such calcul
 
 If one desires *subgroup* effects, simply pass a subset of data to the `data` argument:
 
-```{r subgroups}
+```{r subgroups, warning=FALSE}
 # effects for men
 summary(margins(mod2, data = subset(margex, sex == 0)))
 # effects for wommen
@@ -146,7 +146,7 @@ plot(marg3)
 
 In addition to the estimation procedures and `plot()` generic, **margins** offers several plotting methods for model objects. First, there is a new generic `cplot()` that displays predictions or marginal effects (from an "lm" or "glm" model) of a variable conditional across values of third variable (or itself). For example, here is a graph of predicted probabilities from a logit model:
 
-```{r cplot1}
+```{r cplot1, warning=FALSE}
 mod4 <- glm(am ~ wt*drat, data = mtcars, family = binomial)
 cplot(mod4, x = "wt", dx = 'drat')
 ```
@@ -165,7 +165,25 @@ cplot(mod4, x = "wt", dx = "drat", what = "effect")
 
 ### Customizing the look of your plots
 
-Since `cplot()` and `plot()` return `ggplot2` objects, the look is very easy to customize. Here is an example:
+Since `cplot()` and `plot()` return `ggplot2` objects, the look is very easy to customize. For example, we could flip the marginal effects plot on its side, change the colors and line type, rename the variables, and add a red line at 0:
+
+```{r plot-look}
+library(ggplot2)
+mod3 <- glm(highbp ~ sex * agegrp * bmi, data = nhanes2, family = binomial)
+marg3 <- margins(mod3)
+plot(marg3,
+     level = .99,
+     colour = 'turquoise', size = 1.5, linetype = 'dashed',
+     term_map = c('Body Mass Index' = 'bmi','Gender' = 'sex')) + 
+  geom_hline(yintercept = 0, colour = 'red') +
+  xlab('The two variables I care about') +
+  ylab('Average marginal effects with 95% confidence intervals') +
+  coord_flip()
+```
+
+Notice that the `agegrp` does not appear in the plot above because it was omitted from the `term_map` argument. This gives you a convenient way to omit terms from the plot.
+
+We can apply the same kinds of changes to graphs produced by `cplot()`:
 
 ```{r cplot-look}
 library(ggplot2)
@@ -177,12 +195,11 @@ cplot(mod4, x = "wt", dx = 'drat', what='effect', size=2, colour='blue',
     ggtitle('This is a custom title')
 ```
 
-You could also use one of many user-created themes. For instance, here is a plot drawn with the [`ggpomological theme`](https://github.com/gadenbuie/ggpomological) and the [Homemade Apple font](https://fonts.google.com/specimen/Homemade+Apple/):
+You can even use one of many user-created themes that are floating around the web. For instance, here is a plot drawn with the [`ggpomological theme`](https://github.com/gadenbuie/ggpomological) and the [Homemade Apple font](https://fonts.google.com/specimen/Homemade+Apple/):
 
 ```{r cplot_pomological}
 library(ggpomological)
-cplot(mod4, x = "wt", dx = 'drat', what='effect', 
-      alpha=.5, fill='#efe1c6', colour='#6f5438') + 
+cplot(mod4, x = "wt", dx = 'drat', what='effect', alpha=.5, fill='#efe1c6', colour='#6f5438') + 
     theme_pomological_fancy()
 ```
 

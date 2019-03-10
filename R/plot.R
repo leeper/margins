@@ -38,9 +38,7 @@ function(x,
     summ <- summary(x, level = level, by_factor = TRUE)
 
     # subset and rename
-    if (is.null(term_map)) {
-        summ$factor <- paste0('dydx_', summ$factor)
-    } else {
+    if (!is.null(term_map)) {
         summ <- summ[summ$factor %in% term_map,]
         if (!is.null(names(term_map))) {
             summ$factor <- names(term_map)[match(summ$factor, term_map)]
