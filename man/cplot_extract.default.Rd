@@ -22,10 +22,15 @@ marginal effects, if \code{x} is numeric. By default, it is calculated from
 the data using \code{\link{seq_range}}. If \code{x} is a factor, this is
 ignored, as is \code{n}.}
 
-\item{...}{Additional arguments passed to
-\code{\link[ggplot2]{geom_pointrange}} if `x` is a factor, or
-\code{\link[ggplot2]{geom_ribbon}} if `x` is continuous. For example,
-\code{shape}, \code{fill}, \code{alpha}.}
+\item{...}{Additional arguments such as \code{colour}, \code{linetype},
+\code{size}, \code{shape}, \code{fill}, \code{alpha}. These will be passed
+to \code{ggplot2} geom functions to alter the style of the plot.  If `x` is
+a factor, these arguments will be passed to
+\code{\link[ggplot2]{geom_pointrange}}. If `x` is numeric, these arguments
+will be passed to \code{\link[ggplot2]{geom_line}} and
+\code{\link[ggplot2]{geom_ribbon}}.  The \code{alpha} and \code{fill}
+arguments are not passed to \code{geom_line}. The \code{colour} argument is
+not passed to \code{geom_ribbon}.}
 }
 \description{
 Internal function to extract data for `cplot`

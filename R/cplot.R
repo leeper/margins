@@ -18,15 +18,17 @@
 #'   data.frames. This might be useful if you want to plot using an alternative
 #'   plotting package (e.g., ggplot2). Also, if set to value \dQuote{add}, then
 #'   the resulting data is added to the existing plot.
-#' @param size 
-#' @param colour 
-#' @param linetype 
 #' @param rugplot logical include a rugplot at the bottom of the graph 
-#' @param \dots Additional arguments passed to
-#'   \code{\link[ggplot2]{geom_pointrange}} if `x` is a factor, or
-#'   \code{\link[ggplot2]{geom_ribbon}} if `x` is continuous. For example,
-#'   \code{shape}, \code{fill}, \code{alpha}.
-#'
+#' @param \dots Additional arguments such as \code{colour}, \code{linetype},
+#'   \code{size}, \code{shape}, \code{fill}, \code{alpha}. These will be passed
+#'   to \code{ggplot2} geom functions to alter the style of the plot.  If `x` is
+#'   a factor, these arguments will be passed to
+#'   \code{\link[ggplot2]{geom_pointrange}}. If `x` is numeric, these arguments
+#'   will be passed to \code{\link[ggplot2]{geom_line}} and
+#'   \code{\link[ggplot2]{geom_ribbon}}.  The \code{alpha} and \code{fill}
+#'   arguments are not passed to \code{geom_line}. The \code{colour} argument is
+#'   not passed to \code{geom_ribbon}.
+#'  
 #' @details Note that when \code{what = "prediction"}, the plots show
 #' predictions holding values of the data at their mean or mode, whereas when
 #' \code{what = "effect"} average marginal effects (i.e., at observed values)
@@ -53,10 +55,9 @@
 #' m <- lm(Sepal.Length ~ Sepal.Width, data = iris)
 #' cplot(m)
 #' 
-#' # more complex model
+#' # marginal effect of 'Petal.Width' across 'Petal.Width'
 #' m <- lm(Sepal.Length ~ Sepal.Width * Petal.Width * I(Petal.Width ^ 2), 
 #'         data = head(iris, 50))
-#' ## marginal effect of 'Petal.Width' across 'Petal.Width'
 #' cplot(m, x = "Petal.Width", what = "effect", n = 10)
 #'
 #' # factor independent variables
@@ -67,20 +68,7 @@
 #' ## marginal effect of each factor level across numeric variable
 #' cplot(m, x = "wt", dx = "am", what = "effect")
 #' 
-#' # marginal effect of 'Petal.Width' across 'Sepal.Width'
-#' ## without drawing the plot
-#' ## this might be useful for using, e.g., ggplot2 for plotting
-#' tmp <- cplot(m, x = "Sepal.Width", dx = "Petal.Width", 
-#'              what = "effect", n = 10, draw = FALSE)
-#' if (require("ggplot2")) {
-#'   # use ggplot2 instead of base graphics
-#'   ggplot(tmp, aes(x = Petal.Width, y = "effect")) + 
-#'          geom_line(lwd = 2) + 
-#'          geom_line(aes(y = effect + 1.96*se.effect)) + 
-#'          geom_line(aes(y = effect - 1.96*se.effect))
-#' }
-#' 
-#' # a non-linear model
+#' # non-linear model
 #' m <- glm(am ~ wt*drat, data = mtcars, family = binomial)
 #' cplot(m, x = "wt") # prediction (response scale)
 #' cplot(m, x = "wt") # prediction (link scale)
@@ -90,24 +78,19 @@
 #'   ggplot(cplotdat, aes(x = xvals, y = plogis(yvals))) + 
 #'          geom_line(lwd = 1.5) + 
 #'          geom_line(aes(y = plogis(upper))) + 
-#'          geom_line(aes(y = plotis(lower)))
+#'          geom_line(aes(y = plogis(lower)))
+#'
+#'
+#' # marginal effect of 'Petal.Width' across 'Sepal.Width'
+#' ## without drawing the plot
+#' ## this might be useful if you want even more control over the plots
+#' tmp <- cplot(m, x = "Sepal.Width", dx = "Petal.Width", 
+#'              what = "effect", n = 10, draw = FALSE)
 #' }
 #' 
 #' # effects on linear predictor and outcome
 #' cplot(m, x = "drat", dx = "wt", what = "effect", type = "link")
 #' cplot(m, x = "drat", dx = "wt", what = "effect", type = "response")
-#' 
-#' # plot conditional predictions across a third factor
-#' local({
-#'   iris$long <- rbinom(nrow(iris), 1, 0.6)
-#'   x <- glm(long ~ Sepal.Width*Species, data = iris)
-#'   cplot(x, x = "Sepal.Width", data = iris[iris$Species == "setosa", ], 
-#'         ylim = c(0,1), col = "red", se.fill = rgb(1,0,0,.5), xlim = c(2,4.5))
-#'   cplot(x, x = "Sepal.Width", data = iris[iris$Species == "versicolor", ], 
-#'         draw = "add", col = "blue", se.fill = rgb(0,1,0,.5))
-#'   cplot(x, x = "Sepal.Width", data = iris[iris$Species == "virginica", ], 
-#'         draw = "add", col = "green", se.fill = rgb(0,0,1,.5))
-#' })
 #' 
 #' # ordinal outcome
 #' if (require("MASS")) {
@@ -147,9 +130,6 @@ cplot <- function(object,
                   vcov = stats::vcov(object),
                   level = 0.95,
                   draw = TRUE,
-                  colour = 'black',
-                  linetype = 1,
-                  size = 0.5,
                   xvals = NULL,
                   n = 25,
                   rugplot = TRUE,
@@ -204,57 +184,56 @@ cplot <- function(object,
 
         out <- ggplot(outdat, aes(x = xvals, y = yvals))
 
+        # ... will be passed to geom_* functions. we will add stuff to it and
+        # use `do.call`.
+        extra_args <- list(...)
+
         # x is numeric -> geom_line + geom_ribbon
         if (is.numeric(outdat$xvals)) {
 
-            # geom_line for estimates
-            out  <- out +
-                    geom_line(size = size, colour = colour, linetype = linetype)
+            # confidence intervals are available -> geom_ribbon
+            if (all(c('lower', 'upper') %in% names(outdat))) {
+
+                # default look options 
+                extra_args_ribbon <- extra_args
+                if (!'alpha' %in% names(extra_args)) {
+                    extra_args_ribbon[['alpha']] <- 0.3
+                }
+                if (!'fill' %in% names(extra_args)) {
+                    extra_args_ribbon[['fill']] <- 'grey'
+                }
+
+                extra_args_ribbon[['mapping']] <- aes(ymin = lower, ymax = upper)
+                extra_args_ribbon[['colour']] <- NULL # don't draw an ugly border around the CI
+                out <- out + do.call('geom_ribbon', extra_args_ribbon)
+
+            }
+
+            # geom_line for estimates (draw *after* the ribbon)
+            extra_args_line <- extra_args
+            extra_args_line[['alpha']] <- NULL # transparent mfx lines don't look good
+            extra_args_line[['fill']] <- NULL # argument not recognized by geom_line
+            out  <- out + do.call('geom_line', extra_args_line)
 
             # rugplot
             if (rugplot) {
                 rugdat <- data.frame('x' = data[[xvar]])
-                out <- out +
-                       geom_rug(data = rugdat, aes(x = x), inherit.aes=FALSE)
+                out <- out + geom_rug(data = rugdat, aes(x = x), inherit.aes=FALSE)
             }
-
-            # confidence intervals are available
-            if (all(c('lower', 'upper') %in% names(outdat))) {
-
-                # geom_ribbon for confidence intervals (user-supplied alpha fill)
-                extra_args <- list(...)
-                if (all(c('alpha', 'fill') %in% names(extra_args))) {
-                    out <- out +
-                           geom_ribbon(aes(ymin = lower, ymax = upper), 
-                                       ...) 
-                } else if ('alpha' %in% names(extra_args)) {
-                    out <- out +
-                           geom_ribbon(aes(ymin = lower, ymax = upper), 
-                                       fill = 'grey', ...) 
-                } else if ('fill' %in% names(extra_args)) {
-                    out <- out +
-                           geom_ribbon(aes(ymin = lower, ymax = upper), 
-                                       alpha = .3, ...) 
-                } else {
-                    out <- out +
-                           geom_ribbon(aes(ymin = lower, ymax = upper), 
-                                       alpha = .3, fill = 'grey', ...) 
-                }
-
-            }
-
 
         # x is not numeric -> geom_pointrange or geom_point
         } else {
 
             # confidence intervals are available
             if (all(c('lower', 'upper') %in% names(outdat))) {
-                out <- out +
-                       geom_pointrange(aes(ymin = lower, ymax = upper),
-                                       size = size, colour = colour, linetype = linetype, ...)
+                extra_args_pointrange <- extra_args
+                extra_args_pointrange[['mapping']] <- aes(ymin = lower, ymax = upper)
+                extra_args_pointrange$fill <- NULL # argument not recognized by geom_pointrange
+                out <- out + do.call('geom_pointrange', extra_args_pointrange)
             } else {
-                out <- out +
-                       geom_point(size = size, colour = colour, ...)
+                extra_args_point <- extra_args
+                extra_args_point$fill <- NULL # argument not recognized by geom_point
+                out <- out + do.call('geom_point', extra_args_point)
             }
 
         }
