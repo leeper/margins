@@ -3,8 +3,10 @@ context("Plotting")
 
 library(ggplot2)
 library(margins)
+library(MASS)
 data(mpg)
 data(mtcars)
+data(housing)
 
 test_that("persp() method for 'lm' works", {
     x <- lm(mpg ~ wt * hp, data = mtcars)
@@ -70,6 +72,13 @@ test_that("cplot() glm models", {
     vdiffr::expect_doppelganger('cplot(): logit', 
         cplot(mod, x = 'wt', dx = 'drat'))
 
+})
+
+test_that("plot() polr models", {
+    mod <- MASS::polr(Sat ~ Infl + Type + Cont, weights = Freq, data = housing)
+    mfx <- margins(mod)
+    vdiffr::expect_doppelganger('plot(): MASS::polr()', 
+        plot(mfx))
 })
 
 
