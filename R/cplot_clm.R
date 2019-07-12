@@ -1,4 +1,4 @@
-#' @inheritParams cplot
+#' @rdname cplot_extract
 #' @export
 cplot_extract.clm <-
 function(object, 

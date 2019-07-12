@@ -23,7 +23,7 @@ plot.}
 \code{colour}, etc.}
 }
 \value{
-The original \dQuote{margins} object \code{x}, invisibly.
+A ggplot2 object
 }
 \description{
 An implementation of Stata's \samp{marginsplot} as an S3

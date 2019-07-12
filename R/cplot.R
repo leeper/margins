@@ -3,7 +3,16 @@
 #' @description Draw one or more conditional effects plots reflecting
 #'   model coefficients, or a function to perform the estimation with
 #'   \code{model} as its only argument.
-#' @param at Currently ignored.
+#' @param object A statistical model object
+#' @param x The name of the variable to show on the x-axis
+#' @param dx The name of the variable whose effect should be plotted
+#' @param what The quantity to plot: 'prediction', 'effect', 'classprediction',
+#'   or 'stackedprediction'
+#' @param type 'response' or 'link'
+#' @param vcov the variance-covariance matrix used to calculate confidence intervals
+#' @param z name of the third dimension variable over which quantities should
+#'   be plotted (as facets).
+#' @param zvals discrete values of the z variable over which to plot
 #' @param n An integer specifying the number of points across \code{x} at which
 #'   to calculate the predicted value or marginal effect, when \code{x} is
 #'   numeric. Ignored otherwise.
@@ -11,6 +20,8 @@
 #'   marginal effects, if \code{x} is numeric. By default, it is calculated from
 #'   the data using \code{\link{seq_range}}. If \code{x} is a factor, this is
 #'   ignored, as is \code{n}.
+#' @param data data.frame over which to calculate individual marginal effects
+#'   or predictions
 #' @param level The confidence level required (used to draw uncertainty
 #'   bounds).
 #' @param draw A logical (default \code{TRUE}), specifying whether to draw the
@@ -19,6 +30,7 @@
 #'   plotting package (e.g., ggplot2). Also, if set to value \dQuote{add}, then
 #'   the resulting data is added to the existing plot.
 #' @param rugplot logical include a rugplot at the bottom of the graph 
+#' @param at Currently ignored.
 #' @param \dots Additional arguments such as \code{colour}, \code{linetype},
 #'   \code{size}, \code{shape}, \code{fill}, \code{alpha}. These will be passed
 #'   to \code{ggplot2} geom functions to alter the style of the plot.  If `x` is
@@ -45,8 +57,8 @@
 #' \code{marginalModelPlot()} function in the
 #' \bold{\href{https://cran.r-project.org/package=car}{car}} package.
 #' 
-#' @return A tidy data frame containing the data used to draw the plot. Use
-#' \code{draw = FALSE} to simply generate the data structure for use elsewhere.
+#' @return A ggplot2 object. Use \code{draw = FALSE} to simply generate the
+#' data structure for use elsewhere.
 #'
 #' @examples
 #' \dontrun{
@@ -116,7 +128,7 @@
 #' }
 #' @seealso \code{\link{plot.margins}}, \code{\link{persp.lm}}
 #' @keywords graphics
-#' @importFrom ggplot2 ggplot geom_line geom_ribbon geom_pointrange geom_rug xlab ylab theme_minimal theme_classic facet_wrap
+#' @importFrom ggplot2 ggplot aes_string geom_line geom_ribbon geom_pointrange geom_rug xlab ylab theme_minimal theme_classic facet_wrap
 #' @importFrom utils head
 #' @importFrom graphics par plot lines rug polygon segments points
 #' @importFrom prediction prediction find_data seq_range mean_or_mode
@@ -124,10 +136,10 @@
 cplot <- function(object, 
                   x = NULL,
                   dx = NULL, 
-                  data = NULL,
                   what = c("prediction", "effect", "classprediction", "stackedprediction"), 
                   type = c("response", "link"), 
                   vcov = stats::vcov(object),
+                  data = NULL,
                   level = 0.95,
                   draw = TRUE,
                   xvals = NULL,
@@ -138,8 +150,6 @@ cplot <- function(object,
                   at = NULL,
                   ...) {
                 
-    # input checks
-
     # default values
     if (is.null(data)) {
         data <- prediction::find_data(object)
@@ -172,11 +182,11 @@ cplot <- function(object,
     # prepare data for plotting
     out <- cplot_extract(object = object, 
                          data = data, 
-                         xvar = xvar, 
                          dx = dx, 
+                         xvar = xvar, 
+                         xvals = xvals,
                          what = what, 
                          type = type, 
-                         xvals = xvals,
                          zvar = z,
                          zvals = zvals,
                          vcov = vcov,
@@ -190,7 +200,7 @@ cplot <- function(object,
         # save for future queries (e.g., levels)
         outdat <- out 
 
-        out <- ggplot(outdat, aes(x = xvals, y = yvals))
+        out <- ggplot(outdat, aes_string(x = 'xvals', y = 'yvals'))
 
         # ... will be passed to geom_* functions. we will add stuff to it and
         # use `do.call`.
@@ -211,7 +221,7 @@ cplot <- function(object,
                     extra_args_ribbon[['fill']] <- 'grey'
                 }
 
-                extra_args_ribbon[['mapping']] <- aes(ymin = lower, ymax = upper)
+                extra_args_ribbon[['mapping']] <- aes_string(ymin = 'lower', ymax = 'upper')
                 extra_args_ribbon[['colour']] <- NULL # don't draw an ugly border around the CI
                 out <- out + do.call('geom_ribbon', extra_args_ribbon)
 
@@ -226,7 +236,7 @@ cplot <- function(object,
             # rugplot
             if (rugplot) {
                 rugdat <- data.frame('x' = data[[xvar]])
-                out <- out + geom_rug(data = rugdat, aes(x = x), inherit.aes=FALSE)
+                out <- out + geom_rug(data = rugdat, aes_string(x = 'x'), inherit.aes=FALSE)
             }
 
         # x is not numeric -> geom_pointrange or geom_point
@@ -235,7 +245,7 @@ cplot <- function(object,
             # confidence intervals are available
             if (all(c('lower', 'upper') %in% names(outdat))) {
                 extra_args_pointrange <- extra_args
-                extra_args_pointrange[['mapping']] <- aes(ymin = lower, ymax = upper)
+                extra_args_pointrange[['mapping']] <- aes_string(ymin = 'lower', ymax = 'upper')
                 extra_args_pointrange$fill <- NULL # argument not recognized by geom_pointrange
                 out <- out + do.call('geom_pointrange', extra_args_pointrange)
             } else {
@@ -262,109 +272,5 @@ cplot <- function(object,
     }
 
     # output
-    return(out)
-}
-
-#' Generic extracts model information for use by `cplot`
-#'
-#' @export
-cplot_extract <- function(object, ...) {
-    UseMethod("cplot_extract")
-}
-
-#' Internal function to extract data for `cplot`
-#'
-#' @inheritParams cplot
-cplot_extract.default <- function(object, 
-                                  data, 
-                                  dx, 
-                                  level, 
-                                  xvar, 
-                                  zvar,
-                                  xvals,
-                                  zvals,
-                                  at,
-                                  n,
-                                  type, 
-                                  vcov,
-                                  what,
-                                  ...) {
-
-    # handle factors and subset data
-    data <- force(data)
-    f <- check_factors(object, data, xvar = xvar, dx = dx)
-    x_is_factor <- f[["x_is_factor"]]
-    dx_is_factor <- f[["dx_is_factor"]]
-    dat <- f[["data"]]
-
-    # setup xvals (based on whether factor)
-    if (is.null(xvals)) {
-        if (isTRUE(x_is_factor)) {
-            if (is.factor(dat[[xvar]])) {
-                xvals <- as.character(levels(dat[[clean_terms(xvar)]]))
-            } else {
-                xvals <- as.character(unique(dat[[clean_terms(xvar)]]))
-            }
-        } else {
-            xvals <- prediction::seq_range(data[[xvar]], n = n)
-        } 
-    }
-
-    # at argument
-    at <- setNames(list(xvals), xvar)
-    z_valid <- !is.null(zvar) & !is.null(zvals)
-    if (z_valid) {
-        at[[zvar]] <- zvals
-    }
-   
-    # confidence level
-    a <- (1 - level)/2
-    fac <- qnorm(c(a, 1 - a))
-    
-    if (what == "prediction") {
-
-        # generates predictions as mean/mode of all variables rather than average prediction!
-        tmpdat <- lapply(dat[, names(dat) != xvar, drop = FALSE], prediction::mean_or_mode)
-
-        # data.frame with all combinations of xvals, zvals, and mean/mode values 
-        tmpdat[[xvar]] <- xvals
-        if (z_valid) {
-            tmpdat[[zvar]] <- zvals
-        }
-        tmpdat <- expand.grid(tmpdat, stringsAsFactors = FALSE)
-
-        # predicted values
-        outdat <- prediction(model = object, data = tmpdat, type = type, level = level, vcov = vcov)
-
-        # output
-        out <- structure(list(xvals = outdat[[xvar]],
-                              yvals = outdat[["fitted"]],
-                              upper = outdat[["fitted"]] + (fac[2] * outdat[["se.fitted"]]),
-                              lower = outdat[["fitted"]] + (fac[1] * outdat[["se.fitted"]])),
-                         class = "data.frame", row.names = seq_along(outdat[["fitted"]]))
-        if (z_valid) {
-            out[['zvals']] <- outdat[[zvar]]
-        }
-
-    } else if (what == "effect") {
-
-        if (is.factor(dat[[dx]]) && nlevels(data[[dx]]) > 2L) {
-            stop("Displaying effect of a factor variable with > 2 levels is not currently supported!")
-        }
-
-        marg <- margins(model = object, data = data, at = at, type = type, vcov = vcov)
-
-        if (!z_valid) {
-            out <- summary(marg, level = level)[ , c(xvar, "AME", "upper", "lower", "factor"), drop = FALSE]
-            out <- setNames(out[out[["factor"]] == dx, , drop = FALSE], 
-                            c("xvals", "yvals", "upper", "lower", "factor"))
-        } else {
-            out <- summary(marg, level = level)[ , c(xvar, zvar, "AME", "upper", "lower", "factor"), drop = FALSE]
-            out <- setNames(out[out[["factor"]] == dx, , drop = FALSE], 
-                            c("xvals", "zvals", "yvals", "upper", "lower", "factor"))
-        }
-
-    }
-
     return(out)
 }

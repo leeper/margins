@@ -1,4 +1,4 @@
-#' @inheritParams cplot
+#' @rdname cplot_extract
 #' @export
 cplot_extract.polr <-
 function(object, 
@@ -88,6 +88,6 @@ function(object,
     return(out)
 }
 
-#' @rdname cplot
+#' @rdname cplot_extract
 #' @export
 cplot_extract.multinom <- cplot_extract.polr
