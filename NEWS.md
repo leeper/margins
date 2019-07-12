@@ -1,3 +1,7 @@
+# margins 0.3.26
+
+* Most plotting functions now use ggplot2 instead of base
+
 # margins 0.3.25
 
 * Setup a `cplot.default()` method and modified documentation of `cplot()`, `image()`, and `persp()` methods slightly. (#84, h/t Luke Sonnet)
