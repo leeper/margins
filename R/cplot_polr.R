@@ -16,6 +16,8 @@ function(object,
          zvals,
          ...) {
 
+    # NOTE: dx is not actually used by this function
+
     if (!is.null(zvar) | !is.null(zvals)) {                                       
         stop('The `zvar` and `zvals` arguments are not supported for this type of model.')     
     }  

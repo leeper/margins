@@ -68,32 +68,29 @@ Visualization of the fitted values from the model makes clear that the two speci
 
 But what is a marginal effect exactly? And why is it a useful quantity of interest? Figure \ref{fig:cplot1} shows the calculation of the marginal effect of GDP per capita on population size, based upon model 1 in Table \ref{tab:model1}. Because the model is specified without interactions, the slope of the predicted relationship between $x$ and $y$ is straight linear, so the marginal effect of $x$ is estimated as the slope of this fitted value line, using the usual $\frac{\Delta Y}{\Delta X}$ calculation and can be calculated irrespective of the value of life expectancy. The visibly apparent marginal effect of -26.4 is clearly consistent with the coefficient estimate reported in Table \ref{tab:model1}, model 1.
 
-<<cplot1, results = "show", fig.cap = "Marginal Effect of GDP per Capita on Population Size, as shown by Expected Value Plot">>=
-local({
-  c1 <- suppressWarnings(cplot(m1, "loggdp", n = 50, 
-          xlab = "GDP Per Capita (Logged)",
-          se.type = "shade",
-          xlim = c(7,10), ylim = c(-30,80)))
-  w <- c(which.min((c1[["xvals"]]-8)^2),
-         which.min((c1[["xvals"]]-9)^2))
-  # dashed
-  segments(0, c1[w[2],"yvals"], 9, c1[w[2],"yvals"], lty = 2)
-  segments(0, c1[w[1],"yvals"], 8, c1[w[1],"yvals"], lty = 2)
-  segments(8, -30, 8, c1[w[1],"yvals"], lty = 2)
-  segments(9, -30, 9, c1[w[2],"yvals"], lty = 2)
-  
-  # red
-  segments(8, c1[w[1],"yvals"], 9, c1[w[2],"yvals"], 
-           col = "red", lwd = 3)
-  segments(8, c1[w[2],"yvals"], 9, c1[w[2],"yvals"], 
-           col = "red", lwd = 3)
-  segments(8, c1[w[2],"yvals"], 8, c1[w[1],"yvals"], 
-           col = "red", lwd = 3)
-  text(8, 20, expression(Delta(y) == -26.4), pos = 2, 
-       cex = 2, col = "red")
-  text(8.5, 0, expression(Delta(x) == 1), cex = 2, col = "red")
-  text(9, 40, expression(ME(x) == -26.4), cex = 2, col = "red")
-})
+<<cplot1, echo=FALSE, results = "show", fig.cap = "Marginal Effect of GDP per Capita on Population Size, as shown by Expected Value Plot", warning=FALSE>>=
+ library(ggplot2)
+ xvals <- seq(7, 10, length.out = 100)
+ dat <- cplot(m1, x = 'loggdp', n = 50, xvals = xvals, draw = FALSE)
+ lab <- data.frame(x = 7,
+                   y = 17)
+ seg <- data.frame(x1 = 8, y1 = dat$yvals[dat$xvals==8],
+                   x2 = 9, y2 = dat$yvals[dat$xvals==9],
+                   x3 = 8, y3 = dat$yvals[dat$xvals==9],
+                   x4 = 9, y4 = dat$yvals[dat$xvals==9],
+                   x5 = 8, y5 = dat$yvals[dat$xvals==8],
+                   x6 = 8, y6 = dat$yvals[dat$xvals==9])
+ cplot(m1, x = 'loggdp', n = 50) + 
+       xlab('GDP Per Capita (Logged)') +
+       xlim(c(7, 10)) +
+       ylim(c(-30,80)) +
+       geom_segment(aes(x = x1, y = y1, xend = x2, yend = y2, colour = "segment"), data = seg) +
+       geom_segment(aes(x = x3, y = y3, xend = x4, yend = y4, colour = "segment"), data = seg) +
+       geom_segment(aes(x = x5, y = y5, xend = x6, yend = y6, colour = "segment"), data = seg) +
+       annotate(geom="text", x=7.5, y=17, label=expression(Delta(y) == -26.4), color="red", size = 8) +
+       annotate(geom="text", x=8.5, y=0, label=expression(Delta(x) == 1), color="red", size = 8) +
+       annotate(geom="text", x=9, y=25, label=expression(ME(x) == -26.4), color="red", size = 8) +
+       theme(legend.position='none')
 @
 
 
