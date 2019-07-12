@@ -75,10 +75,27 @@ test_that("cplot() glm models", {
 })
 
 test_that("plot() polr models", {
+
     mod <- MASS::polr(Sat ~ Infl + Type + Cont, weights = Freq, data = housing)
     mfx <- margins(mod)
-    vdiffr::expect_doppelganger('plot(): MASS::polr()', 
+
+    vdiffr::expect_doppelganger('cplot(): MASS::polr()', 
         plot(mfx))
+
+    expect_error(cplot(mod, what = 'effect'))
+
+    # works
+    vdiffr::expect_doppelganger('cplot(what="prediction"): MASS::polr()',
+        cplot(mod, what = 'prediction'))
+
+    # works
+    vdiffr::expect_doppelganger('cplot(what="classprediction"): MASS::polr()',
+        cplot(mod, what = 'classprediction'))
+
+    # does NOT work
+    vdiffr::expect_doppelganger('cplot(what="stackedprediction"): MASS::polr()',
+        cplot(mod, what = 'stackedprediction'))
+
 })
 
 

@@ -75,6 +75,7 @@ function(object,
             for (i in grep('^Pr\\(', names(outdat))) {
                 out[[i]] <- data.frame(xvals = xvals,
                                        yvals = outdat[[i]],
+                                       zvals = names(outdat)[i],
                                        stringsAsFactors = FALSE)
             }
             out <- do.call('rbind', out)
