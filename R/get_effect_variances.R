@@ -123,6 +123,13 @@ function(data,
             }
             return(means)
         })
+        # When length(variables) == 1, effectmat is a vector
+        if (!is.matrix(effectmat)) {
+            # Coerce to 1 row matrix
+            effectmat <- matrix(effectmat, nrow = 1)
+            # Rownames are lost in these cases
+            rownames(effectmat) <- paste0("dydx_", variables)
+        }
         # calculate the variance of the simulated AMEs
         vc <- var(t(effectmat))
         variances <- diag(vc)
@@ -164,7 +171,13 @@ function(data,
             means
         }
         # bootstrap the data and take the variance of bootstrapped AMEs
-        vc <- var(t(replicate(iterations, bootfun())))
+        vc <- if (length(variables) > 1) {
+            var(t(replicate(iterations, bootfun())))
+        } else { # Take the variance of the vector
+            # Need to coerce to 1 x 1 matrix with appropriate dimnames
+            matrix(var(replicate(iterations, bootfun())), nrow = 1L, 
+                   dimnames = list(nms <- paste0("dydx_", variables), nms))
+        }
         variances <- diag(vc)
         jacobian <- NULL
     }
