@@ -1,3 +1,7 @@
+## margins 0.3.27
+
+* Better support for various edge cases involving missing or unused factor levels. (#125, h/t Tomasz Żółtak)
+
 ## margins 0.3.26
 
 * Add `coef.margins()` and `coef.summary.margins()` methods. (#131, h/t Tomasz Żółtak)
