@@ -81,7 +81,7 @@ test_that("alternative dydx() args", {
 })
 
 
-context("print(), summary(), and confint() methods")
+context("print(), summary(), confint(), and coef() methods")
 test_that("print()/summary() for 'margins' object", {
     x <- lm(mpg ~ wt * hp, data = head(mtcars))
     m <- margins(x)
@@ -94,6 +94,15 @@ test_that("confint() for 'margins' object", {
     x <- lm(mpg ~ wt * hp, data = head(mtcars))
     m <- margins(x)
     expect_true(inherits(confint(m), "matrix"), label = "confint() for margins")
+})
+test_that("coef() for 'margins' object", {
+    x <- lm(mpg ~ wt * hp, data = head(mtcars))
+    m <- margins(x)
+    s1 <- summary(m, by_factor = TRUE)
+    s2 <- summary(m, by_factor = FALSE)
+    # coef(m)
+    # coef(s1)
+    # coef(s2)
 })
 
 
