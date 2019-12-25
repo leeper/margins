@@ -1,0 +1,65 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: margins 0.3.25\n"
+"POT-Creation-Date: 2019-12-25 08:43\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+
+msgid "Displaying effect of a factor variable with > 2 levels is not currently supported!"
+msgstr ""
+
+msgid "Displaying marginal effects is not currently supported for 'clm' models!"
+msgstr ""
+
+msgid "Displaying marginal effects is not currently supported for 'polr' models!"
+msgstr ""
+
+msgid "Class of variable,"
+msgstr ""
+
+msgid ", is unrecognized. Returning NA."
+msgstr ""
+
+msgid "No variable classes found in model."
+msgstr ""
+
+msgid "Some values in 'variables' are not in the model terms."
+msgstr ""
+
+msgid "No variables found in model."
+msgstr ""
+
+msgid "Argument 'data' is ignored for objects of class 'margins'"
+msgstr ""
+
+msgid "Argument 'variables' is ignored for objects of class 'margins'"
+msgstr ""
+
+msgid "'type' is ignored for models of class '%s'"
+msgstr ""
+
+msgid "Note: Estimating marginal effects without survey weights. Specify 'design' to adjust for weighting."
+msgstr ""
+
+msgid "'design' must be a 'survey.design' object for models of class 'svyglm'"
+msgstr ""
+
+msgid "Average marginal effects (survey-weighted)"
+msgstr ""
+
+msgid "Average marginal effects"
+msgstr ""
+
+msgid "call"
+msgstr ""
+
+msgid "Average marginal effects at specified values (survey-weighted)"
+msgstr ""
+
+msgid "Average marginal effects at specified values"
+msgstr ""
