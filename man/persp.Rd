@@ -10,62 +10,149 @@
 \alias{persp.loess}
 \title{Perspective and heatmap/contour plots for models}
 \usage{
-\method{image}{lm}(x, xvar = attributes(terms(x))[["term.labels"]][1],
-  yvar = attributes(terms(x))[["term.labels"]][2], dx = xvar,
-  what = c("prediction", "effect"), type = c("response", "link"),
-  vcov = stats::vcov(x), nx = 25L, ny = nx, nz = 20, xlab = xvar,
-  ylab = yvar, xaxs = "i", yaxs = xaxs, bty = "o",
+\method{image}{lm}(
+  x,
+  xvar = attributes(terms(x))[["term.labels"]][1],
+  yvar = attributes(terms(x))[["term.labels"]][2],
+  dx = xvar,
+  what = c("prediction", "effect"),
+  type = c("response", "link"),
+  vcov = stats::vcov(x),
+  nx = 25L,
+  ny = nx,
+  nz = 20,
+  xlab = xvar,
+  ylab = yvar,
+  xaxs = "i",
+  yaxs = xaxs,
+  bty = "o",
   col = gray(seq(0.05, 0.95, length.out = nz), alpha = 0.75),
-  contour = TRUE, contour.labels = NULL, contour.drawlabels = TRUE,
-  contour.cex = 0.6, contour.col = "black", contour.lty = 1,
-  contour.lwd = 1, ...)
+  contour = TRUE,
+  contour.labels = NULL,
+  contour.drawlabels = TRUE,
+  contour.cex = 0.6,
+  contour.col = "black",
+  contour.lty = 1,
+  contour.lwd = 1,
+  ...
+)
 
-\method{image}{glm}(x, xvar = attributes(terms(x))[["term.labels"]][1],
-  yvar = attributes(terms(x))[["term.labels"]][2], dx = xvar,
-  what = c("prediction", "effect"), type = c("response", "link"),
-  vcov = stats::vcov(x), nx = 25L, ny = nx, nz = 20, xlab = xvar,
-  ylab = yvar, xaxs = "i", yaxs = xaxs, bty = "o",
+\method{image}{glm}(
+  x,
+  xvar = attributes(terms(x))[["term.labels"]][1],
+  yvar = attributes(terms(x))[["term.labels"]][2],
+  dx = xvar,
+  what = c("prediction", "effect"),
+  type = c("response", "link"),
+  vcov = stats::vcov(x),
+  nx = 25L,
+  ny = nx,
+  nz = 20,
+  xlab = xvar,
+  ylab = yvar,
+  xaxs = "i",
+  yaxs = xaxs,
+  bty = "o",
   col = gray(seq(0.05, 0.95, length.out = nz), alpha = 0.75),
-  contour = TRUE, contour.labels = NULL, contour.drawlabels = TRUE,
-  contour.cex = 0.6, contour.col = "black", contour.lty = 1,
-  contour.lwd = 1, ...)
+  contour = TRUE,
+  contour.labels = NULL,
+  contour.drawlabels = TRUE,
+  contour.cex = 0.6,
+  contour.col = "black",
+  contour.lty = 1,
+  contour.lwd = 1,
+  ...
+)
 
-\method{image}{loess}(x, xvar = attributes(terms(x))[["term.labels"]][1],
-  yvar = attributes(terms(x))[["term.labels"]][2], dx = xvar,
-  what = c("prediction", "effect"), type = c("response", "link"),
-  vcov = stats::vcov(x), nx = 25L, ny = nx, nz = 20, xlab = xvar,
-  ylab = yvar, xaxs = "i", yaxs = xaxs, bty = "o",
+\method{image}{loess}(
+  x,
+  xvar = attributes(terms(x))[["term.labels"]][1],
+  yvar = attributes(terms(x))[["term.labels"]][2],
+  dx = xvar,
+  what = c("prediction", "effect"),
+  type = c("response", "link"),
+  vcov = stats::vcov(x),
+  nx = 25L,
+  ny = nx,
+  nz = 20,
+  xlab = xvar,
+  ylab = yvar,
+  xaxs = "i",
+  yaxs = xaxs,
+  bty = "o",
   col = gray(seq(0.05, 0.95, length.out = nz), alpha = 0.75),
-  contour = TRUE, contour.labels = NULL, contour.drawlabels = TRUE,
-  contour.cex = 0.6, contour.col = "black", contour.lty = 1,
-  contour.lwd = 1, ...)
+  contour = TRUE,
+  contour.labels = NULL,
+  contour.drawlabels = TRUE,
+  contour.cex = 0.6,
+  contour.col = "black",
+  contour.lty = 1,
+  contour.lwd = 1,
+  ...
+)
 
-\method{persp}{lm}(x, xvar = attributes(terms(x))[["term.labels"]][1],
-  yvar = attributes(terms(x))[["term.labels"]][2], dx = xvar,
-  what = c("prediction", "effect"), type = c("response", "link"),
-  vcov = stats::vcov(x), nx = 25L, ny = nx, theta = 45, phi = 10,
-  shade = 0.75, xlab = xvar, ylab = yvar, zlab = if
-  (match.arg(what) == "prediction") "Predicted value" else
-  paste0("Marginal effect of ", dx), ticktype = c("detailed", "simple"),
-  ...)
+\method{persp}{lm}(
+  x,
+  xvar = attributes(terms(x))[["term.labels"]][1],
+  yvar = attributes(terms(x))[["term.labels"]][2],
+  dx = xvar,
+  what = c("prediction", "effect"),
+  type = c("response", "link"),
+  vcov = stats::vcov(x),
+  nx = 25L,
+  ny = nx,
+  theta = 45,
+  phi = 10,
+  shade = 0.75,
+  xlab = xvar,
+  ylab = yvar,
+  zlab = if (match.arg(what) == "prediction") "Predicted value" else
+    paste0("Marginal effect of ", dx),
+  ticktype = c("detailed", "simple"),
+  ...
+)
 
-\method{persp}{glm}(x, xvar = attributes(terms(x))[["term.labels"]][1],
-  yvar = attributes(terms(x))[["term.labels"]][2], dx = xvar,
-  what = c("prediction", "effect"), type = c("response", "link"),
-  vcov = stats::vcov(x), nx = 25L, ny = nx, theta = 45, phi = 10,
-  shade = 0.75, xlab = xvar, ylab = yvar, zlab = if
-  (match.arg(what) == "prediction") "Predicted value" else
-  paste0("Marginal effect of ", dx), ticktype = c("detailed", "simple"),
-  ...)
+\method{persp}{glm}(
+  x,
+  xvar = attributes(terms(x))[["term.labels"]][1],
+  yvar = attributes(terms(x))[["term.labels"]][2],
+  dx = xvar,
+  what = c("prediction", "effect"),
+  type = c("response", "link"),
+  vcov = stats::vcov(x),
+  nx = 25L,
+  ny = nx,
+  theta = 45,
+  phi = 10,
+  shade = 0.75,
+  xlab = xvar,
+  ylab = yvar,
+  zlab = if (match.arg(what) == "prediction") "Predicted value" else
+    paste0("Marginal effect of ", dx),
+  ticktype = c("detailed", "simple"),
+  ...
+)
 
-\method{persp}{loess}(x, xvar = attributes(terms(x))[["term.labels"]][1],
-  yvar = attributes(terms(x))[["term.labels"]][2], dx = xvar,
-  what = c("prediction", "effect"), type = c("response", "link"),
-  vcov = stats::vcov(x), nx = 25L, ny = nx, theta = 45, phi = 10,
-  shade = 0.75, xlab = xvar, ylab = yvar, zlab = if
-  (match.arg(what) == "prediction") "Predicted value" else
-  paste0("Marginal effect of ", dx), ticktype = c("detailed", "simple"),
-  ...)
+\method{persp}{loess}(
+  x,
+  xvar = attributes(terms(x))[["term.labels"]][1],
+  yvar = attributes(terms(x))[["term.labels"]][2],
+  dx = xvar,
+  what = c("prediction", "effect"),
+  type = c("response", "link"),
+  vcov = stats::vcov(x),
+  nx = 25L,
+  ny = nx,
+  theta = 45,
+  phi = 10,
+  shade = 0.75,
+  xlab = xvar,
+  ylab = yvar,
+  zlab = if (match.arg(what) == "prediction") "Predicted value" else
+    paste0("Marginal effect of ", dx),
+  ticktype = c("detailed", "simple"),
+  ...
+)
 }
 \arguments{
 \item{x}{A model object.}

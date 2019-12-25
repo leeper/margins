@@ -12,6 +12,6 @@ These objects are imported from other packages. Follow the links
 below to see their documentation.
 
 \describe{
-  \item{prediction}{\code{\link[prediction]{prediction}}, \code{\link[prediction]{find_data}}}
+  \item{prediction}{\code{\link[prediction]{find_data}}, \code{\link[prediction]{prediction}}}
 }}
 
