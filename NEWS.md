@@ -2,6 +2,7 @@
 
 * Setup a `cplot.default()` method and modified documentation of `cplot()`, `image()`, and `persp()` methods slightly. (#84, h/t Luke Sonnet)
 * Improve the documentation the behavior of `cplot()` for generalized linear models, which can generate unexpected confidence intervals (albeit ones consistent with base R's behavior). (#92)
+* Fix a bug in `margins()` with `glmerMod` objects (#129)
 
 # margins 0.3.24
 
