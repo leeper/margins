@@ -35,3 +35,17 @@ test_that("margins() errors correctly when there are no RHS variables", {
     expect_error(marginal_effects(x))
     expect_error(margins(x))
 })
+
+test_that("vce = 'bootstrap' works with one variable as variables argument", {
+    x <- lm(mpg ~ wt + hp * cyl, data = mtcars)
+    suppressWarnings(m <- margins(x, vce = "bootstrap", variables = "hp"))
+    expect_true(inherits(m, "data.frame"))
+    expect_true(nrow(summary(m)) == 1L)
+})
+
+test_that("vce = 'simulation' works with one variable as variables argument", {
+    x <- lm(mpg ~ wt + hp * cyl, data = mtcars)
+    suppressWarnings(m <- margins(x, vce = "simulation", variables = "hp"))
+    expect_true(inherits(m, "data.frame"))
+    expect_true(nrow(summary(m)) == 1L)
+})

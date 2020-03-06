@@ -4,12 +4,25 @@
 \alias{plot.margins}
 \title{Plot Marginal Effects Estimates}
 \usage{
-\method{plot}{margins}(x, pos = seq_along(marginal_effects(x, with_at =
-  FALSE)), which = colnames(marginal_effects(x, with_at = FALSE)),
-  labels = gsub("^dydx_", "", which), horizontal = FALSE, xlab = "",
-  ylab = "Average Marginal Effect", level = 0.95, pch = 21,
-  points.col = "black", points.bg = "black", las = 1, cex = 1,
-  lwd = 2, zeroline = TRUE, zero.col = "gray", ...)
+\method{plot}{margins}(
+  x,
+  pos = seq_along(marginal_effects(x, with_at = FALSE)),
+  which = colnames(marginal_effects(x, with_at = FALSE)),
+  labels = gsub("^dydx_", "", which),
+  horizontal = FALSE,
+  xlab = "",
+  ylab = "Average Marginal Effect",
+  level = 0.95,
+  pch = 21,
+  points.col = "black",
+  points.bg = "black",
+  las = 1,
+  cex = 1,
+  lwd = 2,
+  zeroline = TRUE,
+  zero.col = "gray",
+  ...
+)
 }
 \arguments{
 \item{x}{An object of class \dQuote{margins}, as returned by \code{\link{margins}}.}

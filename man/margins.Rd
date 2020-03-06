@@ -24,71 +24,165 @@
 \usage{
 margins(model, ...)
 
-\method{margins}{betareg}(model, data = find_data(model, parent.frame()),
-  variables = NULL, at = NULL, type = c("response", "link"),
-  vcov = stats::vcov(model, phi = FALSE), vce = c("delta",
-  "simulation", "bootstrap", "none"), iterations = 50L,
-  unit_ses = FALSE, eps = 1e-07, ...)
+\method{margins}{betareg}(
+  model,
+  data = find_data(model, parent.frame()),
+  variables = NULL,
+  at = NULL,
+  type = c("response", "link"),
+  vcov = stats::vcov(model, phi = FALSE),
+  vce = c("delta", "simulation", "bootstrap", "none"),
+  iterations = 50L,
+  unit_ses = FALSE,
+  eps = 1e-07,
+  ...
+)
 
-\method{margins}{clm}(model, data = find_data(model, parent.frame()),
-  variables = NULL, at = NULL, type = c("response", "link"),
-  vce = "none", eps = 1e-07, ...)
+\method{margins}{clm}(
+  model,
+  data = find_data(model, parent.frame()),
+  variables = NULL,
+  at = NULL,
+  type = c("response", "link"),
+  vce = "none",
+  eps = 1e-07,
+  ...
+)
 
-\method{margins}{default}(model, data = find_data(model, parent.frame()),
-  variables = NULL, at = NULL, type = c("response", "link"),
-  vcov = stats::vcov(model), vce = c("delta", "simulation",
-  "bootstrap", "none"), iterations = 50L, unit_ses = FALSE,
-  eps = 1e-07, ...)
+\method{margins}{default}(
+  model,
+  data = find_data(model, parent.frame()),
+  variables = NULL,
+  at = NULL,
+  type = c("response", "link"),
+  vcov = stats::vcov(model),
+  vce = c("delta", "simulation", "bootstrap", "none"),
+  iterations = 50L,
+  unit_ses = FALSE,
+  eps = 1e-07,
+  ...
+)
 
-\method{margins}{glm}(model, data = find_data(model, parent.frame()),
-  variables = NULL, at = NULL, type = c("response", "link"),
-  vcov = stats::vcov(model), vce = c("delta", "simulation",
-  "bootstrap", "none"), iterations = 50L, unit_ses = FALSE,
-  eps = 1e-07, ...)
+\method{margins}{glm}(
+  model,
+  data = find_data(model, parent.frame()),
+  variables = NULL,
+  at = NULL,
+  type = c("response", "link"),
+  vcov = stats::vcov(model),
+  vce = c("delta", "simulation", "bootstrap", "none"),
+  iterations = 50L,
+  unit_ses = FALSE,
+  eps = 1e-07,
+  ...
+)
 
-\method{margins}{lm}(model, data = find_data(model, parent.frame()),
-  variables = NULL, at = NULL, type = c("response", "link"),
-  vcov = stats::vcov(model), vce = c("delta", "simulation",
-  "bootstrap", "none"), iterations = 50L, unit_ses = FALSE,
-  eps = 1e-07, ...)
+\method{margins}{lm}(
+  model,
+  data = find_data(model, parent.frame()),
+  variables = NULL,
+  at = NULL,
+  type = c("response", "link"),
+  vcov = stats::vcov(model),
+  vce = c("delta", "simulation", "bootstrap", "none"),
+  iterations = 50L,
+  unit_ses = FALSE,
+  eps = 1e-07,
+  ...
+)
 
-\method{margins}{loess}(model, data, variables = NULL, at = NULL,
-  vce = "none", eps = 1e-07, ...)
+\method{margins}{loess}(
+  model,
+  data,
+  variables = NULL,
+  at = NULL,
+  vce = "none",
+  eps = 1e-07,
+  ...
+)
 
-\method{margins}{merMod}(model, data = find_data(model),
-  variables = NULL, at = NULL, type = c("response", "link"),
-  vcov = stats::vcov(model), vce = c("delta", "simulation",
-  "bootstrap", "none"), iterations = 50L, unit_ses = FALSE,
-  eps = 1e-07, ...)
+\method{margins}{merMod}(
+  model,
+  data = find_data(model),
+  variables = NULL,
+  at = NULL,
+  type = c("response", "link"),
+  vcov = stats::vcov(model),
+  vce = c("delta", "simulation", "bootstrap", "none"),
+  iterations = 50L,
+  unit_ses = FALSE,
+  eps = 1e-07,
+  ...
+)
 
-\method{margins}{lmerMod}(model, data = find_data(model),
-  variables = NULL, at = NULL, type = c("response", "link"),
-  vcov = stats::vcov(model), vce = c("delta", "simulation",
-  "bootstrap", "none"), iterations = 50L, unit_ses = FALSE,
-  eps = 1e-07, ...)
+\method{margins}{lmerMod}(
+  model,
+  data = find_data(model),
+  variables = NULL,
+  at = NULL,
+  type = c("response", "link"),
+  vcov = stats::vcov(model),
+  vce = c("delta", "simulation", "bootstrap", "none"),
+  iterations = 50L,
+  unit_ses = FALSE,
+  eps = 1e-07,
+  ...
+)
 
-\method{margins}{multinom}(model, data = find_data(model,
-  parent.frame()), variables = NULL, at = NULL, type = NULL,
-  vcov = stats::vcov(model), vce = c("delta", "simulation",
-  "bootstrap", "none"), iterations = 50L, unit_ses = FALSE,
-  eps = 1e-07, ...)
+\method{margins}{multinom}(
+  model,
+  data = find_data(model, parent.frame()),
+  variables = NULL,
+  at = NULL,
+  type = NULL,
+  vcov = stats::vcov(model),
+  vce = c("delta", "simulation", "bootstrap", "none"),
+  iterations = 50L,
+  unit_ses = FALSE,
+  eps = 1e-07,
+  ...
+)
 
-\method{margins}{nnet}(model, data = find_data(model, parent.frame()),
-  variables = NULL, at = NULL, vce = "none", eps = 1e-07, ...)
+\method{margins}{nnet}(
+  model,
+  data = find_data(model, parent.frame()),
+  variables = NULL,
+  at = NULL,
+  vce = "none",
+  eps = 1e-07,
+  ...
+)
 
-\method{margins}{polr}(model, data = find_data(model, parent.frame()),
-  variables = NULL, at = NULL, type = NULL,
-  vcov = stats::vcov(model), vce = c("delta", "simulation",
-  "bootstrap", "none"), iterations = 50L, unit_ses = FALSE,
-  eps = 1e-07, ...)
+\method{margins}{polr}(
+  model,
+  data = find_data(model, parent.frame()),
+  variables = NULL,
+  at = NULL,
+  type = NULL,
+  vcov = stats::vcov(model),
+  vce = c("delta", "simulation", "bootstrap", "none"),
+  iterations = 50L,
+  unit_ses = FALSE,
+  eps = 1e-07,
+  ...
+)
 
 margins_summary(model, ..., level = 0.95, by_factor = TRUE)
 
-\method{margins}{svyglm}(model, data = find_data(model, parent.frame()),
-  design, variables = NULL, at = NULL, type = c("response", "link"),
-  vcov = stats::vcov(model), vce = c("delta", "simulation",
-  "bootstrap", "none"), iterations = 50L, unit_ses = FALSE,
-  eps = 1e-07, ...)
+\method{margins}{svyglm}(
+  model,
+  data = find_data(model, parent.frame()),
+  design,
+  variables = NULL,
+  at = NULL,
+  type = c("response", "link"),
+  vcov = stats::vcov(model),
+  vce = c("delta", "simulation", "bootstrap", "none"),
+  iterations = 50L,
+  unit_ses = FALSE,
+  eps = 1e-07,
+  ...
+)
 }
 \arguments{
 \item{model}{A model object. See Details for supported model classes.}
@@ -124,6 +218,8 @@ A data frame of class \dQuote{margins} containing the contents of \code{data}, p
 }
 \description{
 This package is an R port of Stata's \samp{margins} command, implemented as an S3 generic \code{margins()} for model objects, like those of class \dQuote{lm} and \dQuote{glm}. \code{margins()} is an S3 generic function for building a \dQuote{margins} object from a model object. Methods are currently implemented for several model classes (see Details, below).
+
+margins provides \dQuote{marginal effects} summaries of models. Marginal effects are partial derivatives of the regression equation with respect to each variable in the model for each unit in the data; average marginal effects are simply the mean of these unit-specific partial derivatives over some sample. In ordinary least squares regression with no interactions or higher-order term, the estimated slope coefficients are marginal effects. In other cases and for generalized linear models, the coefficients are not marginal effects at least not on the scale of the response variable. margins therefore provides ways of calculating the marginal effects of variables to make these models more interpretable.
 
 The package also provides a low-level function, \code{\link{marginal_effects}}, to estimate those quantities and return a data frame of unit-specific effects and another even lower-level function, \code{\link{dydx}}, to provide variable-specific derivatives from models. Some of the underlying architecture for the package is provided by the low-level function \code{\link[prediction]{prediction}}, which provides a consistent data frame interface to \code{\link[stats]{predict}} for a large number of model types. If a \code{prediction} method exists for a model class, \code{margin} should work for the model class but only those classes listed here have been tested and specifically supported.
 }
