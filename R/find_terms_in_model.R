@@ -17,9 +17,15 @@ find_terms_in_model.default <- function(model, variables = NULL) {
         ## then look in the `terms(model$model)`
         classes <- attributes(terms(model$model))[["dataClasses"]][-1L]
     } else {
-        ## then get desperate and use `find_data()`
-        ## this is used for "merMod" objects
-        att <- attributes(terms(find_data(model)))
+
+        ## then get desperate and use `find_data()` (this is used for "merMod" objects)
+        att <- try(attributes(terms(find_data(model))), silent = TRUE)
+
+        ## try `model.frame()` (this is used by "glmerMod" objects)
+        if (inherits(att, 'try-error')) {
+            att <- try(attributes(terms(model.frame(model))), silent = TRUE)
+        }
+
         if ("dataClasses" %in% names(att)) {
             classes <- att[["dataClasses"]][-1L]
             rm(att)

@@ -5,6 +5,7 @@
 * Fix bug that caused spurious `NA`s and errors in `margins()` when `vce` was `"bootstrap"` or `"simulation"` and `variables` had a length of 1. (#112)
 * Models fit using the `lme4` package can now have variance estimation via bootstrap and simulation (#105).
 * Updated documentation to be more explicit about what the package does for users unfamiliar with Stata. (#119)
+* Fix a bug in `margins()` with `glmerMod` objects (#129)
 
 ## margins 0.3.24
 
