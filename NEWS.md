@@ -1,3 +1,9 @@
+## margins 0.3.26
+
+* More Straightforward handling of "svyglm" objects from package **survey** (remove the `design` argument from `margins.svyglm()`). #124
+* Better handling of factor predictors. #116, #121, #125
+* Added `coef()` method for "margins" class. #131
+
 ## margins 0.3.25
 
 * Setup a `cplot.default()` method and modified documentation of `cplot()`, `image()`, and `persp()` methods slightly. (#84, h/t Luke Sonnet)

@@ -28,6 +28,18 @@ test_that("margins() works with missing factor levels", {
     suppressWarnings(m <- margins(x))
     expect_true(inherits(m, "data.frame"))
     expect_true(nrow(summary(m)) == 4L)
+    rm(mtcars2)
+})
+
+test_that("margins() works with `at` for a factor predictor", {
+    mtcars2 <- mtcars
+    mtcars2$cyl <- factor(mtcars2$cyl)
+    x <- lm(mpg ~ cyl + gear, data = mtcars2)
+    m <- margins(x, at = list(cyl = "6"))
+    expect_true(inherits(m, "data.frame"))
+    expect_equal(summary(m)$factor, c("cyl4", "cyl8", "gear"))
+    expect_equivalent(summary(m)$AME, c(6.7470899, -4.2182834, 0.7430041), tolerance = tol)
+    rm(mtcars2)
 })
 
 test_that("margins() errors correctly when there are no RHS variables", {

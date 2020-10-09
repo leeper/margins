@@ -33,7 +33,7 @@ if (requireNamespace("betareg")) {
 context("Test 'lme4' methods")
 if (requireNamespace("lme4")) {
     data("ChickWeight", package = "datasets")
-    
+
     # linear mixed effects models (random intercepts)
     m <- lme4::lmer(weight ~ Diet + (1|Chick), data = ChickWeight)
     test_that("Test marginal_effects() for 'lmerMod' (single grouping)", {
@@ -46,12 +46,12 @@ if (requireNamespace("lme4")) {
     })
     test_that("Test margins(vce = 'simulation') for 'lmerMod' (single grouping)", {
         expect_true(inherits(margins(m, vce = "simulation", iterations = 5),
-                             "margins"))  
+                             "margins"))
     })
     test_that("Test margins(vce = 'bootstrap') for 'lmerMod' (single grouping)", {
         expect_true(inherits(suppressWarnings({
             margins(m, vce = "bootstrap", iterations = 5)
-        }), "margins"))  
+        }), "margins"))
     })
     # lmer with multiple random intercepts
     m <- lme4::lmer(weight ~ Diet + (1|Time) + (1|Chick), data = ChickWeight)
@@ -65,14 +65,14 @@ if (requireNamespace("lme4")) {
     })
     test_that("Test margins(vce = 'simulation') for 'lmerMod' (multiple grouping)", {
         expect_true(inherits(margins(m, vce = "simulation", iterations = 5),
-                             "margins"))  
+                             "margins"))
     })
     test_that("Test margins(vce = 'bootstrap') for 'lmerMod' (multiple grouping)", {
         expect_true(inherits(suppressWarnings({
             margins(m, vce = "bootstrap", iterations = 5)
-        }), "margins"))  
+        }), "margins"))
     })
-    
+
     # lmer with random slopes
     m <- lme4::lmer(weight ~ Diet + (1+Time|Chick), data = ChickWeight)
     test_that("Test marginal_effects() for 'lmerMod' (random slopes)", {
@@ -85,14 +85,14 @@ if (requireNamespace("lme4")) {
     })
     test_that("Test margins(vce = 'simulation') for 'lmerMod' (random slopes)", {
         expect_true(inherits(margins(m, vce = "simulation", iterations = 5),
-                             "margins"))  
+                             "margins"))
     })
     test_that("Test margins(vce = 'bootstrap') for 'lmerMod' (random slopes)", {
         expect_true(inherits(suppressWarnings({
             margins(m, vce = "bootstrap", iterations = 5)
-        }), "margins"))  
+        }), "margins"))
     })
-    
+
     # generalized linear mixed effects models
     ChickWeight$high <- cut(ChickWeight$weight, 2)
     m <- lme4::glmer(high ~ Diet + (1|Chick), data = ChickWeight, binomial)
@@ -106,14 +106,14 @@ if (requireNamespace("lme4")) {
     })
     test_that("Test margins(vce = 'simulation') for 'merMod'", {
         expect_true(inherits(margins(m, vce = "simulation", iterations = 5),
-                             "margins"))  
+                             "margins"))
     })
     test_that("Test margins(vce = 'bootstrap') for 'merMod'", {
         expect_true(inherits(suppressWarnings({
             margins(m, vce = "bootstrap", iterations = 5)
-        }), "margins"))  
+        }), "margins"))
     })
-    
+
 }
 
 context("Test 'MASS' methods")
@@ -146,7 +146,7 @@ if (requireNamespace("nnet")) {
         expect_true(inherits(margins(m), "margins"))
         expect_true(inherits(margins(m, category = "c"), "margins"))
     })
-    
+
     # "multinom" objects
     data("housing", package = "MASS")
     m <- nnet::multinom(Sat ~ Infl + Type + Cont, weights = Freq, data = housing)
@@ -179,25 +179,65 @@ if (requireNamespace("ordinal")) {
 test_that("Test 'svyglm' methods", {
     if (requireNamespace("survey")) {
         data("fpc", package = "survey")
-        svyd <- survey::svydesign(weights=~weight, ids=~psuid, strata=~stratid, fpc=~Nh, variables=~x + nh, data=fpc, nest=TRUE)
+        fpc$nh_f = factor(fpc$nh)
+        svyd <- survey::svydesign(weights=~weight, ids=~psuid, strata=~stratid, fpc=~Nh, variables=~x + nh + nh_f, data=fpc, nest=TRUE)
+        svrepd <- survey::as.svrepdesign(svyd)
+        svrepd <- survey::svrepdesign(survey::make.formula(colnames(svrepd)), weights(svrepd), weights(svrepd, type="sampling"), data=fpc, combined.weights=FALSE)
         x <- survey::svyglm(x ~ nh, design = svyd)
-        test_that("Test margins() for 'svyglm' without passing 'design' object", {
+        xf <- survey::svyglm(x ~ nh_f, design = svyd)
+        xrep <- survey::svyglm(x ~ nh, design = svrepd)
+        test_that("Test margins() for 'svyglm' without passing 'data'", {
             m1 <- margins(x)
             expect_true(inherits(print(m1), "margins"), label = "print() method for margins from svyglm")
             expect_true(inherits(summary(m1), "data.frame"), label = "summary() method for margins from svyglm")
             expect_true(inherits(print(summary(m1)), "data.frame"), label = "print() method for summary.margins from svyglm")
         })
-        test_that("Test margins() for 'svyglm' with 'design' object", {
-            m2 <- margins(x, design = svyd)
+        test_that("Test margins() for 'svyglm' with a factor predictor (without passing 'data')", {
+            m1f <- margins(xf)
+            expect_true(inherits(print(m1f), "margins"), label = "print() method for margins from svyglm")
+            expect_true(inherits(summary(m1f), "data.frame"), label = "summary() method for margins from svyglm")
+            expect_true(inherits(print(summary(m1f)), "data.frame"), label = "print() method for summary.margins from svyglm")
+        })
+        test_that("Test margins() for 'svyglm' estimated on replicate weights design without passing 'data'", {
+            m1rep <- margins(xrep)
+            expect_true(inherits(print(m1rep), "margins"), label = "print() method for margins from svyglm")
+            expect_true(inherits(summary(m1rep), "data.frame"), label = "summary() method for margins from svyglm")
+            expect_true(inherits(print(summary(m1rep)), "data.frame"), label = "print() method for summary.margins from svyglm")
+            expect_equal(summary(m1rep)[, c("factor", "AME")],
+                         summary(m1)[, c("factor", "AME")], label = "same point estimates using survey.design and svyrep.design objects")
+        })
+        test_that("Test margins() for 'svyglm' with 'data'", {
+            m2 <- margins(x, data = svyd)
             expect_true(inherits(print(m2), "margins"), label = "print() method for margins from svyglm (with 'design')")
             expect_true(inherits(summary(m2), "data.frame"), label = "summary() method for margins from svyglm (with 'design')")
             expect_true(inherits(print(summary(m2)), "data.frame"), label = "print() method for summary.margins from svyglm (with 'design')")
         })
-        test_that("Test margins() for 'svyglm' with 'design' object and 'at' specification", {
-            m3 <- margins(x, at = list(nh = mean(fpc$nh)), design = svyd)
+        test_that("Test margins() for 'svyglm' with 'data'", {
+            m2rep <- margins(x, data = svrepd)
+            expect_true(inherits(print(m2rep), "margins"), label = "print() method for margins from svyglm (with 'design')")
+            expect_true(inherits(summary(m2rep), "data.frame"), label = "summary() method for margins from svyglm (with 'design')")
+            expect_true(inherits(print(summary(m2rep)), "data.frame"), label = "print() method for summary.margins from svyglm (with 'design')")
+            expect_equal(summary(m2rep)[, c("factor", "AME")],
+                         summary(m2)[, c("factor", "AME")], label = "same point estimates using survey.design and svyrep.design objects")
+        })
+        test_that("Test margins() for 'svyglm' with 'data' object and 'at' specification", {
+            m3 <- margins(x, at = list(nh = mean(fpc$nh)), data = svyd)
             expect_true(inherits(print(m3), "margins"), label = "print() method for margins from svyglm (with 'at')")
             expect_true(inherits(summary(m3), "data.frame"), label = "summary() method for margins from svyglm (with 'at')")
             expect_true(inherits(print(summary(m3)), "data.frame"), label = "print() method for summary.margins from svyglm (with 'at')")
         })
+        test_that("Test margins() for 'svyglm' estimated on replicate weights design with 'data' object and 'at' specification", {
+            m3rep <- margins(xrep, at = list(nh = mean(fpc$nh)), data = svyd)
+            expect_true(inherits(print(m3rep), "margins"), label = "print() method for margins from svyglm (with 'at')")
+            expect_true(inherits(summary(m3rep), "data.frame"), label = "summary() method for margins from svyglm (with 'at')")
+            expect_true(inherits(print(summary(m3rep)), "data.frame"), label = "print() method for summary.margins from svyglm (with 'at')")
+        })
+        test_that("Test margins() for 'svyglm' with 'data' object and 'at' specification for a factor predictor", {
+            m3f <- margins(xf, at = list(nh_f = levels(fpc$nh_f)[2]), data = svyd)
+            expect_true(inherits(print(m3f), "margins"), label = "print() method for margins from svyglm (with 'at')")
+            expect_true(inherits(summary(m3f), "data.frame"), label = "summary() method for margins from svyglm (with 'at')")
+            expect_true(inherits(print(summary(m3f)), "data.frame"), label = "print() method for summary.margins from svyglm (with 'at')")
+        })
+        rm(fpc, svyd, svrepd, x, xf, xrep)
     }
 })
