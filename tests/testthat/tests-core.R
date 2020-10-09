@@ -40,7 +40,6 @@ test_that("Test build_datalist()", {
     rm(m)
 })
 
-
 context("Test `at` behavior")
 test_that("`at` behavior works and warnings/errors occur as expected", {
     x <- lm(mpg ~ cyl * hp + wt, data = head(mtcars))
@@ -54,20 +53,21 @@ test_that("`at` behavior works and warnings/errors occur as expected", {
 
 test_that("factor variables work", {
     x1 <- lm(mpg ~ factor(cyl), data = head(mtcars))
-    expect_true(inherits(marginal_effects(x1), "data.frame"), label = "factors work in formula") 
+    expect_true(inherits(marginal_effects(x1), "data.frame"), label = "factors work in formula")
     x2 <- lm(Sepal.Length ~ Species, data = iris)
     expect_true(inherits(marginal_effects(x2), "data.frame"), label = "natural factors work")
 })
 
 test_that("dydx() works", {
-    mtcars$am <- as.logical(mtcars$am)
-    mtcars$cyl <- factor(mtcars$cyl)
-    x <- lm(mpg ~ wt + am + cyl, data = head(mtcars))
-    expect_true(inherits(dydx(head(mtcars), x, "wt"), "data.frame"), label = "dydx dispatch works for numeric")
-    expect_true(inherits(dydx(head(mtcars), x, "cyl"), "data.frame"), label = "dydx dispatch works for factor")
-    expect_true(inherits(dydx(head(mtcars), x, "am"), "data.frame"), label = "dydx dispatch works for logical")
-    expect_true(inherits(marginal_effects(x), "data.frame"), label = "dydx dispatch works via marginal_effects()")    
-    rm(mtcars)
+    mtcars2 <- mtcars
+    mtcars2$am <- as.logical(mtcars2$am)
+    mtcars2$cyl <- factor(mtcars2$cyl)
+    x <- lm(mpg ~ wt + am + cyl, data = head(mtcars2))
+    expect_true(inherits(dydx(head(mtcars2), x, "wt"), "data.frame"), label = "dydx dispatch works for numeric")
+    expect_true(inherits(dydx(head(mtcars2), x, "cyl"), "data.frame"), label = "dydx dispatch works for factor")
+    expect_true(inherits(dydx(head(mtcars2), x, "am"), "data.frame"), label = "dydx dispatch works for logical")
+    expect_true(inherits(marginal_effects(x), "data.frame"), label = "dydx dispatch works via marginal_effects()")
+    rm(mtcars2)
 })
 
 test_that("alternative dydx() args", {
@@ -77,7 +77,6 @@ test_that("alternative dydx() args", {
     expect_true(inherits(dydx(head(mtcars), x, "wt", change = "sd"), "data.frame"), label = "dydx w/ change = 'sd'")
     expect_true(inherits(dydx(head(mtcars), x, "wt", change = range(mtcars[["wt"]], na.rm = TRUE)), "data.frame"), label = "dydx w/ change = c(a,b)")
     expect_error(dydx(head(mtcars), x, "wt", change = !L), label = "error in dydx w/ change = 1L")
-    rm(mtcars)
 })
 
 
@@ -108,5 +107,5 @@ test_that("vcov.margins() method words", {
     m <- margins(x <- lm(mpg ~ wt * hp, data = mtcars))
     expect_true(inherits(vcov(m), "matrix"), label = "vcov() method words")
     expect_true(identical(dim(vcov(m)), c(2L, 2L)), label = "vcov.margins() has correct dimensions")
-    
+
 })

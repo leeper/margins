@@ -171,8 +171,7 @@ margins_summary(model, ..., level = 0.95, by_factor = TRUE)
 
 \method{margins}{svyglm}(
   model,
-  data = find_data(model, parent.frame()),
-  design,
+  data = find_data(model),
   variables = NULL,
   at = NULL,
   type = c("response", "link"),
@@ -210,8 +209,6 @@ margins_summary(model, ..., level = 0.95, by_factor = TRUE)
 \item{level}{A numeric value specifying the confidence level for calculating p-values and confidence intervals.}
 
 \item{by_factor}{A logical specifying whether to order the output by factor (the default, \code{TRUE}).}
-
-\item{design}{Only for models estimated using \code{\link[survey]{svyglm}}, the \dQuote{survey.design} object used to estimate the model. This is required.}
 }
 \value{
 A data frame of class \dQuote{margins} containing the contents of \code{data}, predicted values from \code{model} for \code{data}, the standard errors of the predictions, and any estimated marginal effects. If \code{at = NULL} (the default), then the data frame will have a number of rows equal to \code{nrow(data)}. Otherwise, the number of rows will be a multiple thereof based upon the number of combinations of values specified in \code{at}. Columns containing marginal effects are distinguished by their name (prefixed by \code{dydx_}). These columns can be extracted from a \dQuote{margins} object using, for example, \code{marginal_effects(margins(model))}. Columns prefixed by \code{Var_} specify the variances of the \emph{average} marginal effects, whereas (optional) columns prefixed by \code{SE_} contain observation-specific standard errors. A special column, \code{_at_number}, specifies which \code{at} combination a given row corresponds to; the data frame carries an attribute \dQuote{at} that specifies which combination of values this index represents. The \code{summary.margins()} method provides for pretty printing of the results, particularly in cases where \code{at} is specified. A variance-covariance matrix for the average marginal effects is returned as an attribute (though behavior when \code{at} is non-NULL is unspecified).

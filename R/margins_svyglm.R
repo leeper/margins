@@ -1,11 +1,10 @@
 #' @rdname margins
 #' @export
-margins.svyglm <- 
-function(model, 
-         data = find_data(model, parent.frame()), 
-         design,
+margins.svyglm <-
+function(model,
+         data = find_data(model),
          variables = NULL,
-         at = NULL, 
+         at = NULL,
          type = c("response", "link"),
          vcov = stats::vcov(model),
          vce = c("delta", "simulation", "bootstrap", "none"),
@@ -13,38 +12,39 @@ function(model,
          unit_ses = FALSE,
          eps = 1e-7,
          ...) {
-    
+
     # require survey
     requireNamespace("survey")
-    
+
     # match.arg()
     type <- match.arg(type)
     vce <- match.arg(vce)
-    
-    # `design` object
-    if (missing(design)) {
-        message("Note: Estimating marginal effects without survey weights. Specify 'design' to adjust for weighting.")
-        wts <- NULL
-    } else if (!inherits(design, "survey.design")) {
-        stop("'design' must be a 'survey.design' object for models of class 'svyglm'")
+
+    if (inherits(data, c("survey.design", "svyrep.design"))) {
+        wts <- weights(data, type = "sampling")
+        data <- find_data(data)
     } else {
-        wts <- weights(design)
+        # these are not sampling weights, but they're proportional to sampling
+        #   weigts, what works as well (and it's simplicty is appealing)
+        wts <- weights(model)
+        # to get literally sampling weights you should use:
+        # wts <- weights(model$survey.design, type = "sampling")[-na.action(model)]
     }
-    
+
     # setup data
     data_list <- build_datalist(data, at = at)
     if (is.null(names(data_list))) {
         names(data_list) <- NA_character_
     }
     at_specification <- attr(data_list, "at_specification")
-    
+
     # identify classes of terms in `model`
     varslist <- find_terms_in_model(model, variables = variables)
-    
+
     # reduce memory profile
     model[["model"]] <- NULL
     attr(model[["terms"]], ".Environment") <- NULL
-    
+
     # calculate marginal effects
     out <- list()
     for (i in seq_along(data_list)) {
@@ -70,10 +70,10 @@ function(model,
         jac <- NULL
         vc <- NULL
     }
-    
+
     # return value
-    structure(do.call("rbind", out), 
-              class = c("margins", "data.frame"), 
+    structure(do.call("rbind", out),
+              class = c("margins", "data.frame"),
               at = if (is.null(at)) NULL else at_specification,
               type = type,
               call = if ("call" %in% names(model)) model[["call"]] else NULL,

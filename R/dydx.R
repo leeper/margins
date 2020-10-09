@@ -12,32 +12,32 @@
 #' @param \dots Ignored.
 #' @details
 #' These functions provide a simple interface to the calculation of marginal effects for specific variables used in a model, and are the workhorse functions called internally by \code{\link{marginal_effects}}.
-#' 
+#'
 #' \code{dydx} is an S3 generic with classes implemented for specific variable types. S3 method dispatch, somewhat atypically, is based upon the class of \code{data[[variable]]}.
-#' 
+#'
 #' For numeric (and integer) variables, the method calculates an instantaneous marginal effect using a simple \dQuote{central difference} numerical differentiation:
 #' \deqn{\frac{f(x + \frac{1}{2}h) - f(x - \frac{1}{2}h)}{dh}}{(f(x + 0.5h) - f(x - 0.5h))/(2h)}, where (\eqn{h = \max(|x|, 1) \sqrt{\epsilon}}{h = max(|x|, 1)sqrt(epsilon)} and the value of \eqn{\epsilon}{epsilon} is given by argument \code{eps}. This procedure is subject to change in the future.
-#' 
+#'
 #' For factor variables (or character variables, which are implicitly coerced to factors by modelling functions), discrete first-differences in predicted outcomes are reported instead (i.e., change in predicted outcome when factor is set to a given level minus the predicted outcome when the factor is set to its baseline level). These are sometimes called \dQuote{partial effects}. If you want to use numerical differentiation for factor variables (which you probably do not want to do), enter them into the original modelling function as numeric values rather than factors.
-#' 
+#'
 #' For ordered factor variables, the same approach as factors is used. This may contradict the output of modelling function summaries, which rely on \code{options("contrasts")} to determine the contrasts to use (the default being \code{\link[stats]{contr.poly}} rather than \code{\link[stats]{contr.treatment}}, the latter being used normally for unordered factors).
-#' 
+#'
 #' For logical variables, the same approach as factors is used, but always moving from \code{FALSE} to \code{TRUE}.
-#' 
+#'
 #' @return A data frame, typically with one column unless the variable is a factor with more than two levels. The names of the marginal effect columns begin with \dQuote{dydx_} to distinguish them from the substantive variables of the same names.
 #' @references
 #'   Miranda, Mario J. and Paul L. Fackler. 2002. \emph{Applied Computational Economics and Finance}. p. 103.
-#' 
+#'
 #'   Greene, William H. 2012. \emph{Econometric Analysis}. 7th edition. pp. 733--741.
-#' 
+#'
 #'   Cameron, A. Colin and Pravin K. Trivedi. 2010. \emph{Microeconometric Using Stata}. Revised edition. pp. 106--108, 343--356, 476--478.
-#' 
+#'
 #' @examples
 #' require("datasets")
 #' x <- lm(mpg ~ cyl * hp + wt, data = head(mtcars))
 #' # marginal effect (numerical derivative)
 #' dydx(head(mtcars), x, "hp")
-#' 
+#'
 #' # other discrete differences
 #' ## change from min(mtcars$hp) to max(mtcars$hp)
 #' dydx(head(mtcars), x, "hp", change = "minmax")
@@ -47,12 +47,12 @@
 #' dydx(head(mtcars), x, "hp", change = "sd")
 #' ## change between arbitrary values of mtcars$hp
 #' dydx(head(mtcars), x, "hp", change = c(75,150))
-#' 
+#'
 #' # factor variables
 #' mtcars[["cyl"]] <- factor(mtcars$cyl)
 #' x <- lm(mpg ~ cyl, data = head(mtcars))
 #' dydx(head(mtcars), x, "cyl")
-#' 
+#'
 #' @seealso \code{\link{marginal_effects}}, \code{\link{margins}}
 #' @importFrom prediction prediction
 #' @importFrom data.table rbindlist
@@ -63,16 +63,16 @@ dydx <- function(data, model, variable, ...) {
 
 #' @rdname dydx
 #' @export
-dydx.default <- 
-function(data, 
-         model, 
-         variable, 
-         type = c("response", "link"), 
+dydx.default <-
+function(data,
+         model,
+         variable,
+         type = c("response", "link"),
          change = c("dydx", "minmax", "iqr", "sd"),
          eps = 1e-7,
          as.data.frame = TRUE,
          ...) {
-    
+
     if (is.numeric(change)) {
         stopifnot(length(change) == 2)
         lwr <- change[1]
@@ -86,14 +86,14 @@ function(data,
         warning(paste0("Class of variable, ", variable, ", is unrecognized. Returning NA."))
         return(rep(NA_real_, nrow(data)))
     }
-    
+
     d0 <- d1 <- data
-    
+
     # set value of `h` based on `eps` to deal with machine precision
     setstep <- function(x) {
         x + (max(abs(x), 1, na.rm = TRUE) * sqrt(eps)) - x
     }
-    
+
     if (change == "dydx") {
         # calculate numerical derivative
         d0[[variable]] <- d0[[variable]] - setstep(d0[[variable]])
@@ -118,26 +118,26 @@ function(data,
         d0[[variable]] <- lwr
         d1[[variable]] <- upr
     }
-    
+
     if (!is.null(type)) {
         type <- type[1L]
         pred <- prediction(model = model, data = data.table::rbindlist(list(d0, d1)), type = type, calculate_se = FALSE, ...)[["fitted"]]
     } else {
         pred <- prediction(model = model, data = data.table::rbindlist(list(d0, d1)), calculate_se = FALSE, ...)[["fitted"]]
     }
-    
+
     if (change == "dydx") {
         out <- (pred[nrow(d0) + seq_len(nrow(d0))] - pred[seq_len(nrow(d0))]) / (d1[[variable]] - d0[[variable]])
     } else {
         out <- (pred[nrow(d0) + seq_len(nrow(d0))] - pred[seq_len(nrow(d0))])
     }
     class(out) <- c("marginaleffect", "numeric")
-    
+
     # return data.frame (or matrix) with column of derivatives
     if (isTRUE(as.data.frame)) {
         return(structure(list(out),
                          names = paste0("dydx_",variable),
-                         class = c("data.frame"), 
+                         class = c("data.frame"),
                          row.names = seq_len(nrow(data))))
     } else {
         return(structure(matrix(out, ncol = 1L), dimnames = list(seq_len(length(out)), paste0("dydx_",variable))))
@@ -146,7 +146,7 @@ function(data,
 
 #' @rdname dydx
 #' @export
-dydx.factor <- 
+dydx.factor <-
 function(data,
          model,
          variable,
@@ -155,27 +155,36 @@ function(data,
          as.data.frame = TRUE,
          ...
 ) {
-    
-    levs <- levels(as.factor(data[[variable]]))
-    base <- levs[1L]
-    levs <- levs[-1L]
-    
+    i <- 1
+    levs = try(find_data(model, parent.frame(i))[[variable]], silent = TRUE)
+    while (inherits(levs, "try-error")) {
+        i <- i + 1
+        levs = try(find_data(model, parent.frame(i))[[variable]], silent = TRUE)
+    }
+    levs <- sort(unique(levs))
+    if (variable %in% names(attributes(data)$at)) {
+        base <- factor(attributes(data)$at[[variable]], levs)
+    } else {
+        base <- levs[1L]
+    }
+    levs <- levs[levs != base]
+
     # setup response object
     if (isTRUE(fwrap)) {
         outcolnames <- paste0("factor(", variable, ")", levs)
     } else {
         outcolnames <- paste0("dydx_", variable, levs)
     }
-    
+
     if (isTRUE(as.data.frame)) {
-        out <- structure(rep(list(list()), length(levs)), 
-                         class = "data.frame", 
-                         names = outcolnames, 
+        out <- structure(rep(list(list()), length(levs)),
+                         class = "data.frame",
+                         names = outcolnames,
                          row.names = seq_len(nrow(data)))
     } else {
         out <- matrix(NA_real_, nrow = nrow(data), ncol = length(levs), dimnames = list(seq_len(nrow(data)), outcolnames))
     }
-    
+
     # setup base data and prediction
     d0 <- d1 <- data
     d0[[variable]] <- base
@@ -200,7 +209,7 @@ function(data,
             out[, outcolnames[i]] <- pred1 - pred0
         }
     }
-    
+
     # return data.frame (or matrix) with column of derivatives
     return(out)
 }
@@ -211,7 +220,7 @@ dydx.ordered <- dydx.factor
 
 #' @rdname dydx
 #' @export
-dydx.logical <- 
+dydx.logical <-
 function(data,
          model,
          variable,
@@ -219,12 +228,12 @@ function(data,
          as.data.frame = TRUE,
          ...
 ) {
-    
+
     # setup base data and prediction
     d0 <- d1 <- data
     d0[[variable]] <- FALSE
     d1[[variable]] <- TRUE
-    
+
     # calculate difference for moving FALSE to TRUE
     if (!is.null(type)) {
         type <- type[1L]
@@ -233,13 +242,13 @@ function(data,
         pred <- prediction(model = model, data = data.table::rbindlist(list(d0, d1)), calculate_se = FALSE, ...)[["fitted"]]
     }
     out <- structure(pred[nrow(d0) + seq_len(nrow(d0))] - pred[seq_len(nrow(d0))], class = c("marginaleffect", "numeric"))
-    
+
     # return data.frame (or matrix) with column of derivatives
     class(out) <- c("marginaleffect", "numeric")
     if (isTRUE(as.data.frame)) {
         return(structure(list(out),
                          names = paste0("dydx_",variable),
-                         class = c("data.frame"), 
+                         class = c("data.frame"),
                          row.names = seq_len(nrow(data))))
     } else {
         return(structure(matrix(out, ncol = 1L), dimnames = list(seq_len(length(out)), paste0("dydx_",variable))))
