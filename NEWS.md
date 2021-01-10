@@ -1,3 +1,7 @@
+## margins 0.3.26
+
+* Remove unconditional use of cairo_pdf in vignette, per CRAN policy.
+
 ## margins 0.3.25
 
 * Setup a `cplot.default()` method and modified documentation of `cplot()`, `image()`, and `persp()` methods slightly. (#84, h/t Luke Sonnet)
