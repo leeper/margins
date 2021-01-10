@@ -25,7 +25,7 @@
 <<opts, echo = FALSE, results = "hide">>=
 library("knitr")
 opts_knit$set(progress = TRUE, verbose = TRUE)
-opts_chunk$set(echo = FALSE, results = "hide", dev = "cairo_pdf", fig.height=7, fig.width=11, out.width='\\textwidth')
+opts_chunk$set(echo = FALSE, results = "hide", fig.height=7, fig.width=11, out.width='\\textwidth')
 @
 
 
