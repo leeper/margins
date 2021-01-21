@@ -50,7 +50,7 @@
 #' @references
 #' Greene, W.H. 2012. Econometric Analysis, 7th Ed. Boston: Pearson.
 #' 
-#' Stata manual: \code{margins}. Retrieved 2014-12-15 from \url{http://www.stata.com/manuals13/rmargins.pdf}.
+#' Stata manual: \code{margins}. Retrieved 2014-12-15 from \url{https://www.stata.com/manuals13/rmargins.pdf}.
 #' @examples
 #' # basic example using linear model
 #' require("datasets")

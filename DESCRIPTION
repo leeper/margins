@@ -48,4 +48,4 @@ Enhances:
     survey
 ByteCompile: true
 VignetteBuilder: knitr
-RoxygenNote: 7.0.2
+RoxygenNote: 7.1.0

@@ -324,7 +324,7 @@ mapply(margins_summary, model = list_mod, data = list_data, SIMPLIFY = FALSE)
 \references{
 Greene, W.H. 2012. Econometric Analysis, 7th Ed. Boston: Pearson.
 
-Stata manual: \code{margins}. Retrieved 2014-12-15 from \url{http://www.stata.com/manuals13/rmargins.pdf}.
+Stata manual: \code{margins}. Retrieved 2014-12-15 from \url{https://www.stata.com/manuals13/rmargins.pdf}.
 }
 \seealso{
 \code{\link{marginal_effects}}, \code{\link{dydx}}, \code{\link[prediction]{prediction}}
