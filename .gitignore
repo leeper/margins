@@ -20,3 +20,4 @@ ignore/
 ignore/*
 revdep/
 revdep/*
+.Rproj.user

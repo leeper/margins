@@ -8,6 +8,7 @@ function(model,
          type = c("response", "link"),
          vce = "none",
          eps = 1e-7,
+         save = FALSE,
          ...) {
     
     # match.arg()
@@ -54,5 +55,6 @@ function(model,
               vcov = NULL,
               jacobian = NULL,
               weighted = FALSE,
-              iterations = NULL)
+              iterations = NULL,
+              object = if (save) model else NULL)
 }

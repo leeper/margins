@@ -32,3 +32,5 @@
 ^vignettes/.+\.pdf$
 ^vignettes/.+\.tex$
 ^data-raw$
+^.*\.Rproj$
+^\.Rproj\.user$

@@ -96,6 +96,36 @@ test_that("confint() for 'margins' object", {
     expect_true(inherits(confint(m), "matrix"), label = "confint() for margins")
 })
 
+context("Saving model object")
+test_that("save = TRUE works", {
+    x <- lm(mpg ~ wt * hp, data = mtcars)
+    m <- margins(x, save = TRUE)
+    x_df <- with(summary(x),
+                 data.frame(
+                     r.squared = r.squared,
+                    adj.r.squared = adj.r.squared,
+                    sigma = sigma,
+                    logLik = as.numeric(stats::logLik(x)),
+                    AIC = stats::AIC(x),
+                    BIC = stats::BIC(x),
+                    deviance = stats::deviance(x),
+                    df.residual = df.residual(x),
+                    nobs = stats::nobs(x)
+                    ))
+    m_df <- with(summary(attr(m, 'object')),
+                 data.frame(
+                     r.squared = r.squared,
+                     adj.r.squared = adj.r.squared,
+                     sigma = sigma,
+                     logLik = as.numeric(stats::logLik(attr(m, 'object'))),
+                     AIC = stats::AIC(attr(m, 'object')),
+                     BIC = stats::BIC(attr(m, 'object')),
+                     deviance = stats::deviance(attr(m, 'object')),
+                     df.residual = df.residual(attr(m, 'object')),
+                     nobs = stats::nobs(attr(m, 'object'))
+                     ))
+    expect_equal(x_df, m_df, label = "Original lm object correctly saved as attribute")
+})
 
 context("Variance tests")
 test_that("minimum test of variance calculations", {

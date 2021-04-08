@@ -35,6 +35,7 @@ margins(model, ...)
   iterations = 50L,
   unit_ses = FALSE,
   eps = 1e-07,
+  save = FALSE,
   ...
 )
 
@@ -46,6 +47,7 @@ margins(model, ...)
   type = c("response", "link"),
   vce = "none",
   eps = 1e-07,
+  save = FALSE,
   ...
 )
 
@@ -60,6 +62,7 @@ margins(model, ...)
   iterations = 50L,
   unit_ses = FALSE,
   eps = 1e-07,
+  save = FALSE,
   ...
 )
 
@@ -74,6 +77,7 @@ margins(model, ...)
   iterations = 50L,
   unit_ses = FALSE,
   eps = 1e-07,
+  save = FALSE,
   ...
 )
 
@@ -88,6 +92,7 @@ margins(model, ...)
   iterations = 50L,
   unit_ses = FALSE,
   eps = 1e-07,
+  save = FALSE,
   ...
 )
 
@@ -98,6 +103,7 @@ margins(model, ...)
   at = NULL,
   vce = "none",
   eps = 1e-07,
+  save = FALSE,
   ...
 )
 
@@ -112,6 +118,7 @@ margins(model, ...)
   iterations = 50L,
   unit_ses = FALSE,
   eps = 1e-07,
+  save = FALSE,
   ...
 )
 
@@ -126,6 +133,7 @@ margins(model, ...)
   iterations = 50L,
   unit_ses = FALSE,
   eps = 1e-07,
+  save = FALSE,
   ...
 )
 
@@ -140,6 +148,7 @@ margins(model, ...)
   iterations = 50L,
   unit_ses = FALSE,
   eps = 1e-07,
+  save = FALSE,
   ...
 )
 
@@ -150,6 +159,7 @@ margins(model, ...)
   at = NULL,
   vce = "none",
   eps = 1e-07,
+  save = FALSE,
   ...
 )
 
@@ -164,6 +174,7 @@ margins(model, ...)
   iterations = 50L,
   unit_ses = FALSE,
   eps = 1e-07,
+  save = FALSE,
   ...
 )
 
@@ -181,6 +192,7 @@ margins_summary(model, ..., level = 0.95, by_factor = TRUE)
   iterations = 50L,
   unit_ses = FALSE,
   eps = 1e-07,
+  save = FALSE,
   ...
 )
 }
@@ -206,6 +218,8 @@ margins_summary(model, ..., level = 0.95, by_factor = TRUE)
 \item{unit_ses}{If \code{vce = "delta"}, a logical specifying whether to calculate and return unit-specific marginal effect variances. This calculation is time consuming and the information is often not needed, so this is set to \code{FALSE} by default.}
 
 \item{eps}{A numeric value specifying the \dQuote{step} to use when calculating numerical derivatives.}
+
+\item{save}{Logical indicating whether the original model object itself should be saved as an attribute. (This may be useful for further processing of margins objects, e.g., as part of model summaries.)}
 
 \item{level}{A numeric value specifying the confidence level for calculating p-values and confidence intervals.}
 

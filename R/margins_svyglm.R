@@ -12,6 +12,7 @@ function(model,
          iterations = 50L, # if vce == "bootstrap" or "simulation"
          unit_ses = FALSE,
          eps = 1e-7,
+         save = FALSE,
          ...) {
     
     # require survey
@@ -81,5 +82,6 @@ function(model,
               vcov = vc,
               jacobian = jac,
               weighted = if (is.null(wts)) FALSE else TRUE,
-              iterations = if (vce == "bootstrap") iterations else NULL)
+              iterations = if (vce == "bootstrap") iterations else NULL,
+              object = if (save) model else NULL)
 }
