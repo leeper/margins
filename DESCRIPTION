@@ -18,7 +18,11 @@ Authors@R: c(person("Thomas J.", "Leeper",
              person("Jacob A.", "Long", 
                     role = c("ctb"),
                     email = "long.1377@osu.edu",
-                    comment = c(ORCID = "0000-0002-1582-6214"))
+                    comment = c(ORCID = "0000-0002-1582-6214")),
+             person("Grant R.", "McDermott", 
+                    role = c("ctb"),
+                    email = "grantmcd@uoregon.edu",
+                    comment = c(ORCID = "0000-0001-7883-8573"))
              )
 URL: https://github.com/leeper/margins
 BugReports: https://github.com/leeper/margins/issues
@@ -48,4 +52,4 @@ Enhances:
     survey
 ByteCompile: true
 VignetteBuilder: knitr
-RoxygenNote: 7.1.0
+RoxygenNote: 7.1.1

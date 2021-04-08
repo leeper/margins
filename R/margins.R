@@ -19,6 +19,7 @@
 #' @param iterations If \code{vce = "bootstrap"}, the number of bootstrap iterations. If \code{vce = "simulation"}, the number of simulated effects to draw. Ignored otherwise.
 #' @param unit_ses If \code{vce = "delta"}, a logical specifying whether to calculate and return unit-specific marginal effect variances. This calculation is time consuming and the information is often not needed, so this is set to \code{FALSE} by default.
 #' @param eps A numeric value specifying the \dQuote{step} to use when calculating numerical derivatives.
+#' @param save Logical indicating whether the original model object itself should be saved as an attribute. (This may be useful for further processing of margins objects, e.g., as part of model summaries.)
 #' @param \dots Arguments passed to methods, and onward to \code{\link{dydx}} methods and possibly further to \code{\link[prediction]{prediction}} methods. This can be useful, for example, for setting \code{type} (predicted value type), \code{eps} (precision), or \code{category} (category for multi-category outcome models), etc.
 #' @details Methods for this generic return a \dQuote{margins} object, which is a data frame consisting of the original data, predicted values and standard errors thereof, estimated marginal effects from the model \code{model} (for all variables used in the model, or the subset specified by \code{variables}), along with attributes describing various features of the marginal effects estimates.
 #' 

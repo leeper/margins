@@ -11,6 +11,7 @@ function(model,
          iterations = 50L, # if vce == "bootstrap" or "simulation"
          unit_ses = FALSE,
          eps = 1e-7,
+         save = FALSE,
          ...) {
     
     # match.arg()
@@ -59,6 +60,7 @@ function(model,
               type = type,
               call = if ("call" %in% names(model)) model[["call"]] else NULL,
               model_class = class(model),
+              object = if (save) model else NULL,
               vce = vce,
               vcov = vc,
               jacobian = jac,

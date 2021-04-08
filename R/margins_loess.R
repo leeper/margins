@@ -7,6 +7,7 @@ function(model,
          at = NULL, 
          vce = "none", 
          eps = 1e-7,
+         save = FALSE,
          ...){
     
     # setup data
@@ -54,5 +55,6 @@ function(model,
               vcov = NULL,
               jacobian = NULL,
               weighted = FALSE,
-              iterations = NULL)
+              iterations = NULL,
+              object = if (save) model else NULL)
 }
