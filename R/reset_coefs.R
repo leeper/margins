@@ -3,18 +3,21 @@ reset_coefs <- function(model, coefs) {
     UseMethod("reset_coefs")
 }
 
+#' @export
 reset_coefs.default <- function(model, coefs) {
     # in basic model classes coefficients are named vector
     model[["coefficients"]][names(coefs)] <- coefs
     model
 }
 
+#' @export
 reset_coefs.lm <- function(model, coefs) {
     # in lm coefficients are named vector
     model[["coefficients"]][names(coefs)] <- coefs
     model
 }
 
+#' @export
 reset_coefs.glm <- function(model, coefs) {
     # in glm coefficients are named vector
     model[["coefficients"]][names(coefs)] <- coefs
@@ -25,12 +28,14 @@ reset_coefs.glm <- function(model, coefs) {
     model
 }
 
+#' @export
 reset_coefs.betareg <- function(model, coefs) {
     # in betareg, coefficients are a two-element list. We want to substitute the first element!
     model[["coefficients"]]$mean[names(coefs)] <- coefs
     model
 }
 
+#' @export
 reset_coefs.merMod <- function(model, coefs) {
     # in 'merMod', predictions work the slot called "beta", which is unnamed
     # `fixef(model)` returns the same thing named
@@ -41,4 +46,5 @@ reset_coefs.merMod <- function(model, coefs) {
     model
 }
 
+#' @export
 reset_coefs.lmerMod <- reset_coefs.merMod

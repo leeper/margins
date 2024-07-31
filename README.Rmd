@@ -198,9 +198,9 @@ The most computationally expensive part of `margins()` is variance estimation. I
 
 [![CRAN](http://www.r-pkg.org/badges/version/margins)](https://cran.r-project.org/package=margins)
 ![Downloads](http://cranlogs.r-pkg.org/badges/margins)
-[![Build Status](https://travis-ci.org/leeper/margins.svg?branch=master)](https://travis-ci.org/leeper/margins)
+<!-- [![Build Status](https://app.travis-ci.org/leeper/margins.svg?branch=master)](https://app.travis-ci.org/leeper/margins) -->
 [![Build status](https://ci.appveyor.com/api/projects/status/t6nxndmvvcw3gw7f/branch/master?svg=true)](https://ci.appveyor.com/project/leeper/margins/branch/master)
-[![codecov.io](http://codecov.io/github/leeper/margins/coverage.svg?branch=master)](https://codecov.io/github/leeper/margins?branch=master)
+[![codecov.io](http://app.codecov.io/github/leeper/margins/coverage.svg?branch=master)](https://app.codecov.io/github/leeper/margins?branch=master)
 [![Project Status: Active - The project has reached a stable, usable state and is being actively developed.](http://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/)
 
 The development version of this package can be installed directly from GitHub using `remotes`:

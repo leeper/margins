@@ -10,7 +10,7 @@
 #' @param vcov A matrix containing the variance-covariance matrix for estimated model coefficients, or a function to perform the estimation with \code{model} as its only argument.
 #' @param at Currently ignored.
 #' @param n An integer specifying the number of points across \code{x} at which to calculate the predicted value or marginal effect, when \code{x} is numeric. Ignored otherwise.
-#' @param xvals A numeric vector of values at which to calculate predictions or marginal effects, if \code{x} is numeric. By default, it is calculated from the data using \code{\link{seq_range}}. If \code{x} is a factor, this is ignored, as is \code{n}.
+#' @param xvals A numeric vector of values at which to calculate predictions or marginal effects, if \code{x} is numeric. By default, it is calculated from the data using \code{\link[prediction]{seq_range}}. If \code{x} is a factor, this is ignored, as is \code{n}.
 #' @param level The confidence level required (used to draw uncertainty bounds).
 #' @param draw A logical (default \code{TRUE}), specifying whether to draw the plot. If \code{FALSE}, the data used in drawing are returned as a list of data.frames. This might be useful if you want to plot using an alternative plotting package (e.g., ggplot2). Also, if set to value \dQuote{add}, then the resulting data is added to the existing plot.
 #' @param xlab A character string specifying the value of \code{xlab} in \code{\link[graphics]{plot}}. 

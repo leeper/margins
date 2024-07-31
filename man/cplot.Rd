@@ -76,8 +76,8 @@ cplot(object, ...)
   ylab = if (match.arg(what) == "effect") paste0("Marginal effect of ", dx) else
     paste0("Predicted value"),
   xlim = NULL,
-  ylim = if (match.arg(what) \%in\% c("prediction", "stackedprediction")) c(0, 1.04)
-    else NULL,
+  ylim = if (match.arg(what) \%in\% c("prediction", "stackedprediction")) c(0, 1.04) else
+    NULL,
   lwd = 1L,
   col = "black",
   lty = 1L,
@@ -252,8 +252,8 @@ cplot(object, ...)
   ylab = if (match.arg(what) == "effect") paste0("Marginal effect of ", dx) else
     paste0("Predicted value"),
   xlim = NULL,
-  ylim = if (match.arg(what) \%in\% c("prediction", "stackedprediction")) c(0, 1.04)
-    else NULL,
+  ylim = if (match.arg(what) \%in\% c("prediction", "stackedprediction")) c(0, 1.04) else
+    NULL,
   lwd = 1L,
   col = "black",
   lty = 1L,
@@ -293,8 +293,8 @@ cplot(object, ...)
   ylab = if (match.arg(what) == "effect") paste0("Marginal effect of ", dx) else
     paste0("Predicted value"),
   xlim = NULL,
-  ylim = if (match.arg(what) \%in\% c("prediction", "stackedprediction")) c(0, 1.04)
-    else NULL,
+  ylim = if (match.arg(what) \%in\% c("prediction", "stackedprediction")) c(0, 1.04) else
+    NULL,
   lwd = 1L,
   col = "black",
   lty = 1L,
@@ -338,7 +338,7 @@ cplot(object, ...)
 
 \item{n}{An integer specifying the number of points across \code{x} at which to calculate the predicted value or marginal effect, when \code{x} is numeric. Ignored otherwise.}
 
-\item{xvals}{A numeric vector of values at which to calculate predictions or marginal effects, if \code{x} is numeric. By default, it is calculated from the data using \code{\link{seq_range}}. If \code{x} is a factor, this is ignored, as is \code{n}.}
+\item{xvals}{A numeric vector of values at which to calculate predictions or marginal effects, if \code{x} is numeric. By default, it is calculated from the data using \code{\link[prediction]{seq_range}}. If \code{x} is a factor, this is ignored, as is \code{n}.}
 
 \item{level}{The confidence level required (used to draw uncertainty bounds).}
 

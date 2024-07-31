@@ -7,6 +7,7 @@ find_terms_in_model <- function(model, variables = NULL) {
     UseMethod("find_terms_in_model")
 }
 
+#' @export
 find_terms_in_model.default <- function(model, variables = NULL) {
     
     # identify classes of terms in `model`
@@ -71,6 +72,7 @@ find_terms_in_model.default <- function(model, variables = NULL) {
     return(vars)
 }
 
+#' @export
 find_terms_in_model.merMod <- function(model, variables = NULL) {
     
     # require lme4 package in order to identify random effects terms
@@ -85,6 +87,7 @@ find_terms_in_model.merMod <- function(model, variables = NULL) {
     varslist
 }
 
+#' @export
 find_terms_in_model.lmerMod <- find_terms_in_model.merMod
 
 # call gsub_bracket on all common formula operations

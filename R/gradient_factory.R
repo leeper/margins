@@ -4,6 +4,7 @@ gradient_factory <- function(data, model, variables = NULL, type = "response", w
     UseMethod("gradient_factory", model)
 }
 
+#' @export
 gradient_factory.default <- function(data, model, variables = NULL, type = "response", weights = NULL, eps = 1e-7, varslist = NULL, ...) {
     
     # identify classes of terms in `model`

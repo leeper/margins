@@ -20,7 +20,6 @@
 ^revdep.?
 ^ignore$
 ^inst/doc/.+\.log$
-^inst/doc/.+\.Rmd$
 ^vignettes/figure$
 ^vignettes/figure/.+$
 ^vignettes/.+\.aux$

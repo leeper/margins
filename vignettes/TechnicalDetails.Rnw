@@ -1,4 +1,4 @@
-%\VignetteEngine{knitr}
+%\VignetteEngine{knitr::knitr}
 %\VignetteIndexEntry{Technical Implementation Details}
 \documentclass[a4paper,12pt]{article}
 \usepackage[margin=1in]{geometry}
@@ -26,6 +26,9 @@
 library("knitr")
 opts_knit$set(progress = TRUE, verbose = TRUE)
 opts_chunk$set(echo = FALSE, results = "hide", fig.height=7, fig.width=11, out.width='\\textwidth')
+has_pkgs <- requireNamespace("gapminder", quietly = TRUE) &&
+    requireNamespace("stargazer", quietly = TRUE)
+opts_chunk$set(eval  = has_pkgs)
 @
 
 
@@ -42,7 +45,7 @@ The outline of this text is as follows: section \ref{sec:stats} describes the st
 The quantity of interest typically reported by statistical software estimation commands for regression models is the regression coefficient (along with standard errors thereof, and various goodness-of-fit and summary statistics). Consider, for example, a trivial regression of country population size as a function of GDP per capita, life expectancy, and the interaction of the two. (As should be obvious, this model is not intended to carry any causal interpretation.)
 
 <<model1, results = "asis">>=
-library("gapminder")
+library(gapminder)
 suppressPackageStartupMessages(library("stargazer"))
 gapminder[["pop"]] <- gapminder[["pop"]]/1e6
 gapminder[["loggdp"]] <- log(gapminder[["gdpPercap"]])
